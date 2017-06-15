@@ -874,15 +874,15 @@ namespace AirflowNetworkSolver {
 		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 
 		// I       - component number.
-		// N       - number of node/zone 1.
-		// M       - number of node/zone 2.
+		// n0      - number of node/zone 1.
+		// n1      - number of node/zone 2.
 		// F       - flows through the element (kg/s).
 		// DF      - partial derivatives:  DF/DP.
 		// NF      - number of flows, 1 or 2.
 		int i;
 		int j;
-		int M;
-		int n;
+		int n1;
+		int n0;
 		int FLAG;
 		int NF;
 #ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
@@ -904,113 +904,113 @@ namespace AirflowNetworkSolver {
 		static gio::Fmt Format_901( "(A5,3I3,4E16.7)" );
 
 		// FLOW:
-		for ( n = 1; n <= NetworkNumOfNodes; ++n ) {
-			SUMF( n ) = 0.0;
-			SUMAF( n ) = 0.0;
-			if ( AirflowNetworkNodeData( n ).NodeTypeNum == 1 ) {
-				AD( n ) = 1.0;
+		for ( n0 = 1; n0 <= NetworkNumOfNodes; ++n0 ) {
+			SUMF( n0 ) = 0.0;
+			SUMAF( n0 ) = 0.0;
+			if ( AirflowNetworkNodeData( n0 ).NodeTypeNum == 1 ) {
+				AD( n0 ) = 1.0;
 			} else {
-				AD( n ) = 0.0;
+				AD( n0 ) = 0.0;
 			}
 		}
-		for ( n = 1; n <= NNZE; ++n ) {
-			AU( n ) = 0.0;
+		for ( n0 = 1; n0 <= NNZE; ++n0 ) {
+			AU( n0 ) = 0.0;
 		}
 		//                              Set up the Jacobian matrix.
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			n = AirflowNetworkLinkageData( i ).NodeNums( 1 );
-			M = AirflowNetworkLinkageData( i ).NodeNums( 2 );
+			n0 = AirflowNetworkLinkageData( i ).NodeNums( 1 );
+			n1 = AirflowNetworkLinkageData( i ).NodeNums( 2 );
 			//!!! Check array of DP. DpL is used for multizone air flow calculation only
 			//!!! and is not for forced air calculation
 			if ( i > NumOfLinksMultiZone ) {
-				DP = PZ( n ) - PZ( M ) + PS( i ) + PW( i );
+				DP = PZ( n0 ) - PZ( n1 ) + PS( i ) + PW( i );
 			} else {
-				DP = PZ( n ) - PZ( M ) + DpL( i, 1 ) + PW( i );
+				DP = PZ( n0 ) - PZ( n1 ) + DpL( i, 1 ) + PW( i );
 			}
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << "PS:" << i << n << M << PS( i ) << PW( i ) << AirflowNetworkLinkSimu( i ).DP;
+			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << "PS:" << i << n0 << n1 << PS( i ) << PW( i ) << AirflowNetworkLinkSimu( i ).DP;
 			j = AirflowNetworkLinkageData( i ).CompNum;
 			{ auto const SELECT_CASE_var( AirflowNetworkCompData( j ).CompTypeNum );
 			if ( SELECT_CASE_var == CompTypeNum_PLR ) { // Distribution system crack component
-				AFEPLR( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEPLR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DWC ) { // Distribution system duct component
-				AFEDWC( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEDWC( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_CVF ) { // Distribution system constant volume fan component
-				AFECFR( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFECFR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_FAN ) { // Distribution system detailed fan component
-				AFEFAN( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEFAN( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 				//           Case (CompTypeNum_CPF) ! not currently used in EnergyPlus code -- left for compatibility with AirNet
 				//              CALL AFECPF(J,LFLAG,DP,I,N,M,F,DF,NF)
 			} else if ( SELECT_CASE_var == CompTypeNum_DMP ) { // Distribution system damper component
-				AFEDMP( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEDMP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_ELR ) { // Distribution system effective leakage ratio component
-				AFEELR( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEELR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_CPD ) { // Distribution system constant pressure drop component
-				AFECPD( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFECPD( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DOP ) { // Detailed opening
-				AFEDOP( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEDOP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SOP ) { // Simple opening
-				AFESOP( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFESOP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SCR ) { // Surface crack component
-				AFESCR( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFESCR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SEL ) { // Surface effective leakage ratio component
-				AFESEL( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFESEL( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_COI ) { // Distribution system coil component
-				AFECOI( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFECOI( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_TMU ) { // Distribution system terminal unit component
-				AFETMU( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFETMU( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_EXF ) { // Exhaust fan component
-				AFEEXF( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEEXF( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_HEX ) { // Distribution system heat exchanger component
-				AFEHEX( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEHEX( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_HOP ) { // Horizontal opening
-				AFEHOP( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEHOP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_OAF ) { // OA supply fan
-				AFEOAF( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEOAF( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_REL ) { // Relief fan
-				AFEREL( j, LFLAG, DP, i, n, M, F, DF, NF );
+				AFEREL( j, LFLAG, DP, i, n0, n1, F, DF, NF );
 			} else {
 				continue;
 			}}
 			AirflowNetworkLinkSimu( i ).DP = DP;
-			AFLOW( i ) = F( 1 );
+			AFLOW( i ) = F[ 0 ];
 			AFLOW2( i ) = 0.0;
 			if ( AirflowNetworkCompData( j ).CompTypeNum == CompTypeNum_DOP ) {
-				AFLOW2( i ) = F( 2 );
+				AFLOW2( i ) = F[ 1 ];
 			}
-			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRi:" << i << n << M << AirflowNetworkLinkSimu( i ).DP << F( 1 ) << DF( 1 );
+			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRi:" << i << n0 << n1 << AirflowNetworkLinkSimu( i ).DP << F[ 0 ] << DF[ 0 ];
 			FLAG = 1;
-			if ( AirflowNetworkNodeData( n ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( n0 ).NodeTypeNum == 0 ) {
 				++FLAG;
-				X( 1 ) = DF( 1 );
-				X( 2 ) = -DF( 1 );
-				SUMF( n ) += F( 1 );
-				SUMAF( n ) += std::abs( F( 1 ) );
+				X( 1 ) = DF[ 0 ];
+				X( 2 ) = -DF[ 0 ];
+				SUMF( n0 ) += F[ 0 ];
+				SUMAF( n0 ) += std::abs( F[ 0 ] );
 			}
-			if ( AirflowNetworkNodeData( M ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( n1 ).NodeTypeNum == 0 ) {
 				FLAG += 2;
-				X( 4 ) = DF( 1 );
-				X( 3 ) = -DF( 1 );
-				SUMF( M ) -= F( 1 );
-				SUMAF( M ) += std::abs( F( 1 ) );
+				X( 4 ) = DF[ 0 ];
+				X( 3 ) = -DF[ 0 ];
+				SUMF( n1 ) -= F[ 0 ];
+				SUMAF( n1 ) += std::abs( F[ 0 ] );
 			}
 			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).NodeNums, IK, AU, AD, FLAG );
 			if ( NF == 1 ) continue;
-			AFLOW2( i ) = F( 2 );
-			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRj:" << i << n << M << AirflowNetworkLinkSimu( i ).DP << F( 2 ) << DF( 2 );
+			AFLOW2( i ) = F[ 1 ];
+			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRj:" << i << n0 << n1 << AirflowNetworkLinkSimu( i ).DP << F[ 1 ] << DF[ 1 ];
 			FLAG = 1;
-			if ( AirflowNetworkNodeData( n ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( n0 ).NodeTypeNum == 0 ) {
 				++FLAG;
-				X( 1 ) = DF( 2 );
-				X( 2 ) = -DF( 2 );
-				SUMF( n ) += F( 2 );
-				SUMAF( n ) += std::abs( F( 2 ) );
+				X( 1 ) = DF[ 1 ];
+				X( 2 ) = -DF[ 1 ];
+				SUMF( n0 ) += F[ 1 ];
+				SUMAF( n0 ) += std::abs( F[ 1 ] );
 			}
-			if ( AirflowNetworkNodeData( M ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( n1 ).NodeTypeNum == 0 ) {
 				FLAG += 2;
-				X( 4 ) = DF( 2 );
-				X( 3 ) = -DF( 2 );
-				SUMF( M ) -= F( 2 );
-				SUMAF( M ) += std::abs( F( 2 ) );
+				X( 4 ) = DF[ 1 ];
+				X( 3 ) = -DF[ 1 ];
+				SUMF( n1 ) -= F[ 1 ];
+				SUMAF( n1 ) += std::abs( F[ 1 ] );
 			}
 			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).NodeNums, IK, AU, AD, FLAG );
 		}
@@ -1021,19 +1021,19 @@ namespace AirflowNetworkSolver {
 		// If they are, let's remove them from the matrix -- but only for the purposes of doing the solve.
 		// They way I do this is building a separate IK array (newIK) that simply changes the column heights.
 		// So the affected SOLVEs would use this newIK and nothing else changes.
-		for ( n = 1; n <= NetworkNumOfNodes + 1; ++n ) {
-			newIK( n ) = IK( n );
+		for ( n0 = 1; n0 <= NetworkNumOfNodes + 1; ++n0 ) {
+			newIK( n0 ) = IK( n0 );
 			//print*, " NetworkNumOfNodes  n=", n, " IK(n)=", IK(n)
 		}
 
 		newsum = IK( 2 ) - IK( 1 ); // always 0?
 
 		JHK = 1;
-		for ( n = 2; n <= NetworkNumOfNodes; ++n ) {
-			JHK1 = IK( n + 1 ); // starts at IK(3)-IK(2)
+		for ( n0 = 2; n0 <= NetworkNumOfNodes; ++n0 ) {
+			JHK1 = IK( n0 + 1 ); // starts at IK(3)-IK(2)
 			LHK = JHK1 - JHK;
 			if ( LHK <= 0 ) {
-				newIK( n + 1 ) = newIK( n );
+				newIK( n0 + 1 ) = newIK( n0 );
 				continue;
 			}
 			//write(*,'(4(a,i8))') "n=", n, " ik=", ik(n), " JHK=", JHK, " LHK=", LHK
@@ -1056,7 +1056,7 @@ namespace AirflowNetworkSolver {
 				//   write(*, '(2(a,i8),a, f15.3)') "  n=", n, " i=", i, " AU(JHK+i)=", AU(JHK+i)
 				//enddo
 			}
-			newIK( n + 1 ) = newIK( n ) + newh;
+			newIK( n0 + 1 ) = newIK( n0 ) + newh;
 			newsum += newh;
 
 			//do i = LHK-1,0, -1
@@ -1073,13 +1073,13 @@ namespace AirflowNetworkSolver {
 
 		// Now fill newAU from AU, using newIK
 		thisIK = 1;
-		for ( n = 2; n <= NetworkNumOfNodes; ++n ) {
-			thisIK = newIK( n );
-			ispan = newIK( n + 1 ) - thisIK;
+		for ( n0 = 2; n0 <= NetworkNumOfNodes; ++n0 ) {
+			thisIK = newIK( n0 );
+			ispan = newIK( n0 + 1 ) - thisIK;
 
 			if ( ispan <= 0 ) continue;
 			for ( i = 0; i <= ispan - 1; ++i ) {
-				newAU( thisIK + i ) = AU( IK( n ) + i );
+				newAU( thisIK + i ) = AU( IK( n0 ) + i );
 			}
 
 		}
@@ -1169,12 +1169,12 @@ namespace AirflowNetworkSolver {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				Ctl = std::pow( RhozNorm / RHOZ( n ), expn - 1.0 ) * std::pow( VisczNorm / VISCZ( n ), 2.0 * expn - 1.0 );
-				DF( 1 ) = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
+				DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 			} else {
 				Ctl = std::pow( RhozNorm / RHOZ( M ), expn - 1.0 ) * std::pow( VisczNorm / VISCZ( M ), 2.0 * expn - 1.0 );
-				DF( 1 ) = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
+				DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
+			F[ 0 ] = -DF[ 0 ] * PDROP;
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -1202,11 +1202,11 @@ namespace AirflowNetworkSolver {
 			// Select laminar or turbulent flow.
 			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " plr: " << i << PDROP << FL << FT;
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = FT * expn / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = FT * expn / PDROP;
 			}
 		}
 	}
@@ -1217,8 +1217,8 @@ namespace AirflowNetworkSolver {
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
-		int const n, // Node 1 number
-		int const M, // Node 2 number
+		int const n1, // Node 1 number
+		int const n2, // Node 2 number
 		Array1A< Real64 > F, // Airflow through the component [kg/s]
 		Array1A< Real64 > DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
@@ -1229,7 +1229,7 @@ namespace AirflowNetworkSolver {
 		//       DATE WRITTEN   Extracted from AIRNET
 		//       MODIFIED       Lixing Gu, 2/1/04
 		//                      Revised the subroutine to meet E+ needs
-		//       MODIFIED       Lixing Gu, 6/8/05
+		//       MODIFIED       Lixing Gu, 6/8/05; Jason DeGraw, 6/12/2017
 		//       RE-ENGINEERED  na
 
 		// PURPOSE OF THIS SUBROUTINE:
@@ -1243,10 +1243,6 @@ namespace AirflowNetworkSolver {
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1275,79 +1271,72 @@ namespace AirflowNetworkSolver {
 		Real64 RhoCor;
 		int CompNum;
 
-		// Formats
-		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
+		// Argument array dimensioning
+		F.dim( 2 );
+		DF.dim( 2 );
+
+		// Handle positive/negative pressure difference
+		Real64 sign( 1.0 );
+		Real64 dz( RHOZ( n1 ) );
+		Real64 sqrtdz( SQRTDZ( n1 ) );
+		Real64 viscz( VISCZ( n1 ) );
+		Real64 tz( TZ( n1 ) );
+		Real64 absdeltap( PDROP );
+		if ( PDROP < 0.0 ) {
+			sign = -1.0;
+			dz = RHOZ( n2 );
+			sqrtdz = SQRTDZ( n2 );
+			viscz = VISCZ( n2 );
+			tz = TZ( n2 );
+			absdeltap = -PDROP;
+		}
 
 		// FLOW:
 		// Crack standard condition from given inputs
-		if ( i > NetworkNumOfLinks - NumOfLinksIntraZone ) {
+		if ( i > NetworkNumOfLinks - DataAirflowNetwork::NumOfLinksIntraZone ) {
 			Corr = 1.0;
 		} else {
-			Corr = MultizoneSurfaceData( i ).Factor;
+			Corr = DataAirflowNetwork::MultizoneSurfaceData( i ).Factor;
 		}
-		CompNum = AirflowNetworkCompData( j ).TypeNum;
-		RhozNorm = PsyRhoAirFnPbTdbW( MultizoneSurfaceCrackData( CompNum ).StandardP, MultizoneSurfaceCrackData( CompNum ).StandardT, MultizoneSurfaceCrackData( CompNum ).StandardW );
+		CompNum = DataAirflowNetwork::AirflowNetworkCompData( j ).TypeNum;
+		RhozNorm = Psychrometrics::PsyRhoAirFnPbTdbW( DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).StandardP,
+			DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).StandardT, DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).StandardW );
 		VisczNorm = 1.71432e-5 + 4.828e-8 * MultizoneSurfaceCrackData( CompNum ).StandardT;
+		//VisczNorm = Psychrometrics::airDynamicVisc( DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).StandardT );
 
-		expn = MultizoneSurfaceCrackData( CompNum ).FlowExpo;
-		VisAve = ( VISCZ( n ) + VISCZ( M ) ) / 2.0;
-		Tave = ( TZ( n ) + TZ( M ) ) / 2.0;
-		if ( PDROP >= 0.0 ) {
-			coef = MultizoneSurfaceCrackData( CompNum ).FlowCoef / SQRTDZ( n ) * Corr;
-		} else {
-			coef = MultizoneSurfaceCrackData( CompNum ).FlowCoef / SQRTDZ( M ) * Corr;
-		}
+		expn = DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).FlowExpo;
+		VisAve = 0.5 * ( VISCZ( n1 ) + VISCZ( n2 ) );
+		Tave = 0.5 * ( TZ( n1 ) + TZ( n2 ) );
+
+		coef = DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).FlowCoef * Corr;
 
 		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
-			if ( PDROP >= 0.0 ) {
-				RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
-				Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-				DF( 1 ) = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
-			} else {
-				RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
-				Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-				DF( 1 ) = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
-			}
-			F( 1 ) = -DF( 1 ) * PDROP;
+			RhoCor = ( tz + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
+			Ctl = std::pow( RhozNorm / dz / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
+			DF[ 0 ] = coef * sqrtdz / viscz * Ctl;
+			F[ 0 ] = -DF[ 0 ] * PDROP;
 		} else {
 			// Standard calculation.
-			if ( PDROP >= 0.0 ) {
-				// Flow in positive direction.
-				// Laminar flow.
-				RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
-				Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-				CDM = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
-				FL = CDM * PDROP;
-				// Turbulent flow.
-				if ( expn == 0.5 ) {
-					FT = coef * SQRTDZ( n ) * std::sqrt( PDROP ) * Ctl;
-				} else {
-					FT = coef * SQRTDZ( n ) * std::pow( PDROP, expn ) * Ctl;
-				}
+			// Laminar flow.
+			RhoCor = ( tz + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
+			Ctl = std::pow( RhozNorm / ( dz * RhoCor ), expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
+			CDM = coef * dz / viscz * Ctl;
+			FL = CDM * PDROP;
+			// Turbulent flow.
+			if ( expn == 0.5 ) {
+				FT = sign * coef * std::sqrt( absdeltap ) * Ctl;
 			} else {
-				// Flow in negative direction.
-				// Laminar flow.
-				RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
-				Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-				CDM = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
-				FL = CDM * PDROP;
-				// Turbulent flow.
-				if ( expn == 0.5 ) {
-					FT = -coef * SQRTDZ( M ) * std::sqrt( -PDROP ) * Ctl;
-				} else {
-					FT = -coef * SQRTDZ( M ) * std::pow( -PDROP, expn ) * Ctl;
-				}
+				FT = sign * coef * std::pow( absdeltap, expn ) * Ctl;
 			}
 			// Select laminar or turbulent flow.
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " scr: " << i << PDROP << FL << FT;
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = FT * expn / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = FT * expn / PDROP;
 			}
 		}
 	}
@@ -1440,12 +1429,12 @@ namespace AirflowNetworkSolver {
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = ( 2.0 * RHOZ( n ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( n ) * DisSysCompDuctData( CompNum ).InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( n ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( n ) * DisSysCompDuctData( CompNum ).InitLamCoef * ld );
 			} else {
-				DF( 1 ) = ( 2.0 * RHOZ( M ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( M ) * DisSysCompDuctData( CompNum ).InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( M ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( M ) * DisSysCompDuctData( CompNum ).InitLamCoef * ld );
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " dwi:" << i << DisSysCompDuctData( CompNum ).InitLamCoef << F( 1 ) << DF( 1 );
+			F[ 0 ] = -DF[ 0 ] * PDROP;
+			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " dwi:" << i << DisSysCompDuctData( CompNum ).InitLamCoef << F[ 0 ] << DF[ 0 ];
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -1519,11 +1508,11 @@ namespace AirflowNetworkSolver {
 			}
 			// Select laminar or turbulent flow.
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = 0.5 * FT / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
 
@@ -1651,7 +1640,7 @@ namespace AirflowNetworkSolver {
 			DPMID = PDROP - 0.5 * Height * GDRHO;
 			// Initialization or identical temps: treat as one-way flow.
 			GenericCrack( FlowCoef, FlowExpo, LFLAG, DPMID, n, M, F, DF, NF );
-			if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Drs:" << DPMID << F( 1 ) << DF( 1 );
+			if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Drs:" << DPMID << F[ 0 ] << DF[ 0 ];
 		} else {
 			// Possible two-way flow:
 			Y = PDROP / GDRHO;
@@ -1668,39 +1657,39 @@ namespace AirflowNetworkSolver {
 			if ( Y <= 0.0 ) {
 				// One-way flow (negative).
 				if ( DRHO >= 0.0 ) {
-					F( 1 ) = -SQRTDZ( M ) * std::abs( FH - F0 );
-					DF( 1 ) = SQRTDZ( M ) * std::abs( DFH - DF0 );
+					F[ 0 ] = -SQRTDZ( M ) * std::abs( FH - F0 );
+					DF[ 0 ] = SQRTDZ( M ) * std::abs( DFH - DF0 );
 				} else {
-					F( 1 ) = SQRTDZ( n ) * std::abs( FH - F0 );
-					DF( 1 ) = SQRTDZ( n ) * std::abs( DFH - DF0 );
+					F[ 0 ] = SQRTDZ( n ) * std::abs( FH - F0 );
+					DF[ 0 ] = SQRTDZ( n ) * std::abs( DFH - DF0 );
 				}
-				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr1:" << C << F( 1 ) << DF( 1 );
+				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr1:" << C << F[ 0 ] << DF[ 0 ];
 			} else if ( Y >= Height ) {
 				// One-way flow (positive).
 				if ( DRHO >= 0.0 ) {
-					F( 1 ) = SQRTDZ( n ) * std::abs( FH - F0 );
-					DF( 1 ) = SQRTDZ( n ) * std::abs( DFH - DF0 );
+					F[ 0 ] = SQRTDZ( n ) * std::abs( FH - F0 );
+					DF[ 0 ] = SQRTDZ( n ) * std::abs( DFH - DF0 );
 				} else {
-					F( 1 ) = -SQRTDZ( M ) * std::abs( FH - F0 );
-					DF( 1 ) = SQRTDZ( M ) * std::abs( DFH - DF0 );
+					F[ 0 ] = -SQRTDZ( M ) * std::abs( FH - F0 );
+					DF[ 0 ] = SQRTDZ( M ) * std::abs( DFH - DF0 );
 				}
-				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr2:" << C << F( 1 ) << DF( 1 );
+				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr2:" << C << F[ 0 ] << DF[ 0 ];
 			} else {
 				// Two-way flow.
 				NF = 2;
 				if ( DRHO >= 0.0 ) {
-					F( 1 ) = -SQRTDZ( M ) * FH;
-					DF( 1 ) = SQRTDZ( M ) * DFH;
-					F( 2 ) = SQRTDZ( n ) * F0;
-					DF( 2 ) = SQRTDZ( n ) * DF0;
+					F[ 0 ] = -SQRTDZ( M ) * FH;
+					DF[ 0 ] = SQRTDZ( M ) * DFH;
+					F[ 1 ] = SQRTDZ( n ) * F0;
+					DF[ 1 ] = SQRTDZ( n ) * DF0;
 				} else {
-					F( 1 ) = SQRTDZ( n ) * FH;
-					DF( 1 ) = SQRTDZ( n ) * DFH;
-					F( 2 ) = -SQRTDZ( M ) * F0;
-					DF( 2 ) = SQRTDZ( M ) * DF0;
+					F[ 0 ] = SQRTDZ( n ) * FH;
+					DF[ 0 ] = SQRTDZ( n ) * DFH;
+					F[ 1 ] = -SQRTDZ( M ) * F0;
+					DF[ 1 ] = SQRTDZ( M ) * DF0;
 				}
-				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr3:" << C << F( 1 ) << DF( 1 );
-				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr4:" << C << F( 2 ) << DF( 2 );
+				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr3:" << C << F[ 0 ] << DF[ 0 ];
+				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr4:" << C << F[ 1 ] << DF[ 1 ];
 			}
 		}
 
@@ -1778,21 +1767,21 @@ namespace AirflowNetworkSolver {
 		NF = 1;
 		if ( DisSysCompCVFData( CompNum ).FanTypeNum == FanType_SimpleOnOff ) {
 			if ( LoopFanOperationMode == CycFanCycComp && LoopSystemOnMassFlowrate > 0.0 ) {
-				F( 1 ) = LoopSystemOnMassFlowrate;
+				F[ 0 ] = LoopSystemOnMassFlowrate;
 			} else {
-				F( 1 ) = Node( DisSysCompCVFData( CompNum ).InletNode ).MassFlowRate * DisSysCompCVFData( CompNum ).Ctrl;
+				F[ 0 ] = Node( DisSysCompCVFData( CompNum ).InletNode ).MassFlowRate * DisSysCompCVFData( CompNum ).Ctrl;
 				if ( MultiSpeedHPIndicator == 2 ) {
-					F( 1 ) = LoopSystemOnMassFlowrate * LoopCompCycRatio + LoopSystemOffMassFlowrate * ( 1.0 - LoopCompCycRatio );
+					F[ 0 ] = LoopSystemOnMassFlowrate * LoopCompCycRatio + LoopSystemOffMassFlowrate * ( 1.0 - LoopCompCycRatio );
 				}
 			}
 		} else if ( DisSysCompCVFData( CompNum ).FanTypeNum == FanType_SimpleConstVolume ) {
 			if ( DisSysCompCVFData( CompNum ).FlowRate > 0 ) {
-				F( 1 ) = DisSysCompCVFData( CompNum ).FlowRate * DisSysCompCVFData( CompNum ).Ctrl;
+				F[ 0 ] = DisSysCompCVFData( CompNum ).FlowRate * DisSysCompCVFData( CompNum ).Ctrl;
 			} else {
-				F( 1 ) = Node( DisSysCompCVFData( CompNum ).InletNode ).MassFlowRate * DisSysCompCVFData( CompNum ).Ctrl;
+				F[ 0 ] = Node( DisSysCompCVFData( CompNum ).InletNode ).MassFlowRate * DisSysCompCVFData( CompNum ).Ctrl;
 			}
 			if ( MultiSpeedHPIndicator == 2 ) {
-				F( 1 ) = LoopSystemOnMassFlowrate;
+				F[ 0 ] = LoopSystemOnMassFlowrate;
 			}
 		} else if ( DisSysCompCVFData( CompNum ).FanTypeNum == FanType_SimpleVAV ) {
 			// Check VAV termals with a damper
@@ -1814,14 +1803,14 @@ namespace AirflowNetworkSolver {
 					}
 				}
 			}
-			F( 1 ) = SumTermFlow / ( 1.0 - SumFracSuppLeak );
+			F[ 0 ] = SumTermFlow / ( 1.0 - SumFracSuppLeak );
 			VAVTerminalRatio = 0.0;
-			if ( F( 1 ) > DisSysCompCVFData( CompNum ).MaxAirMassFlowRate ) {
-				VAVTerminalRatio = DisSysCompCVFData( CompNum ).MaxAirMassFlowRate / F( 1 );
-				F( 1 ) = DisSysCompCVFData( CompNum ).MaxAirMassFlowRate;
+			if ( F[ 0 ] > DisSysCompCVFData( CompNum ).MaxAirMassFlowRate ) {
+				VAVTerminalRatio = DisSysCompCVFData( CompNum ).MaxAirMassFlowRate / F[ 0 ];
+				F[ 0 ] = DisSysCompCVFData( CompNum ).MaxAirMassFlowRate;
 			}
 		}
-		DF( 1 ) = 0.0;
+		DF[ 0 ] = 0.0;
 
 	}
 
@@ -1918,7 +1907,7 @@ namespace AirflowNetworkSolver {
 		if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " fan:" << i << PDROP << PRISE << AFECTL( i ) << DisSysCompDetFanData( CompNum ).TranRat;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear approximation.
-			F( 1 ) = -DisSysCompDetFanData( CompNum ).Qfree * AFECTL( i ) * ( 1.0 - PRISE / DisSysCompDetFanData( CompNum ).Pshut );
+			F[ 0 ] = -DisSysCompDetFanData( CompNum ).Qfree * AFECTL( i ) * ( 1.0 - PRISE / DisSysCompDetFanData( CompNum ).Pshut );
 			DPDF = -DisSysCompDetFanData( CompNum ).Pshut / DisSysCompDetFanData( CompNum ).Qfree;
 			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " fni:" << JA << DisSysCompDetFanData( CompNum ).Qfree << DisSysCompDetFanData( CompNum ).Pshut;
 		} else {
@@ -1968,16 +1957,16 @@ Label70: ;
 Label80: ;
 			CX = 0.5 * ( BX + DX );
 Label90: ;
-			F( 1 ) = CX;
+			F[ 0 ] = CX;
 			DPDF = DisSysCompDetFanData( CompNum ).Coeff( k + 2 ) + CX * ( 2.0 * DisSysCompDetFanData( CompNum ).Coeff( k + 3 ) + CX * 3.0 * DisSysCompDetFanData( CompNum ).Coeff( k + 4 ) );
 		}
 		// Convert to flow at given speed.
-		F( 1 ) *= ( RHOZ( n ) / DisSysCompDetFanData( CompNum ).RhoAir ) * AFECTL( i );
+		F[ 0 ] *= ( RHOZ( n ) / DisSysCompDetFanData( CompNum ).RhoAir ) * AFECTL( i );
 		// Set derivative w/r pressure drop (-).
 		if ( AFECTL( i ) >= DisSysCompDetFanData( CompNum ).TranRat ) {
-			DF( 1 ) = -AFECTL( i ) / DPDF;
+			DF[ 0 ] = -AFECTL( i ) / DPDF;
 		} else {
-			DF( 1 ) = -1.0 / DPDF;
+			DF[ 0 ] = -1.0 / DPDF;
 		}
 	}
 
@@ -2039,11 +2028,11 @@ Label90: ;
 		// FLOW:
 		NF = 1;
 		if ( LFLAG == 1 ) {
-			F( 1 ) = AFECTL( i );
-			DF( 1 ) = F( 1 );
+			F[ 0 ] = AFECTL( i );
+			DF[ 0 ] = F[ 0 ];
 		} else {
-			F( 1 ) = -AFECTL( i ) / PDROP;
-			DF( 1 ) = -F( 1 ) / PDROP;
+			F[ 0 ] = -AFECTL( i ) / PDROP;
+			DF[ 0 ] = -F[ 0 ] / PDROP;
 		}
 
 	}
@@ -2120,19 +2109,19 @@ Label90: ;
 		if ( LFLAG == 1 || std::abs( PDROP ) <= DisSysCompDamperData( CompNum ).LTP ) {
 			//                              Laminar flow.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = C * DisSysCompDamperData( CompNum ).LamFlow * RHOZ( n ) / VISCZ( n );
+				DF[ 0 ] = C * DisSysCompDamperData( CompNum ).LamFlow * RHOZ( n ) / VISCZ( n );
 			} else {
-				DF( 1 ) = C * DisSysCompDamperData( CompNum ).LamFlow * RHOZ( M ) / VISCZ( M );
+				DF[ 0 ] = C * DisSysCompDamperData( CompNum ).LamFlow * RHOZ( M ) / VISCZ( M );
 			}
-			F( 1 ) = DF( 1 ) * PDROP;
+			F[ 0 ] = DF[ 0 ] * PDROP;
 		} else {
 			//                              Turbulent flow.
 			if ( PDROP >= 0.0 ) {
-				F( 1 ) = C * DisSysCompDamperData( CompNum ).TurFlow * SQRTDZ( n ) * std::pow( PDROP, DisSysCompDamperData( CompNum ).FlowExpo );
+				F[ 0 ] = C * DisSysCompDamperData( CompNum ).TurFlow * SQRTDZ( n ) * std::pow( PDROP, DisSysCompDamperData( CompNum ).FlowExpo );
 			} else {
-				F( 1 ) = -C * DisSysCompDamperData( CompNum ).TurFlow * SQRTDZ( M ) * std::pow( -PDROP, DisSysCompDamperData( CompNum ).FlowExpo );
+				F[ 0 ] = -C * DisSysCompDamperData( CompNum ).TurFlow * SQRTDZ( M ) * std::pow( -PDROP, DisSysCompDamperData( CompNum ).FlowExpo );
 			}
-			DF( 1 ) = F( 1 ) * DisSysCompDamperData( CompNum ).FlowExpo / PDROP;
+			DF[ 0 ] = F[ 0 ] * DisSysCompDamperData( CompNum ).FlowExpo / PDROP;
 		}
 
 	}
@@ -2208,11 +2197,11 @@ Label90: ;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = FlowCoef * RHOZ( n ) / VISCZ( n );
+				DF[ 0 ] = FlowCoef * RHOZ( n ) / VISCZ( n );
 			} else {
-				DF( 1 ) = FlowCoef * RHOZ( M ) / VISCZ( M );
+				DF[ 0 ] = FlowCoef * RHOZ( M ) / VISCZ( M );
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
+			F[ 0 ] = -DF[ 0 ] * PDROP;
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -2241,11 +2230,11 @@ Label90: ;
 			// Select laminar or turbulent flow.
 			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " plr: " << i << PDROP << FL << FT;
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = FT * FlowExpo / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = FT * FlowExpo / PDROP;
 			}
 		}
 
@@ -2320,11 +2309,11 @@ Label90: ;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = FlowCoef * RHOZ( n ) / VISCZ( n );
+				DF[ 0 ] = FlowCoef * RHOZ( n ) / VISCZ( n );
 			} else {
-				DF( 1 ) = FlowCoef * RHOZ( M ) / VISCZ( M );
+				DF[ 0 ] = FlowCoef * RHOZ( M ) / VISCZ( M );
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
+			F[ 0 ] = -DF[ 0 ] * PDROP;
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -2353,11 +2342,11 @@ Label90: ;
 			// Select laminar or turbulent flow.
 			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " plr: " << i << PDROP << FL << FT;
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = FT * DisSysCompELRData( CompNum ).FlowExpo / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = FT * DisSysCompELRData( CompNum ).FlowExpo / PDROP;
 			}
 		}
 
@@ -2426,19 +2415,19 @@ Label90: ;
 
 		NF = 1;
 		if ( PDROP == 0.0 ) {
-			F( 1 ) = std::sqrt( 2.0 * RHOZ( n ) ) * DisSysCompCPDData( CompNum ).A * std::sqrt( DisSysCompCPDData( CompNum ).DP );
-			DF( 1 ) = 0.5 * F( 1 ) / DisSysCompCPDData( CompNum ).DP;
+			F[ 0 ] = std::sqrt( 2.0 * RHOZ( n ) ) * DisSysCompCPDData( CompNum ).A * std::sqrt( DisSysCompCPDData( CompNum ).DP );
+			DF[ 0 ] = 0.5 * F[ 0 ] / DisSysCompCPDData( CompNum ).DP;
 		} else {
 			for ( k = 1; k <= NetworkNumOfLinks; ++k ) {
 				if ( AirflowNetworkLinkageData( k ).NodeNums( 2 ) == n ) {
-					F( 1 ) = AFLOW( k );
+					F[ 0 ] = AFLOW( k );
 					break;
 				}
 			}
 			PDROP = DisSysCompCPDData( CompNum ).DP;
 			PZ( M ) = PZ( n ) - PDROP;
-			Co = F( 1 ) / DisSysCompCPDData( CompNum ).DP;
-			DF( 1 ) = 10.e10;
+			Co = F[ 0 ] / DisSysCompCPDData( CompNum ).DP;
+			DF[ 0 ] = 10.e10;
 		}
 
 	}
@@ -2534,12 +2523,12 @@ Label90: ;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = ( 2.0 * RHOZ( n ) * area * DisSysCompCoilData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( n ) * area * DisSysCompCoilData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
 			} else {
-				DF( 1 ) = ( 2.0 * RHOZ( M ) * area * DisSysCompCoilData( CompNum ).D ) / ( VISCZ( M ) * InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( M ) * area * DisSysCompCoilData( CompNum ).D ) / ( VISCZ( M ) * InitLamCoef * ld );
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " dwi:" << i << InitLamCoef << F( 1 ) << DF( 1 );
+			F[ 0 ] = -DF[ 0 ] * PDROP;
+			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " dwi:" << i << InitLamCoef << F[ 0 ] << DF[ 0 ];
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -2613,11 +2602,11 @@ Label90: ;
 			}
 			// Select laminar or turbulent flow.
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = 0.5 * FT / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
 
@@ -2714,12 +2703,12 @@ Label90: ;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = ( 2.0 * RHOZ( n ) * area * DisSysCompTermUnitData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( n ) * area * DisSysCompTermUnitData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
 			} else {
-				DF( 1 ) = ( 2.0 * RHOZ( M ) * area * DisSysCompTermUnitData( CompNum ).D ) / ( VISCZ( M ) * InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( M ) * area * DisSysCompTermUnitData( CompNum ).D ) / ( VISCZ( M ) * InitLamCoef * ld );
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " dwi:" << i << InitLamCoef << F( 1 ) << DF( 1 );
+			F[ 0 ] = -DF[ 0 ] * PDROP;
+			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " dwi:" << i << InitLamCoef << F[ 0 ] << DF[ 0 ];
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -2793,20 +2782,20 @@ Label90: ;
 			}
 			// Select laminar or turbulent flow.
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = 0.5 * FT / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
 		// If damper, setup the airflows from nodal values calculated from terminal
 		if ( AirflowNetworkLinkageData( i ).VAVTermDamper ) {
-			F( 1 ) = Node( DisSysCompTermUnitData( CompNum ).DamperInletNode ).MassFlowRate;
+			F[ 0 ] = Node( DisSysCompTermUnitData( CompNum ).DamperInletNode ).MassFlowRate;
 			if ( VAVTerminalRatio > 0.0 ) {
-				F( 1 ) *= VAVTerminalRatio;
+				F[ 0 ] *= VAVTerminalRatio;
 			}
-			DF( 1 ) = 0.0;
+			DF[ 0 ] = 0.0;
 		}
 
 	}
@@ -2886,11 +2875,11 @@ Label90: ;
 			// Treat the component as an exhaust fan
 			NF = 1;
 			if ( PressureSetFlag == PressureCtrlExhaust ) {
-				F( 1 ) = ExhaustFanMassFlowRate;
+				F[ 0 ] = ExhaustFanMassFlowRate;
 			} else {
-				F( 1 ) = Node( InletNode ).MassFlowRate;
+				F[ 0 ] = Node( InletNode ).MassFlowRate;
 			}
-			DF( 1 ) = 0.0;
+			DF[ 0 ] = 0.0;
 			return;
 		} else {
 			// Treat the component as a surface crack
@@ -2914,13 +2903,13 @@ Label90: ;
 				if ( PDROP >= 0.0 ) {
 					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-					DF( 1 ) = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
+					DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				} else {
 					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-					DF( 1 ) = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
+					DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				}
-				F( 1 ) = -DF( 1 ) * PDROP;
+				F[ 0 ] = -DF[ 0 ] * PDROP;
 			} else {
 				// Standard calculation.
 				if ( PDROP >= 0.0 ) {
@@ -2953,11 +2942,11 @@ Label90: ;
 				// Select laminar or turbulent flow.
 				if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " scr: " << i << PDROP << FL << FT;
 				if ( std::abs( FL ) <= std::abs( FT ) ) {
-					F( 1 ) = FL;
-					DF( 1 ) = CDM;
+					F[ 0 ] = FL;
+					DF[ 0 ] = CDM;
 				} else {
-					F( 1 ) = FT;
-					DF( 1 ) = FT * expn / PDROP;
+					F[ 0 ] = FT;
+					DF[ 0 ] = FT * expn / PDROP;
 				}
 			}
 		}
@@ -3051,11 +3040,11 @@ Label90: ;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				DF( 1 ) = ( 2.0 * RHOZ( n ) * area * DisSysCompHXData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( n ) * area * DisSysCompHXData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
 			} else {
-				DF( 1 ) = ( 2.0 * RHOZ( M ) * area * DisSysCompHXData( CompNum ).D ) / ( VISCZ( M ) * InitLamCoef * ld );
+				DF[ 0 ] = ( 2.0 * RHOZ( M ) * area * DisSysCompHXData( CompNum ).D ) / ( VISCZ( M ) * InitLamCoef * ld );
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
+			F[ 0 ] = -DF[ 0 ] * PDROP;
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -3123,11 +3112,11 @@ Label90: ;
 			}
 			// Select laminar or turbulent flow.
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = 0.5 * FT / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
 
@@ -3276,13 +3265,13 @@ Label90: ;
 			}
 		}
 
-		F( 1 ) = fma12 - fma21;
-		DF( 1 ) = dp1fma12 - dp1fma21;
-		F( 2 ) = 0.0;
+		F[ 0 ] = fma12 - fma21;
+		DF[ 0 ] = dp1fma12 - dp1fma21;
+		F[ 1 ] = 0.0;
 		if ( fma12 != 0.0 && fma21 != 0.0 ) {
-			F( 2 ) = BuoFlow;
+			F[ 1 ] = BuoFlow;
 		}
-		DF( 2 ) = 0.0;
+		DF[ 1 ] = 0.0;
 
 	}
 
@@ -3352,10 +3341,10 @@ Label90: ;
 		if ( Node( InletNode ).MassFlowRate > VerySmallMassFlow ) {
 			// Treat the component as an exhaust fan
 			NF = 1;
-			F( 1 ) = Node( InletNode ).MassFlowRate;
-			DF( 1 ) = 0.0;
+			F[ 0 ] = Node( InletNode ).MassFlowRate;
+			DF[ 0 ] = 0.0;
 			if ( LoopFanOperationMode == CycFanCycComp && LoopOnOffFanPartLoadRatio > 0.0 ) {
-				F( 1 ) = F( 1 ) / LoopOnOffFanPartLoadRatio;
+				F[ 0 ] = F[ 0 ] / LoopOnOffFanPartLoadRatio;
 			}
 			return;
 		} else {
@@ -3380,13 +3369,13 @@ Label90: ;
 				if ( PDROP >= 0.0 ) {
 					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-					DF( 1 ) = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
+					DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				} else {
 					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-					DF( 1 ) = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
+					DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				}
-				F( 1 ) = -DF( 1 ) * PDROP;
+				F[ 0 ] = -DF[ 0 ] * PDROP;
 			} else {
 				// Standard calculation.
 				if ( PDROP >= 0.0 ) {
@@ -3418,11 +3407,11 @@ Label90: ;
 				}
 				// Select laminar or turbulent flow.
 				if ( std::abs( FL ) <= std::abs( FT ) ) {
-					F( 1 ) = FL;
-					DF( 1 ) = CDM;
+					F[ 0 ] = FL;
+					DF[ 0 ] = CDM;
 				} else {
-					F( 1 ) = FT;
-					DF( 1 ) = FT * expn / PDROP;
+					F[ 0 ] = FT;
+					DF[ 0 ] = FT * expn / PDROP;
 				}
 			}
 		}
@@ -3489,8 +3478,8 @@ Label90: ;
 		if ( Node( OutletNode ).MassFlowRate > VerySmallMassFlow && PressureSetFlag == PressureCtrlRelief ) {
 			// Treat the component as an exhaust fan
 			NF = 1;
-			F( 1 ) = ReliefMassFlowRate;
-			DF( 1 ) = 0.0;
+			F[ 0 ] = ReliefMassFlowRate;
+			DF[ 0 ] = 0.0;
 			return;
 		} else {
 			// Treat the component as a surface crack
@@ -3514,13 +3503,13 @@ Label90: ;
 				if ( PDROP >= 0.0 ) {
 					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-					DF( 1 ) = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
+					DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				} else {
 					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-					DF( 1 ) = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
+					DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				}
-				F( 1 ) = -DF( 1 ) * PDROP;
+				F[ 0 ] = -DF[ 0 ] * PDROP;
 			} else {
 				// Standard calculation.
 				if ( PDROP >= 0.0 ) {
@@ -3552,11 +3541,11 @@ Label90: ;
 				}
 				// Select laminar or turbulent flow.
 				if ( std::abs( FL ) <= std::abs( FT ) ) {
-					F( 1 ) = FL;
-					DF( 1 ) = CDM;
+					F[ 0 ] = FL;
+					DF[ 0 ] = CDM;
 				} else {
-					F( 1 ) = FT;
-					DF( 1 ) = FT * expn / PDROP;
+					F[ 0 ] = FT;
+					DF[ 0 ] = FT * expn / PDROP;
 				}
 			}
 		}
@@ -3645,13 +3634,13 @@ Label90: ;
 			if ( PDROP >= 0.0 ) {
 				RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
 				Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-				DF( 1 ) = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
+				DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 			} else {
 				RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
 				Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
-				DF( 1 ) = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
+				DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 			}
-			F( 1 ) = -DF( 1 ) * PDROP;
+			F[ 0 ] = -DF[ 0 ] * PDROP;
 		} else {
 			// Standard calculation.
 			if ( PDROP >= 0.0 ) {
@@ -3684,11 +3673,11 @@ Label90: ;
 			// Select laminar or turbulent flow.
 			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " generic crack: " << PDROP << FL << FT;
 			if ( std::abs( FL ) <= std::abs( FT ) ) {
-				F( 1 ) = FL;
-				DF( 1 ) = CDM;
+				F[ 0 ] = FL;
+				DF[ 0 ] = CDM;
 			} else {
-				F( 1 ) = FT;
-				DF( 1 ) = FT * expn / PDROP;
+				F[ 0 ] = FT;
+				DF[ 0 ] = FT * expn / PDROP;
 			}
 		}
 	}
@@ -4597,13 +4586,13 @@ Label90: ;
 		}
 
 		// Output mass flow rates and associated derivatives
-		F( 1 ) = fma12 - fma21;
-		DF( 1 ) = dp1fma12 - dp1fma21;
-		F( 2 ) = 0.0;
+		F[ 0 ] = fma12 - fma21;
+		DF[ 0 ] = dp1fma12 - dp1fma21;
+		F[ 1 ] = 0.0;
 		if ( fma12 != 0.0 && fma21 != 0.0 ) {
-			F( 2 ) = fma21;
+			F[ 1 ] = fma21;
 		}
-		DF( 2 ) = 0.0;
+		DF[ 1 ] = 0.0;
 
 	}
 
