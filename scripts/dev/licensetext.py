@@ -1,6 +1,7 @@
 import datetime
 import json
 import glob
+import filevisitor
 #
 # From file "EnergyPlus License DRAFT 112015 100 fixed.txt"
 #
@@ -163,36 +164,15 @@ def mergeParagraphs(text):
     lines.append(current.lstrip())
     return '\n'.join(lines)+'\n'
 
-class Visitor:
-    def __init__(self):
-        self.count = 0
-    def filecheck(self, filepath):
-        pass
-    def files(self, path):
-        return glob.glob(path+'*')
-    def check(self, path):
-        for file in self.files(path):
-            self.filecheck(file)
-            self.count += 1
-
-class CodeChecker(Visitor):
-    def __init__(self):
-        Visitor.__init__(self)
-    def files(self, path):
-        srcs = glob.glob(path+'*.cc')
-        hdrs = glob.glob(path+'*.hh')
-        hdrs.extend(glob.glob(path+'*.h'))
-        return srcs+hdrs
-
-class Checker(CodeChecker):
+class Checker(filevisitor.CodeChecker):
     def __init__(self, boilerplate, toolname='unspecified', message=error):
-        CodeChecker.__init__(self)
+        filevisitor.CodeChecker.__init__(self)
         lines = boilerplate.splitlines()
         self.n = len(lines)
         self.text = boilerplate
         self.toolname = toolname
         self.message = message
-    def filecheck(self, filepath):
+    def visit(self, filepath):
         fp = open(filepath,'r')
         txt = fp.read()
         fp.close()
@@ -215,16 +195,17 @@ class Checker(CodeChecker):
                               'line':1,
                               'messagetype':'error',
                               'message':'License text is not at top of file'})
+        return 1
 
 
-class Replacer(CodeChecker):
+class Replacer(filevisitor.CodeChecker):
     def __init__(self, oldtext, newtext, dryrun=True):
-        CodeChecker.__init__(self)
+        filevistor.CodeChecker.__init__(self)
         self.oldtxt = oldtext
         self.newtxt = newtext
         self.dryrun = dryrun
         self.replaced = 0
-    def filecheck(self,filepath):
+    def visit(self,filepath):
         fp = open(filepath,'r')
         txt = fp.read()
         fp.close()
@@ -238,6 +219,7 @@ class Replacer(CodeChecker):
                 fp.write(txt)
                 fp.close()
                 self.replaced+=1
+        return 1
     def summary(self):
         txt = ['Checked %d files' % self.count]
         if self.dryrun:
