@@ -1390,8 +1390,8 @@ namespace ZoneContaminantPredictorCorrector {
 			if ( SimulateAirflowNetwork > AirflowNetworkControlSimple ) {
 				for ( Loop = 1; Loop <= TotGCGenPDriven; ++Loop ) {
 					SurfNum = ZoneContamGenericPDriven( Loop ).SurfNum;
-					Pi = AirflowNetworkNodeSimu( MultizoneSurfaceData( SurfNum ).NodeNums( 1 ) ).PZ;
-					Pj = AirflowNetworkNodeSimu( MultizoneSurfaceData( SurfNum ).NodeNums( 2 ) ).PZ;
+					Pi = AirflowNetworkNodeSimu( MultizoneSurfaceData( SurfNum ).nodeNums[ 0 ] ).PZ;
+					Pj = AirflowNetworkNodeSimu( MultizoneSurfaceData( SurfNum ).nodeNums[ 1 ] ).PZ;
 					if ( Pj >= Pi ) {
 						GCGain = ZoneContamGenericPDriven( Loop ).GCGenRateCoef * GetCurrentScheduleValue( ZoneContamGenericPDriven( Loop ).GCGenRateCoefSchedPtr ) * std::pow( Pj - Pi, ZoneContamGenericPDriven( Loop ).GCExpo );
 					} else {

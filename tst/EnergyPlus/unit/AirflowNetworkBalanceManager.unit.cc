@@ -103,8 +103,8 @@ namespace EnergyPlus {
 		MultizoneSurfaceData( 2 ).SurfNum = 2;
 
 		CalcWindPressureCoeffs();
-		EXPECT_EQ( 1, MultizoneSurfaceData( 1 ).NodeNums( 2 ) );
-		EXPECT_EQ( 2, MultizoneSurfaceData( 2 ).NodeNums( 2 ) );
+		EXPECT_EQ( 1, MultizoneSurfaceData( 1 ).nodeNums[ 1 ] );
+		EXPECT_EQ( 2, MultizoneSurfaceData( 2 ).nodeNums[ 1 ] );
 		EXPECT_EQ( 1, MultizoneExternalNodeData( 1 ).curve );
 		EXPECT_EQ( 3, MultizoneExternalNodeData( 2 ).curve );
 

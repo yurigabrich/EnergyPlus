@@ -100,22 +100,6 @@ namespace AirflowNetworkSolver {
 
 	// USE STATEMENTS:
 
-	// Using/Aliasing
-	using namespace DataPrecisionGlobals;
-	using DataGlobals::Pi;
-	using DataGlobals::DegToRadians;
-	using DataGlobals::KelvinConv;
-	using DataGlobals::rTinyValue;
-	using DataEnvironment::StdBaroPress;
-	using DataEnvironment::OutBaroPress;
-	using DataEnvironment::OutDryBulbTemp;
-	using DataEnvironment::OutHumRat;
-	using DataEnvironment::Latitude;
-	using DataSurfaces::Surface;
-	using Psychrometrics::PsyRhoAirFnPbTdbW;
-	using Psychrometrics::PsyCpAirFnWTdb;
-	using Psychrometrics::PsyHFnTdbW;
-	using Psychrometrics::PsyRhoAirFnPbTdbW;
 	using namespace DataAirflowNetwork;
 
 	// Data
@@ -317,7 +301,7 @@ namespace AirflowNetworkSolver {
 			}
 			gio::write( Unit11, Format_900 ) << 0;
 			for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-				gio::write( Unit11, Format_910 ) << i << AirflowNetworkLinkageData( i ).NodeNums( 1 ) << AirflowNetworkLinkageData( i ).NodeHeights( 1 ) << AirflowNetworkLinkageData( i ).NodeNums( 2 ) << AirflowNetworkLinkageData( i ).NodeHeights( 2 ) << AirflowNetworkLinkageData( i ).CompNum << 0 << 0;
+				gio::write( Unit11, Format_910 ) << i << AirflowNetworkLinkageData( i ).nodeNums[ 0 ] << AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] << AirflowNetworkLinkageData( i ).nodeNums[ 1 ] << AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] << AirflowNetworkLinkageData( i ).CompNum << 0 << 0;
 			}
 			gio::write( Unit11, Format_900 ) << 0;
 		}
@@ -450,10 +434,10 @@ namespace AirflowNetworkSolver {
 		}
 		// Determine column heights.
 		for ( M = 1; M <= NetworkNumOfLinks; ++M ) {
-			j = AirflowNetworkLinkageData( M ).NodeNums( 2 );
+			j = AirflowNetworkLinkageData( M ).nodeNums[ 1 ];
 			if ( j == 0 ) continue;
 			L = ID( j );
-			i = AirflowNetworkLinkageData( M ).NodeNums( 1 );
+			i = AirflowNetworkLinkageData( M ).nodeNums[ 0 ];
 			k = ID( i );
 			N1 = std::abs( L - k );
 			N2 = max( k, L );
@@ -528,11 +512,11 @@ namespace AirflowNetworkSolver {
 		}
 		// Compute zone air properties.
 		for ( n = 1; n <= NetworkNumOfNodes; ++n ) {
-			RHOZ( n ) = PsyRhoAirFnPbTdbW( StdBaroPress + PZ( n ), TZ( n ), WZ( n ) );
+			RHOZ( n ) = Psychrometrics::PsyRhoAirFnPbTdbW(DataEnvironment::StdBaroPress + PZ( n ), TZ( n ), WZ( n ) );
 			if ( AirflowNetworkNodeData( n ).ExtNodeNum > 0 ) {
-				RHOZ( n ) = PsyRhoAirFnPbTdbW( StdBaroPress + PZ( n ), OutDryBulbTemp, OutHumRat );
-				TZ( n ) = OutDryBulbTemp;
-				WZ( n ) = OutHumRat;
+				RHOZ( n ) = Psychrometrics::PsyRhoAirFnPbTdbW( DataEnvironment::StdBaroPress + PZ( n ), DataEnvironment::OutDryBulbTemp, DataEnvironment::OutHumRat );
+				TZ( n ) = DataEnvironment::OutDryBulbTemp;
+				WZ( n ) = DataEnvironment::OutHumRat;
 			}
 			SQRTDZ( n ) = std::sqrt( RHOZ( n ) );
 			VISCZ( n ) = 1.71432e-5 + 4.828e-8 * TZ( n );
@@ -540,14 +524,14 @@ namespace AirflowNetworkSolver {
 		}
 		// Compute stack pressures.
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			n = AirflowNetworkLinkageData( i ).NodeNums( 1 );
-			M = AirflowNetworkLinkageData( i ).NodeNums( 2 );
+			n = AirflowNetworkLinkageData( i ).nodeNums[ 0 ];
+			M = AirflowNetworkLinkageData( i ).nodeNums[ 1 ];
 			if ( AFLOW( i ) > 0.0 ) {
-				PS( i ) = 9.80 * ( RHOZ( n ) * ( AirflowNetworkNodeData( n ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + AirflowNetworkLinkageData( i ).NodeHeights( 2 ) * ( RHOZ( M ) - RHOZ( n ) ) );
+				PS( i ) = 9.80 * ( RHOZ( n ) * ( AirflowNetworkNodeData( n ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] * ( RHOZ( M ) - RHOZ( n ) ) );
 			} else if ( AFLOW( i ) < 0.0 ) {
-				PS( i ) = 9.80 * ( RHOZ( M ) * ( AirflowNetworkNodeData( n ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + AirflowNetworkLinkageData( i ).NodeHeights( 1 ) * ( RHOZ( M ) - RHOZ( n ) ) );
+				PS( i ) = 9.80 * ( RHOZ( M ) * ( AirflowNetworkNodeData( n ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] * ( RHOZ( M ) - RHOZ( n ) ) );
 			} else {
-				PS( i ) = 4.90 * ( ( RHOZ( n ) + RHOZ( M ) ) * ( AirflowNetworkNodeData( n ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + ( AirflowNetworkLinkageData( i ).NodeHeights( 1 ) + AirflowNetworkLinkageData( i ).NodeHeights( 2 ) ) * ( RHOZ( M ) - RHOZ( n ) ) );
+				PS( i ) = 4.90 * ( ( RHOZ( n ) + RHOZ( M ) ) * ( AirflowNetworkNodeData( n ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + ( AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] + AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] ) * ( RHOZ( M ) - RHOZ( n ) ) );
 			}
 		}
 
@@ -562,8 +546,8 @@ namespace AirflowNetworkSolver {
 		}
 		if ( LIST >= 1 ) gio::write( Unit21, Format_900 );
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			n = AirflowNetworkLinkageData( i ).NodeNums( 1 );
-			M = AirflowNetworkLinkageData( i ).NodeNums( 2 );
+			n = AirflowNetworkLinkageData( i ).nodeNums[ 0 ];
+			M = AirflowNetworkLinkageData( i ).nodeNums[ 1 ];
 			if ( LIST >= 1 ) {
 				gio::write( Unit21, Format_901 ) << "Flow: " << i << n << M << AirflowNetworkLinkSimu( i ).DP << AFLOW( i ) << AFLOW2( i );
 			}
@@ -799,7 +783,7 @@ namespace AirflowNetworkSolver {
 					C = CCF( n ) * CEF( n );
 				} else {
 					//            IF (CCF(N) .EQ. 0.0d0) CCF(N)=TINY(CCF(N))  ! 1.0E-40
-					if ( CCF( n ) == 0.0 ) CCF( n ) = rTinyValue; // 1.0E-40 (Epsilon)
+					if ( CCF( n ) == 0.0 ) CCF( n ) = DataGlobals::rTinyValue; // 1.0E-40 (Epsilon)
 					PCF( n ) = CCF( n );
 					C = CCF( n );
 				}
@@ -897,8 +881,8 @@ namespace AirflowNetworkSolver {
 #endif
 		Array1D< Real64 > X( 4 );
 		Real64 DP;
-		Array1D< Real64 > F( 2 );
-		Array1D< Real64 > DF( 2 );
+		std::array< Real64, 2 > F;
+		std::array< Real64, 2 > DF;
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,3I3,4E16.7)" );
@@ -918,8 +902,8 @@ namespace AirflowNetworkSolver {
 		}
 		//                              Set up the Jacobian matrix.
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			n0 = AirflowNetworkLinkageData( i ).NodeNums( 1 );
-			n1 = AirflowNetworkLinkageData( i ).NodeNums( 2 );
+			n0 = AirflowNetworkLinkageData( i ).nodeNums[ 0 ];
+			n1 = AirflowNetworkLinkageData( i ).nodeNums[ 1 ];
 			//!!! Check array of DP. DpL is used for multizone air flow calculation only
 			//!!! and is not for forced air calculation
 			if ( i > NumOfLinksMultiZone ) {
@@ -993,7 +977,7 @@ namespace AirflowNetworkSolver {
 				SUMF( n1 ) -= F[ 0 ];
 				SUMAF( n1 ) += std::abs( F[ 0 ] );
 			}
-			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).NodeNums, IK, AU, AD, FLAG );
+			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).nodeNums, IK, AU, AD, FLAG );
 			if ( NF == 1 ) continue;
 			AFLOW2( i ) = F[ 1 ];
 			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRj:" << i << n0 << n1 << AirflowNetworkLinkSimu( i ).DP << F[ 1 ] << DF[ 1 ];
@@ -1012,7 +996,7 @@ namespace AirflowNetworkSolver {
 				SUMF( n1 ) -= F[ 1 ];
 				SUMAF( n1 ) += std::abs( F[ 1 ] );
 			}
-			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).NodeNums, IK, AU, AD, FLAG );
+			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).nodeNums, IK, AU, AD, FLAG );
 		}
 
 #ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
@@ -1095,8 +1079,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -1119,10 +1103,6 @@ namespace AirflowNetworkSolver {
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1153,7 +1133,7 @@ namespace AirflowNetworkSolver {
 		// FLOW:
 		// Crack standard condition: T=20C, p=101325 Pa and 0 g/kg
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
-		RhozNorm = PsyRhoAirFnPbTdbW( 101325.0, 20.0, 0.0 );
+		RhozNorm = Psychrometrics::PsyRhoAirFnPbTdbW( 101325.0, 20.0, 0.0 );
 		VisczNorm = 1.71432e-5 + 4.828e-8 * 20.0;
 		expn = DisSysCompLeakData( CompNum ).FlowExpo;
 		coef = DisSysCompLeakData( CompNum ).FlowCoef;
@@ -1219,8 +1199,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n1, // Node 1 number
 		int const n2, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -1270,10 +1250,6 @@ namespace AirflowNetworkSolver {
 		Real64 Tave;
 		Real64 RhoCor;
 		int CompNum;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Handle positive/negative pressure difference
 		Real64 sign( 1.0 );
@@ -1349,8 +1325,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -1375,10 +1351,6 @@ namespace AirflowNetworkSolver {
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1526,8 +1498,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -1552,10 +1524,6 @@ namespace AirflowNetworkSolver {
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1610,8 +1578,8 @@ namespace AirflowNetworkSolver {
 		OpenFactor = MultizoneSurfaceData( i ).OpenFactor;
 		if ( OpenFactor > 0.0 ) {
 			Width *= OpenFactor;
-			if ( Surface( MultizoneSurfaceData( i ).SurfNum ).Tilt < 90.0 ) {
-				Height *= Surface( MultizoneSurfaceData( i ).SurfNum ).SinTilt;
+			if ( DataSurfaces::Surface( MultizoneSurfaceData( i ).SurfNum ).Tilt < 90.0 ) {
+				Height *= DataSurfaces::Surface( MultizoneSurfaceData( i ).SurfNum ).SinTilt;
 			}
 		}
 
@@ -1703,8 +1671,8 @@ namespace AirflowNetworkSolver {
 		int const EP_UNUSED( i ), // Linkage number
 		int const EP_UNUSED( n ), // Node 1 number
 		int const EP_UNUSED( M ), // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -1735,10 +1703,6 @@ namespace AirflowNetworkSolver {
 		using DataHVACGlobals::FanType_SimpleOnOff;
 		using DataHVACGlobals::FanType_SimpleConstVolume;
 		using DataHVACGlobals::FanType_SimpleVAV;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1789,15 +1753,15 @@ namespace AirflowNetworkSolver {
 			SumFracSuppLeak = 0.0;
 			for ( k = 1; k <= NetworkNumOfLinks; ++k ) {
 				if ( AirflowNetworkLinkageData( k ).VAVTermDamper ) {
-					k1 = AirflowNetworkNodeData( AirflowNetworkLinkageData( k ).NodeNums( 1 ) ).EPlusNodeNum;
+					k1 = AirflowNetworkNodeData( AirflowNetworkLinkageData( k ).nodeNums[ 0 ] ).EPlusNodeNum;
 					if ( Node( k1 ).MassFlowRate > 0.0 ) {
 						SumTermFlow += Node( k1 ).MassFlowRate;
 					}
 				}
 				if ( AirflowNetworkCompData( AirflowNetworkLinkageData( k ).CompNum ).CompTypeNum == CompTypeNum_ELR ) {
 					// Calculate supply leak sensible losses
-					Node1 = AirflowNetworkLinkageData( k ).NodeNums( 1 );
-					Node2 = AirflowNetworkLinkageData( k ).NodeNums( 2 );
+					Node1 = AirflowNetworkLinkageData( k ).nodeNums[ 0 ];
+					Node2 = AirflowNetworkLinkageData( k ).nodeNums[ 1 ];
 					if ( ( AirflowNetworkNodeData( Node2 ).EPlusZoneNum > 0 ) && ( AirflowNetworkNodeData( Node1 ).EPlusNodeNum == 0 ) ) {
 						SumFracSuppLeak += DisSysCompELRData( AirflowNetworkCompData( AirflowNetworkLinkageData( k ).CompNum ).TypeNum ).ELR;
 					}
@@ -1822,8 +1786,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -1847,10 +1811,6 @@ namespace AirflowNetworkSolver {
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1980,8 +1940,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const EP_UNUSED( n ), // Node 1 number
 		int const EP_UNUSED( M ), // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2005,10 +1965,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2047,8 +2003,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2072,10 +2028,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2134,8 +2086,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2159,10 +2111,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2248,8 +2196,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2273,10 +2221,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2360,8 +2304,8 @@ Label90: ;
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2385,10 +2329,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2419,7 +2359,7 @@ Label90: ;
 			DF[ 0 ] = 0.5 * F[ 0 ] / DisSysCompCPDData( CompNum ).DP;
 		} else {
 			for ( k = 1; k <= NetworkNumOfLinks; ++k ) {
-				if ( AirflowNetworkLinkageData( k ).NodeNums( 2 ) == n ) {
+				if ( AirflowNetworkLinkageData( k ).nodeNums[ 1 ] == n ) {
 					F[ 0 ] = AFLOW( k );
 					break;
 				}
@@ -2440,8 +2380,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2465,10 +2405,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2514,7 +2450,7 @@ Label90: ;
 		// Get component properties
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 		ed = Rough / DisSysCompDuctData( CompNum ).D;
-		area = pow_2( DisSysCompCoilData( CompNum ).D ) * Pi;
+		area = pow_2( DisSysCompCoilData( CompNum ).D ) * DataGlobals::Pi;
 		ld = DisSysCompCoilData( CompNum ).L / DisSysCompCoilData( CompNum ).D;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
@@ -2620,8 +2556,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2645,10 +2581,6 @@ Label90: ;
 
 		// Using/Aliasing
 		using DataLoopNode::Node;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2694,7 +2626,7 @@ Label90: ;
 		// Get component properties
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 		ed = Rough / DisSysCompTermUnitData( CompNum ).D;
-		area = pow_2( DisSysCompTermUnitData( CompNum ).D ) * Pi;
+		area = pow_2( DisSysCompTermUnitData( CompNum ).D ) * DataGlobals::Pi;
 		ld = DisSysCompTermUnitData( CompNum ).L / DisSysCompTermUnitData( CompNum ).D;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
@@ -2808,8 +2740,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2832,10 +2764,6 @@ Label90: ;
 		// Using/Aliasing
 		using DataLoopNode::Node;
 		using DataHVACGlobals::VerySmallMassFlow;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -2885,7 +2813,7 @@ Label90: ;
 			// Treat the component as a surface crack
 			// Crack standard condition from given inputs
 			Corr = MultizoneSurfaceData( i ).Factor;
-			RhozNorm = PsyRhoAirFnPbTdbW( MultizoneCompExhaustFanData( CompNum ).StandardP, MultizoneCompExhaustFanData( CompNum ).StandardT, MultizoneCompExhaustFanData( CompNum ).StandardW );
+			RhozNorm = Psychrometrics::PsyRhoAirFnPbTdbW( MultizoneCompExhaustFanData( CompNum ).StandardP, MultizoneCompExhaustFanData( CompNum ).StandardT, MultizoneCompExhaustFanData( CompNum ).StandardW );
 			VisczNorm = 1.71432e-5 + 4.828e-8 * MultizoneCompExhaustFanData( CompNum ).StandardT;
 
 			expn = MultizoneCompExhaustFanData( CompNum ).FlowExpo;
@@ -2901,11 +2829,11 @@ Label90: ;
 			if ( LFLAG == 1 ) {
 				// Initialization by linear relation.
 				if ( PDROP >= 0.0 ) {
-					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				} else {
-					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				}
@@ -2915,7 +2843,7 @@ Label90: ;
 				if ( PDROP >= 0.0 ) {
 					// Flow in positive direction.
 					// Laminar flow.
-					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					CDM = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 					FL = CDM * PDROP;
@@ -2928,7 +2856,7 @@ Label90: ;
 				} else {
 					// Flow in negative direction.
 					// Laminar flow.
-					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					CDM = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 					FL = CDM * PDROP;
@@ -2960,8 +2888,8 @@ Label90: ;
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -2985,10 +2913,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3031,7 +2955,7 @@ Label90: ;
 		// Get component properties
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 		ed = Rough / DisSysCompHXData( CompNum ).D;
-		area = pow_2( DisSysCompHXData( CompNum ).D ) * Pi;
+		area = pow_2( DisSysCompHXData( CompNum ).D ) * DataGlobals::Pi;
 		ld = DisSysCompHXData( CompNum ).L / DisSysCompHXData( CompNum ).D;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
@@ -3130,8 +3054,8 @@ Label90: ;
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -3155,10 +3079,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		using DataGlobals::Pi;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3222,7 +3142,7 @@ Label90: ;
 		BuoFlow = 0.0;
 		dPBuoFlow = 0.0;
 
-		if ( AirflowNetworkLinkageData( i ).NodeHeights( 1 ) > AirflowNetworkLinkageData( i ).NodeHeights( 2 ) ) {
+		if ( AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] > AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] ) {
 			// Node N is upper zone
 			if ( RHOZ( n ) > RHOZ( M ) ) {
 				BuoFlowMax = RhozAver * 0.055 * std::sqrt( 9.81 * std::abs( RHOZ( n ) - RHOZ( M ) ) * pow_5( DH ) / RhozAver );
@@ -3283,8 +3203,8 @@ Label90: ;
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -3301,10 +3221,6 @@ Label90: ;
 		using DataAirLoop::LoopFanOperationMode;
 		using DataAirLoop::LoopOnOffFanPartLoadRatio;
 		using DataHVACGlobals::FanType_SimpleOnOff;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3351,7 +3267,7 @@ Label90: ;
 			// Treat the component as a surface crack
 			// Crack standard condition from given inputs
 			Corr = 1.0;
-			RhozNorm = PsyRhoAirFnPbTdbW( DisSysCompOutdoorAirData( CompNum ).StandardP, DisSysCompOutdoorAirData( CompNum ).StandardT, DisSysCompOutdoorAirData( CompNum ).StandardW );
+			RhozNorm = Psychrometrics::PsyRhoAirFnPbTdbW( DisSysCompOutdoorAirData( CompNum ).StandardP, DisSysCompOutdoorAirData( CompNum ).StandardT, DisSysCompOutdoorAirData( CompNum ).StandardW );
 			VisczNorm = 1.71432e-5 + 4.828e-8 * DisSysCompOutdoorAirData( CompNum ).StandardT;
 
 			expn = DisSysCompOutdoorAirData( CompNum ).FlowExpo;
@@ -3367,11 +3283,11 @@ Label90: ;
 			if ( LFLAG == 1 ) {
 				// Initialization by linear relation.
 				if ( PDROP >= 0.0 ) {
-					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				} else {
-					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				}
@@ -3381,7 +3297,7 @@ Label90: ;
 				if ( PDROP >= 0.0 ) {
 					// Flow in positive direction.
 					// Laminar flow.
-					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					CDM = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 					FL = CDM * PDROP;
@@ -3394,7 +3310,7 @@ Label90: ;
 				} else {
 					// Flow in negative direction.
 					// Laminar flow.
-					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					CDM = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 					FL = CDM * PDROP;
@@ -3426,8 +3342,8 @@ Label90: ;
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -3438,10 +3354,6 @@ Label90: ;
 		// Using/Aliasing
 		using DataLoopNode::Node;
 		using DataHVACGlobals::VerySmallMassFlow;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3485,7 +3397,7 @@ Label90: ;
 			// Treat the component as a surface crack
 			// Crack standard condition from given inputs
 			Corr = 1.0;
-			RhozNorm = PsyRhoAirFnPbTdbW( DisSysCompReliefAirData( CompNum ).StandardP, DisSysCompReliefAirData( CompNum ).StandardT, DisSysCompReliefAirData( CompNum ).StandardW );
+			RhozNorm = Psychrometrics::PsyRhoAirFnPbTdbW( DisSysCompReliefAirData( CompNum ).StandardP, DisSysCompReliefAirData( CompNum ).StandardT, DisSysCompReliefAirData( CompNum ).StandardW );
 			VisczNorm = 1.71432e-5 + 4.828e-8 * DisSysCompReliefAirData( CompNum ).StandardT;
 
 			expn = DisSysCompReliefAirData( CompNum ).FlowExpo;
@@ -3501,11 +3413,11 @@ Label90: ;
 			if ( LFLAG == 1 ) {
 				// Initialization by linear relation.
 				if ( PDROP >= 0.0 ) {
-					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				} else {
-					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				}
@@ -3515,7 +3427,7 @@ Label90: ;
 				if ( PDROP >= 0.0 ) {
 					// Flow in positive direction.
 					// Laminar flow.
-					RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					CDM = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 					FL = CDM * PDROP;
@@ -3528,7 +3440,7 @@ Label90: ;
 				} else {
 					// Flow in negative direction.
 					// Laminar flow.
-					RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+					RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 					Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 					CDM = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 					FL = CDM * PDROP;
@@ -3560,8 +3472,8 @@ Label90: ;
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -3585,10 +3497,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		// na
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3618,7 +3526,7 @@ Label90: ;
 
 		// FLOW:
 		// Calculate normal density and viscocity at Crack standard condition: T=20C, p=101325 Pa and 0 g/kg
-		RhozNorm = PsyRhoAirFnPbTdbW( 101325.0, 20.0, 0.0 );
+		RhozNorm = Psychrometrics::PsyRhoAirFnPbTdbW( 101325.0, 20.0, 0.0 );
 		VisczNorm = 1.71432e-5 + 4.828e-8 * 20.0;
 		VisAve = ( VISCZ( n ) + VISCZ( M ) ) / 2.0;
 		Tave = ( TZ( n ) + TZ( M ) ) / 2.0;
@@ -3632,11 +3540,11 @@ Label90: ;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
-				RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+				RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 				Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 				DF[ 0 ] = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 			} else {
-				RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+				RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 				Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 				DF[ 0 ] = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 			}
@@ -3646,7 +3554,7 @@ Label90: ;
 			if ( PDROP >= 0.0 ) {
 				// Flow in positive direction.
 				// Laminar flow.
-				RhoCor = ( TZ( n ) + KelvinConv ) / ( Tave + KelvinConv );
+				RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 				Ctl = std::pow( RhozNorm / RHOZ( n ) / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 				CDM = coef * RHOZ( n ) / VISCZ( n ) * Ctl;
 				FL = CDM * PDROP;
@@ -3659,7 +3567,7 @@ Label90: ;
 			} else {
 				// Flow in negative direction.
 				// Laminar flow.
-				RhoCor = ( TZ( M ) + KelvinConv ) / ( Tave + KelvinConv );
+				RhoCor = ( TZ( M ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 				Ctl = std::pow( RhozNorm / RHOZ( M ) / RhoCor, 2.0 * expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
 				CDM = coef * RHOZ( M ) / VISCZ( M ) * Ctl;
 				FL = CDM * PDROP;
@@ -3939,7 +3847,7 @@ Label90: ;
 	void
 	FILSKY(
 		Array1A< Real64 > const X, // element array (row-wise sequence)
-		Array1A_int const LM, // location matrix
+		std::array< int, 2> const &LM, // location matrix
 		Array1A_int const IK, // pointer to the top of column/row "K"
 		Array1A< Real64 > AU, // the upper triangle of [A] before and after factoring
 		Array1A< Real64 > AD, // the main diagonal of [A] before and after factoring
@@ -3969,7 +3877,6 @@ Label90: ;
 
 		// Argument array dimensioning
 		X.dim( 4 );
-		LM.dim( 2 );
 		IK.dim( NetworkNumOfNodes+1 );
 		AU.dim( IK(NetworkNumOfNodes+1) );
 		AD.dim( NetworkNumOfNodes );
@@ -3996,8 +3903,8 @@ Label90: ;
 		// FLOW:
 		// K = row number, L = column number.
 		if ( FLAG > 1 ) {
-			k = LM( 1 );
-			L = LM( 2 );
+			k = LM[ 0 ];
+			L = LM[ 1 ];
 			if ( FLAG == 4 ) {
 				AD( k ) += X( 1 );
 				if ( k < L ) {
@@ -4143,8 +4050,8 @@ Label90: ;
 		int const IL, // Linkage number
 		int const EP_UNUSED( n ), // Node 1 number
 		int const EP_UNUSED( M ), // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	)
 	{
@@ -4193,10 +4100,6 @@ Label90: ;
 
 		// USE STATEMENTS:
 		using DataGlobals::PiOvr2;
-
-		// Argument array dimensioning
-		F.dim( 2 );
-		DF.dim( 2 );
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -4702,13 +4605,13 @@ Label90: ;
 		Interval = ActLh * OwnHeightFactor / NrInt;
 
 		for ( n = 1; n <= NrInt; ++n ) {
-			hghtsF( n + 1 ) = AirflowNetworkLinkageData( il ).NodeHeights( 1 ) + Interval * ( n - 0.5 );
-			hghtsT( n + 1 ) = AirflowNetworkLinkageData( il ).NodeHeights( 2 ) + Interval * ( n - 0.5 );
+			hghtsF( n + 1 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 0 ] + Interval * ( n - 0.5 );
+			hghtsT( n + 1 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 1 ] + Interval * ( n - 0.5 );
 		}
-		hghtsF( 1 ) = AirflowNetworkLinkageData( il ).NodeHeights( 1 );
-		hghtsT( 1 ) = AirflowNetworkLinkageData( il ).NodeHeights( 2 );
-		hghtsF( NrInt + 2 ) = AirflowNetworkLinkageData( il ).NodeHeights( 1 ) + ActLh * OwnHeightFactor;
-		hghtsT( NrInt + 2 ) = AirflowNetworkLinkageData( il ).NodeHeights( 2 ) + ActLh * OwnHeightFactor;
+		hghtsF( 1 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 0 ];
+		hghtsT( 1 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 1 ];
+		hghtsF( NrInt + 2 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 0 ] + ActLh * OwnHeightFactor;
+		hghtsT( NrInt + 2 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 1 ] + ActLh * OwnHeightFactor;
 
 		lF = 1;
 		lT = 1;
@@ -4737,7 +4640,7 @@ Label90: ;
 			}
 		}
 
-		zStF( 1 ) = AirflowNetworkLinkageData( il ).NodeHeights( 1 );
+		zStF( 1 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 0 ];
 		i = 2;
 		k = 1;
 
@@ -4753,8 +4656,8 @@ Label90: ;
 			++k;
 		}
 
-		zStF( i ) = AirflowNetworkLinkageData( il ).NodeHeights( 1 ) + ActLh * OwnHeightFactor; //Autodesk:BoundsViolation zStF(i) @ i>2
-		zStT( 1 ) = AirflowNetworkLinkageData( il ).NodeHeights( 2 );
+		zStF( i ) = AirflowNetworkLinkageData( il ).nodeHeights[ 0 ] + ActLh * OwnHeightFactor; //Autodesk:BoundsViolation zStF(i) @ i>2
+		zStT( 1 ) = AirflowNetworkLinkageData( il ).nodeHeights[ 1 ];
 		i = 2;
 		k = 1;
 
@@ -4770,7 +4673,7 @@ Label90: ;
 			++k;
 		}
 
-		zStT( i ) = AirflowNetworkLinkageData( il ).NodeHeights( 2 ) + ActLh * OwnHeightFactor; //Autodesk:BoundsViolation zStT(i) @ i>2
+		zStT( i ) = AirflowNetworkLinkageData( il ).nodeHeights[ 1 ] + ActLh * OwnHeightFactor; //Autodesk:BoundsViolation zStT(i) @ i>2
 
 		// Calculation of DpProf, RhoProfF, RhoProfT
 		for ( i = 1; i <= NrInt + 2; ++i ) {
@@ -4895,13 +4798,13 @@ Label90: ;
 		Real64 CONV;
 
 		// FLOW:
-		RhoREF = PsyRhoAirFnPbTdbW( PSea, OutDryBulbTemp, OutHumRat );
+		RhoREF = Psychrometrics::PsyRhoAirFnPbTdbW( PSea, DataEnvironment::OutDryBulbTemp, DataEnvironment::OutHumRat );
 
-		CONV = Latitude * 2.0 * Pi / 360.0;
+		CONV = DataEnvironment::Latitude * 2.0 * Pi / 360.0;
 		G = 9.780373 * ( 1.0 + 0.0052891 * pow_2( std::sin( CONV ) ) - 0.0000059 * pow_2( std::sin( 2.0 * CONV ) ) );
 
 		Hfl = 1.0;
-		Pbz = OutBaroPress;
+		Pbz = DataEnvironment::OutBaroPress;
 		Nl = NumOfLinksMultiZone;
 		OpenNum = 0;
 		RhoLd( 1 ) = 1.2;
@@ -4911,13 +4814,13 @@ Label90: ;
 		for ( i = 1; i <= Nl; ++i ) {
 			// Check surface tilt
 			if ( i <= Nl - NumOfLinksIntraZone ) { //Revised by L.Gu, on 9 / 29 / 10
-				if ( AirflowNetworkLinkageData( i ).DetOpenNum > 0 && Surface( MultizoneSurfaceData( i ).SurfNum ).Tilt < 90 ) {
-					Hfl( i ) = Surface( MultizoneSurfaceData( i ).SurfNum ).SinTilt;
+				if ( AirflowNetworkLinkageData( i ).DetOpenNum > 0 && DataSurfaces::Surface( MultizoneSurfaceData( i ).SurfNum ).Tilt < 90 ) {
+					Hfl( i ) = DataSurfaces::Surface( MultizoneSurfaceData( i ).SurfNum ).SinTilt;
 				}
 			}
 			// Initialisation
-			From = AirflowNetworkLinkageData( i ).NodeNums( 1 );
-			To = AirflowNetworkLinkageData( i ).NodeNums( 2 );
+			From = AirflowNetworkLinkageData( i ).nodeNums[ 0 ];
+			To = AirflowNetworkLinkageData( i ).nodeNums[ 1 ];
 			if ( AirflowNetworkNodeData( From ).EPlusZoneNum > 0 && AirflowNetworkNodeData( To ).EPlusZoneNum > 0 ) {
 				ll = 0;
 			} else if ( AirflowNetworkNodeData( From ).EPlusZoneNum == 0 && AirflowNetworkNodeData( To ).EPlusZoneNum > 0 ) {
@@ -4976,8 +4879,8 @@ Label90: ;
 			}
 
 			// RhoDrL is Rho at link level without pollutant but with humidity
-			RhoDrL( i, 1 ) = PsyRhoAirFnPbTdbW( OutBaroPress + PzFrom, TempL1, Xhl1 );
-			RhoDrL( i, 2 ) = PsyRhoAirFnPbTdbW( OutBaroPress + PzTo, TempL2, Xhl2 );
+			RhoDrL( i, 1 ) = Psychrometrics::PsyRhoAirFnPbTdbW( DataEnvironment::OutBaroPress + PzFrom, TempL1, Xhl1 );
+			RhoDrL( i, 2 ) = Psychrometrics::PsyRhoAirFnPbTdbW( DataEnvironment::OutBaroPress + PzTo, TempL2, Xhl2 );
 
 			// End initialisation
 
@@ -4986,12 +4889,12 @@ Label90: ;
 			if ( Fromz == 0 ) ilayptr = 1;
 			j = ilayptr;
 			k = 1;
-			LClimb( G, RhoLd( 1 ), AirflowNetworkLinkageData( i ).NodeHeights( 1 ), TempL1, Xhl1, DpF( k ), Toz, PzTo, Pbz, RhoDrL( i, 1 ) );
+			LClimb( G, RhoLd( 1 ), AirflowNetworkLinkageData( i ).nodeHeights[ 0 ], TempL1, Xhl1, DpF( k ), Toz, PzTo, Pbz, RhoDrL( i, 1 ) );
 			RhoL1 = RhoLd( 1 );
 			// For large openings calculate the stack pressure difference profile and the
 			// density profile within the the top- and the bottom- height of the large opening
 			if ( ActLOwnh > 0.0 ) {
-				HSt( k ) = AirflowNetworkLinkageData( i ).NodeHeights( 1 );
+				HSt( k ) = AirflowNetworkLinkageData( i ).nodeHeights[ 0 ];
 				RhoStF( k ) = RhoL1;
 				++k;
 				HSt( k ) = 0.0;
@@ -5002,7 +4905,7 @@ Label90: ;
 				while ( true ) {
 					ilayptr = 0;
 					if ( Fromz == 0 ) ilayptr = 9;
-					if ( ( j > ilayptr ) || ( HSt( k ) > AirflowNetworkLinkageData( i ).NodeHeights( 1 ) ) ) break;
+					if ( ( j > ilayptr ) || ( HSt( k ) > AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] ) ) break;
 					j += 9;
 					HSt( k ) = 0.0;
 					if ( HSt( k - 1 ) < 0.0 ) HSt( k ) = HSt( k - 1 );
@@ -5013,7 +4916,7 @@ Label90: ;
 				while ( true ) {
 					ilayptr = 0;
 					if ( Fromz == 0 ) ilayptr = 9;
-					if ( ( j > ilayptr ) || ( HSt( k ) >= ( AirflowNetworkLinkageData( i ).NodeHeights( 1 ) + ActLOwnh ) ) ) break; //Autodesk:BoundsViolation HSt(k) @ k>2
+					if ( ( j > ilayptr ) || ( HSt( k ) >= ( AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] + ActLOwnh ) ) ) break; //Autodesk:BoundsViolation HSt(k) @ k>2
 					T = TzFrom;
 					X = XhzFrom;
 					LClimb( G, RhoStd, HSt( k ), T, X, DpF( k ), Fromz, PzFrom, Pbz, RhoDrDummi ); //Autodesk:BoundsViolation HSt(k) and DpF(k) @ k>2
@@ -5024,7 +4927,7 @@ Label90: ;
 					if ( HSt( k - 1 ) < 0.0 ) HSt( k ) = HSt( k - 1 ); //Autodesk:BoundsViolation @ k>2
 				}
 				// Stack pressure difference and rho for top-height of the large opening
-				HSt( k ) = AirflowNetworkLinkageData( i ).NodeHeights( 1 ) + ActLOwnh; //Autodesk:BoundsViolation k>2 poss
+				HSt( k ) = AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] + ActLOwnh; //Autodesk:BoundsViolation k>2 poss
 				T = TzFrom;
 				X = XhzFrom;
 				LClimb( G, RhoStd, HSt( k ), T, X, DpF( k ), Fromz, PzFrom, Pbz, RhoDrDummi ); //Autodesk:BoundsViolation k>2 poss
@@ -5041,13 +4944,13 @@ Label90: ;
 			j = ilayptr;
 			// Calculate Rho at link height only if we have large openings or layered zones.
 			k = 1;
-			LClimb( G, RhoLd( 2 ), AirflowNetworkLinkageData( i ).NodeHeights( 2 ), TempL2, Xhl2, DpT( k ), Toz, PzTo, Pbz, RhoDrL( i, 2 ) );
+			LClimb( G, RhoLd( 2 ), AirflowNetworkLinkageData( i ).nodeHeights[ 1 ], TempL2, Xhl2, DpT( k ), Toz, PzTo, Pbz, RhoDrL( i, 2 ) );
 			RhoL2 = RhoLd( 2 );
 
 			// For large openings calculate the stack pressure difference profile and the
 			// density profile within the the top- and the bottom- height of the large opening
 			if ( ActLOwnh > 0.0 ) {
-				HSt( k ) = AirflowNetworkLinkageData( i ).NodeHeights( 2 );
+				HSt( k ) = AirflowNetworkLinkageData( i ).nodeHeights[ 1 ];
 				RhoStT( k ) = RhoL2;
 				++k;
 				HSt( k ) = 0.0;
@@ -5055,7 +4958,7 @@ Label90: ;
 				while ( true ) {
 					ilayptr = 0;
 					if ( Toz == 0 ) ilayptr = 9;
-					if ( ( j > ilayptr ) || ( HSt( k ) > AirflowNetworkLinkageData( i ).NodeHeights( 2 ) ) ) break;
+					if ( ( j > ilayptr ) || ( HSt( k ) > AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] ) ) break;
 					j += 9;
 					HSt( k ) = 0.0;
 					if ( HSt( k - 1 ) < 0.0 ) HSt( k ) = HSt( k - 1 );
@@ -5065,7 +4968,7 @@ Label90: ;
 				while ( true ) {
 					ilayptr = 0;
 					if ( Toz == 0 ) ilayptr = 9;
-					if ( ( j > ilayptr ) || ( HSt( k ) >= ( AirflowNetworkLinkageData( i ).NodeHeights( 2 ) + ActLOwnh ) ) ) break; //Autodesk:BoundsViolation Hst(k) @ k>2
+					if ( ( j > ilayptr ) || ( HSt( k ) >= ( AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] + ActLOwnh ) ) ) break; //Autodesk:BoundsViolation Hst(k) @ k>2
 					T = TzTo;
 					X = XhzTo;
 					LClimb( G, RhoStd, HSt( k ), T, X, DpT( k ), Toz, PzTo, Pbz, RhoDrDummi ); //Autodesk:BoundsViolation HSt(k) and DpT(k) @ k>2
@@ -5076,7 +4979,7 @@ Label90: ;
 					if ( HSt( k - 1 ) < 0.0 ) HSt( k ) = HSt( k - 1 ); //Autodesk:BoundsViolation @ k>2
 				}
 				// Stack pressure difference and rho for top-height of the large opening
-				HSt( k ) = AirflowNetworkLinkageData( i ).NodeHeights( 2 ) + ActLOwnh; //Autodesk:BoundsViolation k>2 poss
+				HSt( k ) = AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] + ActLOwnh; //Autodesk:BoundsViolation k>2 poss
 				T = TzTo;
 				X = XhzTo;
 				LClimb( G, RhoStd, HSt( k ), T, X, DpT( k ), Toz, PzTo, Pbz, RhoDrDummi ); //Autodesk:BoundsViolation k>2 poss
@@ -5088,7 +4991,7 @@ Label90: ;
 			}
 
 			// CALCULATE STACK PRESSURE FOR THE PATH ITSELF for different flow directions
-			H = double( AirflowNetworkLinkageData( i ).NodeHeights( 2 ) ) - double( AirflowNetworkLinkageData( i ).NodeHeights( 1 ) );
+			H = double( AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] ) - double( AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] );
 			if ( ll == 0 || ll == 3 || ll == 6 ) {
 				H -= AirflowNetworkNodeData( From ).NodeHeight;
 			}
@@ -5269,15 +5172,15 @@ Label90: ;
 					Htop = Z;
 					P = PZ + Dp;
 					if ( Htop != Hbot ) {
-						Rho0 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho0 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						T += ( Htop - Hbot ) * BetaT;
 						X += ( Htop - Hbot ) * BetaXfct * X0;
-						Rho1 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho1 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						BetaRho = ( Rho1 - Rho0 ) / ( Htop - Hbot );
 						Dp += psz( Pbz + P, Rho0, BetaRho, Hbot, Htop, G );
 					}
-					RhoDr = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
-					Rho = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					RhoDr = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					Rho = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
 					return;
 
 				} else {
@@ -5286,16 +5189,16 @@ Label90: ;
 					// P is the pressure up to the start height of the layer we just reached
 					P = PZ + Dp;
 					if ( Htop != Hbot ) {
-						Rho0 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho0 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						T += ( Htop - Hbot ) * BetaT;
 						X += ( Htop - Hbot ) * BetaXfct * X0;
-						Rho1 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho1 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						BetaRho = ( Rho1 - Rho0 ) / ( Htop - Hbot );
 						Dp += psz( Pbz + P, Rho0, BetaRho, Hbot, Htop, G );
 					}
 
-					RhoDr = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
-					Rho = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					RhoDr = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					Rho = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
 
 					// place current values Hbot and Beta's
 					Hbot = H;
@@ -5347,31 +5250,31 @@ Label90: ;
 					Hbot = Z;
 					P = PZ + Dp;
 					if ( Htop != Hbot ) {
-						Rho1 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho1 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						T += ( Hbot - Htop ) * BetaT;
 						X += ( Hbot - Htop ) * BetaXfct * X0;
-						Rho0 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho0 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						BetaRho = ( Rho1 - Rho0 ) / ( Htop - Hbot );
 						Dp -= psz( Pbz + P, Rho0, BetaRho, Hbot, Htop, G );
 					}
-					RhoDr = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
-					Rho = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					RhoDr = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					Rho = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
 					return;
 				} else {
 					// bottom of the layer is below Z  (Z below ref)
 					Hbot = H;
 					P = PZ + Dp;
 					if ( Htop != Hbot ) {
-						Rho1 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho1 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						// T,X,C calculated for the lower height
 						T += ( Hbot - Htop ) * BetaT;
 						X += ( Hbot - Htop ) * BetaXfct * X0;
-						Rho0 = PsyRhoAirFnPbTdbW( Pbz + P, T, X );
+						Rho0 = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + P, T, X );
 						BetaRho = ( Rho1 - Rho0 ) / ( Htop - Hbot );
 						Dp -= psz( Pbz + P, Rho0, BetaRho, Hbot, Htop, G );
 					}
-					RhoDr = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
-					Rho = PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					RhoDr = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
+					Rho = Psychrometrics::PsyRhoAirFnPbTdbW( Pbz + PZ + Dp, T, X );
 
 					// place current values Hbot and Beta's
 					Htop = H;

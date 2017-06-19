@@ -1216,8 +1216,8 @@ namespace RoomAirModelManager {
 
 			// If a crack is used it must have an air flow coefficient = 0.5
 			for ( Loop2 = 1; Loop2 <= NumOfLinksMultiZone; ++Loop2 ) {
-				NodeNum1 = MultizoneSurfaceData( Loop2 ).NodeNums( 1 );
-				NodeNum2 = MultizoneSurfaceData( Loop2 ).NodeNums( 2 );
+				NodeNum1 = MultizoneSurfaceData( Loop2 ).nodeNums[ 0 ];
+				NodeNum2 = MultizoneSurfaceData( Loop2 ).nodeNums[ 1 ];
 				if ( Surface( MultizoneSurfaceData( Loop2 ).SurfNum ).Zone == ThisZone || ( AirflowNetworkNodeData( NodeNum2 ).EPlusZoneNum == ThisZone && AirflowNetworkNodeData( NodeNum1 ).EPlusZoneNum > 0 ) || ( AirflowNetworkNodeData( NodeNum2 ).EPlusZoneNum > 0 && AirflowNetworkNodeData( NodeNum1 ).EPlusZoneNum == ThisZone ) ) {
 					CompNum = AirflowNetworkLinkageData( Loop2 ).CompNum;
 					TypeNum = AirflowNetworkCompData( CompNum ).TypeNum;
@@ -2212,8 +2212,8 @@ namespace RoomAirModelManager {
 							++SurfNum;
 							// Check if airflow network Surface is an interzone surface:
 						} else {
-							NodeNum1 = MultizoneSurfaceData( Loop2 ).NodeNums( 1 );
-							NodeNum2 = MultizoneSurfaceData( Loop2 ).NodeNums( 2 );
+							NodeNum1 = MultizoneSurfaceData( Loop2 ).nodeNums[ 0 ];
+							NodeNum2 = MultizoneSurfaceData( Loop2 ).nodeNums[ 1 ];
 							if ( ( AirflowNetworkNodeData( NodeNum2 ).EPlusZoneNum == Loop && AirflowNetworkNodeData( NodeNum1 ).EPlusZoneNum > 0 ) || ( AirflowNetworkNodeData( NodeNum2 ).EPlusZoneNum > 0 && AirflowNetworkNodeData( NodeNum1 ).EPlusZoneNum == Loop ) ) {
 								AirflowNetworkSurfaceUCSDCV( SurfNum, Loop ) = Loop2;
 								++SurfNum;

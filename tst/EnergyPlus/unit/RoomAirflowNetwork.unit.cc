@@ -205,16 +205,16 @@ TEST_F( RoomAirflowNetworkTest, RAFNTest )
 	RoomAirflowNetworkZoneInfo( ZoneNum ).Node( 2 ).Link( 3 ).AirflowNetworkLinkSimuID = 5;
 	RoomAirflowNetworkZoneInfo( ZoneNum ).Node( 2 ).AirflowNetworkNodeID = 2;
 
-	AirflowNetworkLinkageData( 1 ).NodeNums( 1 ) = 1;
-	AirflowNetworkLinkageData( 2 ).NodeNums( 1 ) = 1;
-	AirflowNetworkLinkageData( 3 ).NodeNums( 1 ) = 1;
-	AirflowNetworkLinkageData( 1 ).NodeNums( 2 ) = 3;
-	AirflowNetworkLinkageData( 2 ).NodeNums( 2 ) = 4;
-	AirflowNetworkLinkageData( 3 ).NodeNums( 2 ) = 2;
-	AirflowNetworkLinkageData( 4 ).NodeNums( 1 ) = 2;
-	AirflowNetworkLinkageData( 5 ).NodeNums( 1 ) = 2;
-	AirflowNetworkLinkageData( 4 ).NodeNums( 2 ) = 5;
-	AirflowNetworkLinkageData( 5 ).NodeNums( 2 ) = 6;
+	AirflowNetworkLinkageData( 1 ).nodeNums[ 0 ] = 1;
+	AirflowNetworkLinkageData( 2 ).nodeNums[ 0 ] = 1;
+	AirflowNetworkLinkageData( 3 ).nodeNums[ 0 ] = 1;
+	AirflowNetworkLinkageData( 1 ).nodeNums[ 1 ] = 3;
+	AirflowNetworkLinkageData( 2 ).nodeNums[ 1 ] = 4;
+	AirflowNetworkLinkageData( 3 ).nodeNums[ 1 ] = 2;
+	AirflowNetworkLinkageData( 4 ).nodeNums[ 0 ] = 2;
+	AirflowNetworkLinkageData( 5 ).nodeNums[ 0 ] = 2;
+	AirflowNetworkLinkageData( 4 ).nodeNums[ 1 ] = 5;
+	AirflowNetworkLinkageData( 5 ).nodeNums[ 1 ] = 6;
 	AirflowNetworkNodeSimu( 1 ).TZ = 25.0;
 	AirflowNetworkNodeSimu( 1 ).WZ = 0.001;
 	AirflowNetworkNodeSimu( 2 ).TZ = 20.0;

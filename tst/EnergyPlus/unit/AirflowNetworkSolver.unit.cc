@@ -71,8 +71,8 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_HorizontalOpening )
 	int n;
 	int m;
 	int NF;
-	Array1D< Real64 > F;
-	Array1D< Real64 > DF;
+	std::array< Real64, 2 > F{ { 0.0, 0.0 } };
+	std::array< Real64, 2 > DF{ { 0.0, 0.0 } };
 
 	n = 1;
 	m = 2;
@@ -95,28 +95,23 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_HorizontalOpening )
 	MultizoneCompHorOpeningData( 1 ).Slope = 90.0;
 	MultizoneCompHorOpeningData( 1 ).DischCoeff = 0.2;
 
-	F.allocate( 2 );
-	DF.allocate( 2 );
-
 	AirflowNetworkLinkageData.allocate( i );
-	AirflowNetworkLinkageData( i ).NodeHeights( 1 ) = 4.0;
-	AirflowNetworkLinkageData( i ).NodeHeights( 2 ) = 2.0;
+	AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] = 4.0;
+	AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] = 2.0;
 
 	AFEHOP( 1, 1, 0.05, 1, 1, 2, F, DF, NF );
-	EXPECT_NEAR( 3.47863, F( 1 ), 0.00001 );
-	EXPECT_NEAR( 34.7863, DF( 1 ), 0.0001 );
-	EXPECT_NEAR( 2.96657, F( 2 ), 0.00001 );
-	EXPECT_EQ( 0.0, DF( 2 ) );
+	EXPECT_NEAR( 3.47863, F[ 0 ], 0.00001 );
+	EXPECT_NEAR( 34.7863, DF[ 0 ], 0.0001 );
+	EXPECT_NEAR( 2.96657, F[ 1 ], 0.00001 );
+	EXPECT_EQ( 0.0, DF[ 1 ] );
 
 	AFEHOP( 1, 1, -0.05, 1, 1, 2, F, DF, NF );
-	EXPECT_NEAR( -3.42065, F( 1 ), 0.00001 );
-	EXPECT_NEAR( 34.20649, DF( 1 ), 0.0001 );
-	EXPECT_NEAR( 2.96657, F( 2 ), 0.00001 );
-	EXPECT_EQ( 0.0, DF( 2 ) );
+	EXPECT_NEAR( -3.42065, F[ 0 ], 0.00001 );
+	EXPECT_NEAR( 34.20649, DF[ 0 ], 0.0001 );
+	EXPECT_NEAR( 2.96657, F[ 1 ], 0.00001 );
+	EXPECT_EQ( 0.0, DF[ 1 ] );
 
 	AirflowNetworkLinkageData.deallocate();
-	DF.deallocate();
-	F.deallocate();
 	RHOZ.deallocate();
 	MultizoneCompHorOpeningData.deallocate();
 	MultizoneSurfaceData.deallocate();
@@ -125,16 +120,10 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_HorizontalOpening )
 
 TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_Crack )
 {
-	int n;
-	int m;
 	int NF;
-	//std::array< Real64, 2 > F{ { 0.0, 0.0 } };
-	//std::array< Real64, 2 > DF{ { 0.0, 0.0 } };
-	Array1D< Real64 > F{ { 0.0, 0.0 } };
-  Array1D< Real64 > DF{ { 0.0, 0.0 } };
+	std::array< Real64, 2 > F{ { 0.0, 0.0 } };
+	std::array< Real64, 2 > DF{ { 0.0, 0.0 } };
 
-	n = 1;
-	m = 2;
 
 	Real64 tz1 = 20.0;
 
@@ -171,8 +160,8 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_Crack )
 	DataAirflowNetwork::MultizoneSurfaceCrackData( 1 ).StandardW = 0.0;
 
 	DataAirflowNetwork::AirflowNetworkLinkageData.allocate( 1 );
-	DataAirflowNetwork::AirflowNetworkLinkageData( 1 ).NodeHeights( 1 ) = 1.0;
-	DataAirflowNetwork::AirflowNetworkLinkageData( 1 ).NodeHeights( 2 ) = 1.0;
+	DataAirflowNetwork::AirflowNetworkLinkageData( 1 ).nodeHeights[ 0 ] = 1.0;
+	DataAirflowNetwork::AirflowNetworkLinkageData( 1 ).nodeHeights[ 1 ] = 1.0;
 
 	AirflowNetworkSolver::AFESCR( 1, 0, 100.0, 1, 1, 2, F, DF, NF );
 	EXPECT_EQ( 1, NF );
@@ -198,9 +187,9 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_Crack )
 	AirflowNetworkSolver::AFESCR(1, 1, -100.0, 1, 1, 2, F, DF, NF );
 	EXPECT_EQ( 1, NF);
 	//EXPECT_NEAR( 0.06*sqrt( density )/viscosity, F[ 0 ], 1.0e-12);
-	EXPECT_NEAR( 0.0006*sqrt(density) / viscosity, DF[0], 1.0e-12 );
-	EXPECT_EQ( 0.0, F[1] );
-	EXPECT_EQ( 0.0, DF[1] );
+	EXPECT_NEAR( 0.0006*sqrt( density ) / viscosity, DF[ 0 ], 1.0e-12 );
+	EXPECT_EQ( 0.0, F[ 1 ] );
+	EXPECT_EQ( 0.0, DF[ 1 ] );
 
 	Real64 tz2 = 22.0;
 	Real64 density2 = Psychrometrics::PsyRhoAirFnPbTdbW( 101325.0, tz2, 0.0 );

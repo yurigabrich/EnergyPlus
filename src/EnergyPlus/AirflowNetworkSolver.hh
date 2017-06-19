@@ -49,7 +49,7 @@
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array1A.hh>
-#include <ObjexxFCL/Array2D.hh>
+//#include <ObjexxFCL/Array2D.hh>
 
 // EnergyPlus Headers
 #include <EnergyPlus.hh>
@@ -145,8 +145,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -158,8 +158,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -171,8 +171,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -184,8 +184,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -197,8 +197,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -210,8 +210,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -225,8 +225,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -240,8 +240,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -253,8 +253,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -266,8 +266,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -279,8 +279,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -292,8 +292,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -305,8 +305,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -318,8 +318,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -331,8 +331,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -344,8 +344,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -357,8 +357,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -370,8 +370,8 @@ namespace AirflowNetworkSolver {
 		int const i, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -383,8 +383,8 @@ namespace AirflowNetworkSolver {
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
@@ -412,7 +412,7 @@ namespace AirflowNetworkSolver {
 	void
 	FILSKY(
 		Array1A< Real64 > const X, // element array (row-wise sequence)
-		Array1A_int const LM, // location matrix
+		std::array< int, 2> const &LM, // location matrix
 		Array1A_int const IK, // pointer to the top of column/row "K"
 		Array1A< Real64 > AU, // the upper triangle of [A] before and after factoring
 		Array1A< Real64 > AD, // the main diagonal of [A] before and after factoring
@@ -443,8 +443,8 @@ namespace AirflowNetworkSolver {
 		int const IL, // Linkage number
 		int const n, // Node 1 number
 		int const M, // Node 2 number
-		Array1A< Real64 > F, // Airflow through the component [kg/s]
-		Array1A< Real64 > DF, // Partial derivative:  DF/DP
+		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
+		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
 	);
 
