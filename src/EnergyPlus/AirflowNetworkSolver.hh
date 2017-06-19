@@ -156,7 +156,7 @@ namespace AirflowNetworkSolver {
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
-		int const n, // Node 1 number
+		int const N, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
 		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP

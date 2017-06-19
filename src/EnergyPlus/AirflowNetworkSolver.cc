@@ -858,15 +858,15 @@ namespace AirflowNetworkSolver {
 		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 
 		// I       - component number.
-		// n0      - number of node/zone 1.
-		// n1      - number of node/zone 2.
+		// N       - number of node/zone 1.
+		// M      - number of node/zone 2.
 		// F       - flows through the element (kg/s).
 		// DF      - partial derivatives:  DF/DP.
 		// NF      - number of flows, 1 or 2.
 		int i;
 		int j;
-		int n1;
-		int n0;
+		int M;
+		int N;
 		int FLAG;
 		int NF;
 #ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
@@ -888,70 +888,70 @@ namespace AirflowNetworkSolver {
 		static gio::Fmt Format_901( "(A5,3I3,4E16.7)" );
 
 		// FLOW:
-		for ( n0 = 1; n0 <= NetworkNumOfNodes; ++n0 ) {
-			SUMF( n0 ) = 0.0;
-			SUMAF( n0 ) = 0.0;
-			if ( AirflowNetworkNodeData( n0 ).NodeTypeNum == 1 ) {
-				AD( n0 ) = 1.0;
+		for ( N = 1; N <= NetworkNumOfNodes; ++N ) {
+			SUMF( N ) = 0.0;
+			SUMAF( N ) = 0.0;
+			if ( AirflowNetworkNodeData( N ).NodeTypeNum == 1 ) {
+				AD( N ) = 1.0;
 			} else {
-				AD( n0 ) = 0.0;
+				AD( N ) = 0.0;
 			}
 		}
-		for ( n0 = 1; n0 <= NNZE; ++n0 ) {
-			AU( n0 ) = 0.0;
+		for ( N = 1; N <= NNZE; ++N ) {
+			AU( N ) = 0.0;
 		}
 		//                              Set up the Jacobian matrix.
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			n0 = AirflowNetworkLinkageData( i ).nodeNums[ 0 ];
-			n1 = AirflowNetworkLinkageData( i ).nodeNums[ 1 ];
+			N = AirflowNetworkLinkageData( i ).nodeNums[ 0 ];
+			M = AirflowNetworkLinkageData( i ).nodeNums[ 1 ];
 			//!!! Check array of DP. DpL is used for multizone air flow calculation only
 			//!!! and is not for forced air calculation
 			if ( i > NumOfLinksMultiZone ) {
-				DP = PZ( n0 ) - PZ( n1 ) + PS( i ) + PW( i );
+				DP = PZ( N ) - PZ( M ) + PS( i ) + PW( i );
 			} else {
-				DP = PZ( n0 ) - PZ( n1 ) + DpL( i, 1 ) + PW( i );
+				DP = PZ( N ) - PZ( M ) + DpL( i, 1 ) + PW( i );
 			}
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << "PS:" << i << n0 << n1 << PS( i ) << PW( i ) << AirflowNetworkLinkSimu( i ).DP;
+			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << "PS:" << i << N << M << PS( i ) << PW( i ) << AirflowNetworkLinkSimu( i ).DP;
 			j = AirflowNetworkLinkageData( i ).CompNum;
 			{ auto const SELECT_CASE_var( AirflowNetworkCompData( j ).CompTypeNum );
 			if ( SELECT_CASE_var == CompTypeNum_PLR ) { // Distribution system crack component
-				AFEPLR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEPLR( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DWC ) { // Distribution system duct component
-				AFEDWC( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEDWC( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_CVF ) { // Distribution system constant volume fan component
-				AFECFR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFECFR( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_FAN ) { // Distribution system detailed fan component
-				AFEFAN( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEFAN( j, LFLAG, DP, i, N, M, F, DF, NF );
 				//           Case (CompTypeNum_CPF) ! not currently used in EnergyPlus code -- left for compatibility with AirNet
 				//              CALL AFECPF(J,LFLAG,DP,I,N,M,F,DF,NF)
 			} else if ( SELECT_CASE_var == CompTypeNum_DMP ) { // Distribution system damper component
-				AFEDMP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEDMP( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_ELR ) { // Distribution system effective leakage ratio component
-				AFEELR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEELR( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_CPD ) { // Distribution system constant pressure drop component
-				AFECPD( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFECPD( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DOP ) { // Detailed opening
-				AFEDOP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEDOP( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SOP ) { // Simple opening
-				AFESOP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFESOP( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SCR ) { // Surface crack component
-				AFESCR( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFESCR( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SEL ) { // Surface effective leakage ratio component
-				AFESEL( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFESEL( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_COI ) { // Distribution system coil component
-				AFECOI( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFECOI( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_TMU ) { // Distribution system terminal unit component
-				AFETMU( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFETMU( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_EXF ) { // Exhaust fan component
-				AFEEXF( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEEXF( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_HEX ) { // Distribution system heat exchanger component
-				AFEHEX( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEHEX( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_HOP ) { // Horizontal opening
-				AFEHOP( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEHOP( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_OAF ) { // OA supply fan
-				AFEOAF( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEOAF( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else if ( SELECT_CASE_var == CompTypeNum_REL ) { // Relief fan
-				AFEREL( j, LFLAG, DP, i, n0, n1, F, DF, NF );
+				AFEREL( j, LFLAG, DP, i, N, M, F, DF, NF );
 			} else {
 				continue;
 			}}
@@ -961,40 +961,40 @@ namespace AirflowNetworkSolver {
 			if ( AirflowNetworkCompData( j ).CompTypeNum == CompTypeNum_DOP ) {
 				AFLOW2( i ) = F[ 1 ];
 			}
-			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRi:" << i << n0 << n1 << AirflowNetworkLinkSimu( i ).DP << F[ 0 ] << DF[ 0 ];
+			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRi:" << i << N << M << AirflowNetworkLinkSimu( i ).DP << F[ 0 ] << DF[ 0 ];
 			FLAG = 1;
-			if ( AirflowNetworkNodeData( n0 ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( N ).NodeTypeNum == 0 ) {
 				++FLAG;
 				X( 1 ) = DF[ 0 ];
 				X( 2 ) = -DF[ 0 ];
-				SUMF( n0 ) += F[ 0 ];
-				SUMAF( n0 ) += std::abs( F[ 0 ] );
+				SUMF( N ) += F[ 0 ];
+				SUMAF( N ) += std::abs( F[ 0 ] );
 			}
-			if ( AirflowNetworkNodeData( n1 ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( M ).NodeTypeNum == 0 ) {
 				FLAG += 2;
 				X( 4 ) = DF[ 0 ];
 				X( 3 ) = -DF[ 0 ];
-				SUMF( n1 ) -= F[ 0 ];
-				SUMAF( n1 ) += std::abs( F[ 0 ] );
+				SUMF( M ) -= F[ 0 ];
+				SUMAF( M ) += std::abs( F[ 0 ] );
 			}
 			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).nodeNums, IK, AU, AD, FLAG );
 			if ( NF == 1 ) continue;
 			AFLOW2( i ) = F[ 1 ];
-			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRj:" << i << n0 << n1 << AirflowNetworkLinkSimu( i ).DP << F[ 1 ] << DF[ 1 ];
+			if ( LIST >= 3 ) gio::write( Unit21, Format_901 ) << " NRj:" << i << N << M << AirflowNetworkLinkSimu( i ).DP << F[ 1 ] << DF[ 1 ];
 			FLAG = 1;
-			if ( AirflowNetworkNodeData( n0 ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( N ).NodeTypeNum == 0 ) {
 				++FLAG;
 				X( 1 ) = DF[ 1 ];
 				X( 2 ) = -DF[ 1 ];
-				SUMF( n0 ) += F[ 1 ];
-				SUMAF( n0 ) += std::abs( F[ 1 ] );
+				SUMF( N ) += F[ 1 ];
+				SUMAF( N ) += std::abs( F[ 1 ] );
 			}
-			if ( AirflowNetworkNodeData( n1 ).NodeTypeNum == 0 ) {
+			if ( AirflowNetworkNodeData( M ).NodeTypeNum == 0 ) {
 				FLAG += 2;
 				X( 4 ) = DF[ 1 ];
 				X( 3 ) = -DF[ 1 ];
-				SUMF( n1 ) -= F[ 1 ];
-				SUMAF( n1 ) += std::abs( F[ 1 ] );
+				SUMF( M ) -= F[ 1 ];
+				SUMAF( M ) += std::abs( F[ 1 ] );
 			}
 			if ( FLAG != 1 ) FILSKY( X, AirflowNetworkLinkageData( i ).nodeNums, IK, AU, AD, FLAG );
 		}
@@ -1005,19 +1005,19 @@ namespace AirflowNetworkSolver {
 		// If they are, let's remove them from the matrix -- but only for the purposes of doing the solve.
 		// They way I do this is building a separate IK array (newIK) that simply changes the column heights.
 		// So the affected SOLVEs would use this newIK and nothing else changes.
-		for ( n0 = 1; n0 <= NetworkNumOfNodes + 1; ++n0 ) {
-			newIK( n0 ) = IK( n0 );
+		for ( N = 1; N <= NetworkNumOfNodes + 1; ++N ) {
+			newIK( N ) = IK( N );
 			//print*, " NetworkNumOfNodes  n=", n, " IK(n)=", IK(n)
 		}
 
 		newsum = IK( 2 ) - IK( 1 ); // always 0?
 
 		JHK = 1;
-		for ( n0 = 2; n0 <= NetworkNumOfNodes; ++n0 ) {
-			JHK1 = IK( n0 + 1 ); // starts at IK(3)-IK(2)
+		for ( N = 2; N <= NetworkNumOfNodes; ++N ) {
+			JHK1 = IK( N + 1 ); // starts at IK(3)-IK(2)
 			LHK = JHK1 - JHK;
 			if ( LHK <= 0 ) {
-				newIK( n0 + 1 ) = newIK( n0 );
+				newIK( N + 1 ) = newIK( N );
 				continue;
 			}
 			//write(*,'(4(a,i8))') "n=", n, " ik=", ik(n), " JHK=", JHK, " LHK=", LHK
@@ -1040,7 +1040,7 @@ namespace AirflowNetworkSolver {
 				//   write(*, '(2(a,i8),a, f15.3)') "  n=", n, " i=", i, " AU(JHK+i)=", AU(JHK+i)
 				//enddo
 			}
-			newIK( n0 + 1 ) = newIK( n0 ) + newh;
+			newIK( N + 1 ) = newIK( N ) + newh;
 			newsum += newh;
 
 			//do i = LHK-1,0, -1
@@ -1057,13 +1057,13 @@ namespace AirflowNetworkSolver {
 
 		// Now fill newAU from AU, using newIK
 		thisIK = 1;
-		for ( n0 = 2; n0 <= NetworkNumOfNodes; ++n0 ) {
-			thisIK = newIK( n0 );
-			ispan = newIK( n0 + 1 ) - thisIK;
+		for ( N = 2; N <= NetworkNumOfNodes; ++N ) {
+			thisIK = newIK( N );
+			ispan = newIK( N + 1 ) - thisIK;
 
 			if ( ispan <= 0 ) continue;
 			for ( i = 0; i <= ispan - 1; ++i ) {
-				newAU( thisIK + i ) = AU( IK( n0 ) + i );
+				newAU( thisIK + i ) = AU( IK( N ) + i );
 			}
 
 		}
@@ -1197,8 +1197,8 @@ namespace AirflowNetworkSolver {
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
-		int const n1, // Node 1 number
-		int const n2, // Node 2 number
+		int const N, // Node 1 number
+		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
 		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
 		int & NF // Number of flows, either 1 or 2
@@ -1253,17 +1253,17 @@ namespace AirflowNetworkSolver {
 
 		// Handle positive/negative pressure difference
 		Real64 sign( 1.0 );
-		Real64 dz( RHOZ( n1 ) );
-		Real64 sqrtdz( SQRTDZ( n1 ) );
-		Real64 viscz( VISCZ( n1 ) );
-		Real64 tz( TZ( n1 ) );
+		Real64 dz( RHOZ( N ) );
+		Real64 sqrtdz( SQRTDZ( N ) );
+		Real64 viscz( VISCZ( N ) );
+		Real64 tz( TZ( N ) );
 		Real64 absdeltap( PDROP );
 		if ( PDROP < 0.0 ) {
 			sign = -1.0;
-			dz = RHOZ( n2 );
-			sqrtdz = SQRTDZ( n2 );
-			viscz = VISCZ( n2 );
-			tz = TZ( n2 );
+			dz = RHOZ( M );
+			sqrtdz = SQRTDZ( M );
+			viscz = VISCZ( M );
+			tz = TZ( M );
 			absdeltap = -PDROP;
 		}
 
@@ -1281,8 +1281,8 @@ namespace AirflowNetworkSolver {
 		//VisczNorm = Psychrometrics::airDynamicVisc( DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).StandardT );
 
 		expn = DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).FlowExpo;
-		VisAve = 0.5 * ( VISCZ( n1 ) + VISCZ( n2 ) );
-		Tave = 0.5 * ( TZ( n1 ) + TZ( n2 ) );
+		VisAve = 0.5 * ( VISCZ( N ) + VISCZ( M ) );
+		Tave = 0.5 * ( TZ( N ) + TZ( M ) );
 
 		coef = DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).FlowCoef * Corr;
 
