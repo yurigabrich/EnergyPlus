@@ -55,7 +55,7 @@
 
 namespace EnergyPlus {
 
-namespace DataErrorTracking {
+namespace ErrorTracking {
 
 	// Data
 	// -only module should be available to other modules and routines.
@@ -154,12 +154,33 @@ namespace DataErrorTracking {
 	// Object Data
 	extern Array1D< RecurringErrorData > RecurringErrors;
 
+	void debug(std::string &msg); // Replace with macro?
+
+	void info(std::string &msg);
+
+	void warning(std::string &primarymsg);
+	void warning(std::string &primarymsg, std::string &timestampmsg);
+	void warning(std::string &primarymsg, std::vector< std::string > &additionalmsgs);
+	void waarning(std::string &primary, std::vector< std::string > &additionalmsgs, std::string &timestampmsg);
+
+	void error( std::string &message );
+	void error( std::string &primarymsg, std::string &timestampmsg );
+	void error( std::string &message, std::vector< std::string > &additionalmsgs );
+	void error( std::string &primary, std::vector< std::string > &additionalmsgs, std::string &timestampmsg );
+
+	void fatal(std::string &msg);
+	void fatal(std::string &primarymsg, std::string &timestampmsg);
+	void fatal(std::string &primarymsg, std::vector< std::string > &additionalmsgs);
+	void fatal(std::string &primary, std::vector< std::string > &additionalmsgs, std::string &timestampmsg);
+
+	extern bool outputErrorHeader;
+
 	// Clears the global data in DataErrorTracking
 	// Needed for unit tests, should not normally be called.
 	void
 	clear_state();
 
-} // DataErrorTracking
+} // ErrorTracking
 
 } // EnergyPlus
 

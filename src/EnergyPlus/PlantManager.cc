@@ -59,7 +59,7 @@
 #include <DataBranchAirLoopPlant.hh>
 #include <DataConvergParams.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataHVACGlobals.hh>
 #include <DataIPShortCuts.hh>
 #include <DataLoopNode.hh>
@@ -2802,7 +2802,7 @@ namespace PlantManager {
 		// USE STATEMENTS:
 		// na
 		// Using/Aliasing
-		using DataErrorTracking::AskForPlantCheckOnAbort;
+		using ErrorTracking::AskForPlantCheckOnAbort;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:

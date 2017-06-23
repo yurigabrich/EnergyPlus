@@ -59,7 +59,7 @@
 #include <BranchNodeConnections.hh>
 #include <CurveManager.hh>
 #include <DataBranchAirLoopPlant.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataHVACGlobals.hh>
 #include <DataPrecisionGlobals.hh>
 #include <DataSizing.hh>
@@ -2821,7 +2821,7 @@ namespace BranchInputManager {
 
 		// Using/Aliasing
 		using General::RoundSigDigits;
-		using DataErrorTracking::TotalSevereErrors;
+		using ErrorTracking::TotalSevereErrors;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:

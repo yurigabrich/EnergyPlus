@@ -99,8 +99,6 @@ SET( SRC
   DataDefineEquip.hh
   DataEnvironment.cc
   DataEnvironment.hh
-  DataErrorTracking.cc
-  DataErrorTracking.hh
   DataGenerators.cc
   DataGenerators.hh
   DataGlobalConstants.cc
@@ -203,6 +201,8 @@ SET( SRC
   ElectricPowerServiceManager.hh
   ElectricPowerServiceManager.cc
   EnergyPlus.hh
+  ErrorTracking.cc
+  ErrorTracking.hh
   EvaporativeCoolers.cc
   EvaporativeCoolers.hh
   EvaporativeFluidCoolers.cc

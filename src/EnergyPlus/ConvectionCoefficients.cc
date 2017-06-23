@@ -61,7 +61,7 @@
 #include <ConvectionCoefficients.hh>
 #include <CurveManager.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataHeatBalance.hh>
 #include <DataHeatBalFanSys.hh>
 #include <DataHeatBalSurface.hh>
@@ -1136,7 +1136,7 @@ namespace ConvectionCoefficients {
 		using ScheduleManager::CheckScheduleValueMinMax;
 		using CurveManager::GetCurveIndex;
 		using CurveManager::GetCurveType;
-		using DataErrorTracking::TotalSevereErrors;
+		using ErrorTracking::TotalSevereErrors;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:

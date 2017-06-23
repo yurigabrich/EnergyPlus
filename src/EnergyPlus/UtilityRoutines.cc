@@ -68,7 +68,7 @@ extern "C" {
 #include <BranchNodeConnections.hh>
 #include <CommandLineInterface.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataPrecisionGlobals.hh>
 #include <DataReportingFlags.hh>
@@ -120,7 +120,7 @@ AbortEnergyPlus()
 	using namespace DataPrecisionGlobals;
 	using namespace DataSystemVariables;
 	using namespace DataTimings;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using General::RoundSigDigits;
 	using NodeInputManager::SetupNodeVarsForReporting;
 	using NodeInputManager::CheckMarkedNodes;
@@ -398,7 +398,7 @@ EndEnergyPlus()
 	using namespace DataPrecisionGlobals;
 	using namespace DataSystemVariables;
 	using namespace DataTimings;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using General::RoundSigDigits;
 	using SolarShading::ReportSurfaceErrors;
 	using ExternalInterface::NumExternalInterfaces;
@@ -837,7 +837,7 @@ ShowFatalError(
 	// na
 
 	// Using/Aliasing
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using General::RoundSigDigits;
 
 	// Locals
@@ -893,7 +893,7 @@ ShowSevereError(
 
 	// Using/Aliasing
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using DataGlobals::WarmupFlag;
 	using DataGlobals::DoingSizing;
 	using DataGlobals::KickOffSimulation;
@@ -958,7 +958,7 @@ ShowSevereMessage(
 
 	// Using/Aliasing
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1184,7 +1184,7 @@ ShowWarningError(
 
 	// Using/Aliasing
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using DataGlobals::WarmupFlag;
 	using DataGlobals::DoingSizing;
 	using DataGlobals::KickOffSimulation;
@@ -1246,7 +1246,7 @@ ShowWarningMessage(
 
 	// Using/Aliasing
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1306,7 +1306,7 @@ ShowRecurringSevereErrorAtEnd(
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1366,7 +1366,7 @@ ShowRecurringWarningErrorAtEnd(
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1426,7 +1426,7 @@ ShowRecurringContinueErrorAtEnd(
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1485,7 +1485,7 @@ StoreRecurringErrorMessage(
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
 	using namespace DataStringGlobals;
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using DataGlobals::WarmupFlag;
 	using DataGlobals::DoingSizing;
 
@@ -1648,7 +1648,7 @@ SummarizeErrors()
 	// na
 
 	// Using/Aliasing
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1713,7 +1713,7 @@ ShowRecurringErrors()
 	// na
 
 	// Using/Aliasing
-	using namespace DataErrorTracking;
+	using namespace ErrorTracking;
 	using General::RoundSigDigits;
 	using General::strip_trailing_zeros;
 

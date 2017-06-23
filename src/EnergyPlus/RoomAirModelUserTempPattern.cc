@@ -54,7 +54,7 @@
 // EnergyPlus Headers
 #include <RoomAirModelUserTempPattern.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataHeatBalFanSys.hh>
@@ -862,8 +862,8 @@ namespace RoomAirModelUserTempPattern {
 		using DataHeatBalance::Zone;
 		using DataVectorTypes::Vector;
 		using General::RoundSigDigits;
-		using DataErrorTracking::TotalRoomAirPatternTooLow;
-		using DataErrorTracking::TotalRoomAirPatternTooHigh;
+		using ErrorTracking::TotalRoomAirPatternTooLow;
+		using ErrorTracking::TotalRoomAirPatternTooHigh;
 
 		// Return value
 		Real64 FigureNDheightInZone;

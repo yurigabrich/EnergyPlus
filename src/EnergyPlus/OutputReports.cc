@@ -58,7 +58,7 @@
 #include <CommandLineInterface.hh>
 #include <OutputReports.hh>
 #include <DataDaylighting.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataPrecisionGlobals.hh>
@@ -98,7 +98,7 @@ ReportSurfaces()
 
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
-	using DataErrorTracking::AskForSurfacesReport;
+	using ErrorTracking::AskForSurfacesReport;
 	using namespace DataSurfaceColors;
 	using General::ScanForReports;
 

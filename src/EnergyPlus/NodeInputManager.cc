@@ -57,7 +57,7 @@
 #include <BranchNodeConnections.hh>
 #include <DataContaminantBalance.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataPrecisionGlobals.hh>
 #include <FluidProperties.hh>
 #include <General.hh>
@@ -392,7 +392,7 @@ namespace NodeInputManager {
 		// na
 
 		// Using/Aliasing
-		using DataErrorTracking::AbortProcessing; // used here to determine if this routine called during fatal error processing
+		using ErrorTracking::AbortProcessing; // used here to determine if this routine called during fatal error processing
 		using DataContaminantBalance::Contaminant;
 
 		// Locals

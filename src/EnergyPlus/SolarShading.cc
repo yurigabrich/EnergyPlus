@@ -62,7 +62,7 @@
 #include <DataDaylighting.hh>
 #include <DataDaylightingDevices.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataStringGlobals.hh>
 #include <DataHeatBalance.hh>
@@ -3794,7 +3794,7 @@ namespace SolarShading {
 		// BLAST/IBLAST code, original author George Walton
 
 		// Using/Aliasing
-		using namespace DataErrorTracking;
+		using namespace ErrorTracking;
 		using General::TrimSigDigits;
 
 		// Locals
@@ -9428,7 +9428,7 @@ namespace SolarShading {
 		// na
 
 		// Using/Aliasing
-		using namespace DataErrorTracking; // for error tracking
+		using namespace ErrorTracking; // for error tracking
 		using General::RoundSigDigits;
 
 		// Locals

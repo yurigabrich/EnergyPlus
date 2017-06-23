@@ -45,12 +45,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // EnergyPlus Headers
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataPrecisionGlobals.hh>
+#include "DataGlobals.hh"
+#include "DataStringGlobals.hh"
+#include "SQLiteProcedures.hh"
 
 namespace EnergyPlus {
 
-namespace DataErrorTracking {
+namespace ErrorTracking {
 
 	// MODULE INFORMATION:
 	//       AUTHOR         Linda K. Lawrie
@@ -133,9 +136,160 @@ namespace DataErrorTracking {
 	bool AskForPlantCheckOnAbort( false ); // flag used to tell if plant structure can be checked
 	bool ExitDuringSimulations( false ); // flag used to tell if program is in simulation mode when fatal occurs
 	std::string LastSevereError;
+	bool outputErrorHeader(true);
 
 	// Object Data
 	Array1D< RecurringErrorData > RecurringErrors;
+
+	static void
+	logMessage(
+		std::string const & ErrorMessage
+	)
+	{
+
+		// SUBROUTINE INFORMATION:
+		//       AUTHOR         Linda K. Lawrie
+		//       DATE WRITTEN   December 1997
+		//       MODIFIED       na
+		//       RE-ENGINEERED  Jason DeGraw, 6/20/2017
+
+		// PURPOSE OF THIS SUBROUTINE:
+		// This subroutine displays the error messages on the "standard error output".
+		// This routine is internal to this file only.
+
+		// METHODOLOGY EMPLOYED:
+		// 
+
+		// REFERENCES:
+		// na
+
+		// Using/Aliasing
+		using DataStringGlobals::VerString;
+		using DataStringGlobals::IDDVerString;
+		using DataGlobals::DoingInputProcessing;
+		using DataGlobals::CacheIPErrorFile;
+		using DataGlobals::err_stream;
+
+		if ( outputErrorHeader && err_stream ) {
+			*err_stream << "Program Version," + VerString + ',' + IDDVerString + DataStringGlobals::NL;
+			outputErrorHeader = false;
+		}
+
+		if ( ! DoingInputProcessing ) {
+			if ( err_stream ) *err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
+		} else {
+			//gio::write( CacheIPErrorFile, fmtA ) << ErrorMessage; // Remove after input refactor
+		}
+
+	}
+
+	void
+	error(
+	std::string const & message
+	)
+	{
+
+		// SUBROUTINE INFORMATION:
+		//       AUTHOR         Linda K. Lawrie
+		//       DATE WRITTEN   September 1997
+		//       MODIFIED       na
+		//       RE-ENGINEERED  Jason DeGraw, 6/20/2017
+
+		// PURPOSE OF THIS SUBROUTINE:
+		// This subroutine puts ErrorMessage with a Severe designation on
+		// designated output files.
+
+		// METHODOLOGY EMPLOYED:
+		// Calls ShowErrorMessage utility routine.
+
+		// REFERENCES:
+		// na
+
+		// Using/Aliasing
+		using namespace DataStringGlobals;
+		using DataGlobals::WarmupFlag;
+		using DataGlobals::DoingSizing;
+		using DataGlobals::KickOffSimulation;
+
+		// Locals
+		// SUBROUTINE ARGUMENT DEFINITIONS:
+
+		// SUBROUTINE PARAMETER DEFINITIONS:
+		// na
+
+		// INTERFACE BLOCK SPECIFICATIONS
+
+		// DERIVED TYPE DEFINITIONS
+		// na
+
+		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		int Loop;
+
+		for ( Loop = 1; Loop <= SearchCounts; ++Loop ) {
+			if ( has( message, MessageSearch( Loop ) ) ) ++MatchCounts( Loop );
+		}
+
+		++TotalSevereErrors;
+		if ( DataGlobals::WarmupFlag && ! DataGlobals::DoingSizing && ! DataGlobals::KickOffSimulation && ! AbortProcessing ) ++TotalSevereErrorsDuringWarmup;
+		if ( DataGlobals::DoingSizing ) ++TotalSevereErrorsDuringSizing;
+		logMessage( " ** Severe  ** " + message );
+		LastSevereError = message;
+
+		//  This probably needs to be moved into the utility routine
+		if ( sqlite ) {
+			sqlite->createSQLiteErrorRecord( 1, 1, message, 1 );
+		}
+
+	}
+
+	void
+	error(
+		std::string &message, 
+		std::vector< std::string > &additionalmsgs
+	)
+	{
+		// SUBROUTINE INFORMATION:
+		//       AUTHOR         Linda K. Lawrie
+		//       DATE WRITTEN   September 1997
+		//       MODIFIED       na
+		//       RE-ENGINEERED  Jason DeGraw, 6/20/2017
+
+		// PURPOSE OF THIS SUBROUTINE:
+		// This subroutine puts ErrorMessage with a Severe designation on
+		// designated output files.
+
+		// METHODOLOGY EMPLOYED:
+		// Calls ShowErrorMessage utility routine.
+
+		int Loop;
+
+		for ( Loop = 1; Loop <= SearchCounts; ++Loop ) {
+			if ( has( message, MessageSearch( Loop ) ) ) ++MatchCounts( Loop );
+		}
+
+		++TotalSevereErrors;
+		if ( DataGlobals::WarmupFlag && ! DataGlobals::DoingSizing && ! DataGlobals::KickOffSimulation && ! AbortProcessing ) {
+			++TotalSevereErrorsDuringWarmup;
+		}
+		if ( DataGlobals::DoingSizing ) {
+			++TotalSevereErrorsDuringSizing;
+		}
+		logMessage( " ** Severe  ** " + message );
+		LastSevereError = message;
+
+		//  This probably needs to be moved into the utility routine
+		if (sqlite) {
+			sqlite->createSQLiteErrorRecord(1, 1, message, 1);
+		}
+		
+		for ( std::string &mesg : additionalmsgs ) {
+			logMessage( " **   ~~~   ** " + message );
+			if ( sqlite ) {
+				sqlite->updateSQLiteErrorRecord( message );
+			}
+		}
+
+	}
 
 	// Clears the global data in DataErrorTracking
 	// Needed for unit tests, should not normally be called.
@@ -163,6 +317,6 @@ namespace DataErrorTracking {
 		ExitDuringSimulations = false; // flag used to tell if program is in simulation mode when fatal occurs
 	}
 
-} // DataErrorTracking
+} // ErrorTracking
 
 } // EnergyPlus

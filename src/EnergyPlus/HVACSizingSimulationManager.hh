@@ -55,7 +55,6 @@
 
 // EnergyPlus Headers
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataPlant.hh>
 #include <DataReportingFlags.hh>

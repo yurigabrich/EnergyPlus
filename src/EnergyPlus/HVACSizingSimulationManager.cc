@@ -53,7 +53,7 @@
 // EnergyPlus Headers
 #include <HVACSizingSimulationManager.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataPlant.hh>
 #include <DataReportingFlags.hh>
@@ -241,7 +241,7 @@ namespace EnergyPlus {
 		using PlantPipingSystemsManager::SimulateGroundDomains;
 		using ExteriorEnergyUse::ManageExteriorEnergyUse;
 		using DataSystemVariables::ReportDuringHVACSizingSimulation;
-		using DataErrorTracking::ExitDuringSimulations;
+		using ErrorTracking::ExitDuringSimulations;
 
 		using namespace WeatherManager;
 		using namespace DataGlobals;

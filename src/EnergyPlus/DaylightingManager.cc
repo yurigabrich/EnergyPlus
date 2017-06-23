@@ -68,7 +68,7 @@
 #include <DataDaylighting.hh>
 #include <DataDaylightingDevices.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataIPShortCuts.hh>
@@ -9308,7 +9308,7 @@ Label903: ;
 		using DataStringGlobals::CharComma;
 		using DataStringGlobals::CharSpace;
 		using General::TrimSigDigits;
-		using DataErrorTracking::AbortProcessing;
+		using ErrorTracking::AbortProcessing;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:

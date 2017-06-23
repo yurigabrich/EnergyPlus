@@ -51,7 +51,7 @@
 // EnergyPlus Headers
 #include <CommandLineInterface.hh>
 #include <DataTimings.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataPrecisionGlobals.hh>
 #include <DataSystemVariables.hh>
 #include <General.hh>
@@ -414,7 +414,7 @@ namespace DataTimings {
 		// na
 
 		// Using/Aliasing
-		using DataErrorTracking::AbortProcessing;
+		using ErrorTracking::AbortProcessing;
 
 		// Return value
 		Real64 totalTimeUsed;
@@ -474,7 +474,7 @@ namespace DataTimings {
 		// na
 
 		// Using/Aliasing
-		using DataErrorTracking::AbortProcessing;
+		using ErrorTracking::AbortProcessing;
 
 		// Return value
 		Real64 averageTimeUsed;

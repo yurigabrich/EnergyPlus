@@ -73,7 +73,7 @@ extern "C" {
 #include <DataContaminantBalance.hh>
 #include <DataConvergParams.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobalConstants.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
@@ -248,8 +248,8 @@ namespace SimulationManager {
 		using OutputReportTabular::OpenOutputTabularFile;
 		using OutputReportTabular::CloseOutputTabularFile;
 		using OutputReportTabular::ResetTabularReports;
-		using DataErrorTracking::AskForConnectionsReport;
-		using DataErrorTracking::ExitDuringSimulations;
+		using ErrorTracking::AskForConnectionsReport;
+		using ErrorTracking::ExitDuringSimulations;
 		using OutputProcessor::SetupTimePointers;
 		using OutputProcessor::ReportForTabularReports;
 		using CostEstimateManager::SimCostEstimate;
@@ -1862,8 +1862,8 @@ namespace SimulationManager {
 		using namespace DataZoneEquipment;
 		using OutAirNodeManager::OutsideAirNodeList;
 		using OutAirNodeManager::NumOutsideAirNodes;
-		using DataErrorTracking::AbortProcessing; // used here to turn off Node Connection Error reporting
-		using DataErrorTracking::AskForConnectionsReport;
+		using ErrorTracking::AbortProcessing; // used here to turn off Node Connection Error reporting
+		using ErrorTracking::AskForConnectionsReport;
 		using DualDuct::ReportDualDuctConnections;
 		using DataGlobals::OutputFileBNDetails;
 

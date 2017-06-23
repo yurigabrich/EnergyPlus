@@ -63,7 +63,7 @@
 #include <DataContaminantBalance.hh>
 #include <DataConvergParams.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataHeatBalFanSys.hh>
@@ -1522,7 +1522,7 @@ namespace HVACManager {
 		using SimAirServingZones::ManageAirLoops;
 		using PlantManager::ManagePlantLoops;
 		using AirflowNetworkBalanceManager::ManageAirflowNetworkBalance;
-		using DataErrorTracking::AskForPlantCheckOnAbort;
+		using ErrorTracking::AskForPlantCheckOnAbort;
 		using PlantUtilities::SetAllFlowLocks;
 		using PlantUtilities::ResetAllPlantInterConnectFlags;
 		using DataPlant::FlowUnlocked;

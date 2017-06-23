@@ -60,7 +60,7 @@
 #include <CrossVentMgr.hh>
 #include <DataAirflowNetwork.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataHeatBalFanSys.hh>
@@ -336,9 +336,9 @@ namespace RoomAirModelManager {
 		using RoomAirModelUserTempPattern::FigureNDheightInZone;
 		using DataZoneEquipment::ZoneEquipConfig;
 		using DataZoneEquipment::EquipConfiguration;
-		using DataErrorTracking::TotalWarningErrors;
-		using DataErrorTracking::TotalRoomAirPatternTooLow;
-		using DataErrorTracking::TotalRoomAirPatternTooHigh;
+		using ErrorTracking::TotalWarningErrors;
+		using ErrorTracking::TotalRoomAirPatternTooLow;
+		using ErrorTracking::TotalRoomAirPatternTooHigh;
 		using General::RoundSigDigits;
 
 		// Locals

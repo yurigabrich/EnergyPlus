@@ -59,7 +59,7 @@
 // EnergyPlus Headers
 #include <SurfaceGeometry.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataHeatBalSurface.hh>
@@ -830,7 +830,7 @@ namespace SurfaceGeometry {
 		using namespace Vectors;
 		using ScheduleManager::GetScheduleMinValue;
 		using ScheduleManager::GetScheduleMaxValue;
-		using namespace DataErrorTracking;
+		using namespace ErrorTracking;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -4511,7 +4511,7 @@ namespace SurfaceGeometry {
 		using InputProcessor::FindItemInList;
 		using General::TrimSigDigits;
 		using General::RoundSigDigits;
-		using namespace DataErrorTracking;
+		using namespace ErrorTracking;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -6422,7 +6422,7 @@ namespace SurfaceGeometry {
 		// Using/Aliasing
 		using namespace Vectors;
 		using General::RoundSigDigits;
-		using namespace DataErrorTracking;
+		using namespace ErrorTracking;
 
 		// Locals
 		static gio::Fmt fmt3( "(A,I5,A,3(1X,F18.13))" );
@@ -10860,7 +10860,7 @@ namespace SurfaceGeometry {
 
 		// Using/Aliasing
 		using General::RoundSigDigits;
-		using namespace DataErrorTracking;
+		using namespace ErrorTracking;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
