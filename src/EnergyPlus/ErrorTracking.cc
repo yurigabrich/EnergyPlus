@@ -166,20 +166,23 @@ namespace ErrorTracking {
 		// Using/Aliasing
 		using DataStringGlobals::VerString;
 		using DataStringGlobals::IDDVerString;
-		using DataGlobals::DoingInputProcessing;
-		using DataGlobals::CacheIPErrorFile;
+		//using DataGlobals::DoingInputProcessing;
+		//using DataGlobals::CacheIPErrorFile;
 		using DataGlobals::err_stream;
 
-		if ( outputErrorHeader && err_stream ) {
-			*err_stream << "Program Version," + VerString + ',' + IDDVerString + DataStringGlobals::NL;
-			outputErrorHeader = false;
-		}
+		if ( err_stream ) {
+			if ( outputErrorHeader ) {
+				*err_stream << "Program Version," + VerString + ',' + IDDVerString + DataStringGlobals::NL;
+				outputErrorHeader = false;
+			}
+			*err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
+		} // Maybe add else to std::cerr?
 
-		if ( ! DoingInputProcessing ) {
-			if ( err_stream ) *err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
-		} else {
+		//if ( ! DoingInputProcessing ) {
+		//	if ( err_stream ) *err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
+		//} else {
 			//gio::write( CacheIPErrorFile, fmtA ) << ErrorMessage; // Remove after input refactor
-		}
+		//}
 
 	}
 
