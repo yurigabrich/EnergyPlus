@@ -283,9 +283,9 @@ namespace ErrorTracking {
 		}
 		
 		for ( std::string &mesg : additionalmsgs ) {
-			logMessage( " **   ~~~   ** " + message );
+			logMessage( " **   ~~~   ** " + mesg );
 			if ( sqlite ) {
-				sqlite->updateSQLiteErrorRecord( message );
+				sqlite->updateSQLiteErrorRecord( mesg );
 			}
 		}
 

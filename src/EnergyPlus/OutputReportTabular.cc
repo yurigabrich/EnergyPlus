@@ -68,7 +68,6 @@
 #include <DataCostEstimate.hh>
 #include <DataDefineEquip.hh>
 #include <DataEnvironment.hh>
-#include <DataErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataGlobalConstants.hh>
 #include <DataHeatBalance.hh>
