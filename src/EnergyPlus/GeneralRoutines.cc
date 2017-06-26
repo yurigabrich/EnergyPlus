@@ -271,6 +271,8 @@ ControlCompOutput(
 	// Object Data
 	static IntervalHalf ZoneInterHalf( 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, false, false, false, false );
 	static ZoneEquipControllerProps ZoneController( 0.0, 0.0, 0.0, 0.0, 0.0 );
+	
+	Real64 const HWBaseboardLowLoad = 0.001; // Below this limit the baseboard is being shut off so no need to iterate further
 
 	if ( ControlCompTypeNum != 0 ) {
 		SimCompNum = ControlCompTypeNum;
@@ -535,6 +537,7 @@ ControlCompOutput(
 			CalcHWBaseboard( CompNum, LoadMet );
 			// Calculate the control signal (the variable we are forcing to zero)
 			ZoneController.SensedValue = ( LoadMet - QZnReq ) / Denom;
+			if ( LoadMet <= HWBaseboardLowLoad ) ZoneController.SensedValue = 0.0;
 			break;
 
 		case 7: // 'ZONEHVAC:FOURPIPEFANCOIL'
