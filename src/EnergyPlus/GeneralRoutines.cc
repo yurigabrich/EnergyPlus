@@ -537,7 +537,7 @@ ControlCompOutput(
 			CalcHWBaseboard( CompNum, LoadMet );
 			// Calculate the control signal (the variable we are forcing to zero)
 			ZoneController.SensedValue = ( LoadMet - QZnReq ) / Denom;
-			if ( LoadMet <= HWBaseboardLowLoad ) ZoneController.SensedValue = 0.0;
+			if ( ( Iter > MaxIter / 2 ) && ( LoadMet <= HWBaseboardLowLoad ) ) ZoneController.SensedValue = 0.0;
 			break;
 
 		case 7: // 'ZONEHVAC:FOURPIPEFANCOIL'

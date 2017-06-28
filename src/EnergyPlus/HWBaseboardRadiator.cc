@@ -1139,7 +1139,7 @@ namespace HWBaseboardRadiator {
 		// SUBROUTINE PARAMETER DEFINITIONS:
 		Real64 const MinFrac( 0.0005 ); // Minimum fraction that delivers radiant heats to surfaces
 		static std::string const RoutineName( "CalcHWBaseboard" );
-		Real64 const HWBBLowFlowTol( 0.000000001 ); // minimum significant mass flow rate (kg/s) which translates to less than 1 gram per hour
+		Real64 const HWBBLowFlowTol( 0.00000027 ); // minimum significant mass flow rate (kg/s) which translates to less than 1 gram per hour
 
 		// INTERFACE BLOCK SPECIFICATIONS
 		// na

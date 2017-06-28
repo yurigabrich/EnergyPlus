@@ -192,6 +192,18 @@ TEST_F( EnergyPlusFixture, HWBaseboardRadiator_HWBaseboardWaterFlowResetTest ) {
 	EXPECT_EQ( HWBaseboard( 1 ).AirInletTemp, HWBaseboard( 1 ).AirOutletTemp );
 	EXPECT_EQ( HWBaseboard( 1 ).WaterInletTemp, HWBaseboard( 1 ).WaterOutletTemp);
 	EXPECT_EQ( 0.0, HWBaseboard( 1 ).AirMassFlowRate );
+	
+	// near zero water flow case--should set flow to zero
+	ZoneSysEnergyDemand( 1 ).RemainingOutputReqToHeatSP = 1200.0; // non-zero load
+	Node( HWBaseboard( 1 ).WaterInletNode ).MassFlowRate = 0.000000001; // non-zero but tiny flow (less than one drop per hour)
+	LoadMet = 9999.9; // reset to something other than zero to make sure this gets reset
+	
+	CalcHWBaseboard( BBNum, LoadMet );
+	
+	EXPECT_EQ( 0.0, LoadMet );
+	EXPECT_EQ( 0.0, HWBaseboard( 1 ).TotPower );
+	EXPECT_EQ( 0.0, Node( HWBaseboard( 1 ).WaterInletNode ).MassFlowRate );
+	EXPECT_EQ( 0.0, HWBaseboard( 1 ).AirMassFlowRate );
 
 	// clear
 	Node.deallocate();
