@@ -388,7 +388,7 @@ namespace DataAirflowNetwork {
 		MultizoneSurfaceProp() :
 			Factor( 0.0 ),
 			SurfNum( 0 ),
-			nodeNums( { 0, 0 } ),
+			nodeNums{ { 0, 0 } },
 			OpenFactor( 0.0 ),
 			OpenFactorLast( 0.0 ),
 			EMSOpenFactorActuated( false ),
@@ -707,9 +707,9 @@ namespace DataAirflowNetwork {
 
 		// Default Constructor
 		AirflowNetworkLinkage() :
-			nodeHeights( { 0.0, 0.0 } ),
+			nodeHeights{ { 0.0, 0.0 } },
 			CompNum( 0 ),
-			nodeNums( { 0, 0 } ),
+			nodeNums{ { 0, 0 } },
 			LinkNum( 0 )
 		{}
 
