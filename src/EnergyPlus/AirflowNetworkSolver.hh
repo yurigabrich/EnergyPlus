@@ -137,7 +137,7 @@ namespace AirflowNetworkSolver {
 		int const LFLAG // if = 1, use laminar relationship (initialization).
 	);
 
-	void
+	int
 	AFEPLR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -146,11 +146,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFESCR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -159,11 +158,10 @@ namespace AirflowNetworkSolver {
 		int const N, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEDWC(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -172,11 +170,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFESOP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -185,11 +182,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFECFR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -198,11 +194,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEFAN(
 		int const JA, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -211,13 +206,12 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
 	// The above subroutine is not used. Leave it for the time being and revise later.
 
-	void
+	int
 	AFECPF(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -226,13 +220,12 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
 	// Leave it for the time being and revise later. Or drop this component ???????????
 
-	void
+	int
 	AFEDMP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -241,11 +234,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFESEL(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -254,11 +246,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEELR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -267,11 +258,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFECPD(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -280,11 +270,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFECOI(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -293,11 +282,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFETMU(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -306,11 +294,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEEXF(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -319,11 +306,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEHEX(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -332,11 +318,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEHOP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -345,11 +330,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEOAF(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -358,11 +342,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	AFEREL(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -371,11 +354,10 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
-	void
+	int
 	GenericCrack(
 		Real64 & coef, // Flow coefficient
 		Real64 const expn, // Flow exponent
@@ -384,9 +366,8 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
-	);
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
+	); // Returns number of flows, either 1 or 2
 
 	void
 	FACSKY(
@@ -435,7 +416,7 @@ namespace AirflowNetworkSolver {
 		int const UOUT // Output file unit
 	);
 
-	void
+	int
 	AFEDOP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -444,8 +425,7 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	);
 
 	void

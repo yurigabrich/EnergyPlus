@@ -915,43 +915,43 @@ namespace AirflowNetworkSolver {
 			j = AirflowNetworkLinkageData( i ).CompNum;
 			{ auto const SELECT_CASE_var( AirflowNetworkCompData( j ).CompTypeNum );
 			if ( SELECT_CASE_var == CompTypeNum_PLR ) { // Distribution system crack component
-				AFEPLR( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEPLR( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DWC ) { // Distribution system duct component
-				AFEDWC( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEDWC( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_CVF ) { // Distribution system constant volume fan component
-				AFECFR( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFECFR( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_FAN ) { // Distribution system detailed fan component
-				AFEFAN( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEFAN( j, LFLAG, DP, i, N, M, F, DF );
 				//           Case (CompTypeNum_CPF) ! not currently used in EnergyPlus code -- left for compatibility with AirNet
 				//              CALL AFECPF(J,LFLAG,DP,I,N,M,F,DF,NF)
 			} else if ( SELECT_CASE_var == CompTypeNum_DMP ) { // Distribution system damper component
-				AFEDMP( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEDMP( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_ELR ) { // Distribution system effective leakage ratio component
-				AFEELR( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEELR( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_CPD ) { // Distribution system constant pressure drop component
-				AFECPD( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFECPD( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DOP ) { // Detailed opening
-				AFEDOP( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEDOP( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SOP ) { // Simple opening
-				AFESOP( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFESOP( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SCR ) { // Surface crack component
-				AFESCR( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFESCR( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_SEL ) { // Surface effective leakage ratio component
-				AFESEL( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFESEL( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_COI ) { // Distribution system coil component
-				AFECOI( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFECOI( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_TMU ) { // Distribution system terminal unit component
-				AFETMU( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFETMU( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_EXF ) { // Exhaust fan component
-				AFEEXF( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEEXF( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_HEX ) { // Distribution system heat exchanger component
-				AFEHEX( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEHEX( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_HOP ) { // Horizontal opening
-				AFEHOP( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEHOP( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_OAF ) { // OA supply fan
-				AFEOAF( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEOAF( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_REL ) { // Relief fan
-				AFEREL( j, LFLAG, DP, i, N, M, F, DF, NF );
+				NF = AFEREL( j, LFLAG, DP, i, N, M, F, DF );
 			} else {
 				continue;
 			}}
@@ -1071,7 +1071,7 @@ namespace AirflowNetworkSolver {
 
 	}
 
-	void
+	int
 	AFEPLR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -1080,8 +1080,7 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 		// SUBROUTINE INFORMATION:
@@ -1126,6 +1125,7 @@ namespace AirflowNetworkSolver {
 		Real64 Ctl;
 		Real64 coef;
 		int CompNum;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -1144,7 +1144,6 @@ namespace AirflowNetworkSolver {
 			coef /= SQRTDZ( M );
 		}
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -1189,9 +1188,10 @@ namespace AirflowNetworkSolver {
 				DF[ 0 ] = FT * expn / PDROP;
 			}
 		}
+		return NF;
 	}
 
-	void
+	int
 	AFESCR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -1200,8 +1200,7 @@ namespace AirflowNetworkSolver {
 		int const N, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 		// SUBROUTINE INFORMATION:
@@ -1250,6 +1249,7 @@ namespace AirflowNetworkSolver {
 		Real64 Tave;
 		Real64 RhoCor;
 		int CompNum;
+		int  NF( 1 );
 
 		// Handle positive/negative pressure difference
 		Real64 sign( 1.0 );
@@ -1286,7 +1286,6 @@ namespace AirflowNetworkSolver {
 
 		coef = DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).FlowCoef * Corr;
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			RhoCor = ( tz + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
@@ -1315,9 +1314,10 @@ namespace AirflowNetworkSolver {
 				DF[ 0 ] = FT * expn / PDROP;
 			}
 		}
+		return NF;
 	}
 
-	void
+	int
 	AFEDWC(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -1326,8 +1326,7 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -1386,6 +1385,7 @@ namespace AirflowNetworkSolver {
 		Real64 ld;
 		Real64 g;
 		Real64 AA1;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -1397,7 +1397,6 @@ namespace AirflowNetworkSolver {
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -1487,10 +1486,10 @@ namespace AirflowNetworkSolver {
 				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFESOP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -1499,8 +1498,7 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -1562,6 +1560,7 @@ namespace AirflowNetworkSolver {
 		Real64 Width;
 		Real64 Height;
 		Real64 OpenFactor;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_900( "(A5,9X,4E16.7)" );
@@ -1596,18 +1595,17 @@ namespace AirflowNetworkSolver {
 			if ( MultizoneSurfaceData( i ).Multiplier > 1.0 ) Width *= MultizoneSurfaceData( i ).Multiplier;
 		}
 
-		NF = 1;
 		DRHO = RHOZ( n ) - RHOZ( M );
 		GDRHO = 9.8 * DRHO;
 		if ( LIST >= 4 ) gio::write( Unit21, Format_903 ) << " DOR:" << i << n << M << PDROP << std::abs( DRHO ) << MinRhoDiff;
 		if ( OpenFactor == 0.0 ) {
-			GenericCrack( FlowCoef, FlowExpo, LFLAG, PDROP, n, M, F, DF, NF );
-			return;
+			NF = GenericCrack( FlowCoef, FlowExpo, LFLAG, PDROP, n, M, F, DF );
+			return NF;
 		}
 		if ( std::abs( DRHO ) < MinRhoDiff || LFLAG == 1 ) {
 			DPMID = PDROP - 0.5 * Height * GDRHO;
 			// Initialization or identical temps: treat as one-way flow.
-			GenericCrack( FlowCoef, FlowExpo, LFLAG, DPMID, n, M, F, DF, NF );
+			NF = GenericCrack( FlowCoef, FlowExpo, LFLAG, DPMID, n, M, F, DF );
 			if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Drs:" << DPMID << F[ 0 ] << DF[ 0 ];
 		} else {
 			// Possible two-way flow:
@@ -1660,10 +1658,10 @@ namespace AirflowNetworkSolver {
 				if ( LIST >= 4 ) gio::write( Unit21, Format_900 ) << " Dr4:" << C << F[ 1 ] << DF[ 1 ];
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFECFR(
 		int const j, // Component number
 		int const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
@@ -1672,8 +1670,7 @@ namespace AirflowNetworkSolver {
 		int const EP_UNUSED( n ), // Node 1 number
 		int const EP_UNUSED( M ), // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -1724,11 +1721,11 @@ namespace AirflowNetworkSolver {
 		Real64 SumFracSuppLeak; // Sum of all supply leaks as a fraction of supply fan flow rate
 		int Node1;
 		int Node2;
+		int NF( 1 );
 
 		// FLOW:
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 
-		NF = 1;
 		if ( DisSysCompCVFData( CompNum ).FanTypeNum == FanType_SimpleOnOff ) {
 			if ( LoopFanOperationMode == CycFanCycComp && LoopSystemOnMassFlowrate > 0.0 ) {
 				F[ 0 ] = LoopSystemOnMassFlowrate;
@@ -1775,10 +1772,10 @@ namespace AirflowNetworkSolver {
 			}
 		}
 		DF[ 0 ] = 0.0;
-
+		return NF;
 	}
 
-	void
+	int
 	AFEFAN(
 		int const JA, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -1787,8 +1784,7 @@ namespace AirflowNetworkSolver {
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -1842,6 +1838,7 @@ namespace AirflowNetworkSolver {
 		int NumCur;
 		Real64 FlowCoef;
 		Real64 FlowExpo;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,5E14.6)" );
@@ -1852,11 +1849,10 @@ namespace AirflowNetworkSolver {
 		FlowCoef = DisSysCompDetFanData( CompNum ).FlowCoef;
 		FlowExpo = DisSysCompDetFanData( CompNum ).FlowExpo;
 
-		NF = 1;
 		if ( AFECTL( i ) <= 0.0 ) {
 			// Speed = 0; treat fan as resistance.
-			GenericCrack( FlowCoef, FlowExpo, LFLAG, PDROP, n, M, F, DF, NF );
-			return;
+			NF = GenericCrack( FlowCoef, FlowExpo, LFLAG, PDROP, n, M, F, DF );
+			return NF;
 		}
 		// Pressure rise at reference fan speed.
 		if ( AFECTL( i ) >= DisSysCompDetFanData( CompNum ).TranRat ) {
@@ -1928,11 +1924,12 @@ Label90: ;
 		} else {
 			DF[ 0 ] = -1.0 / DPDF;
 		}
+		return NF;
 	}
 
 	// The above subroutine is not used. Leave it for the time being and revise later.
 
-	void
+	int
 	AFECPF(
 		int const EP_UNUSED( j ), // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -1941,8 +1938,7 @@ Label90: ;
 		int const EP_UNUSED( n ), // Node 1 number
 		int const EP_UNUSED( M ), // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -1982,7 +1978,7 @@ Label90: ;
 		// na
 
 		// FLOW:
-		NF = 1;
+		int NF( 1 );
 		if ( LFLAG == 1 ) {
 			F[ 0 ] = AFECTL( i );
 			DF[ 0 ] = F[ 0 ];
@@ -1990,12 +1986,12 @@ Label90: ;
 			F[ 0 ] = -AFECTL( i ) / PDROP;
 			DF[ 0 ] = -F[ 0 ] / PDROP;
 		}
-
+		return NF;
 	}
 
 	// Leave it for the time being and revise later. Or drop this component ???????????
 
-	void
+	int
 	AFEDMP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2004,8 +2000,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2044,6 +2039,7 @@ Label90: ;
 		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 		Real64 C;
 		int CompNum;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -2052,7 +2048,6 @@ Label90: ;
 		// Get component number
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 
-		NF = 1;
 		C = AFECTL( i );
 		if ( C < DisSysCompDamperData( CompNum ).FlowMin ) C = DisSysCompDamperData( CompNum ).FlowMin;
 		if ( C > DisSysCompDamperData( CompNum ).FlowMax ) C = DisSysCompDamperData( CompNum ).FlowMax;
@@ -2075,10 +2070,10 @@ Label90: ;
 			}
 			DF[ 0 ] = F[ 0 ] * DisSysCompDamperData( CompNum ).FlowExpo / PDROP;
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFESEL(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2087,8 +2082,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2131,6 +2125,7 @@ Label90: ;
 		Real64 FlowCoef;
 		Real64 FlowExpo;
 		int CompNum;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -2141,7 +2136,6 @@ Label90: ;
 		FlowExpo = MultizoneSurfaceELAData( CompNum ).FlowExpo;
 		FlowCoef = MultizoneSurfaceELAData( CompNum ).ELA * MultizoneSurfaceELAData( CompNum ).DischCoeff * sqrt_2 * std::pow( MultizoneSurfaceELAData( CompNum ).RefDeltaP, 0.5 - FlowExpo );
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -2185,10 +2179,10 @@ Label90: ;
 				DF[ 0 ] = FT * FlowExpo / PDROP;
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFEELR(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2197,8 +2191,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2240,6 +2233,7 @@ Label90: ;
 		Real64 FT;
 		Real64 FlowCoef;
 		int CompNum;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -2249,7 +2243,6 @@ Label90: ;
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 		FlowCoef = DisSysCompELRData( CompNum ).ELR * DisSysCompELRData( CompNum ).FlowRate / RHOZ( n ) * std::pow( DisSysCompELRData( CompNum ).RefPres, -DisSysCompELRData( CompNum ).FlowExpo );
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -2293,10 +2286,10 @@ Label90: ;
 				DF[ 0 ] = FT * DisSysCompELRData( CompNum ).FlowExpo / PDROP;
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFECPD(
 		int const j, // Component number
 		int const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
@@ -2305,8 +2298,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2346,6 +2338,7 @@ Label90: ;
 		Real64 Co;
 		int CompNum;
 		int k;
+		int NF( 1 );
 
 		// FLOW:
 		// Get component properties
@@ -2369,10 +2362,10 @@ Label90: ;
 			Co = F[ 0 ] / DisSysCompCPDData( CompNum ).DP;
 			DF[ 0 ] = 10.e10;
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFECOI(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2381,8 +2374,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2417,6 +2409,7 @@ Label90: ;
 		Real64 const LamDynCoef( 64.0 );
 		Real64 const LamFriCoef( 0.0001 );
 		Real64 const TurDynCoef( 0.0001 );
+		int NF( 1 );
 
 		// INTERFACE BLOCK SPECIFICATIONS
 		// na
@@ -2545,10 +2538,10 @@ Label90: ;
 				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFETMU(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2557,8 +2550,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2618,6 +2610,7 @@ Label90: ;
 		Real64 g;
 		Real64 AA1;
 		Real64 area;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -2631,7 +2624,6 @@ Label90: ;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -2729,10 +2721,10 @@ Label90: ;
 			}
 			DF[ 0 ] = 0.0;
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFEEXF(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2741,8 +2733,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 		// SUBROUTINE INFORMATION:
@@ -2792,6 +2783,7 @@ Label90: ;
 		Real64 RhoCor;
 		int CompNum;
 		int InletNode;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,I3,6X,4E16.7)" );
@@ -2808,7 +2800,7 @@ Label90: ;
 				F[ 0 ] = Node( InletNode ).MassFlowRate;
 			}
 			DF[ 0 ] = 0.0;
-			return;
+			return NF;
 		} else {
 			// Treat the component as a surface crack
 			// Crack standard condition from given inputs
@@ -2878,9 +2870,10 @@ Label90: ;
 				}
 			}
 		}
+		return NF;
 	}
 
-	void
+	int
 	AFEHEX(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -2889,8 +2882,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -2950,6 +2942,7 @@ Label90: ;
 		Real64 g;
 		Real64 AA1;
 		Real64 area;
+		int NF( 1 );
 
 		// FLOW:
 		// Get component properties
@@ -2960,7 +2953,6 @@ Label90: ;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -3043,10 +3035,10 @@ Label90: ;
 				DF[ 0 ] = 0.5 * FT / PDROP;
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFEHOP(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -3055,8 +3047,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 		// SUBROUTINE INFORMATION:
@@ -3112,6 +3103,7 @@ Label90: ;
 		Real64 DH; // Hydraulic diameter [m]
 		Real64 Cshape; // Shape factor [dimensionless]
 		Real64 OpenArea; // Opening area [m2]
+		int NF( 1 );
 
 		// FLOW:
 		// Get information on the horizontal opening
@@ -3129,10 +3121,9 @@ Label90: ;
 		DH = 4.0 * ( Width * Height ) / 2.0 / ( Width + Height ) * Fact;
 
 		// Check which zone is higher
-		NF = 1;
 		if ( Fact == 0.0 ) {
-			GenericCrack( coef, expn, LFLAG, PDROP, n, M, F, DF, NF );
-			return;
+			NF = GenericCrack( coef, expn, LFLAG, PDROP, n, M, F, DF );
+			return NF;
 		}
 
 		fma12 = 0.0;
@@ -3192,10 +3183,10 @@ Label90: ;
 			F[ 1 ] = BuoFlow;
 		}
 		DF[ 1 ] = 0.0;
-
+		return NF;
 	}
 
-	void
+	int
 	AFEOAF(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -3204,8 +3195,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -3249,6 +3239,7 @@ Label90: ;
 		Real64 CDM;
 		Real64 FL;
 		Real64 FT;
+		int NF( 1 );
 
 		// FLOW:
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
@@ -3262,7 +3253,7 @@ Label90: ;
 			if ( LoopFanOperationMode == CycFanCycComp && LoopOnOffFanPartLoadRatio > 0.0 ) {
 				F[ 0 ] = F[ 0 ] / LoopOnOffFanPartLoadRatio;
 			}
-			return;
+			return NF;
 		} else {
 			// Treat the component as a surface crack
 			// Crack standard condition from given inputs
@@ -3331,10 +3322,10 @@ Label90: ;
 				}
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	AFEREL(
 		int const j, // Component number
 		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
@@ -3343,8 +3334,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -3382,6 +3372,7 @@ Label90: ;
 		Real64 CDM;
 		Real64 FL;
 		Real64 FT;
+		int NF( 1 );
 
 		// FLOW:
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
@@ -3392,7 +3383,7 @@ Label90: ;
 			NF = 1;
 			F[ 0 ] = ReliefMassFlowRate;
 			DF[ 0 ] = 0.0;
-			return;
+			return NF;
 		} else {
 			// Treat the component as a surface crack
 			// Crack standard condition from given inputs
@@ -3461,10 +3452,10 @@ Label90: ;
 				}
 			}
 		}
-
+		return NF;
 	}
 
-	void
+	int
 	GenericCrack(
 		Real64 & coef, // Flow coefficient
 		Real64 const expn, // Flow exponent
@@ -3473,8 +3464,7 @@ Label90: ;
 		int const n, // Node 1 number
 		int const M, // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -3520,6 +3510,7 @@ Label90: ;
 		Real64 VisAve;
 		Real64 Tave;
 		Real64 RhoCor;
+		int NF( 1 );
 
 		// Formats
 		static gio::Fmt Format_901( "(A5,6X,4E16.7)" );
@@ -3536,7 +3527,6 @@ Label90: ;
 			coef /= SQRTDZ( M );
 		}
 
-		NF = 1;
 		if ( LFLAG == 1 ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
@@ -3588,6 +3578,7 @@ Label90: ;
 				DF[ 0 ] = FT * expn / PDROP;
 			}
 		}
+		return NF;
 	}
 
 	void
@@ -4042,7 +4033,7 @@ Label90: ;
 		gio::write( UOUT );
 	}
 
-	void
+	int
 	AFEDOP(
 		int const j, // Component number
 		int const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
@@ -4051,8 +4042,7 @@ Label90: ;
 		int const EP_UNUSED( n ), // Node 1 number
 		int const EP_UNUSED( M ), // Node 2 number
 		std::array< Real64, 2 > &F, // Airflow through the component [kg/s]
-		std::array< Real64, 2 > &DF, // Partial derivative:  DF/DP
-		int & NF // Number of flows, either 1 or 2
+		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	)
 	{
 
@@ -4159,6 +4149,7 @@ Label90: ;
 		int i;
 		int Loc;
 		int iNum;
+		int NF( 1 );
 
 		// FLOW:
 		// Get component properties
@@ -4496,7 +4487,7 @@ Label90: ;
 			F[ 1 ] = fma21;
 		}
 		DF[ 1 ] = 0.0;
-
+		return NF;
 	}
 
 	void

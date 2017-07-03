@@ -99,13 +99,13 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_HorizontalOpening )
 	AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] = 4.0;
 	AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] = 2.0;
 
-	AFEHOP( 1, 1, 0.05, 1, 1, 2, F, DF, NF );
+	NF = AFEHOP( 1, 1, 0.05, 1, 1, 2, F, DF );
 	EXPECT_NEAR( 3.47863, F[ 0 ], 0.00001 );
 	EXPECT_NEAR( 34.7863, DF[ 0 ], 0.0001 );
 	EXPECT_NEAR( 2.96657, F[ 1 ], 0.00001 );
 	EXPECT_EQ( 0.0, DF[ 1 ] );
 
-	AFEHOP( 1, 1, -0.05, 1, 1, 2, F, DF, NF );
+	NF = AFEHOP( 1, 1, -0.05, 1, 1, 2, F, DF );
 	EXPECT_NEAR( -3.42065, F[ 0 ], 0.00001 );
 	EXPECT_NEAR( 34.20649, DF[ 0 ], 0.0001 );
 	EXPECT_NEAR( 2.96657, F[ 1 ], 0.00001 );
@@ -163,28 +163,28 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_Crack )
 	DataAirflowNetwork::AirflowNetworkLinkageData( 1 ).nodeHeights[ 0 ] = 1.0;
 	DataAirflowNetwork::AirflowNetworkLinkageData( 1 ).nodeHeights[ 1 ] = 1.0;
 
-	AirflowNetworkSolver::AFESCR( 1, 0, 100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 0, 100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	EXPECT_NEAR( 0.006, F[ 0 ], 1.0e-12 );
 	EXPECT_NEAR( 0.00003, DF[ 0 ], 1.0e-12 );
 	EXPECT_EQ( 0.0, F[ 1 ] );
 	EXPECT_EQ( 0.0, DF[ 1 ] );
 
-	AirflowNetworkSolver::AFESCR( 1, 0, -100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 0, -100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	EXPECT_NEAR( -0.006, F[ 0 ], 1.0e-12 );
 	EXPECT_NEAR( 0.00003, DF[ 0 ], 1.0e-12 );
 	EXPECT_EQ( 0.0, F[ 1 ] );
 	EXPECT_EQ( 0.0, DF[ 1 ] );
 
-	AirflowNetworkSolver::AFESCR( 1, 1, 100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 1, 100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	//EXPECT_NEAR( 0.06*sqrt( density )/viscosity, F[ 0 ], 1.0e-12);
 	EXPECT_NEAR( 0.0006*sqrt( density )/viscosity, DF[ 0 ], 1.0e-12 );
 	EXPECT_EQ( 0.0, F[ 1 ] );
 	EXPECT_EQ( 0.0, DF[ 1 ] );
 
-	AirflowNetworkSolver::AFESCR(1, 1, -100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR(1, 1, -100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF);
 	//EXPECT_NEAR( 0.06*sqrt( density )/viscosity, F[ 0 ], 1.0e-12);
 	EXPECT_NEAR( 0.0006*sqrt( density ) / viscosity, DF[ 0 ], 1.0e-12 );
@@ -208,14 +208,14 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_Crack )
 	Real64 Ctl = std::pow( RhozNorm * ( Tave + DataGlobals::KelvinConv ) / ( density * ( tz1 + DataGlobals::KelvinConv ) ), -0.5 )
 		* std::pow( VisczNorm / VisAve, 0.0 );
 
-	AirflowNetworkSolver::AFESCR( 1, 0, 100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 0, 100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	EXPECT_NEAR( Ctl*0.006, F[ 0 ], 1.0e-12 );
 	EXPECT_NEAR( Ctl*0.00003, DF[ 0 ], 1.0e-12 );
 	EXPECT_EQ( 0.0, F[ 1 ] );
 	EXPECT_EQ( 0.0, DF[ 1 ] );
 
-	AirflowNetworkSolver::AFESCR( 1, 1, 100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 1, 100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	//EXPECT_NEAR( 0.06*sqrt( density )/viscosity, F[ 0 ], 1.0e-12);
 	EXPECT_NEAR( Ctl*0.0006*sqrt( density )/viscosity, DF[ 0 ], 1.0e-12 );
@@ -225,14 +225,14 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_Crack )
 	Ctl = std::pow(RhozNorm * (Tave + DataGlobals::KelvinConv) / (density2 * (tz2 + DataGlobals::KelvinConv)), -0.5)
 		* std::pow(VisczNorm / VisAve, 0.0);
 
-	AirflowNetworkSolver::AFESCR( 1, 0, -100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 0, -100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	EXPECT_NEAR( -Ctl*0.006, F[ 0 ], 1.0e-12 );
 	EXPECT_NEAR( Ctl*0.00003, DF[ 0 ], 1.0e-12 );
 	EXPECT_EQ( 0.0, F[ 1 ] );
 	EXPECT_EQ( 0.0, DF[ 1 ] );
 
-	AirflowNetworkSolver::AFESCR( 1, 1, -100.0, 1, 1, 2, F, DF, NF );
+	NF = AirflowNetworkSolver::AFESCR( 1, 1, -100.0, 1, 1, 2, F, DF );
 	EXPECT_EQ( 1, NF );
 	//EXPECT_NEAR( 0.06*sqrt( density )/viscosity, F[ 0 ], 1.0e-12);
 	EXPECT_NEAR( Ctl*0.0006*sqrt(density2) / viscosity2, DF[0], 1.0e-12 );
