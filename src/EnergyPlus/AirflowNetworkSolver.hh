@@ -112,7 +112,7 @@ namespace AirflowNetworkSolver {
 	// Functions
 
 	void
-	AllocateAirflowNetworkData();
+	AllocateAirflowNetworkSkylineData();
 
 	void
 	InitAirflowNetworkData();

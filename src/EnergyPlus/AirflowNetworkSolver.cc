@@ -155,7 +155,7 @@ namespace AirflowNetworkSolver {
 	// Functions
 
 	void
-	AllocateAirflowNetworkData()
+	AllocateAirflowNetworkSkylineData()
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -188,11 +188,6 @@ namespace AirflowNetworkSolver {
 
 		// DERIVED TYPE DEFINITIONS
 		// na
-
-		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		int i;
-		int j;
-		int n;
 
 		// Formats
 		static gio::Fmt Format_900( "(1X,i2)" );
@@ -231,17 +226,17 @@ namespace AirflowNetworkSolver {
 		AD.allocate( NetworkNumOfNodes );
 		SUMF.allocate( NetworkNumOfNodes );
 
-		n = 0;
-		for ( i = 1; i <= AirflowNetworkNumOfLinks; ++i ) {
-			j = AirflowNetworkCompData( AirflowNetworkLinkageData( i ).CompNum ).CompTypeNum;
-			if ( j == CompTypeNum_DOP ) {
-				++n;
+		// Count up openings that need to be discretized
+		int count = 0;
+		for ( int i = 1; i < AirflowNetworkNumOfLinks; ++i ) {
+			if ( AirflowNetworkCompData(AirflowNetworkLinkageData[i].CompNum).CompTypeNum == CompTypeNum_DOP ) {
+				++count;
 			}
 		}
 
-		DpProf.allocate( n * ( NrInt + 2 ) );
-		RhoProfF.allocate( n * ( NrInt + 2 ) );
-		RhoProfT.allocate( n * ( NrInt + 2 ) );
+		DpProf.allocate( count * ( NrInt + 2 ) );
+		RhoProfF.allocate( count * ( NrInt + 2 ) );
+		RhoProfT.allocate( count * ( NrInt + 2 ) );
 		DpL.allocate( AirflowNetworkNumOfLinks, 2 );
 
 		PB = 101325.0;
@@ -252,41 +247,41 @@ namespace AirflowNetworkSolver {
 			gio::open( Unit21, DataStringGlobals::outputAdsFileName );
 		}
 
-		for ( n = 1; n <= NetworkNumOfNodes; ++n ) {
+		for ( int n = 1; n <= NetworkNumOfNodes; ++n ) {
 			ID( n ) = n;
 		}
-		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			AFECTL( i ) = 1.0;
-			AFLOW( i ) = 0.0;
-			AFLOW2( i ) = 0.0;
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			AFECTL[ i ] = 1.0;
+			AFLOW[ i ] = 0.0;
+			AFLOW2[ i ] = 0.0;
 		}
 
-		for ( i = 1; i <= NetworkNumOfNodes; ++i ) {
-			TZ( i ) = AirflowNetworkNodeSimu( i ).TZ;
-			WZ( i ) = AirflowNetworkNodeSimu( i ).WZ;
-			PZ( i ) = AirflowNetworkNodeSimu( i ).PZ;
+		for ( int i = 0; i < NetworkNumOfNodes; ++i ) {
+			TZ[ i ] = AirflowNetworkNodeSimu[ i ].TZ;
+			WZ[ i ] = AirflowNetworkNodeSimu[ i ].WZ;
+			PZ[ i ] = AirflowNetworkNodeSimu[ i ].PZ;
 		}
 
 		// Assign linkage values
-		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-			PW( i ) = 0.0;
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			PW[ i ] = 0.0;
 		}
 		// Write an ouput file used for AIRNET input
 		if ( LIST >= 5 ) {
 			Unit11 = GetNewUnitNumber();
 			gio::open( Unit11, DataStringGlobals::eplusADSFileName );
-			for ( i = 1; i <= NetworkNumOfNodes; ++i ) {
-				gio::write( Unit11, Format_901 ) << i << AirflowNetworkNodeData( i ).NodeTypeNum << AirflowNetworkNodeData( i ).NodeHeight << TZ( i ) << PZ( i );
+			for ( int i = 0; i < NetworkNumOfNodes; ++i ) {
+				gio::write( Unit11, Format_901 ) << i << AirflowNetworkNodeData[ i ].NodeTypeNum << AirflowNetworkNodeData[ i ].NodeHeight << TZ[ i ] << PZ[ i ];
 			}
 			gio::write( Unit11, Format_900 ) << 0;
-			for ( i = 1; i <= AirflowNetworkNumOfComps; ++i ) {
-				j = AirflowNetworkCompData( i ).TypeNum;
-				{ auto const SELECT_CASE_var( AirflowNetworkCompData( i ).CompTypeNum );
+			for ( int i = 0; i < AirflowNetworkNumOfComps; ++i ) {
+				int j = AirflowNetworkCompData[ i ].TypeNum;
+				{ auto const SELECT_CASE_var( AirflowNetworkCompData[ i ].CompTypeNum );
 				if ( SELECT_CASE_var == CompTypeNum_PLR ) { //'PLR'  Power law component
 					//              WRITE(Unit11,902) AirflowNetworkCompData(i)%CompNum,1,DisSysCompLeakData(j)%FlowCoef, &
 					//                  DisSysCompLeakData(j)%FlowCoef,DisSysCompLeakData(j)%FlowCoef,DisSysCompLeakData(j)%FlowExpo
 				} else if ( SELECT_CASE_var == CompTypeNum_SCR ) { //'SCR'  Surface crack component
-					gio::write( Unit11, Format_902 ) << AirflowNetworkCompData( i ).CompNum << 1 << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowExpo;
+					gio::write( Unit11, Format_902 ) << AirflowNetworkCompData[ i ].CompNum << 1 << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowExpo;
 				} else if ( SELECT_CASE_var == CompTypeNum_DWC ) { //'DWC' Duct component
 					//              WRITE(Unit11,902) AirflowNetworkCompData(i)%CompNum,2,DisSysCompDuctData(j)%L,DisSysCompDuctData(j)%D, &
 					//                               DisSysCompDuctData(j)%A,DisSysCompDuctData(j)%Rough
@@ -295,13 +290,13 @@ namespace AirflowNetworkSolver {
 					//           CASE (CompTypeNum_CVF) ! 'CVF' Constant volume fan component
 					//              WRITE(Unit11,904) AirflowNetworkCompData(i)%CompNum,4,DisSysCompCVFData(j)%FlowRate
 				} else if ( SELECT_CASE_var == CompTypeNum_EXF ) { // 'EXF' Zone exhaust fan
-					gio::write( Unit11, Format_904 ) << AirflowNetworkCompData( i ).CompNum << 4 << MultizoneCompExhaustFanData( j ).FlowRate;
+					gio::write( Unit11, Format_904 ) << AirflowNetworkCompData[ i ].CompNum << 4 << MultizoneCompExhaustFanData( j ).FlowRate;
 				} else {
 				}}
 			}
 			gio::write( Unit11, Format_900 ) << 0;
-			for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-				gio::write( Unit11, Format_910 ) << i << AirflowNetworkLinkageData( i ).nodeNums[ 0 ] << AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] << AirflowNetworkLinkageData( i ).nodeNums[ 1 ] << AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] << AirflowNetworkLinkageData( i ).CompNum << 0 << 0;
+			for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+				gio::write( Unit11, Format_910 ) << i << AirflowNetworkLinkageData[ i ].nodeNums[ 0 ] << AirflowNetworkLinkageData[ i ].nodeHeights[ 0 ] << AirflowNetworkLinkageData[ i ].nodeNums[ 1 ] << AirflowNetworkLinkageData[ i ].nodeHeights[ 1 ] << AirflowNetworkLinkageData[ i ].CompNum << 0 << 0;
 			}
 			gio::write( Unit11, Format_900 ) << 0;
 		}

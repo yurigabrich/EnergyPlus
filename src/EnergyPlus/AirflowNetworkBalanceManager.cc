@@ -178,7 +178,6 @@ namespace AirflowNetworkBalanceManager {
 	using ScheduleManager::GetCurrentScheduleValue;
 	using AirflowNetworkSolver::SETSKY;
 	using AirflowNetworkSolver::AIRMOV;
-	using AirflowNetworkSolver::AllocateAirflowNetworkData;
 	using AirflowNetworkSolver::InitAirflowNetworkData;
 	using AirflowNetworkSolver::NetworkNumOfLinks;
 	using AirflowNetworkSolver::NetworkNumOfNodes;
@@ -4355,7 +4354,7 @@ namespace AirflowNetworkBalanceManager {
 		if ( Contaminant.CO2Simulation ) ANCO.allocate( NumOfZones ); // Local zone CO2 for rollback use
 		if ( Contaminant.GenericContamSimulation ) ANGC.allocate( NumOfZones ); // Local zone generic contaminant for rollback use
 
-		AllocateAirflowNetworkData();
+		AirflowNetworkSolver::AllocateAirflowNetworkSkylineData();
 
 		// CurrentModuleObject='AirflowNetwork Simulations'
 		for ( i = 1; i <= AirflowNetworkNumOfNodes; ++i ) {
