@@ -321,6 +321,123 @@ namespace AirflowNetworkSolver {
 	}
 
 	void
+	AllocateAirflowNetworkData()
+	{
+
+		// SUBROUTINE INFORMATION:
+		//       AUTHOR         Jason DeGraw
+		//       DATE WRITTEN   Aug. 2017
+		//       MODIFIED       na
+		//       RE-ENGINEERED  na
+
+		// PURPOSE OF THIS SUBROUTINE:
+		// This subroutine allocates dynamic arrays for AirflowNetworkSolver.
+
+		// METHODOLOGY EMPLOYED:
+		// na
+
+		// REFERENCES:
+		// na
+
+		// USE STATEMENTS:
+		// na
+
+		// Locals
+		// SUBROUTINE ARGUMENT DEFINITIONS:
+		// na
+
+		// SUBROUTINE PARAMETER DEFINITIONS:
+		// na
+
+		// INTERFACE BLOCK SPECIFICATIONS
+		// na
+
+		// DERIVED TYPE DEFINITIONS
+		// na
+
+		// Assume a network to simulate multizone airflow is a subset of the network to simulate air distribution system.
+		// Network array size is allocated based on the network of air distribution system.
+		// If multizone airflow is simulated only, the array size is allocated based on the multizone network.
+		// FLOW:
+		NetworkNumOfLinks = AirflowNetworkNumOfLinks;
+		NetworkNumOfNodes = AirflowNetworkNumOfNodes;
+
+		AFECTL.allocate( NetworkNumOfLinks );
+		AFLOW2.allocate( NetworkNumOfLinks );
+		AFLOW.allocate( NetworkNumOfLinks );
+		PW.allocate( NetworkNumOfLinks );
+		PS.allocate( NetworkNumOfLinks );
+
+		TZ.allocate( NetworkNumOfNodes );
+		WZ.allocate( NetworkNumOfNodes );
+		PZ.allocate( NetworkNumOfNodes );
+		RHOZ.allocate( NetworkNumOfNodes );
+		SQRTDZ.allocate( NetworkNumOfNodes );
+		VISCZ.allocate( NetworkNumOfNodes );
+		SUMAF.allocate( NetworkNumOfNodes );
+
+		ID.allocate( NetworkNumOfNodes );
+		IK.allocate( NetworkNumOfNodes + 1 );
+#ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
+		newIK.allocate( NetworkNumOfNodes + 1 );
+#endif
+		AD.allocate( NetworkNumOfNodes );
+		SUMF.allocate( NetworkNumOfNodes );
+
+		// Count up openings that need to be discretized
+		int count = 0;
+		for ( int i = 1; i < AirflowNetworkNumOfLinks; ++i ) {
+			if ( AirflowNetworkCompData(AirflowNetworkLinkageData[i].CompNum).CompTypeNum == CompTypeNum_DOP ) {
+				++count;
+			}
+		}
+
+		DpProf.allocate( count * ( NrInt + 2 ) );
+		RhoProfF.allocate( count * ( NrInt + 2 ) );
+		RhoProfT.allocate( count * ( NrInt + 2 ) );
+		DpL.allocate( AirflowNetworkNumOfLinks, 2 );
+
+		// Assign system indices
+		int currentIndex = 0;
+		for ( int i = 0; i < NetworkNumOfNodes; ++i ) {
+			if ( AirflowNetworkNodeData( i ).NodeTypeNum == 0 ) {
+				AirflowNetworkNodeData( i ).index = currentIndex;
+				currentIndex += 1;
+			}
+		}
+		int systemSize = currentIndex;
+		for ( int i = 0; i < NetworkNumOfNodes; ++i ) {
+			if ( AirflowNetworkNodeData( i ).NodeTypeNum != 0 ) {
+				AirflowNetworkNodeData( i ).index = currentIndex;
+				currentIndex += 1;
+			}
+		}
+
+		PB = 101325.0;
+
+		for ( int n = 1; n <= NetworkNumOfNodes; ++n ) {
+			ID( n ) = n;
+		}
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			AFECTL[ i ] = 1.0;
+			AFLOW[ i ] = 0.0;
+			AFLOW2[ i ] = 0.0;
+		}
+
+		for ( int i = 0; i < NetworkNumOfNodes; ++i ) {
+			TZ[ i ] = AirflowNetworkNodeSimu[ i ].TZ;
+			WZ[ i ] = AirflowNetworkNodeSimu[ i ].WZ;
+			PZ[ i ] = AirflowNetworkNodeSimu[ i ].PZ;
+		}
+
+		// Assign linkage values
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			PW[ i ] = 0.0;
+		}
+
+	}
+
+	void
 	InitAirflowNetworkData()
 	{
 
@@ -450,7 +567,7 @@ namespace AirflowNetworkSolver {
 	}
 
 	void
-	AIRMOV()
+	AIRMOV2()
 	{
 		// SUBROUTINE INFORMATION:
 		//       AUTHOR         George Walton
@@ -597,6 +714,145 @@ namespace AirflowNetworkSolver {
 
 		for ( i = 1; i <= NetworkNumOfNodes; ++i ) {
 			AirflowNetworkNodeSimu( i ).PZ = PZ( i );
+		}
+
+	}
+
+	void
+	AIRMOV()
+	{
+		// SUBROUTINE INFORMATION:
+		//       AUTHOR         George Walton
+		//       DATE WRITTEN   Extracted from AIRNET
+		//       MODIFIED       Lixing Gu, 2/1/04
+		//                      Revised the subroutine to meet E+ needs
+		//       MODIFIED       Lixing Gu, 6/8/05
+		//       RE-ENGINEERED  na
+
+		// PURPOSE OF THIS SUBROUTINE:
+		// This subroutine is a driver for AIRNET to calculate nodal pressures and linkage airflows
+
+		// METHODOLOGY EMPLOYED:
+		// na
+
+		// REFERENCES:
+		// na
+
+		// USE STATEMENTS:
+
+		// Locals
+		// SUBROUTINE ARGUMENT DEFINITIONS:
+		// na
+
+		// SUBROUTINE PARAMETER DEFINITIONS:
+		// na
+
+		// INTERFACE BLOCK SPECIFICATIONS
+		// na
+
+		// DERIVED TYPE DEFINITIONS
+		// na
+
+		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		int ITER;
+
+		// FLOW:
+
+		// Initialize pressure for pressure control and for Initialization Type = LinearInitializationMethod
+		if ( ( AirflowNetworkSimu.InitFlag == 0 ) || ( PressureSetFlag > 0 && AirflowNetworkFanActivated ) ) {
+			for ( int n = 0; n < NetworkNumOfNodes; ++n ) {
+				if ( AirflowNetworkNodeData[ n ].NodeTypeNum == 0 ) {
+					PZ[ n ] = 0.0;
+				}
+			}
+		}
+		// Compute zone air properties.
+		for ( int n = 0; n < NetworkNumOfNodes; ++n ) {
+			RHOZ[ n ] = Psychrometrics::PsyRhoAirFnPbTdbW(DataEnvironment::StdBaroPress + PZ[ n ], TZ[ n ], WZ[ n ] );
+			if ( AirflowNetworkNodeData[ n ].ExtNodeNum > 0 ) {
+				RHOZ[ n ] = Psychrometrics::PsyRhoAirFnPbTdbW( DataEnvironment::StdBaroPress + PZ[ n ], DataEnvironment::OutDryBulbTemp, DataEnvironment::OutHumRat );
+				TZ[ n ] = DataEnvironment::OutDryBulbTemp;
+				WZ[ n ] = DataEnvironment::OutHumRat;
+			}
+			SQRTDZ[ n ] = std::sqrt( RHOZ[ n ] );
+			VISCZ[ n ] = 1.71432e-5 + 4.828e-8 * TZ[ n ];
+		}
+
+		// Compute stack pressures.
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			int N = AirflowNetworkLinkageData[ i ].nodeNums[ 0 ];
+			int M = AirflowNetworkLinkageData[ i ].nodeNums[ 1 ];
+			if ( AFLOW[ i ] > 0.0 ) {
+				PS[ i ] = 9.80 * ( RHOZ( N ) * ( AirflowNetworkNodeData( N ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + AirflowNetworkLinkageData[ i ].nodeHeights[ 1 ] * ( RHOZ( M ) - RHOZ( N ) ) );
+			} else if ( AFLOW[ i ] < 0.0 ) {
+				PS[ i ] = 9.80 * ( RHOZ( M ) * ( AirflowNetworkNodeData( N ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + AirflowNetworkLinkageData[ i ].nodeHeights[ 0 ] * ( RHOZ( M ) - RHOZ( N ) ) );
+			} else {
+				PS[ i ] = 4.90 * ( ( RHOZ( N ) + RHOZ( M ) ) * ( AirflowNetworkNodeData( N ).NodeHeight - AirflowNetworkNodeData( M ).NodeHeight ) + ( AirflowNetworkLinkageData[ i ].nodeHeights[ 0 ] + AirflowNetworkLinkageData[ i ].nodeHeights[ 1 ] ) * ( RHOZ( M ) - RHOZ( N ) ) );
+			}
+		}
+
+		// Calculate pressure field in a large opening
+		PStack();
+
+		SOLVZP( IK, AD, AU, ITER );
+
+		// Report element flows and zone pressures.
+		for ( int n = 0; n < NetworkNumOfNodes; ++n ) {
+			SUMAF[ n ] = 0.0;
+		}
+
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			int N = AirflowNetworkLinkageData[ i ].nodeNums[ 0 ];
+			int M = AirflowNetworkLinkageData[ i ].nodeNums[ 1 ];
+
+			if ( AirflowNetworkCompData( AirflowNetworkLinkageData[ i ].CompNum ).CompTypeNum == CompTypeNum_HOP ) {
+				SUMAF( N ) = SUMAF( N ) - AFLOW[ i ];
+				SUMAF( M ) += AFLOW[ i ];
+			} else {
+				SUMAF( N ) = SUMAF( N ) - AFLOW[ i ] - AFLOW2[ i ];
+				SUMAF( M ) += AFLOW[ i ] + AFLOW2[ i ];
+			}
+		}
+
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			if ( AFLOW2[ i ] != 0.0 ) {
+
+			}
+			if ( AFLOW[ i ] > 0.0 ) {
+				AirflowNetworkLinkSimu[ i ].FLOW = AFLOW[ i ];
+				AirflowNetworkLinkSimu[ i ].FLOW2 = 0.0;
+			} else {
+				AirflowNetworkLinkSimu[ i ].FLOW = 0.0;
+				AirflowNetworkLinkSimu[ i ].FLOW2 = -AFLOW[ i ];
+			}
+			if ( AirflowNetworkCompData( AirflowNetworkLinkageData[ i ].CompNum ).CompTypeNum == CompTypeNum_HOP ) {
+				if ( AFLOW[ i ] > 0.0 ) {
+					AirflowNetworkLinkSimu[ i ].FLOW = AFLOW[ i ] + AFLOW2[ i ];
+					AirflowNetworkLinkSimu[ i ].FLOW2 = AFLOW2[ i ];
+				} else {
+					AirflowNetworkLinkSimu[ i ].FLOW = AFLOW2[ i ];
+					AirflowNetworkLinkSimu[ i ].FLOW2 = -AFLOW[ i ] + AFLOW2[ i ];
+				}
+			}
+			if ( AirflowNetworkLinkageData[ i ].DetOpenNum > 0 ) {
+				if ( AFLOW2[ i ] != 0.0 ) {
+					AirflowNetworkLinkSimu[ i ].FLOW = AFLOW[ i ] + AFLOW2[ i ];
+					AirflowNetworkLinkSimu[ i ].FLOW2 = AFLOW2[ i ];
+				}
+			}
+			if ( AirflowNetworkCompData( AirflowNetworkLinkageData[ i ].CompNum ).CompTypeNum == CompTypeNum_SOP && AFLOW2[ i ] != 0.0 ) {
+				if ( AFLOW[ i ] >= 0.0 ) {
+					AirflowNetworkLinkSimu[ i ].FLOW = AFLOW[ i ];
+					AirflowNetworkLinkSimu[ i ].FLOW2 = std::abs( AFLOW2[ i ] );
+				} else {
+					AirflowNetworkLinkSimu[ i ].FLOW = std::abs( AFLOW2[ i ] );
+					AirflowNetworkLinkSimu[ i ].FLOW2 = -AFLOW[ i ];
+				}
+			}
+		}
+
+		for ( int i = 0; i < NetworkNumOfNodes; ++i ) {
+			AirflowNetworkNodeSimu[ i ].PZ = PZ[ i ];
 		}
 
 	}
@@ -5284,6 +5540,15 @@ Label90: ;
 		}
 
 	}
+
+	void airMovement()
+	{
+		InitAirflowNetworkData();
+		AIRMOV();
+	}
+
+	void Solver::airmov()
+	{}
 
 	//*****************************************************************************************
 

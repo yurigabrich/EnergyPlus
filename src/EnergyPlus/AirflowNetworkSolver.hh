@@ -51,6 +51,8 @@
 #include <ObjexxFCL/Array1A.hh>
 #include <ObjexxFCL/Array2D.hh>
 
+#include "Eigen/Sparse"
+
 // EnergyPlus Headers
 #include <EnergyPlus.hh>
 
@@ -471,6 +473,28 @@ namespace AirflowNetworkSolver {
 		Real64 const Pbz, // Barometric pressure at entrance level [Pa]
 		Real64 & RhoDr // Air density of dry air on the link level used
 	);
+
+	void airMovement();
+
+	struct Solver
+	{
+		enum class Type { ConjugateGradient, LU, QR };
+		Solver() {}
+
+		void setup();
+
+		void stack();
+
+		void airmov();
+
+		// Nodal property vectors
+		Eigen::Matrix<Real64, Eigen::Dynamic, 1> pressure;
+		Eigen::Matrix<Real64, Eigen::Dynamic, 1> temperature;
+		Eigen::Matrix<Real64, Eigen::Dynamic, 1> density;
+
+		Eigen::SparseMatrix<Real64> sp;
+
+	};
 
 	//*****************************************************************************************
 
