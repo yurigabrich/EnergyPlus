@@ -472,6 +472,8 @@ namespace AirflowNetworkSolver {
 		Real64 & RhoDr // Air density of dry air on the link level used
 	);
 
+	void airMovement();
+
 	//*****************************************************************************************
 
 } // AirflowNetworkSolver

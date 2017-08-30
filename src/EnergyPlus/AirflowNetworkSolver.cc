@@ -5290,6 +5290,12 @@ Label90: ;
 
 	}
 
+	void airMovement()
+	{
+		InitAirflowNetworkData();
+		AIRMOV();
+	}
+
 	//*****************************************************************************************
 
 } // AirflowNetworkSolver

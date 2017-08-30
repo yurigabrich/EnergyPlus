@@ -177,7 +177,7 @@ namespace AirflowNetworkBalanceManager {
 	using ScheduleManager::GetScheduleIndex;
 	using ScheduleManager::GetCurrentScheduleValue;
 	using AirflowNetworkSolver::SETSKY;
-	using AirflowNetworkSolver::AIRMOV;
+	//using AirflowNetworkSolver::AIRMOV;
 	using AirflowNetworkSolver::AllocateAirflowNetworkData;
 	using AirflowNetworkSolver::InitAirflowNetworkData;
 	using AirflowNetworkSolver::NetworkNumOfLinks;
@@ -4679,10 +4679,11 @@ namespace AirflowNetworkBalanceManager {
 			}
 		}
 
-		InitAirflowNetworkData();
+		//InitAirflowNetworkData();
 
 		if ( !( PressureSetFlag > 0 && AirflowNetworkFanActivated ) ) {
-			AIRMOV( );
+			//AIRMOV( );
+			AirflowNetworkSolver::airMovement();
 		} else if ( PressureSetFlag == PressureCtrlExhaust ) {
 			MinExhaustMassFlowrate = 2.0 * VerySmallMassFlow;
 			MaxExhaustMassFlowrate = Node( DisSysCompOutdoorAirData( 1 ).InletNode ).MassFlowRate;
@@ -4690,7 +4691,8 @@ namespace AirflowNetworkBalanceManager {
 				MaxExhaustMassFlowrate = MaxExhaustMassFlowrate / LoopOnOffFanPartLoadRatio;
 			}
 			ExhaustFanMassFlowRate = MinExhaustMassFlowrate;
-			AIRMOV( );
+			//AIRMOV( );
+			AirflowNetworkSolver::airMovement();
 			ZonePressure1 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 			if ( ZonePressure1 <= PressureSet ) {
 				// The highest pressure due to minimum flow rate could not reach Pressure set, bypass pressure set calculation
@@ -4706,7 +4708,8 @@ namespace AirflowNetworkBalanceManager {
 				}
 			} else {
 				ExhaustFanMassFlowRate = MaxExhaustMassFlowrate;
-				AIRMOV( );
+				//AIRMOV( );
+				AirflowNetworkSolver::airMovement();
 				ZonePressure2 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 				if ( ZonePressure2 >= PressureSet ) {
 					// The lowest pressure due to maximum flow rate is still higher than Pressure set, bypass pressure set calculation
@@ -4747,8 +4750,9 @@ namespace AirflowNetworkBalanceManager {
 				MaxReliefMassFlowrate = MaxReliefMassFlowrate / LoopOnOffFanPartLoadRatio;
 			}
 			ReliefMassFlowRate = MinReliefMassFlowrate;
-			InitAirflowNetworkData( );
-			AIRMOV( );
+			//InitAirflowNetworkData( );
+			//AIRMOV( );
+			AirflowNetworkSolver::airMovement();
 			ZonePressure1 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 
 			if ( ZonePressure1 <= PressureSet ) {
@@ -4765,8 +4769,9 @@ namespace AirflowNetworkBalanceManager {
 				}
 			} else {
 				ReliefMassFlowRate = MaxReliefMassFlowrate;
-				InitAirflowNetworkData( );
-				AIRMOV( );
+				//InitAirflowNetworkData( );
+				//AIRMOV( );
+				AirflowNetworkSolver::airMovement();
 				ZonePressure2 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 				if ( ZonePressure2 >= PressureSet ) {
 					// The lowest pressure due to maximum flow rate is still higher than Pressure set, bypass pressure set calculation
@@ -4859,8 +4864,9 @@ namespace AirflowNetworkBalanceManager {
 			ReliefMassFlowRate = ControllerMassFlowRate;
 		}
 
-		InitAirflowNetworkData( );
-		AIRMOV( );
+		//InitAirflowNetworkData( );
+		//AIRMOV( );
+		AirflowNetworkSolver::airMovement();
 
 		ZonePressure = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 

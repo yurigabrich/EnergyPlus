@@ -1012,6 +1012,7 @@ namespace DataAirflowNetwork {
 		int EPlusTypeNum;
 		int RAFNNodeNum;  // RoomAir model node number
 		int NumOfLinks; // Number of links for RoomAir model
+		int index; // Index in system of equations
 
 		// Default Constructor
 		AirflowNetworkNodeProp() :
@@ -1023,7 +1024,8 @@ namespace DataAirflowNetwork {
 			ExtNodeNum( 0 ),
 			EPlusTypeNum( 0 ),
 			RAFNNodeNum( 0 ),
-			NumOfLinks( 0 )
+			NumOfLinks( 0 ),
+			index( -1 )
 		{}
 
 	};
