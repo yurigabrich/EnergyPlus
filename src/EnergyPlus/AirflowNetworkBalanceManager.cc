@@ -177,8 +177,6 @@ namespace AirflowNetworkBalanceManager {
 	using ScheduleManager::GetScheduleIndex;
 	using ScheduleManager::GetCurrentScheduleValue;
 	using AirflowNetworkSolver::SETSKY;
-	//using AirflowNetworkSolver::AIRMOV;
-	using AirflowNetworkSolver::AllocateAirflowNetworkData;
 	using AirflowNetworkSolver::InitAirflowNetworkData;
 	using AirflowNetworkSolver::NetworkNumOfLinks;
 	using AirflowNetworkSolver::NetworkNumOfNodes;
@@ -3345,6 +3343,7 @@ namespace AirflowNetworkBalanceManager {
 		for ( i = 1; i <= AirflowNetworkNumOfDetOpenings; ++i ) { // Detailed opening component
 			AirflowNetworkCompData( i ).Name = MultizoneCompDetOpeningData( i ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_DOP;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::DOP;
 			AirflowNetworkCompData( i ).TypeNum = i;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3357,6 +3356,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = MultizoneCompSimpleOpeningData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_SOP;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::SOP;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3369,6 +3369,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = MultizoneSurfaceCrackData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_SCR;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::SCR;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3381,6 +3382,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = MultizoneSurfaceELAData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_SEL;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::SEL;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3393,6 +3395,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = MultizoneCompExhaustFanData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_EXF;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::EXF;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3401,10 +3404,11 @@ namespace AirflowNetworkBalanceManager {
 		}
 
 		j += AirflowNetworkNumOfExhFan;
-		for ( i = 1 + j; i <= AirflowNetworkNumOfHorOpenings + j; ++i ) { // Distribution system crack component
+		for ( i = 1 + j; i <= AirflowNetworkNumOfHorOpenings + j; ++i ) { // Horizontal opening
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = MultizoneCompHorOpeningData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_HOP;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::HOP;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3417,6 +3421,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompLeakData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_PLR;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::PLR;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3429,6 +3434,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompELRData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_ELR;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::ELR;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3441,6 +3447,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompDuctData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_DWC;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::DWC;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3453,6 +3460,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompDamperData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_DMP;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::DMP;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3465,6 +3473,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompCVFData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_CVF;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::CVF;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3478,6 +3487,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompDetFanData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_FAN;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::FAN;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3491,6 +3501,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompCPDData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_CPD;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::CPD;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3503,6 +3514,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompCoilData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_COI;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::COI;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3516,6 +3528,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompTermUnitData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_TMU;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::TMU;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3529,6 +3542,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompHXData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_HEX;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::HEX;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3542,6 +3556,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompOutdoorAirData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_OAF;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::OAF;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -3554,6 +3569,7 @@ namespace AirflowNetworkBalanceManager {
 			n = i - j;
 			AirflowNetworkCompData( i ).Name = DisSysCompReliefAirData( n ).Name;
 			AirflowNetworkCompData( i ).CompTypeNum = CompTypeNum_REL;
+			AirflowNetworkCompData( i ).type = AirflowNetworkCompProp::Type::REL;
 			AirflowNetworkCompData( i ).TypeNum = n;
 			AirflowNetworkCompData( i ).EPlusName = "";
 			AirflowNetworkCompData( i ).EPlusCompName = "";
@@ -4355,7 +4371,7 @@ namespace AirflowNetworkBalanceManager {
 		if ( Contaminant.CO2Simulation ) ANCO.allocate( NumOfZones ); // Local zone CO2 for rollback use
 		if ( Contaminant.GenericContamSimulation ) ANGC.allocate( NumOfZones ); // Local zone generic contaminant for rollback use
 
-		AllocateAirflowNetworkData();
+		AirflowNetworkSolver::AllocateAirflowNetworkData();
 
 		// CurrentModuleObject='AirflowNetwork Simulations'
 		for ( i = 1; i <= AirflowNetworkNumOfNodes; ++i ) {
@@ -4679,10 +4695,7 @@ namespace AirflowNetworkBalanceManager {
 			}
 		}
 
-		//InitAirflowNetworkData();
-
 		if ( !( PressureSetFlag > 0 && AirflowNetworkFanActivated ) ) {
-			//AIRMOV( );
 			AirflowNetworkSolver::airMovement();
 		} else if ( PressureSetFlag == PressureCtrlExhaust ) {
 			MinExhaustMassFlowrate = 2.0 * VerySmallMassFlow;
@@ -4691,7 +4704,6 @@ namespace AirflowNetworkBalanceManager {
 				MaxExhaustMassFlowrate = MaxExhaustMassFlowrate / LoopOnOffFanPartLoadRatio;
 			}
 			ExhaustFanMassFlowRate = MinExhaustMassFlowrate;
-			//AIRMOV( );
 			AirflowNetworkSolver::airMovement();
 			ZonePressure1 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 			if ( ZonePressure1 <= PressureSet ) {
@@ -4708,7 +4720,6 @@ namespace AirflowNetworkBalanceManager {
 				}
 			} else {
 				ExhaustFanMassFlowRate = MaxExhaustMassFlowrate;
-				//AIRMOV( );
 				AirflowNetworkSolver::airMovement();
 				ZonePressure2 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 				if ( ZonePressure2 >= PressureSet ) {
@@ -4750,8 +4761,6 @@ namespace AirflowNetworkBalanceManager {
 				MaxReliefMassFlowrate = MaxReliefMassFlowrate / LoopOnOffFanPartLoadRatio;
 			}
 			ReliefMassFlowRate = MinReliefMassFlowrate;
-			//InitAirflowNetworkData( );
-			//AIRMOV( );
 			AirflowNetworkSolver::airMovement();
 			ZonePressure1 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 
@@ -4769,8 +4778,6 @@ namespace AirflowNetworkBalanceManager {
 				}
 			} else {
 				ReliefMassFlowRate = MaxReliefMassFlowrate;
-				//InitAirflowNetworkData( );
-				//AIRMOV( );
 				AirflowNetworkSolver::airMovement();
 				ZonePressure2 = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;
 				if ( ZonePressure2 >= PressureSet ) {
@@ -4864,8 +4871,6 @@ namespace AirflowNetworkBalanceManager {
 			ReliefMassFlowRate = ControllerMassFlowRate;
 		}
 
-		//InitAirflowNetworkData( );
-		//AIRMOV( );
 		AirflowNetworkSolver::airMovement();
 
 		ZonePressure = AirflowNetworkNodeSimu( PressureControllerData( 1 ).AFNNodeNum ).PZ;

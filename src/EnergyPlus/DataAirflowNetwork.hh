@@ -1012,7 +1012,6 @@ namespace DataAirflowNetwork {
 		int EPlusTypeNum;
 		int RAFNNodeNum;  // RoomAir model node number
 		int NumOfLinks; // Number of links for RoomAir model
-		int index; // Index in system of equations
 
 		// Default Constructor
 		AirflowNetworkNodeProp() :
@@ -1024,17 +1023,40 @@ namespace DataAirflowNetwork {
 			ExtNodeNum( 0 ),
 			EPlusTypeNum( 0 ),
 			RAFNNodeNum( 0 ),
-			NumOfLinks( 0 ),
-			index( -1 )
+			NumOfLinks( 0 )
 		{}
 
 	};
 
 	struct AirflowNetworkCompProp // AirflowNetwork element data
 	{
+		enum class Type {
+			DOP, // Detailed large opening component
+			SOP, // Simple opening component
+			SCR, // Surface crack component
+			SEL, // Surface effective leakage ratio component
+			PLR, // Distribution system crack component
+			DWC, // Distribution system duct component
+			CVF, // Distribution system constant volume fan component
+			FAN, // Distribution system detailed fan component
+			MRR, // Distribution system multiple curve fit power law resistant flow component
+			DMP, // Distribution system damper component
+			ELR, // Distribution system effective leakage ratio component
+			CPD, // Distribution system constant pressure drop component
+			COI, // Distribution system coil component
+			TMU, // Distribution system terminal unit component
+			EXF, // Zone exhaust fan
+			HEX, // Distribution system heat exchanger	
+			HOP, // Horizontal opening component
+			RVD, // Reheat VAV terminal damper
+			OAF, // Distribution system OA
+			REL // Distribution system relief air
+		};
+
 		// Members
 		std::string Name; // Provide a unique element name
 		int CompTypeNum; // Provide numeric equivalent for AirflowNetworkCompType
+		Type type; // Component type enumeration
 		int TypeNum; // Component number under same component type
 		int CompNum; // General component number
 		std::string EPlusName; // Provide a unique element name
@@ -1133,6 +1155,7 @@ namespace DataAirflowNetwork {
 		Real64 PZ; // Pressure [Pa]
 		Real64 CO2Z; // CO2 [ppm]
 		Real64 GCZ; // Generic contaminant [ppm]
+		int index; // Index in system of equations
 
 		// Default Constructor
 		AirflowNetworkNodeSimuData() :
@@ -1140,7 +1163,8 @@ namespace DataAirflowNetwork {
 			WZ( 0.0 ),
 			PZ( 0.0 ),
 			CO2Z( 0.0 ),
-			GCZ( 0.0 )
+			GCZ( 0.0 ),
+			index( -1 )
 		{}
 
 	};

@@ -118,7 +118,7 @@ namespace AirflowNetworkSolver {
 	Array1D< Real64 > PW;
 
 	// Common block CONTRL
-	Real64 PB( 0.0 );
+	Real64 PB( 101325.0 );
 	int LIST( 0 );
 
 	// Common block ZONL
@@ -222,15 +222,9 @@ namespace AirflowNetworkSolver {
 		SQRTDZ.allocate( NetworkNumOfNodes );
 		VISCZ.allocate( NetworkNumOfNodes );
 		SUMAF.allocate( NetworkNumOfNodes );
-
-		ID.allocate( NetworkNumOfNodes );
-		IK.allocate( NetworkNumOfNodes + 1 );
-#ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
-		newIK.allocate( NetworkNumOfNodes + 1 );
-#endif
-		AD.allocate( NetworkNumOfNodes );
 		SUMF.allocate( NetworkNumOfNodes );
 
+		// Count up openings that need special treatment
 		n = 0;
 		for ( i = 1; i <= AirflowNetworkNumOfLinks; ++i ) {
 			j = AirflowNetworkCompData( AirflowNetworkLinkageData( i ).CompNum ).CompTypeNum;
@@ -244,17 +238,6 @@ namespace AirflowNetworkSolver {
 		RhoProfT.allocate( n * ( NrInt + 2 ) );
 		DpL.allocate( AirflowNetworkNumOfLinks, 2 );
 
-		PB = 101325.0;
-		//   LIST = 5
-		LIST = 0;
-		if ( LIST >= 1 ) {
-			Unit21 = GetNewUnitNumber();
-			gio::open( Unit21, DataStringGlobals::outputAdsFileName );
-		}
-
-		for ( n = 1; n <= NetworkNumOfNodes; ++n ) {
-			ID( n ) = n;
-		}
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
 			AFECTL( i ) = 1.0;
 			AFLOW( i ) = 0.0;
@@ -271,57 +254,38 @@ namespace AirflowNetworkSolver {
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
 			PW( i ) = 0.0;
 		}
-		// Write an ouput file used for AIRNET input
-		if ( LIST >= 5 ) {
-			Unit11 = GetNewUnitNumber();
-			gio::open( Unit11, DataStringGlobals::eplusADSFileName );
-			for ( i = 1; i <= NetworkNumOfNodes; ++i ) {
-				gio::write( Unit11, Format_901 ) << i << AirflowNetworkNodeData( i ).NodeTypeNum << AirflowNetworkNodeData( i ).NodeHeight << TZ( i ) << PZ( i );
-			}
-			gio::write( Unit11, Format_900 ) << 0;
-			for ( i = 1; i <= AirflowNetworkNumOfComps; ++i ) {
-				j = AirflowNetworkCompData( i ).TypeNum;
-				{ auto const SELECT_CASE_var( AirflowNetworkCompData( i ).CompTypeNum );
-				if ( SELECT_CASE_var == CompTypeNum_PLR ) { //'PLR'  Power law component
-					//              WRITE(Unit11,902) AirflowNetworkCompData(i)%CompNum,1,DisSysCompLeakData(j)%FlowCoef, &
-					//                  DisSysCompLeakData(j)%FlowCoef,DisSysCompLeakData(j)%FlowCoef,DisSysCompLeakData(j)%FlowExpo
-				} else if ( SELECT_CASE_var == CompTypeNum_SCR ) { //'SCR'  Surface crack component
-					gio::write( Unit11, Format_902 ) << AirflowNetworkCompData( i ).CompNum << 1 << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowCoef << MultizoneSurfaceCrackData( j ).FlowExpo;
-				} else if ( SELECT_CASE_var == CompTypeNum_DWC ) { //'DWC' Duct component
-					//              WRITE(Unit11,902) AirflowNetworkCompData(i)%CompNum,2,DisSysCompDuctData(j)%L,DisSysCompDuctData(j)%D, &
-					//                               DisSysCompDuctData(j)%A,DisSysCompDuctData(j)%Rough
-					//              WRITE(Unit11,903) DisSysCompDuctData(i)%TurDynCoef,DisSysCompDuctData(j)%LamFriCoef, &
-					//                               DisSysCompDuctData(j)%LamFriCoef,DisSysCompDuctData(j)%InitLamCoef
-					//           CASE (CompTypeNum_CVF) ! 'CVF' Constant volume fan component
-					//              WRITE(Unit11,904) AirflowNetworkCompData(i)%CompNum,4,DisSysCompCVFData(j)%FlowRate
-				} else if ( SELECT_CASE_var == CompTypeNum_EXF ) { // 'EXF' Zone exhaust fan
-					gio::write( Unit11, Format_904 ) << AirflowNetworkCompData( i ).CompNum << 4 << MultizoneCompExhaustFanData( j ).FlowRate;
-				} else {
-				}}
-			}
-			gio::write( Unit11, Format_900 ) << 0;
-			for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
-				gio::write( Unit11, Format_910 ) << i << AirflowNetworkLinkageData( i ).nodeNums[ 0 ] << AirflowNetworkLinkageData( i ).nodeHeights[ 0 ] << AirflowNetworkLinkageData( i ).nodeNums[ 1 ] << AirflowNetworkLinkageData( i ).nodeHeights[ 1 ] << AirflowNetworkLinkageData( i ).CompNum << 0 << 0;
-			}
-			gio::write( Unit11, Format_900 ) << 0;
-		}
 
-		SETSKY();
-
-		//SETSKY figures out the IK stuff -- which is why E+ doesn't allocate AU until here
+		if( AirflowNetworkSimu.solver == AirflowNetworkSimuProp::Solver::ConjugateGradient ) {
+			
+		} else {
+			// Allocate skyline data
+			ID.allocate(NetworkNumOfNodes);
+			for (n = 1; n <= NetworkNumOfNodes; ++n) {
+				ID(n) = n;
+			}
+			IK.allocate(NetworkNumOfNodes + 1);
 #ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
-		//   ! only printing to screen, can be commented
-		//   print*, "SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS is defined"
-		//   write(*,'(2(a,i8))') "AllocateAirflowNetworkData: after SETSKY, allocating AU.  NetworkNumOfNodes=", &
-		//        NetworkNumOfNodes, " IK(NetworkNumOfNodes+1)= NNZE=", IK(NetworkNumOfNodes+1)
-		//   print*, " NetworkNumOfLinks=", NetworkNumOfLinks
-		// allocate same size as others -- this will be maximum  !noel
-		newAU.allocate( IK( NetworkNumOfNodes + 1 ) );
+			newIK.allocate(NetworkNumOfNodes + 1);
+#endif
+			AD.allocate(NetworkNumOfNodes);
+
+			SETSKY();
+
+			//SETSKY figures out the IK stuff -- which is why E+ doesn't allocate AU until here
+#ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
+			//   ! only printing to screen, can be commented
+			//   print*, "SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS is defined"
+			//   write(*,'(2(a,i8))') "AllocateAirflowNetworkData: after SETSKY, allocating AU.  NetworkNumOfNodes=", &
+			//        NetworkNumOfNodes, " IK(NetworkNumOfNodes+1)= NNZE=", IK(NetworkNumOfNodes+1)
+			//   print*, " NetworkNumOfLinks=", NetworkNumOfLinks
+			// allocate same size as others -- this will be maximum  !noel
+			newAU.allocate( IK( NetworkNumOfNodes + 1 ) );
 #endif
 
-		// noel, GNU says the AU is indexed above its upper bound
-		//ALLOCATE(AU(IK(NetworkNumOfNodes+1)-1))
-		AU.allocate( IK( NetworkNumOfNodes + 1 ) );
+			// noel, GNU says the AU is indexed above its upper bound
+			//ALLOCATE(AU(IK(NetworkNumOfNodes+1)-1))
+			AU.allocate( IK( NetworkNumOfNodes + 1 ) );
+		}
 
 	}
 
@@ -671,7 +635,7 @@ namespace AirflowNetworkSolver {
 		int n;
 		int NNZE;
 		int NSYM;
-		int LFLAG;
+		bool LFLAG;
 		int CONVG;
 		int ACCEL;
 		Array1D< Real64 > PCF( NetworkNumOfNodes );
@@ -702,7 +666,7 @@ namespace AirflowNetworkSolver {
 		if ( AirflowNetworkSimu.InitFlag != 1 ) {
 			// Initialize node/zone pressure values by assuming only linear relationship between
 			// airflows and pressure drops.
-			LFLAG = 1;
+			LFLAG = true;
 			FILJAC( NNZE, LFLAG );
 			for ( n = 1; n <= NetworkNumOfNodes; ++n ) {
 				if ( AirflowNetworkNodeData( n ).NodeTypeNum == 0 ) PZ( n ) = SUMF( n );
@@ -726,7 +690,7 @@ namespace AirflowNetworkSolver {
 		// Solve nonlinear airflow network equations by modified Newton's method.
 
 		while ( ITER < AirflowNetworkSimu.MaxIteration ) {
-			LFLAG = 0;
+			LFLAG = false;
 			++ITER;
 			if ( LIST >= 2 ) gio::write( Unit21, fmtLD ) << "Begin iteration " << ITER;
 			// Set up the Jacobian matrix.
@@ -819,7 +783,7 @@ namespace AirflowNetworkSolver {
 	void
 	FILJAC(
 		int const NNZE, // number of nonzero entries in the "AU" array.
-		int const LFLAG // if = 1, use laminar relationship (initialization).
+		bool const LFLAG // if true, use laminar relationship (initialization).
 	)
 	{
 
@@ -1074,7 +1038,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEPLR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -1144,7 +1108,7 @@ namespace AirflowNetworkSolver {
 			coef /= SQRTDZ( M );
 		}
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				Ctl = std::pow( RhozNorm / RHOZ( n ), expn - 1.0 ) * std::pow( VisczNorm / VISCZ( n ), 2.0 * expn - 1.0 );
@@ -1194,7 +1158,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFESCR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const N, // Node 1 number
@@ -1286,7 +1250,7 @@ namespace AirflowNetworkSolver {
 
 		coef = DataAirflowNetwork::MultizoneSurfaceCrackData( CompNum ).FlowCoef * Corr;
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			RhoCor = ( tz + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
 			Ctl = std::pow( RhozNorm / dz / RhoCor, expn - 1.0 ) * std::pow( VisczNorm / VisAve, 2.0 * expn - 1.0 );
@@ -1320,7 +1284,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEDWC(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -1397,7 +1361,7 @@ namespace AirflowNetworkSolver {
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = ( 2.0 * RHOZ( n ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( n ) * DisSysCompDuctData( CompNum ).InitLamCoef * ld );
@@ -1492,7 +1456,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFESOP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -1602,7 +1566,7 @@ namespace AirflowNetworkSolver {
 			NF = GenericCrack( FlowCoef, FlowExpo, LFLAG, PDROP, n, M, F, DF );
 			return NF;
 		}
-		if ( std::abs( DRHO ) < MinRhoDiff || LFLAG == 1 ) {
+		if ( std::abs( DRHO ) < MinRhoDiff || LFLAG ) {
 			DPMID = PDROP - 0.5 * Height * GDRHO;
 			// Initialization or identical temps: treat as one-way flow.
 			NF = GenericCrack( FlowCoef, FlowExpo, LFLAG, DPMID, n, M, F, DF );
@@ -1664,7 +1628,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFECFR(
 		int const j, // Component number
-		int const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
+		bool const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
 		Real64 const EP_UNUSED( PDROP ), // Total pressure drop across a component (P1 - P2) [Pa]
 		int const EP_UNUSED( i ), // Linkage number
 		int const EP_UNUSED( n ), // Node 1 number
@@ -1778,7 +1742,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEFAN(
 		int const JA, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -1861,7 +1825,7 @@ namespace AirflowNetworkSolver {
 			PRISE = -PDROP * ( DisSysCompDetFanData( CompNum ).RhoAir / RHOZ( n ) ) / ( DisSysCompDetFanData( CompNum ).TranRat * AFECTL( i ) );
 		}
 		if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " fan:" << i << PDROP << PRISE << AFECTL( i ) << DisSysCompDetFanData( CompNum ).TranRat;
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear approximation.
 			F[ 0 ] = -DisSysCompDetFanData( CompNum ).Qfree * AFECTL( i ) * ( 1.0 - PRISE / DisSysCompDetFanData( CompNum ).Pshut );
 			DPDF = -DisSysCompDetFanData( CompNum ).Pshut / DisSysCompDetFanData( CompNum ).Qfree;
@@ -1932,7 +1896,7 @@ Label90: ;
 	int
 	AFECPF(
 		int const EP_UNUSED( j ), // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const EP_UNUSED( n ), // Node 1 number
@@ -1979,7 +1943,7 @@ Label90: ;
 
 		// FLOW:
 		int NF( 1 );
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			F[ 0 ] = AFECTL( i );
 			DF[ 0 ] = F[ 0 ];
 		} else {
@@ -1994,7 +1958,7 @@ Label90: ;
 	int
 	AFEDMP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -2053,7 +2017,7 @@ Label90: ;
 		if ( C > DisSysCompDamperData( CompNum ).FlowMax ) C = DisSysCompDamperData( CompNum ).FlowMax;
 		C = DisSysCompDamperData( CompNum ).A0 + C * ( DisSysCompDamperData( CompNum ).A1 + C * ( DisSysCompDamperData( CompNum ).A2 + C * DisSysCompDamperData( CompNum ).A3 ) );
 		if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " Dmp:" << i << AFECTL( i ) << DisSysCompDamperData( CompNum ).FlowMin << DisSysCompDamperData( CompNum ).FlowMax << C;
-		if ( LFLAG == 1 || std::abs( PDROP ) <= DisSysCompDamperData( CompNum ).LTP ) {
+		if ( LFLAG || std::abs( PDROP ) <= DisSysCompDamperData( CompNum ).LTP ) {
 			//                              Laminar flow.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = C * DisSysCompDamperData( CompNum ).LamFlow * RHOZ( n ) / VISCZ( n );
@@ -2076,7 +2040,7 @@ Label90: ;
 	int
 	AFESEL(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -2136,7 +2100,7 @@ Label90: ;
 		FlowExpo = MultizoneSurfaceELAData( CompNum ).FlowExpo;
 		FlowCoef = MultizoneSurfaceELAData( CompNum ).ELA * MultizoneSurfaceELAData( CompNum ).DischCoeff * sqrt_2 * std::pow( MultizoneSurfaceELAData( CompNum ).RefDeltaP, 0.5 - FlowExpo );
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = FlowCoef * RHOZ( n ) / VISCZ( n );
@@ -2185,7 +2149,7 @@ Label90: ;
 	int
 	AFEELR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -2243,7 +2207,7 @@ Label90: ;
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 		FlowCoef = DisSysCompELRData( CompNum ).ELR * DisSysCompELRData( CompNum ).FlowRate / RHOZ( n ) * std::pow( DisSysCompELRData( CompNum ).RefPres, -DisSysCompELRData( CompNum ).FlowExpo );
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = FlowCoef * RHOZ( n ) / VISCZ( n );
@@ -2292,7 +2256,7 @@ Label90: ;
 	int
 	AFECPD(
 		int const j, // Component number
-		int const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
+		bool const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
 		Real64 & PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
@@ -2368,7 +2332,7 @@ Label90: ;
 	int
 	AFECOI(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -2449,7 +2413,7 @@ Label90: ;
 		AA1 = g;
 
 		NF = 1;
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = ( 2.0 * RHOZ( n ) * area * DisSysCompCoilData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
@@ -2544,7 +2508,7 @@ Label90: ;
 	int
 	AFETMU(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -2624,7 +2588,7 @@ Label90: ;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = ( 2.0 * RHOZ( n ) * area * DisSysCompTermUnitData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
@@ -2727,7 +2691,7 @@ Label90: ;
 	int
 	AFEEXF(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -2818,7 +2782,7 @@ Label90: ;
 			}
 
 			NF = 1;
-			if ( LFLAG == 1 ) {
+			if ( LFLAG ) {
 				// Initialization by linear relation.
 				if ( PDROP >= 0.0 ) {
 					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
@@ -2876,7 +2840,7 @@ Label90: ;
 	int
 	AFEHEX(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
@@ -2953,7 +2917,7 @@ Label90: ;
 		g = 1.14 - 0.868589 * std::log( ed );
 		AA1 = g;
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				DF[ 0 ] = ( 2.0 * RHOZ( n ) * area * DisSysCompHXData( CompNum ).D ) / ( VISCZ( n ) * InitLamCoef * ld );
@@ -3041,7 +3005,7 @@ Label90: ;
 	int
 	AFEHOP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -3189,7 +3153,7 @@ Label90: ;
 	int
 	AFEOAF(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
@@ -3271,7 +3235,7 @@ Label90: ;
 			}
 
 			NF = 1;
-			if ( LFLAG == 1 ) {
+			if ( LFLAG ) {
 				// Initialization by linear relation.
 				if ( PDROP >= 0.0 ) {
 					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
@@ -3328,7 +3292,7 @@ Label90: ;
 	int
 	AFEREL(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const EP_UNUSED( i ), // Linkage number
 		int const n, // Node 1 number
@@ -3401,7 +3365,7 @@ Label90: ;
 			}
 
 			NF = 1;
-			if ( LFLAG == 1 ) {
+			if ( LFLAG ) {
 				// Initialization by linear relation.
 				if ( PDROP >= 0.0 ) {
 					RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
@@ -3459,7 +3423,7 @@ Label90: ;
 	GenericCrack(
 		Real64 & coef, // Flow coefficient
 		Real64 const expn, // Flow exponent
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const n, // Node 1 number
 		int const M, // Node 2 number
@@ -3527,7 +3491,7 @@ Label90: ;
 			coef /= SQRTDZ( M );
 		}
 
-		if ( LFLAG == 1 ) {
+		if ( LFLAG ) {
 			// Initialization by linear relation.
 			if ( PDROP >= 0.0 ) {
 				RhoCor = ( TZ( n ) + DataGlobals::KelvinConv ) / ( Tave + DataGlobals::KelvinConv );
@@ -4036,7 +4000,7 @@ Label90: ;
 	int
 	AFEDOP(
 		int const j, // Component number
-		int const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
+		bool const EP_UNUSED( LFLAG ), // Initialization flag.If = 1, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const IL, // Linkage number
 		int const EP_UNUSED( n ), // Node 1 number
@@ -5294,6 +5258,214 @@ Label90: ;
 	{
 		InitAirflowNetworkData();
 		AIRMOV();
+	}
+
+	void initFunctionWithALongName(const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, int numOfLinks)
+	{}
+
+	void Solver::init( const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, 
+		Array1D< DataAirflowNetwork::AirflowNetworkNodeSimuData > &nodedata, int numOfLinks )
+	{
+		afectl = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
+		aflow2 = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
+		aflow = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
+		pw = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
+		ps = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
+
+		auto numOfNodes = nodeprops.size();
+
+		tz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		wz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		pz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		dz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		sqrtdz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		viscz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		sumaf = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+		sumf = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
+
+		// Assign indices in the system of equations
+		int count = 0;
+		for( int i=0; i < numOfNodes; i++ ) {
+			if( nodeprops[ i ].NodeTypeNum == 0 ) {
+				nodedata[ i ].index = count;
+				count += 1;
+			}
+		}
+		int systemSize = count;
+		for (int i = 0; i < numOfNodes; i++) {
+			if (nodeprops[i].NodeTypeNum != 0) {
+				nodedata[i].index = count;
+				count += 1;
+			}
+		}
+
+		// Initialize the nodal arrays
+		for( auto &node : nodedata ) {
+			tz[ node.index ] = node.TZ;
+			wz[ node.index ] = node.WZ;
+			pz[ node.index ] = node.PZ;
+		}
+
+		// Need to do something with discretized openings
+
+	}
+
+	void Solver::filjac( bool LFLAG )
+	{
+		int i;
+		int j;
+		int M;
+		int N;
+		int FLAG;
+		int NF;
+#ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
+		int LHK; // noel
+		int JHK;
+		int JHK1;
+		int newsum;
+		int newh;
+		int ispan;
+		int thisIK;
+		bool allZero; // noel
+#endif
+		Array1D< Real64 > X( 4 );
+
+		std::array< Real64, 2 > F;
+		std::array< Real64, 2 > DF;
+
+		sumf.setZero();
+		sumaf.setZero();
+
+		// Set up the Jacobian matrix.
+		for ( int i = 0; i < NetworkNumOfLinks; ++i ) {
+			N = AirflowNetworkLinkageData[ i ].nodeNums[ 0 ];
+			M = AirflowNetworkLinkageData[ i ].nodeNums[ 1 ];
+			int indexN = AirflowNetworkNodeSimu[ N ].index;
+			int indexM = AirflowNetworkNodeSimu[ M ].index;
+
+			Real64 DP = pz[indexN] - pz[indexM] + ps[i] + pw[i];
+			//!!! Check array of DP. DpL is used for multizone air flow calculation only
+			//!!! and is not for forced air calculation
+			if ( i > NumOfLinksMultiZone - 1 ) {
+				DP += ps[ i ];
+			} else {
+				DP += DpL( i, 1 );
+			}
+
+			AirflowNetworkLinkSimu[ i ].DP = DP;
+
+			switch( AirflowNetworkCompData( AirflowNetworkLinkageData( i ).CompNum ).type ) {
+			case AirflowNetworkCompProp::Type::PLR: // Distribution system crack component
+				NF = AFEPLR( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::DWC: // Distribution system duct component
+				NF = AFEDWC( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::CVF: // Distribution system constant volume fan component
+				NF = AFECFR( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::FAN: // Distribution system detailed fan component
+				NF = AFEFAN( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+				//           Case (AirflowNetworkCompProp::Type::CPF) ! not currently used in EnergyPlus code -- left for compatibility with AirNet
+				//              CALL AFECPF(J,LFLAG,DP,I,N,M,F,DF,NF)
+			case AirflowNetworkCompProp::Type::DMP: // Distribution system damper component
+				NF = AFEDMP( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::ELR: // Distribution system effective leakage ratio component
+				NF = AFEELR( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::CPD: // Distribution system constant pressure drop component
+				NF = AFECPD( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::DOP: // Detailed opening
+				NF = AFEDOP( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::SOP: // Simple opening
+				NF = AFESOP( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::SCR: // Surface crack component
+				NF = AFESCR( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::SEL: // Surface effective leakage ratio component
+				NF = AFESEL( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::COI: // Distribution system coil component
+				NF = AFECOI( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::TMU: // Distribution system terminal unit component
+				NF = AFETMU( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::EXF: // Exhaust fan component
+				NF = AFEEXF( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::HEX: // Distribution system heat exchanger component
+				NF = AFEHEX( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::HOP: // Horizontal opening
+				NF = AFEHOP( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::OAF: // OA supply fan
+				NF = AFEOAF( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			case AirflowNetworkCompProp::Type::REL: // Relief fan
+				NF = AFEREL( j, LFLAG, DP, i, N, M, F, DF );
+				break;
+			}
+
+			aflow[ i ] = F[ 0 ];
+			aflow2[ i ] = 0.0;
+			if ( AirflowNetworkCompData( j ).type == AirflowNetworkCompProp::Type::DOP ) {
+				aflow2[ i ] = F[ 1 ];
+			}
+			FLAG = 1;
+			if ( AirflowNetworkNodeData( N ).NodeTypeNum == 0 ) {
+				++FLAG;
+				//X( 1 ) = DF[ 0 ];
+				//X( 2 ) = -DF[ 0 ];
+				sumf[ indexN ] += F[ 0 ];
+				sumaf[ indexN ] += std::abs( F[ 0 ] );
+			}
+			if( AirflowNetworkNodeData( M ).NodeTypeNum == 0 ) {
+				FLAG += 2;
+				//X( 4 ) = DF[ 0 ];
+				//X( 3 ) = -DF[ 0 ];
+				sumf[ indexM ] -= F[ 0 ];
+				sumaf[ indexM ] += std::abs( F[ 0 ] );
+			}
+			if( FLAG != 1 )
+			{
+				//FILSKY( X, AirflowNetworkLinkageData( i ).nodeNums, IK, AU, AD, FLAG );
+			}
+			if( NF == 1 )
+			{
+				continue;
+			}
+			aflow2[ i ] = F[ 1 ];
+
+			FLAG = 1;
+			if ( AirflowNetworkNodeData( N ).NodeTypeNum == 0 ) {
+				++FLAG;
+				//X( 1 ) = DF[ 1 ];
+				//X( 2 ) = -DF[ 1 ];
+				sumf[ indexN ] += F[ 1 ];
+				sumaf[ indexN ] += std::abs( F[ 1 ] );
+			}
+			if ( AirflowNetworkNodeData( M ).NodeTypeNum == 0 ) {
+				FLAG += 2;
+				//X( 4 ) = DF[ 1 ];
+				//X( 3 ) = -DF[ 1 ];
+				sumf[ indexM ] -= F[ 1 ];
+				sumaf[ indexM ] += std::abs( F[ 1 ] );
+			}
+			if ( FLAG != 1 ) {
+				//FILSKY( X, AirflowNetworkLinkageData( i ).nodeNums, IK, AU, AD, FLAG );
+			}
+		}
+	}
+
+	void Solver::airmov()
+	{
 	}
 
 	//*****************************************************************************************

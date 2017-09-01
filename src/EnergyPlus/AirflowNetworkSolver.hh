@@ -49,12 +49,22 @@
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array1A.hh>
+#include <ObjexxFCL/Array1D.hh>
 #include <ObjexxFCL/Array2D.hh>
+
+#include "Eigen/Dense"
 
 // EnergyPlus Headers
 #include <EnergyPlus.hh>
+#include "DataAirflowNetwork.hh"
 
 namespace EnergyPlus {
+
+//namespace DataAirflowNetwork {
+
+//class AirflowNetworkNodeProp;
+
+//}
 
 // define this variable to get new code, commenting should yield original
 #define SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
@@ -134,13 +144,13 @@ namespace AirflowNetworkSolver {
 	void
 	FILJAC(
 		int const NNZE, // number of nonzero entries in the "AU" array.
-		int const LFLAG // if = 1, use laminar relationship (initialization).
+		bool const LFLAG // if = 1, use laminar relationship (initialization).
 	);
 
 	int
 	AFEPLR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -152,7 +162,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFESCR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const N, // Node 1 number
@@ -164,7 +174,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEDWC(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -176,7 +186,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFESOP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -188,7 +198,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFECFR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -200,7 +210,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEFAN(
 		int const JA, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -214,7 +224,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFECPF(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -228,7 +238,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEDMP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -240,7 +250,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFESEL(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -252,7 +262,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEELR(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -264,7 +274,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFECPD(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 & PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -276,7 +286,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFECOI(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -288,7 +298,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFETMU(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -300,7 +310,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEEXF(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -312,7 +322,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEHEX(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -324,7 +334,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEHOP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -336,7 +346,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEOAF(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -348,7 +358,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEREL(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const i, // Linkage number
 		int const n, // Node 1 number
@@ -361,7 +371,7 @@ namespace AirflowNetworkSolver {
 	GenericCrack(
 		Real64 & coef, // Flow coefficient
 		Real64 const expn, // Flow exponent
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const n, // Node 1 number
 		int const M, // Node 2 number
@@ -419,7 +429,7 @@ namespace AirflowNetworkSolver {
 	int
 	AFEDOP(
 		int const j, // Component number
-		int const LFLAG, // Initialization flag.If = 1, use laminar relationship
+		bool const LFLAG, // Initialization flag. If true, use laminar relationship
 		Real64 const PDROP, // Total pressure drop across a component (P1 - P2) [Pa]
 		int const IL, // Linkage number
 		int const n, // Node 1 number
@@ -473,6 +483,40 @@ namespace AirflowNetworkSolver {
 	);
 
 	void airMovement();
+
+
+	void initFunctionWithALongName(const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, int numOfLinks);
+
+	struct Solver
+	{
+		enum class Type { ConjugateGradient, LU };
+		Solver() : type(Type::ConjugateGradient)
+		{}
+
+		void init( const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, 
+			Array1D< DataAirflowNetwork::AirflowNetworkNodeSimuData > &nodedata, int numOfLinks );
+		void filjac( bool laminar );
+		void airmov();
+
+		Type type;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > afectl;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > aflow2;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > aflow;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > pw;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > ps;
+
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > tz;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > wz;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > pz;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > dz;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > sqrtdz; 
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > viscz;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > sumaf;
+		Eigen::Matrix< Real64, Eigen::Dynamic, 1 > sumf;
+
+		Eigen::Matrix< Real64, Eigen::Dynamic, Eigen::Dynamic > J;
+
+	};
 
 	//*****************************************************************************************
 
