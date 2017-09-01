@@ -1,0 +1,4 @@
+build/
+vendor/FlatBuffers/
+~$*.xlsx
+*.pdf
