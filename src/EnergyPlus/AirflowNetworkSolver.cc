@@ -5260,9 +5260,6 @@ Label90: ;
 		AIRMOV();
 	}
 
-	void initFunctionWithALongName(const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, int numOfLinks)
-	{}
-
 	void Solver::init( const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, 
 		Array1D< DataAirflowNetwork::AirflowNetworkNodeSimuData > &nodedata, int numOfLinks )
 	{
@@ -5272,7 +5269,7 @@ Label90: ;
 		pw = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
 		ps = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfLinks, 1 );
 
-		auto numOfNodes = nodeprops.size();
+		int numOfNodes = nodeprops.size();
 
 		tz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
 		wz = Eigen::Matrix< Real64, Eigen::Dynamic, 1 >::Zero( numOfNodes, 1 );
@@ -5312,22 +5309,13 @@ Label90: ;
 
 	void Solver::filjac( bool LFLAG )
 	{
-		int i;
-		int j;
+		//int i;
+		//int j;
 		int M;
 		int N;
 		int FLAG;
 		int NF;
-#ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
-		int LHK; // noel
-		int JHK;
-		int JHK1;
-		int newsum;
-		int newh;
-		int ispan;
-		int thisIK;
-		bool allZero; // noel
-#endif
+
 		Array1D< Real64 > X( 4 );
 
 		std::array< Real64, 2 > F;
@@ -5354,7 +5342,8 @@ Label90: ;
 
 			AirflowNetworkLinkSimu[ i ].DP = DP;
 
-			switch( AirflowNetworkCompData( AirflowNetworkLinkageData( i ).CompNum ).type ) {
+			int j = AirflowNetworkLinkageData( i ).CompNum;
+			switch( AirflowNetworkCompData( j ).type ) {
 			case AirflowNetworkCompProp::Type::PLR: // Distribution system crack component
 				NF = AFEPLR( j, LFLAG, DP, i, N, M, F, DF );
 				break;

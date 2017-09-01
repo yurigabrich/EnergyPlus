@@ -484,9 +484,6 @@ namespace AirflowNetworkSolver {
 
 	void airMovement();
 
-
-	void initFunctionWithALongName(const Array1D< DataAirflowNetwork::AirflowNetworkNodeProp > &nodeprops, int numOfLinks);
-
 	struct Solver
 	{
 		enum class Type { ConjugateGradient, LU };
