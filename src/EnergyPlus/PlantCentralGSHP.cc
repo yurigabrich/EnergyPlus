@@ -1742,6 +1742,9 @@ namespace PlantCentralGSHP {
 				GetCurveMinMaxValues( Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).ChillerEIRFPLR, MinPartLoadRat, MaxPartLoadRat );
 				ChillerRefCap = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).RefCap;
 				ReferenceCOP = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).RefCOP;
+				if ( ReferenceCOP < 0.00000001 ) {
+					ReferenceCOP = 0.00000001;
+				}
 				EvapOutletTemp = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).EvapOutletNode.Temp;
 				TempLowLimitEout = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).TempLowLimitEvapOut;
 				EvapOutletTempSetPoint = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).TempRefEvapOutCooling;
@@ -2260,6 +2263,9 @@ namespace PlantCentralGSHP {
 					GetCurveMinMaxValues( Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).ChillerEIRFPLR, MinPartLoadRat, MaxPartLoadRat );
 					ChillerRefCap = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).RefCap;
 					ReferenceCOP = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).RefCOP;
+					if ( ReferenceCOP < 0.00000001 ) {
+						ReferenceCOP = 0.00000001;
+					}
 					EvapOutletTemp = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).TempRefEvapOutClgHtg;
 					TempLowLimitEout = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).TempLowLimitEvapOut;
 					EvapOutletTempSetPoint = Wrapper( WrapperNum ).ChillerHeater( ChillerHeaterNum ).TempRefEvapOutClgHtg;

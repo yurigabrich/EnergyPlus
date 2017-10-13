@@ -7981,7 +7981,11 @@ Label9999: ;
 			SDIRH = BeamSolarRad * SOLCOS( 3 );
 			SDIFH = DifSolarRad;
 			//              Fraction of sky covered by clouds
-			CloudFraction = pow_2( SDIFH / ( SDIRH + SDIFH + 0.0001 ) );
+			if ( SDIFH > 0.1e-100 ) {
+				CloudFraction = pow_2( SDIFH / ( SDIRH + SDIFH + 0.0001 ) );
+			} else {
+				CloudFraction = 0.0;
+			}
 			//              Luminous efficacy of sky diffuse solar and beam solar (lumens/W);
 			//              Horizontal illuminance from sky and horizontal beam illuminance (lux)
 			//              obtained from solar quantities on weather file and luminous efficacy.
