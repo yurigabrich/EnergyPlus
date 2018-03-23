@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2017, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-2018, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
@@ -46,8 +46,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // C++ Headers
-#include<memory>
-#include<vector>
+#include <memory>
+#include <vector>
 
 // EnergyPlus Headers
 #include <EnergyPlus.hh>
@@ -60,7 +60,7 @@
 #include <GroundTemperatureModeling/SiteFCFactorMethodGroundTemperatures.hh>
 #include <GroundTemperatureModeling/SiteShallowGroundTemperatures.hh>
 #include <GroundTemperatureModeling/XingGroundTemperatureModel.hh>
-#include <InputProcessor.hh>
+#include <UtilityRoutines.hh>
 
 namespace EnergyPlus {
 
@@ -74,7 +74,7 @@ namespace GroundTemperatureManager {
 	int const objectType_SiteFCFactorMethodGroundTemp( 6 );
 	int const objectType_XingGroundTemp( 7 );
 
-	Array1D_string const CurrentModuleObjects( 7, { "Site:Groundtemperature:Undisturbed:KusudaAchenbach", "Site:GroundTemperature:Undisturbed:FiniteDifference", "Site:GroundTemperature:BuildingSurface", "Site:GroundTemperature:Shallow", "Site:GroundTemperature:Deep", "Site:GroundTemperature:FCfactorMethod", "Site:GroundTemperature:Undisturbed:Xing"} );
+	Array1D_string const CurrentModuleObjects( 7, { "Site:GroundTemperature:Undisturbed:KusudaAchenbach", "Site:GroundTemperature:Undisturbed:FiniteDifference", "Site:GroundTemperature:BuildingSurface", "Site:GroundTemperature:Shallow", "Site:GroundTemperature:Deep", "Site:GroundTemperature:FCfactorMethod", "Site:GroundTemperature:Undisturbed:Xing"} );
 
 	std::vector < std::shared_ptr < BaseGroundTempsModel > > groundTempModels;
 
@@ -93,31 +93,28 @@ namespace GroundTemperatureManager {
 		//       RE-ENGINEERED  na
 
 		// PURPOSE OF THIS SUBROUTINE:
-		// Called by objects requireing ground temperature models. Determines type and calls appropriate factory method.
-
-		// USE STATEMENTS:
-		using InputProcessor::MakeUPPERCase;
+		// Called by objects requiring ground temperature models. Determines type and calls appropriate factory method.
 
 		// Locals
 		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 		int objectType( 0 );
 
-		std::string objectType_str_UPPERCase = MakeUPPERCase( objectType_str );
+		std::string objectType_str_UPPERCase = UtilityRoutines::MakeUPPERCase( objectType_str );
 
 		// Set object type
-		if ( objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_KusudaGroundTemp ) ) ) {
+		if ( objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_KusudaGroundTemp ) ) ) {
 			objectType = objectType_KusudaGroundTemp;
-		} else if ( objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_FiniteDiffGroundTemp ) ) ) {
+		} else if ( objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_FiniteDiffGroundTemp ) ) ) {
 			objectType = objectType_FiniteDiffGroundTemp;
-		} else if ( objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_SiteBuildingSurfaceGroundTemp ) ) ) {
+		} else if ( objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_SiteBuildingSurfaceGroundTemp ) ) ) {
 			objectType = objectType_SiteBuildingSurfaceGroundTemp;
-		} else if ( objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_SiteShallowGroundTemp ) ) ){
+		} else if ( objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_SiteShallowGroundTemp ) ) ){
 			objectType = objectType_SiteShallowGroundTemp;
-		} else if ( objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_SiteDeepGroundTemp ) ) ) {
+		} else if ( objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_SiteDeepGroundTemp ) ) ) {
 			objectType = objectType_SiteDeepGroundTemp;
-		} else if ( objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_SiteFCFactorMethodGroundTemp ) ) ) {
+		} else if ( objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_SiteFCFactorMethodGroundTemp ) ) ) {
 			objectType = objectType_SiteFCFactorMethodGroundTemp;
-		} else if (objectType_str_UPPERCase == MakeUPPERCase( CurrentModuleObjects( objectType_XingGroundTemp ) ) ) {
+		} else if (objectType_str_UPPERCase == UtilityRoutines::MakeUPPERCase( CurrentModuleObjects( objectType_XingGroundTemp ) ) ) {
 			objectType = objectType_XingGroundTemp;
 		} else {
 			// Error out if no ground temperature object types recognized
