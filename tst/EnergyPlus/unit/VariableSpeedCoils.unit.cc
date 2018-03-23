@@ -1,7 +1,8 @@
-// EnergyPlus, Copyright (c) 1996-2017, The Board of Trustees of the University of Illinois and
+// EnergyPlus, Copyright (c) 1996-2018, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
-// (subject to receipt of any required approvals from the U.S. Dept. of Energy). All rights
-// reserved.
+// (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
+// National Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
+// contributors. All rights reserved.
 //
 // NOTICE: This Software was developed under funding from the U.S. Department of Energy and the
 // U.S. Government consequently retains certain rights. As such, the U.S. Government has been
@@ -50,6 +51,7 @@
 #include <gtest/gtest.h>
 #include "Fixtures/EnergyPlusFixture.hh"
 #include <EnergyPlus/VariableSpeedCoils.hh>
+#include <EnergyPlus/Psychrometrics.hh>
 
 namespace EnergyPlus {
 
@@ -72,6 +74,7 @@ namespace EnergyPlus {
 		"    ,                        !- Evaporative Condenser Pump Rated Power Consumption {W}",
 		"    ,                        !- Crankcase Heater Capacity {W}",
 		"    10,                      !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}",
+		"    ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}",
 		"    ,                        !- Supply Water Storage Tank Name",
 		"    ,                        !- Condensate Collection Water Storage Tank Name",
 		"    ,                        !- Basin Heater Capacity {W/K}",
@@ -247,7 +250,7 @@ namespace EnergyPlus {
 		"    0.0,                        !- Speed 5 Reference Unit Waste Heat Fraction of Input Power At Rated Conditions {dimensionless}",
 		"    wasteHeat VS Temp1 Test,                        !- Speed 5 Waste Heat Function of Temperature Curve Name",
 		"    10734.02101,            !- Speed 6 Reference Unit Gross Rated Total Cooling Capacity {w}",
-		"    0.816,                   !- Speed 6 Reference Unit Gross Rated Sensible Heat Ratio {dimensionless}",	
+		"    0.816,                   !- Speed 6 Reference Unit Gross Rated Sensible Heat Ratio {dimensionless}",
 		"    7.661685232,             !- Speed 6 Reference Unit Gross Rated Cooling COP {dimensionless}",
 		"    0.652231367,             !- Speed 6 Reference Unit Rated Air Flow Rate {m3/s}",
 		"    0.0008201726 ,                  !- Speed 6 Reference Unit Rated Water Flow Rate {m3/s}",
@@ -298,7 +301,7 @@ namespace EnergyPlus {
 		"    1CoolingEIRFWCurve,      !- Speed 9 Energy Input Ratio Function of Water Flow Fraction Curve Name",
 		"    0.0,                        !- Speed 9 Reference Unit Waste Heat Fraction of Input Power At Rated Conditions {dimensionless}",
 		"    wasteHeat VS Temp1 Test;                        !- Speed 9 Waste Heat Function of Temperature Curve Name",
-    
+
 		"  Coil:Heating:WaterToAirHeatPump:VariableSpeedEquationFit,",
 		"    Lobby_ZN_1_FLR_2 WSHP Heating Mode,  !- Name",
 		"    Lobby_ZN_1_FLR_2 WSHP Heating Source Side Inlet Node,  !- Water-to-Refrigerant HX Water Inlet Node Name",
@@ -419,7 +422,7 @@ namespace EnergyPlus {
 		"    1HeatingEIRFWCurve,      !- Speed 9 Energy Input Ratio Function of Water Flow Fraction Curve Name",
 		"    0.0,                        !- Speed 9 Reference Unit Waste Heat Fraction of Input Power At Rated Conditions {dimensionless}",
 		"    wasteHeat VS Temp1 Test;                        !- Speed 9 Waste Heat Function of Temperature Curve Name",
- 
+
 		"  Fan:OnOff,",
 		"    Lobby_ZN_1_FLR_2 WSHP Fan,              !- Name",
 		"    ALWAYS_ON,    !- Availability Schedule Name",
@@ -2481,13 +2484,324 @@ namespace EnergyPlus {
 
 			});
 
-			ASSERT_FALSE( process_idf( idf_objects ) );
-			
+			ASSERT_TRUE( process_idf( idf_objects ) );
+
 			VariableSpeedCoils::GetVarSpeedCoilInput();
 
 			EXPECT_EQ ( VariableSpeedCoils::VarSpeedCoil( 1 ).Name, "LOBBY_ZN_1_FLR_2 WSHP COOLING MODE" );
 
 			EXPECT_EQ ( VariableSpeedCoils::VarSpeedCoil( 2 ).Name, "PSZ-AC_1:5_COOLC STANDARD 4-COMPRESSOR IPAK");
+
+	}
+
+	TEST_F( EnergyPlusFixture, CoilHeatingDXVariableSpeed_MinOADBTempCompOperLimit ) {
+
+		// tests minimum limits of Minimum Outdoor Drybulb Temperature for Compressor Operation
+
+		std::string const idf_objects = delimited_string( {
+
+			"  Version,8.9;",
+
+			"  Curve:Biquadratic,",
+			"    HPACHeatCapFT,           !- Name",
+			"    0.8529681407,            !- Coefficient1 Constant",
+			"    -0.0004847169,           !- Coefficient2 x",
+			"    -0.0000010693,           !- Coefficient3 x**2",
+			"    0.0185542164,            !- Coefficient4 y",
+			"    0.0000872425,            !- Coefficient5 y**2",
+			"    -0.0000166868,           !- Coefficient6 x*y",
+			"    17.78,                   !- Minimum Value of x",
+			"    23.33,                   !- Maximum Value of x",
+			"    -28.89,                  !- Minimum Value of y",
+			"    17.22,                   !- Maximum Value of y",
+			"    0.3799,                  !- Minimum Curve Output",
+			"    1.1896,                  !- Maximum Curve Output",
+			"    Temperature,             !- Input Unit Type for X",
+			"    Temperature,             !- Input Unit Type for Y",
+			"    Dimensionless;           !- Output Unit Type",
+
+			"  Curve:Cubic,",
+			"    HPACHeatCapFFF,          !- Name",
+			"    0.84,                    !- Coefficient1 Constant",
+			"    0.16,                    !- Coefficient2 x",
+			"    0.0,                     !- Coefficient3 x**2",
+			"    0.0,                     !- Coefficient4 x**3",
+			"    0.5,                     !- Minimum Value of x",
+			"    1.5;                     !- Maximum Value of x",
+
+			"  Curve:Biquadratic,",
+			"    HPACHeatEIRFT,           !- Name",
+			"    0.7077081462,            !- Coefficient1 Constant",
+			"    0.0148163478,            !- Coefficient2 x",
+			"    0.0002622589,            !- Coefficient3 x**2",
+			"    -0.0113239622,           !- Coefficient4 y",
+			"    0.0002939277,            !- Coefficient5 y**2",
+			"    -0.0003605284,           !- Coefficient6 x*y",
+			"    17.78,                   !- Minimum Value of x",
+			"    23.33,                   !- Maximum Value of x",
+			"    -28.89,                  !- Minimum Value of y",
+			"    17.22,                   !- Maximum Value of y",
+			"    0.8266,                  !- Minimum Curve Output",
+			"    2.0277,                  !- Maximum Curve Output",
+			"    Temperature,             !- Input Unit Type for X",
+			"    Temperature,             !- Input Unit Type for Y",
+			"    Dimensionless;           !- Output Unit Type",
+
+			"  Curve:Quadratic,",
+			"    HPACHeatEIRFFF,          !- Name",
+			"    1.3824,                  !- Coefficient1 Constant",
+			"    -0.4336,                 !- Coefficient2 x",
+			"    0.0512,                  !- Coefficient3 x**2",
+			"    0.0,                     !- Minimum Value of x",
+			"    1.0;                     !- Maximum Value of x",
+
+			"  Curve:Quadratic,",
+			"    HPACHeatPLFFPLR,         !- Name",
+			"    0.75,                    !- Coefficient1 Constant",
+			"    0.25,                    !- Coefficient2 x",
+			"    0.0,                     !- Coefficient3 x**2",
+			"    0.0,                     !- Minimum Value of x",
+			"    1.0;                     !- Maximum Value of x",
+
+			"  Coil:Heating:DX:VariableSpeed,",
+			"    Heating Coil VariableSpeed,     !- Name",
+			"    Zone1PTHPDXCoolCoilOutletNode,  !- Indoor Air Inlet Node Name",
+			"    Zone1PTHPDXHeatCoilOutletNode,  !- Indoor Air Outlet Node Name",
+			"    10.0,                    !- Number of Speeds {dimensionless}",
+			"    10.0,                    !- Nominal Speed Level {dimensionless}",
+			"    7200.0,                  !- Rated Heating Capacity At Selected Nominal Speed Level {w}",
+			"    0.4,                     !- Rated Air Flow Rate At Selected Nominal Speed Level {m3/s}",
+			"    HPACHeatPLFFPLR,         !- Energy Part Load Fraction Curve Name",
+			"    ,                        !- Defrost Energy Input Ratio Function of Temperature Curve Name",
+			"   -60.0,                    !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}",
+			"    ,                        !- Outdoor Dry-Bulb Temperature to Turn On Compressor {C}",
+			"    5.0,                     !- Maximum Outdoor Dry-Bulb Temperature for Defrost Operation {C}",
+			"    200.0,                   !- Crankcase Heater Capacity {W}",
+			"    10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}",
+			"    Resistive,               !- Defrost Strategy",
+			"    TIMED,                   !- Defrost Control",
+			"    0.166667,                !- Defrost Time Period Fraction",
+			"    7200,                    !- Resistive Defrost Heater Capacity {W}",
+			"    1838.7,                  !- Speed 1 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 1 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.1661088,               !- Speed 1 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 1 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 1 Total  Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 1 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 1 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    2295.5,                  !- Speed 2 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 2 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.179322,                !- Speed 2 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 2 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 2 Total  Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 2 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 2 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    2751.3,                  !- Speed 3 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 3 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.1925352,               !- Speed 3 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 3 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 3 Total  Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 3 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 3 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    3659.6,                  !- Speed 4 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 4 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.2189616,               !- Speed 4 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 4 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 4 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 4 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 4 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    4563.7,                  !- Speed 5 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 5 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.245388,                !- Speed 5 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 5 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 5 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 5 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 5 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    5463.3,                  !- Speed 6 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 6 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.2718144,               !- Speed 6 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 6 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 6 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 6 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 6 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    6358.4,                  !- Speed 7 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 7 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.2982408,               !- Speed 7 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 7 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 7 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 7 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 7 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    7248.5,                  !- Speed 8 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 8 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.3246672,               !- Speed 8 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 8 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 8 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 8 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 8 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    8133.6,                  !- Speed 9 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 9 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.3510936,               !- Speed 9 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 9 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 9 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 9 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF,          !- Speed 9 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    9013.2,                  !- Speed 10 Reference Unit Gross Rated Heating Capacity {w}",
+			"    5.0,                     !- Speed 10 Reference Unit Gross Rated Heating COP {dimensionless}",
+			"    0.37752,                 !- Speed 10 Reference Unit Rated Air Flow Rate {m3/s}",
+			"    HPACHeatCapFT,           !- Speed 10 Heating Capacity Function of Temperature Curve Name",
+			"    HPACHeatCapFFF,          !- Speed 10 Heating Capacity Function of Air Flow Fraction Curve Name",
+			"    HPACHeatEIRFT,           !- Speed 10 Energy Input Ratio Function of Temperature Curve Name",
+			"    HPACHeatEIRFFF;          !- Speed 10 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+
+		} );
+
+		ASSERT_TRUE( process_idf( idf_objects ) );
+
+		VariableSpeedCoils::GetVarSpeedCoilInput();
+
+		ASSERT_EQ( "HEATING COIL VARIABLESPEED", VariableSpeedCoils::VarSpeedCoil( 1 ).Name ); // Heating Coil Variable Speed
+		ASSERT_EQ( -60.0, VariableSpeedCoils::VarSpeedCoil( 1 ).MinOATCompressor ); // removed the minimum limit of -50.0C
+	}
+
+	TEST_F( EnergyPlusFixture, VariableSpeedCoils_Test_CalcTotCap_VSWSHP ) {
+		std::string const idf_objects = delimited_string( {
+			"  Coil:Cooling:DX:VariableSpeed,",
+			"    PSZ-AC_1:5_CoolC Standard 4-compressor IPAK,  !- Name",
+			"    PSZ-AC_1:5_OA-PSZ-AC_1:5_CoolCNode,           !- Air Inlet Node Name",
+			"    PSZ-AC_1:5_CoolC-PSZ-AC_1:5_HeatCNode,        !- Air Outlet Node Name",
+			"    5,                       !- Number of Speeds {dimensionless}",
+			"    5,                       !- Nominal Speed Level {dimensionless}",
+			"    autosize,                !- Rated Total Cooling Capacity At Selected Nominal Speed Level {w}",
+			"    autosize,                !- Rated Volumetric Air Flow Rate At Selected Nominal Speed Level {m3/s}",
+			"    0,                       !- Nominal Time for Condensate to Begin Leaving the Coil {s}",
+			"    0,                       !- Initial Moisture Evaporation Rate Divided by Steady-State AC Latent Capacity {dimensionless}",
+			"    PLF Curve,               !- Energy Part Load Fraction Curve Name",
+			"    PSZ-AC_1:5 OA Node,      !- Condenser Air Inlet Node Name",
+			"    AirCooled,               !- Condenser Type",
+			"    ,                        !- Evaporative Condenser Pump Rated Power Consumption {W}",
+			"    ,                        !- Crankcase Heater Capacity {W}",
+			"    10,                      !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}",
+			"    ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}",
+			"    ,                        !- Supply Water Storage Tank Name",
+			"    ,                        !- Condensate Collection Water Storage Tank Name",
+			"    ,                        !- Basin Heater Capacity {W/K}",
+			"    2,                       !- Basin Heater Setpoint Temperature {C}",
+			"    ,                        !- Basin Heater Operating Schedule Name",
+			"    33861.72,                !- Speed 1 Reference Unit Total Cooling Capacity At Rated Conditions {w}",
+			"    0.70,                    !- Speed 1 Reference Unit Sensible Heat Ratio At Rated Conditions {dimensionless}",
+			"    4.328973,                !- Speed 1 Reference Unit COP At Rated Conditions {dimensionless}",
+			"    1.396964,                !- Speed 1 Reference Unit Air Flow Rate At Rated Conditions {m3/s}",
+			"    ,                        !- Speed 1 Reference Unit Condenser Flow Rate at Rated Conditions {m3/s}",
+			"    ,                        !- Speed 1 Reference Unit Pad Effectiveness of Evap Precooling at Rated Conditions {dimensionless}",
+			"    CapacityCurve,           !- Speed 1 Total Cooling Capacity Function of Temperature Curve Name",
+			"    CAPFF Curve,             !- Speed 1 Total Cooling Capacity Function of Air Flow Fraction Curve Name",
+			"    PowerCurve,              !- Speed 1 Energy Input Ratio Function of Temperature Curve Name",
+			"    EIRFF Curve,             !- Speed 1 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    35516.08,                !- Speed 2 Reference Unit Total Cooling Capacity At Rated Conditions {w}",
+			"    0.78,                    !- Speed 2 Reference Unit Sensible Heat Ratio At Rated Conditions {dimensionless}",
+			"    4.540061,                !- Speed 2 Reference Unit COP At Rated Conditions {dimensionless}",
+			"    1.88779,                 !- Speed 2 Reference Unit Air Flow Rate At Rated Conditions {m3/s}",
+			"    ,                        !- Speed 2 Reference Unit Condenser Flow Rate at Rated Conditions {m3/s}",
+			"    ,                        !- Speed 2 Reference Unit Pad Effectiveness of Evap Precooling at Rated Conditions {dimensionless}",
+			"    CapacityCurve,           !- Speed 2 Total Cooling Capacity Function of Temperature Curve Name",
+			"    CAPFF Curve,             !- Speed 2 Total Cooling Capacity Function of Air Flow Fraction Curve Name",
+			"    PowerCurve,              !- Speed 2 Energy Input Ratio Function of Temperature Curve Name",
+			"    EIRFF Curve,             !- Speed 2 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    65133.17,                !- Speed 3 Reference Unit Total Cooling Capacity At Rated Conditions {w}",
+			"    0.70,                    !- Speed 3 Reference Unit Sensible Heat Ratio At Rated Conditions {dimensionless}",
+			"    4.164418,                !- Speed 3 Reference Unit COP At Rated Conditions {dimensionless}",
+			"    2.831685,                !- Speed 3 Reference Unit Air Flow Rate At Rated Conditions {m3/s}",
+			"    ,                        !- Speed 3 Reference Unit Condenser Flow Rate at Rated Conditions {m3/s}",
+			"    ,                        !- Speed 3 Reference Unit Pad Effectiveness of Evap Precooling at Rated Conditions {dimensionless}",
+			"    CapacityCurve,           !- Speed 3 Total Cooling Capacity Function of Temperature Curve Name",
+			"    CAPFF Curve,             !- Speed 3 Total Cooling Capacity Function of Air Flow Fraction Curve Name",
+			"    PowerCurve,              !- Speed 3 Energy Input Ratio Function of Temperature Curve Name",
+			"    EIRFF Curve,             !- Speed 3 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    119583.3,                !- Speed 4 Reference Unit Total Cooling Capacity At Rated Conditions {w}",
+			"    0.62,                    !- Speed 4 Reference Unit Sensible Heat Ratio At Rated Conditions {dimensionless}",
+			"    3.469661,                !- Speed 4 Reference Unit COP At Rated Conditions {dimensionless}",
+			"    3.553764,                !- Speed 4 Reference Unit Air Flow Rate At Rated Conditions {m3/s}",
+			"    ,                        !- Speed 4 Reference Unit Condenser Flow Rate at Rated Conditions {m3/s}",
+			"    ,                        !- Speed 4 Reference Unit Pad Effectiveness of Evap Precooling at Rated Conditions {dimensionless}",
+			"    CapacityCurve,           !- Speed 4 Total Cooling Capacity Function of Temperature Curve Name",
+			"    CAPFF Curve,             !- Speed 4 Total Cooling Capacity Function of Air Flow Fraction Curve Name",
+			"    PowerCurve,              !- Speed 4 Energy Input Ratio Function of Temperature Curve Name",
+			"    EIRFF Curve,             !- Speed 4 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+			"    132769.7,                !- Speed 5 Reference Unit Total Cooling Capacity At Rated Conditions {w}",
+			"    0.69,                    !- Speed 5 Reference Unit Sensible Heat Ratio At Rated Conditions {dimensionless}",
+			"    3.822957,                !- Speed 5 Reference Unit COP At Rated Conditions {dimensionless}",
+			"    5.66336932,              !- Speed 5 Reference Unit Air Flow Rate At Rated Conditions {m3/s}",
+			"    ,                        !- Speed 5 Reference Unit Condenser Flow Rate at Rated Conditions {m3/s}",
+			"    ,                        !- Speed 5 Reference Unit Pad Effectiveness of Evap Precooling at Rated Conditions {dimensionless}",
+			"    CapacityCurve,           !- Speed 5 Total Cooling Capacity Function of Temperature Curve Name",
+			"    CAPFF Curve,             !- Speed 5 Total Cooling Capacity Function of Air Flow Fraction Curve Name",
+			"    PowerCurve,              !- Speed 5 Energy Input Ratio Function of Temperature Curve Name",
+			"    EIRFF Curve;             !- Speed 5 Energy Input Ratio Function of Air Flow Fraction Curve Name",
+
+			"Curve:Biquadratic,",
+			"    CapacityCurve, 1, 0, 0, 0, 0, 0, 10, 25.5, 7.2, 48.8, , , Temperature, Temperature, Dimensionless;",
+			"Curve:Biquadratic,",
+			"    PowerCurve, 1, 0, 0, 0, 0, 0, 10, 25.5, 7.2, 48.8, , , Temperature, Temperature, Dimensionless;",
+			"Curve:Cubic,",
+			"    CAPFF Curve, 1, 0, 0, 0, 0, 1, , , Dimensionless, Dimensionless;",
+			"Curve:Cubic,",
+			"    EIRFF Curve, 1, 0, 0, 0, 0, 1, , , Dimensionless, Dimensionless;",
+			"Curve:Quadratic,",
+			"    PLF Curve, 0.85, 0.8333, 0.0, 0.0, 0.3, 0.85, 1.0, Dimensionless, Dimensionless;",
+
+		} );
+
+		ASSERT_TRUE( process_idf( idf_objects ) );
+
+		VariableSpeedCoils::GetVarSpeedCoilInput();
+
+		Real64 LSInletDBTemp = 24.0; // conditions at 24 DB / 20 Wb found at http://www.sugartech.co.za/psychro/index.php 
+		Real64 LSInletHumRat = 0.013019367;
+		Real64 LSInletEnth = 57256.90248;
+		Real64 LSInletWBTemp = 20.0;
+		Real64 AirMassFlowRatio = VariableSpeedCoils::VarSpeedCoil( 1 ).MSRatedAirVolFlowRate( 1 );
+		Real64 WaterMassFlowRatio = 0.0;
+		Real64 LSMassFlowRate = 1.45;
+		Real64 CBFSpeed = 0.000001;
+		Real64 MSRatedTotCap = VariableSpeedCoils::VarSpeedCoil( 1 ).MSRatedTotCap( 1 );
+		int MSCapFTemp = VariableSpeedCoils::VarSpeedCoil( 1 ).MSCCapFTemp( 1 );
+		int MSCapAirFFlow = VariableSpeedCoils::VarSpeedCoil( 1 ).MSCCapAirFFlow( 1 );
+		int MSCapWaterFFlow = VariableSpeedCoils::VarSpeedCoil( 1 ).MSCCapWaterFFlow( 1 );
+		Real64 QLoadTotal = 0.0;
+		Real64 QLoadTotal1 = 0.0;
+		Real64 QLoadTotal2 = 0.0;
+		Real64 SHR = VariableSpeedCoils::VarSpeedCoil( 1 ).MSRatedSHR( 1 );
+		Real64 SSInletTemp = 24.0;
+		Real64 InletAirPressure = 101320.0;
+
+		VariableSpeedCoils::CalcTotCapSHR_VSWSHP( LSInletDBTemp, LSInletHumRat, LSInletEnth, LSInletWBTemp, AirMassFlowRatio, WaterMassFlowRatio, LSMassFlowRate, CBFSpeed, MSRatedTotCap, MSCapFTemp, MSCapAirFFlow, MSCapWaterFFlow, 0.0, 0, 0, 0, QLoadTotal1, QLoadTotal2, QLoadTotal, SHR, SSInletTemp, InletAirPressure, 0.0, 1, VariableSpeedCoils::VarSpeedCoil( 1 ).capModFacTotal );
+
+		// same calculations as in CalcTotCapSHR_VSWSHP (except CapFTemp term is 1 so no need to add that calc here)
+		Real64 hDelta = MSRatedTotCap / LSMassFlowRate; // Change in air enthalpy across the cooling coil [J/kg]
+		Real64 hADP = LSInletEnth - hDelta / ( 1.0 - CBFSpeed ); // Apparatus dew point enthalpy [J/kg]
+		Real64 tADP = Psychrometrics::PsyTsatFnHPb( hADP, InletAirPressure ); // Apparatus dew point temperature [C]
+		Real64 wADP = Psychrometrics::PsyWFnTdbH( tADP, hADP ); // Apparatus dew point humidity ratio [kg/kg]
+		Real64 hTinwADP = Psychrometrics::PsyHFnTdbW( LSInletDBTemp, wADP ); // Enthalpy at inlet dry-bulb and wADP [J/kg]
+		Real64 SHRCalc = min( ( hTinwADP - hADP ) / ( LSInletEnth - hADP ), 1.0 ); // temporary calculated value of SHR
+
+		// expect SHR to be < 1
+		EXPECT_NEAR( SHR, 0.5275102, 0.000001 );
+		EXPECT_NEAR( SHR, SHRCalc, 0.000001 );
+		EXPECT_NEAR( QLoadTotal1, 33861.7200, 0.00001 );
+		EXPECT_NEAR( QLoadTotal2, 0.0, 0.00001 );
+		EXPECT_NEAR( QLoadTotal, 33861.7200, 0.00001 );
+
+		Real64 OutletTemp = LSInletDBTemp - ( 1.0 - CBFSpeed ) * ( LSInletDBTemp - tADP );
+		Real64 OutletHumRat = LSInletHumRat - ( 1.0 - CBFSpeed ) * ( LSInletHumRat - wADP );
+		Real64 OutletEnthalpy = LSInletEnth - hDelta;
+		Real64 OutletAirRH = Psychrometrics::PsyRhFnTdbWPb( OutletTemp, OutletHumRat, InletAirPressure );
+
+		// outlet conditions should be very near the saturation curve
+		EXPECT_NEAR( OutletTemp, tADP, 0.0001 );
+		EXPECT_NEAR( OutletHumRat, wADP, 0.00000001 ); // CalcTotCapSHR_VSWSHP provides correct SHR even when CBF is very small
+		EXPECT_NEAR( OutletEnthalpy, hADP, 0.1 );
+		EXPECT_NEAR( OutletAirRH, 0.999, 0.001 );
+		EXPECT_LT( OutletAirRH, 1.0 );
 
 	}
 }
