@@ -1,7 +1,8 @@
-// EnergyPlus, Copyright (c) 1996-2017, The Board of Trustees of the University of Illinois and
+// EnergyPlus, Copyright (c) 1996-2018, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
-// (subject to receipt of any required approvals from the U.S. Dept. of Energy). All rights
-// reserved.
+// (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
+// National Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
+// contributors. All rights reserved.
 //
 // NOTICE: This Software was developed under funding from the U.S. Department of Energy and the
 // U.S. Government consequently retains certain rights. As such, the U.S. Government has been
@@ -139,6 +140,11 @@ namespace DataSizing {
 	extern int const ZOAM_Sum; // sum the outdoor air flow rate of the people component and the space floor area component
 	extern int const ZOAM_Max; // use the maximum of the outdoor air flow rate of the people component and
 	// the space floor area component
+	extern int const ZOAM_IAQP; // Use ASHRAE Standard 62.1-2007 IAQP to calculate the zone level outdoor air flow rates
+	extern int const ZOAM_ProportionalControlSchOcc; // Use ASHRAE Standard 62.1-2004 or Trane Engineer's newsletter (volume 34-5)
+												   // to calculate the zone level outdoor air flow rates based on scheduled occupancy
+	extern int const ZOAM_ProportionalControlDesOcc; // Use ASHRAE Standard 62.1-2004 or Trane Engineer's newsletter (volume 34-5)
+												   // to calculate the zone level outdoor air flow rates based on design occupancy
 
 	//System Outdoor Air Method
 	extern int const SOAM_ZoneSum; // Sum the outdoor air flow rates of all zones
@@ -154,6 +160,7 @@ namespace DataSizing {
 	// based on the generic contaminant setpoint
 	extern int const SOAM_IAQPCOM; // Take the maximum outdoor air rate from both CO2 and generic contaminant controls
 	// based on the generic contaminant setpoint
+	extern int const SOAM_ProportionalControlDesOARate; // Calculate the system level outdoor air flow rates based on design OA rate
 
 	// Zone HVAC Equipment Supply Air Sizing Option
 	extern int const None;
@@ -197,6 +204,7 @@ namespace DataSizing {
 	extern int CurSysNum; // Current Air System index (0 if not in air loop)
 	extern int CurOASysNum; // Current outside air system index (0 if not in OA Sys)
 	extern int CurZoneEqNum; // Current Zone Equipment index (0 if not simulating ZoneEq)
+	extern int CurTermUnitSizingNum; // Current terminal unit sizing index for TermUnitSizing and TermUnitFinalZoneSizing
 	extern int CurBranchNum; // Index of branch being simulated (or 0 if not air loop)
 	extern int CurDuctType; // Duct type of current branch
 	extern int CurLoopNum; // the current plant loop index
@@ -262,7 +270,9 @@ namespace DataSizing {
 	extern Real64 DataNonZoneNonAirloopValue; // used when equipment is not located in a zone or airloop
 	extern int DataZoneUsedForSizing; // pointer to control zone for air loop equipment
 	extern int DataZoneNumber; // a pointer to a zone served by zoneHVAC equipment
-	extern int NumZoneHVACSizing; // Number of zone HVAC sizing objects
+	extern int NumZoneHVACSizing; // Number of design specification zone HVAC sizing objects
+	extern int NumAirTerminalSizingSpec; // Number of design specification air terminal sizing objects
+	extern int NumAirTerminalUnits; // Number of air terminal units (same as total number of zone inlet nodes)
 	extern bool TermUnitSingDuct; // TRUE if a non-induction single duct terminal unit
 	extern bool TermUnitPIU; // TRUE if a powered induction terminal unit
 	extern bool TermUnitIU; // TRUE if an unpowered induction terminal unit
@@ -326,7 +336,6 @@ namespace DataSizing {
 		Real64 DesCoolMinAirFlowPerArea; // design cooling minimum air flow rate per zone area [m3/s / m2]
 		Real64 DesCoolMinAirFlow; // design cooling minimum air flow rate [m3/s]
 		Real64 DesCoolMinAirFlowFrac; // design cooling minimum air flow rate fraction
-		bool DesCoolMinAirFlowFracUsInpFlg; // user input for minimum air flow rate fraction
 		//  (of the cooling design air flow rate)
 		int HeatAirDesMethod; // choice of how to get zone heating design air flow rates;
 		//  1 = calc from des day simulation; 2 = m3/s per zone, user input
@@ -371,7 +380,6 @@ namespace DataSizing {
 			DesCoolMinAirFlowPerArea( 0.0 ),
 			DesCoolMinAirFlow( 0.0 ),
 			DesCoolMinAirFlowFrac( 0.0 ),
-			DesCoolMinAirFlowFracUsInpFlg( false ),
 			HeatAirDesMethod( 0 ),
 			DesHeatAirFlow( 0.0 ),
 			DesHeatMaxAirFlowPerArea( 0.0 ),
@@ -397,6 +405,7 @@ namespace DataSizing {
 	{
 		// Members
 		std::string ZoneName; // name of a zone
+		std::string ADUName; // Terminal Unit Name (air distribution unit or direct air unit) - only assigned for TermUnitFinalZoneSizing
 		std::string CoolDesDay; // name of a cooling design day
 		std::string HeatDesDay; // name of a heating design day
 		int ZnCoolDgnSAMethod; // choice of how to get zone cooling design air temperature;
@@ -426,7 +435,6 @@ namespace DataSizing {
 		Real64 DesCoolMinAirFlowPerArea; // design cooling minimum air flow rate per zone area [m3/s / m2]
 		Real64 DesCoolMinAirFlow; // design cooling minimum air flow rate [m3/s]
 		Real64 DesCoolMinAirFlowFrac; // design cooling minimum air flow rate fraction
-		bool DesCoolMinAirFlowFracUsInpFlg; // user flag for minimum air flow rate fraction
 		//  (of the cooling design air flow rate)
 		int HeatAirDesMethod; // choice of how to get zone heating design air flow rates;
 		//  1 = calc from des day simulation; 2 = m3/s per zone, user input
@@ -445,10 +453,12 @@ namespace DataSizing {
 		Real64 DOASHighSetpoint; // Dedicated Outside Air High Setpoint for Design [C]
 		int ActualZoneNum; // index into the Zone data array (in DataHeatBalance)
 		Real64 DesHeatMassFlow; // zone design heating air mass flow rate [kg/s]
+		Real64 DesHeatMassFlowNoOA; // zone design heating air mass flow rate without applying MinOA as a limit [kg/s]
 		Real64 DesHeatOAFlowFrac; // zone design heating OA air volume fraction [-]
 		bool EMSOverrideDesHeatMassOn; // true if EMS is acting on this structure
 		Real64 EMSValueDesHeatMassFlow; // Value EMS directing to use for Design Heating air mass flow [kg/s]
 		Real64 DesCoolMassFlow; // zone design cooling air mass flow rate [kg/s]
+		Real64 DesCoolMassFlowNoOA; // zone design cooling air mass flow rate without applying MinOA as a limit [kg/s]
 		Real64 DesCoolOAFlowFrac; // zone design cooling OA air volume fraction [-]
 		bool EMSOverrideDesCoolMassOn; // true if EMS is acting on this structure
 		Real64 EMSValueDesCoolMassFlow; // Value EMS directing to use for Design Cooling air mass flow [kg/s]
@@ -463,10 +473,12 @@ namespace DataSizing {
 		Real64 DesHeatDens; // zone design heating air density [kg/m3]
 		Real64 DesCoolDens; // zone design cooling air density [kg/m3]
 		Real64 DesHeatVolFlow; // zone design heating air volume flow rate including sizing factor and scaled to match airflow sizing [m3/s]
+		Real64 DesHeatVolFlowNoOA; // zone design heating air volume flow rate including sizing factor and scaled to match airflow sizing without MinOA limit [m3/s]
 		Real64 NonAirSysDesHeatVolFlow; // base zone design heating air volume flow rate including sizing factor [m3/s]
 		bool EMSOverrideDesHeatVolOn; // true if EMS is acting on this structure
 		Real64 EMSValueDesHeatVolFlow; // Value EMS directing to use for Design Heating air volume flow [m3/s]
 		Real64 DesCoolVolFlow; // zone design cooling air volume flow rate [m3/s]
+		Real64 DesCoolVolFlowNoOA; // zone design cooling air volume flow rate without applying MinOA as a limit [m3/s]
 		Real64 NonAirSysDesCoolVolFlow; // base zone design cooling air volume flow rate including sizing factor [m3/s]
 		bool EMSOverrideDesCoolVolOn; // true if EMS is acting on this structure
 		Real64 EMSValueDesCoolVolFlow; // Value EMS directing to use for Design cooling air volume flow [m3/s]
@@ -519,10 +531,10 @@ namespace DataSizing {
 		//  DesCoolMinAirFlowPerArea
 		Real64 DesHeatMaxAirFlow2; // design heating maximum air flow rate [m3/s] derived from
 		//  DesHeatMaxAirFlowPerArea
-		Array1D< Real64 > HeatFlowSeq; // daily sequence of zone heating air mass flow rate
-		//  (zone time step)
-		Array1D< Real64 > CoolFlowSeq; // daily sequence of zone cooling air mass flow rate
-		//  (zone time step)
+		Array1D< Real64 > HeatFlowSeq; // daily sequence of zone heating air mass flow rate (zone time step) [kg/s]
+		Array1D< Real64 > HeatFlowSeqNoOA; // daily sequence of zone heating air mass flow rate (zone time step) without MinOA limit [kg/s]
+		Array1D< Real64 > CoolFlowSeq; // daily sequence of zone cooling air mass flow rate (zone time step) [kg/s]
+		Array1D< Real64 > CoolFlowSeqNoOA; // daily sequence of zone cooling air mass flow rate (zone time step) without MinOA limit [kg/s]
 		Array1D< Real64 > HeatLoadSeq; // daily sequence of zone heating load (zone time step)
 		Array1D< Real64 > CoolLoadSeq; // daily sequence of zone cooling load (zone time step)
 		Array1D< Real64 > HeatZoneTempSeq; // daily sequence of zone temperatures (heating, zone time step)
@@ -555,10 +567,10 @@ namespace DataSizing {
 		Real64 TotalZoneFloorArea; // total zone floor area
 		Real64 ZonePeakOccupancy; // zone peak occupancy based on max schedule value
 		Real64 SupplyAirAdjustFactor; // supply air adjustment factor for next time step if OA is capped
-		Real64 ZpzClgByZone; // OA Std 62.1 required fraction in cooling mode
-		Real64 ZpzHtgByZone; // OA Std 62.1 required fraction in heating mode
-		Real64 VozClgByZone; // value of required cooling vent to zone, used in 62.1 tabular report
-		Real64 VozHtgByZone; // value of required heating vent to zone, used in 62.1 tabular report
+		Real64 ZpzClgByZone; // OA Std 62.1 required fraction in cooling mode ? should this be ZdzClgByZone
+		Real64 ZpzHtgByZone; // OA Std 62.1 required fraction in heating mode ? should this be ZdzHtgByZone
+		Real64 VozClgByZone; // value of required cooling vent to zone, used in 62.1 tabular report, already includes people diversity term
+		Real64 VozHtgByZone; // value of required heating vent to zone, used in 62.1 tabular report, already includes people diversity term
 		Real64 DOASHeatLoad; // current heating load from DOAS supply air [W]
 		Real64 DOASCoolLoad; // current cooling load from DOAS supply air [W]
 		Real64 DOASHeatAdd; // current heat addition rate from DOAS supply air [W]
@@ -596,7 +608,6 @@ namespace DataSizing {
 			DesCoolMinAirFlowPerArea( 0.0 ),
 			DesCoolMinAirFlow( 0.0 ),
 			DesCoolMinAirFlowFrac( 0.0 ),
-			DesCoolMinAirFlowFracUsInpFlg( false ),
 			HeatAirDesMethod( 0 ),
 			InpDesHeatAirFlow( 0.0 ),
 			DesHeatMaxAirFlowPerArea( 0.0 ),
@@ -610,10 +621,12 @@ namespace DataSizing {
 			DOASHighSetpoint( 0.0 ),
 			ActualZoneNum( 0 ),
 			DesHeatMassFlow( 0.0 ),
+			DesHeatMassFlowNoOA( 0.0 ),
 			DesHeatOAFlowFrac( 0.0 ),
 			EMSOverrideDesHeatMassOn( false ),
 			EMSValueDesHeatMassFlow( 0.0 ),
 			DesCoolMassFlow( 0.0 ),
+			DesCoolMassFlowNoOA( 0.0 ),
 			DesCoolOAFlowFrac( 0.0 ),
 			EMSOverrideDesCoolMassOn( false ),
 			EMSValueDesCoolMassFlow( 0.0 ),
@@ -628,10 +641,12 @@ namespace DataSizing {
 			DesHeatDens( 0.0 ),
 			DesCoolDens( 0.0 ),
 			DesHeatVolFlow( 0.0 ),
+			DesHeatVolFlowNoOA( 0.0 ),
 			NonAirSysDesHeatVolFlow( 0.0 ),
 			EMSOverrideDesHeatVolOn( false ),
 			EMSValueDesHeatVolFlow( 0.0 ),
 			DesCoolVolFlow( 0.0 ),
+			DesCoolVolFlowNoOA( 0.0 ),
 			NonAirSysDesCoolVolFlow( 0.0 ),
 			EMSOverrideDesCoolVolOn( false ),
 			EMSValueDesCoolVolFlow( 0.0 ),
@@ -706,11 +721,22 @@ namespace DataSizing {
 			DOASTotCoolLoad( 0.0 )
 		{}
 
+		void
+		scaleZoneCooling(
+			Real64 const ratio // Scaling ratio
+		);
+		void
+		scaleZoneHeating(
+			Real64 const ratio // Scaling ratio
+		);
+
 	};
 
 	struct TermUnitSizingData
 	{
 		// Members
+		int CtrlZoneNum; // Controlled zone number (index to FinalZoneSizing, etc.)
+		std::string ADUName; // Terminal Unit Name (air distribution unit or direct air unit)
 		Real64 AirVolFlow; // design air vol flow rate for single duct terminal unit [m3/s]
 		Real64 MaxHWVolFlow; // design Hot Water vol flow for single duct terminal unit [m3/s]
 		Real64 MaxSTVolFlow; // design Steam vol flow rate for single duct terminal unit [m3/s]
@@ -722,9 +748,15 @@ namespace DataSizing {
 		Real64 ReheatLoadMult; // multiplier for load in reheat coil UA calculation
 		Real64 DesCoolingLoad; // design cooling load used for zone equipment [W]
 		Real64 DesHeatingLoad; // design heating load used for zone equipment [W]
+		Real64 SpecDesSensCoolingFrac; // Fraction of Design Sensible Cooling Load from DesignSpecification:AirTerminal:Sizing
+		Real64 SpecDesCoolSATRatio; // Cooling Design Supply Air Temperature Difference Ratio from DesignSpecification:AirTerminal:Sizing
+		Real64 SpecDesSensHeatingFrac; // Fraction of Design Sensible Heating Load from DesignSpecification:AirTerminal:Sizing
+		Real64 SpecDesHeatSATRatio; // Heating Design Supply Air Temperature Difference Ratio from DesignSpecification:AirTerminal:Sizing
+		Real64 SpecMinOAFrac; // Fraction of Minimum Outdoor Air Flow from DesignSpecification:AirTerminal:Sizing
 
 		// Default Constructor
 		TermUnitSizingData() :
+			CtrlZoneNum( 0 ),
 			AirVolFlow( 0.0 ),
 			MaxHWVolFlow( 0.0 ),
 			MaxSTVolFlow( 0.0 ),
@@ -735,9 +767,25 @@ namespace DataSizing {
 			ReheatAirFlowMult( 1.0 ),
 			ReheatLoadMult( 1.0 ),
 			DesCoolingLoad( 0.0 ),
-			DesHeatingLoad( 0.0 )
+			DesHeatingLoad( 0.0 ),
+			SpecDesSensCoolingFrac( 1.0 ),
+			SpecDesCoolSATRatio( 1.0 ),
+			SpecDesSensHeatingFrac( 1.0 ),
+			SpecDesHeatSATRatio( 1.0 ),
+			SpecMinOAFrac ( 1.0 )
 		{}
 
+		Real64
+		applyTermUnitSizingCoolFlow(
+			Real64 const & coolFlowWithOA, // Cooling flow rate with MinOA limit applied
+			Real64 const & coolFlowNoOA // Cooling flow rate without MinOA limit applied
+		);
+
+		Real64
+		applyTermUnitSizingHeatFlow(
+			Real64 const & heatFlowWithOA, // Heating flow rate with MinOA limit applied
+			Real64 const & heatFlowNoOA // Heating flow rate without MinOA limit applied
+		);
 	};
 
 	struct ZoneEqSizingData // data saved from zone eq component sizing and passed to subcomponents
@@ -824,6 +872,29 @@ namespace DataSizing {
 
 	};
 
+	// Data Structure for air terminal sizing, referenced by ZoneHVAC:AirDistributionUnit and AirTerminal:SingleDuct:Uncontrolled
+	struct AirTerminalSizingSpecData
+	{
+		// Members
+		std::string Name;
+		Real64 DesSensCoolingFrac; // Fraction of Design Sensible Cooling Load
+		Real64 DesCoolSATRatio; // Cooling Design Supply Air Temperature Difference Ratio
+		Real64 DesSensHeatingFrac; // Fraction of Design Sensible Heating Load
+		Real64 DesHeatSATRatio; // Heating Design Supply Air Temperature Difference Ratio
+		Real64 MinOAFrac; // Fraction of Minimum Outdoor Air Flow
+
+		// Default Constructor
+		AirTerminalSizingSpecData() :
+			DesSensCoolingFrac( 1.0 ),
+			DesCoolSATRatio( 1.0 ),
+			DesSensHeatingFrac( 1.0 ),
+			DesHeatSATRatio( 1.0 ),
+			MinOAFrac( 1.0 )
+		{}
+
+	};
+
+
 	struct SystemSizingInputData
 	{
 		// Members
@@ -835,7 +906,8 @@ namespace DataSizing {
 		int CoolOAOption; // 1 = use 100% outside air; 2 = use min OA; for cooling sizing
 		int HeatOAOption; // 1 = use 100% outside air; 2 = use min OA; for heating sizing
 		Real64 DesOutAirVolFlow; // design (minimum) outside air flow rate [m3/s]
-		Real64 SysAirMinFlowRat; // minimum system air flow ratio
+		Real64 SysAirMinFlowRat; // minimum system air flow ratio for heating, Central Heating Maximum System Air Flow Ratio
+		bool SysAirMinFlowRatWasAutoSized; // true if central heating maximum system air flow ratio was autosize on input
 		Real64 PreheatTemp; // preheat design set temperature [C]
 		Real64 PrecoolTemp; // precool design set temperature [C]
 		Real64 PreheatHumRat; // preheat design humidity ratio [kg water/kg dry air]
@@ -879,6 +951,7 @@ namespace DataSizing {
 			HeatOAOption( 0 ),
 			DesOutAirVolFlow( 0.0 ),
 			SysAirMinFlowRat( 0.0 ),
+			SysAirMinFlowRatWasAutoSized( false ),
 			PreheatTemp( 0.0 ),
 			PrecoolTemp( 0.0 ),
 			PreheatHumRat( 0.0 ),
@@ -926,7 +999,8 @@ namespace DataSizing {
 		int CoolOAOption; // 1 = use 100% outside air; 2 = use min OA; for cooling sizing
 		int HeatOAOption; // 1 = use 100% outside air; 2 = use min OA; for heating sizing
 		Real64 DesOutAirVolFlow; // design (minimum) outside air flow rate [m3/s]
-		Real64 SysAirMinFlowRat; // minimum system air flow ratio
+		Real64 SysAirMinFlowRat; // minimum system air flow ratio for heating, Central Heating Maximum System Air Flow Ratio
+		bool SysAirMinFlowRatWasAutoSized; // true if central heating maximum system air flow ratio was autosize on input
 		Real64 PreheatTemp; // preheat design set temperature
 		Real64 PrecoolTemp; // precool design set temperature [C]
 		Real64 PreheatHumRat; // preheat design humidity ratio [kg water/kg dry air]
@@ -1040,7 +1114,23 @@ namespace DataSizing {
 		Real64 HeatingTotalCapacity; // system total heating capacity
 		int CoolingPeakLoadType; //Type of peak to size cooling coils on   1=SensibleCoolingLoad; 2=TotalCooligLoad
 		int CoolCapControl; // type of control of cooling coil  1=VAV; 2=Bypass; 3=VT; 4=OnOff
+		bool sysSizeHeatingDominant;
+		bool sysSizeCoolingDominant;
 
+		Real64 CoinCoolCoilMassFlow; // coincident volume flow at time of cooling coil sensible+latent peak [m3/s]
+		Real64 CoinHeatCoilMassFlow; // coincident volume flow at time of heating coil sensible peak [m3/s]
+		Real64 DesCoolCoilVolFlow; // design cooling air volume flow rate at time of coil sens+latent peak [m3/s]
+		Real64 DesHeatCoilVolFlow; // design heating air volume flow rate at time of coil sens peak [m3/s]
+		Real64 DesMainCoilVolFlow; // design main supply duct volume flow at time of coil peak [m3/s]
+		//These are for reporting purposes
+
+		int SysHeatCoilTimeStepPk; // timestep in day of heating coil peak
+		int SysHeatAirTimeStepPk; // timestep in day of heating airflow peak
+		int HeatDDNum; // index of design day for heating 
+		int CoolDDNum; // index of design day for cooling
+
+		Real64 SysCoolCoinSpaceSens; // sum of zone space sensible cooling loads at coincident peak
+		Real64 SysHeatCoinSpaceSens; //  sum of zone space sensible heating loads at coincident peak
 		// Default Constructor
 		SystemSizingData() :
 			LoadSizeType( 0 ),
@@ -1049,6 +1139,7 @@ namespace DataSizing {
 			HeatOAOption( 0 ),
 			DesOutAirVolFlow( 0.0 ),
 			SysAirMinFlowRat( 0.0 ),
+			SysAirMinFlowRatWasAutoSized( false ),
 			PreheatTemp( 0.0 ),
 			PrecoolTemp( 0.0 ),
 			PreheatHumRat( 0.0 ),
@@ -1123,7 +1214,20 @@ namespace DataSizing {
 			CoolingTotalCapacity( 0.0 ),
 			HeatingTotalCapacity( 0.0 ),
 			CoolingPeakLoadType( 0 ), // wfb
-			CoolCapControl( 0 ) // wfb
+			CoolCapControl( 0 ), // wfb
+			sysSizeHeatingDominant( false ),
+			sysSizeCoolingDominant( false ),
+			CoinCoolCoilMassFlow( 0.0 ), 
+			CoinHeatCoilMassFlow( 0.0 ),
+			DesCoolCoilVolFlow( 0.0 ),
+			DesHeatCoilVolFlow( 0.0 ),
+			DesMainCoilVolFlow( 0.0 ),
+			SysHeatCoilTimeStepPk( 0 ),
+			SysHeatAirTimeStepPk( 0 ),
+			HeatDDNum ( 0 ),
+			CoolDDNum ( 0 ),
+			SysCoolCoinSpaceSens( 0.0 ),
+			SysHeatCoinSpaceSens( 0.0 )
 		{}
 
 	};
@@ -1266,6 +1370,11 @@ namespace DataSizing {
 		Real64 OAFlowPerZone; // - OA requirement per zone
 		Real64 OAFlowACH; // - OA requirement per zone per hour
 		int OAFlowFracSchPtr; // - Fraction schedule applied to total OA requirement
+		int OAPropCtlMinRateSchPtr; // - Fraction schedule applied to Proportional Control Minimum Outdoor Air Flow Rate 
+		int CO2MaxMinLimitErrorCount; // Counter when max CO2 concentration < min CO2 concentration for SOAM_ProportionalControlSchOcc
+		int CO2MaxMinLimitErrorIndex; // Index for max CO2 concentration < min CO2 concentration recurring error message for SOAM_ProportionalControlSchOcc
+		int CO2GainErrorCount; // Counter when CO2 generation from people is zero for SOAM_ProportionalControlSchOcc
+		int CO2GainErrorIndex; // Index for recurring error message when CO2 generation from people is zero for SOAM_ProportionalControlSchOcc
 
 		// Default Constructor
 		OARequirementsData() :
@@ -1274,7 +1383,12 @@ namespace DataSizing {
 			OAFlowPerArea( 0.0 ),
 			OAFlowPerZone( 0.0 ),
 			OAFlowACH( 0.0 ),
-			OAFlowFracSchPtr( DataGlobals::ScheduleAlwaysOn )
+			OAFlowFracSchPtr( DataGlobals::ScheduleAlwaysOn ),
+			OAPropCtlMinRateSchPtr( DataGlobals::ScheduleAlwaysOn ),
+			CO2MaxMinLimitErrorCount( 0 ),
+			CO2MaxMinLimitErrorIndex( 0 ),
+			CO2GainErrorCount( 0 ),
+			CO2GainErrorIndex( 0 )
 		{}
 
 	};
@@ -1323,9 +1437,53 @@ namespace DataSizing {
 	extern Array1D< CompDesWaterFlowData > CompDesWaterFlow; // array to store components' design water flow
 	extern Array1D< SysSizPeakDDNumData > SysSizPeakDDNum; // data array for peak des day indices
 	extern Array1D< ZoneHVACSizingData > ZoneHVACSizing; // Input data for zone HVAC sizing
+	extern Array1D< AirTerminalSizingSpecData > AirTerminalSizingSpec; // Input data for air terminal sizing
 	// used only for Facility Load Component Summary
 	extern Array1D< FacilitySizingData > CalcFacilitySizing; // Data for facility sizing 
 	extern FacilitySizingData CalcFinalFacilitySizing; // Final data for facility sizing 
+	extern Array1D< Real64 > VbzByZone; // saved value of ZoneOAUnc which is Vbz used in 62.1 tabular report
+	extern Array1D< Real64 > VdzClgByZone; // saved value of cooling based ZoneSA which is Vdz used in 62.1 tabular report (also used for zone level Vps) Vdz includes secondary flows and primary flows
+	extern Array1D< Real64 > VdzMinClgByZone; // minimum discarge flow for cooling, Vdz includes secondary and primary flows for dual path
+	extern Array1D< Real64 > VdzHtgByZone; // saved value of heating based ZoneSA which is Vdz used in 62.1 tabular report (also used for zone level Vps) Vdz includes secondary flows and primary flows
+	extern Array1D< Real64 > VdzMinHtgByZone; // minimum discharge flow for heating, Vdz includes secondary and primary flows for dual path
+	extern Array1D< Real64 > ZdzClgByZone; // minimum discharge outdoor-air fraction for cooling
+	extern Array1D< Real64 > ZdzHtgByZone; // minimum discharge outdoor-air fraction for heating
+	extern Array1D< Real64 > VpzClgByZone; // saved value of cooling based ZonePA which is Vpz used in 62.1 tabular report
+	extern Array1D< Real64 > VpzMinClgByZone; // saved value of minimum cooling based ZonePA which is VpzClg-min used in 62.1 tabular report
+	extern Array1D< Real64 > VpzHtgByZone; // saved value of heating based ZonePA which is Vpz used in 62.1 tabular report
+	extern Array1D< Real64 > VpzMinHtgByZone; // saved value of minimum heating based ZonePA which is VpzHtg-min used in 62.1 tabular report
+	extern Array1D< Real64 > VpzClgSumBySys; // sum of saved value of cooling based ZonePA which is Vpz-sum used in 62.1 tabular report
+	extern Array1D< Real64 > VpzHtgSumBySys; // sum of saved value of heating based ZonePA which is Vpz-sum used in 62.1 tabular report
+	extern Array1D< Real64 > PzSumBySys; // sum of design people for system, Pz_sum 
+	extern Array1D< Real64 > PsBySys; // sum of peak concurrent people by system, Ps
+	extern Array1D< Real64 > DBySys; // Population Diversity by system
+	extern Array1D< std::string > PeakPsOccurrenceDateTimeStringBySys; // string describing date and time when Ps peak occurs
+	extern Array1D< std::string > PeakPsOccurrenceEnvironmentStringBySys; // string describing Environment when Ps peak occurs
+
+	extern Array1D< Real64 > VouBySys; // uncorrected system outdoor air requirement, for std 62.1 VRP
+
+	extern Array1D< Real64 > VpsClgBySys; // System primary airflow Vps, for cooling for std 62.1 VRP
+	extern Array1D< Real64 > VpsHtgBySys; // system primary airflow Vps, for heating for std 62.1 VRP
+	extern Array1D< Real64 > FaByZoneHeat; // saved value of Fa used in 62.1 tabular report
+	extern Array1D< Real64 > FbByZoneCool; // saved value of Fb used in 62.1 tabular report
+	extern Array1D< Real64 > FbByZoneHeat; // saved value of Fb used in 62.1 tabular report
+	extern Array1D< Real64 > FcByZoneCool; // saved value of Fc used in 62.1 tabular report
+	extern Array1D< Real64 > FcByZoneHeat; // saved value of Fc used in 62.1 tabular report
+	extern Array1D< Real64 > XsBySysCool; // saved value of Xs used in 62.1 tabular report
+	extern Array1D< Real64 > XsBySysHeat; // saved value of Xs used in 62.1 tabular report
+	extern Array1D< Real64 > EvzByZoneCool; // saved value of Evz (zone vent effy) used in 62.1 tabular report
+	extern Array1D< Real64 > EvzByZoneHeat; // saved value of Evz (zone vent effy) used in 62.1 tabular report
+	extern Array1D< Real64 > EvzByZoneCoolPrev; // saved value of Evz (zone vent effy) used in 62.1 tabular report
+	extern Array1D< Real64 > EvzByZoneHeatPrev; // saved value of Evz (zone vent effy) used in 62.1 tabular report
+	extern Array1D< Real64 > VotClgBySys; // saved value of cooling ventilation required at primary AHU, used in 62.1 tabular report
+	extern Array1D< Real64 > VotHtgBySys; // saved value of heating ventilation required at primary AHU, used in 62.1 tabular report
+	extern Array1D< Real64 > VozSumClgBySys; // saved value of cooling ventilation required at clg zones
+	extern Array1D< Real64 > VozSumHtgBySys; // saved value of heating ventilation required at htg zones
+	extern Array1D< Real64 > TotCoolCapTemp; // scratch variable used for calulating peak load [W]
+	extern Array1D< Real64 > EvzMinBySysHeat; // saved value of EvzMin used in 62.1 tabular report
+	extern Array1D< Real64 > EvzMinBySysCool; // saved value of EvzMin used in 62.1 tabular report
+	extern Array1D< Real64 > FaByZoneCool; // triggers allocation in UpdateSysSizing
+	extern Array1D< Real64 > SensCoolCapTemp; // triggers allocation in UpdateSysSizing
 
 	// Clears the global data in DataSizing.
 	// Needed for unit tests, should not be normally called.
