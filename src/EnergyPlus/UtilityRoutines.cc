@@ -50,15 +50,14 @@ extern "C" {
 #include <FMI/main.h>
 }
 
-
 // C++ Headers
 #include <cstdlib>
-#include <iostream>
 #include <exception>
+#include <iostream>
 
 // ObjexxFCL Headers
-#include <ObjexxFCL/char.functions.hh>
 #include <ObjexxFCL/Array1D.hh>
+#include <ObjexxFCL/char.functions.hh>
 // #include <ObjexxFCL/Array1.hh>
 #include <ObjexxFCL/Array1S.hh>
 #include <ObjexxFCL/Fmath.hh>
@@ -66,7 +65,6 @@ extern "C" {
 #include <ObjexxFCL/string.functions.hh>
 
 // EnergyPlus Headers
-#include <UtilityRoutines.hh>
 #include <BranchInputManager.hh>
 #include <BranchNodeConnections.hh>
 #include <CommandLineInterface.hh>
@@ -86,11 +84,12 @@ extern "C" {
 #include <NodeInputManager.hh>
 #include <OutputReports.hh>
 #include <Plant/PlantManager.hh>
+#include <SQLiteProcedures.hh>
 #include <SimulationManager.hh>
 #include <SolarShading.hh>
-#include <SQLiteProcedures.hh>
 #include <SystemReports.hh>
 #include <Timer.h>
+#include <UtilityRoutines.hh>
 
 namespace EnergyPlus {
 
@@ -99,11 +98,8 @@ namespace UtilityRoutines {
 	gio::Fmt fmtLD( "*" );
 	gio::Fmt fmtA( "(A)" );
 
-	Real64
-	ProcessNumber(
-		std::string const & String,
-		bool & ErrorFlag
-	) {
+    Real64 ProcessNumber(std::string const &String, bool &ErrorFlag)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -154,15 +150,10 @@ namespace UtilityRoutines {
 		}
 
 		return rProcessNumber;
-
 	}
 
-	int
-	FindItemInList(
-		std::string const & String,
-		Array1_string const & ListOfItems,
-		int const NumItems
-	) {
+    int FindItemInList(std::string const &String, Array1_string const &ListOfItems, int const NumItems)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -185,12 +176,8 @@ namespace UtilityRoutines {
 		return 0; // Not found
 	}
 
-	int
-	FindItemInList(
-		std::string const & String,
-		Array1S_string const ListOfItems,
-		int const NumItems
-	) {
+    int FindItemInList(std::string const &String, Array1S_string const ListOfItems, int const NumItems)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -213,13 +200,8 @@ namespace UtilityRoutines {
 		return 0; // Not found
 	}
 
-
-	int
-	FindItemInSortedList(
-		std::string const & String,
-		Array1S_string const ListOfItems,
-		int const NumItems
-	) {
+    int FindItemInSortedList(std::string const &String, Array1S_string const ListOfItems, int const NumItems)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -254,12 +236,8 @@ namespace UtilityRoutines {
 		return Probe;
 	}
 
-	int
-	FindItem(
-		std::string const & String,
-		Array1D_string const & ListOfItems,
-		int const NumItems
-	) {
+    int FindItem(std::string const &String, Array1D_string const &ListOfItems, int const NumItems)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -283,12 +261,8 @@ namespace UtilityRoutines {
 		return 0; // Not found
 	}
 
-	int
-	FindItem(
-		std::string const & String,
-		Array1S_string const ListOfItems,
-		int const NumItems
-	) {
+    int FindItem(std::string const &String, Array1S_string const ListOfItems, int const NumItems)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -312,8 +286,8 @@ namespace UtilityRoutines {
 		return 0; // Not found
 	}
 
-	std::string
-	MakeUPPERCase( std::string const & InputString ) {
+    std::string MakeUPPERCase(std::string const &InputString)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -334,25 +308,21 @@ namespace UtilityRoutines {
 
 		for ( std::string::size_type i = 0, e = len( InputString ); i < e; ++i ) {
 			int const curCharVal = int( InputString[ i ] );
-			if ( ( 97 <= curCharVal && curCharVal <= 122 ) ||
-				 ( 224 <= curCharVal && curCharVal <= 255 ) ) { // lowercase ASCII and accented characters
+            if ((97 <= curCharVal && curCharVal <= 122) || (224 <= curCharVal && curCharVal <= 255)) { // lowercase ASCII and accented characters
 				ResultString[ i ] = char( curCharVal - 32 );
 			}
 		}
 
 		return ResultString;
-
 	}
 
-	void
-	VerifyName(
-		std::string const & NameToVerify,
+    void VerifyName(std::string const &NameToVerify,
 		Array1D_string const & NamesList,
 		int const NumOfNames,
 		bool & ErrorFound,
 		bool & IsBlank,
-		std::string const & StringToDisplay
-	) {
+                    std::string const &StringToDisplay)
+    {
 
 		// SUBROUTINE INFORMATION:
 		//       AUTHOR         Linda Lawrie
@@ -384,18 +354,15 @@ namespace UtilityRoutines {
 		} else {
 			IsBlank = false;
 		}
-
 	}
 
-	void
-	VerifyName(
-		std::string const & NameToVerify,
+    void VerifyName(std::string const &NameToVerify,
 		Array1S_string const NamesList,
 		int const NumOfNames,
 		bool & ErrorFound,
 		bool & IsBlank,
-		std::string const & StringToDisplay
-	) {
+                    std::string const &StringToDisplay)
+    {
 
 		// SUBROUTINE INFORMATION:
 		//       AUTHOR         Linda Lawrie
@@ -427,15 +394,10 @@ namespace UtilityRoutines {
 		} else {
 			IsBlank = false;
 		}
-
 	}
 
-	bool
-	IsNameEmpty(
-		std::string & NameToVerify,
-		std::string const & StringToDisplay,
-		bool & ErrorFound
-	){
+    bool IsNameEmpty(std::string &NameToVerify, std::string const &StringToDisplay, bool &ErrorFound)
+    {
 		if ( NameToVerify.empty() ) {
 			ShowSevereError(StringToDisplay + " Name, cannot be blank");
 			ErrorFound = true;
@@ -445,8 +407,8 @@ namespace UtilityRoutines {
 		return false;
 	}
 
-	std::string
-	IPTrimSigDigits( int const IntegerValue ) {
+    std::string IPTrimSigDigits(int const IntegerValue)
+    {
 
 		// FUNCTION INFORMATION:
 		//       AUTHOR         Linda K. Lawrie
@@ -464,12 +426,10 @@ namespace UtilityRoutines {
 
 		gio::write( String, fmtLD ) << IntegerValue;
 		return stripped( String );
-
-	}
 }
+} // namespace UtilityRoutines
 
-void
-AbortEnergyPlus()
+void AbortEnergyPlus()
 {
 
 	// SUBROUTINE INFORMATION:
@@ -500,12 +460,15 @@ AbortEnergyPlus()
 	using BranchInputManager::TestBranchIntegrity;
 	using BranchNodeConnections::CheckNodeConnections;
 	using BranchNodeConnections::TestCompSetInletOutletNodes;
+    using ExternalInterface::CloseSocket;
+    using ExternalInterface::NumExternalInterfaces;
+    using General::RoundSigDigits;
+    using NodeInputManager::CheckMarkedNodes;
+    using NodeInputManager::SetupNodeVarsForReporting;
+    using PlantManager::CheckPlantOnAbort;
 	using SimulationManager::ReportLoopConnections;
-	using SystemReports::ReportAirLoopConnections;
 	using SolarShading::ReportSurfaceErrors;
-	using PlantManager::CheckPlantOnAbort;
-	using ExternalInterface::NumExternalInterfaces;
-	using ExternalInterface::CloseSocket;
+    using SystemReports::ReportAirLoopConnections;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -608,32 +571,39 @@ AbortEnergyPlus()
 	if ( Seconds < 0.0 ) Seconds = 0.0;
 	gio::write( Elapsed, ETimeFmt ) << Hours << Minutes << Seconds;
 
-	ShowMessage( "EnergyPlus Warmup Error Summary. During Warmup: " + NumWarningsDuringWarmup + " Warning; " + NumSevereDuringWarmup + " Severe Errors." );
-	ShowMessage( "EnergyPlus Sizing Error Summary. During Sizing: " + NumWarningsDuringSizing + " Warning; " + NumSevereDuringSizing + " Severe Errors." );
+    ShowMessage("EnergyPlus Warmup Error Summary. During Warmup: " + NumWarningsDuringWarmup + " Warning; " + NumSevereDuringWarmup +
+                " Severe Errors.");
+    ShowMessage("EnergyPlus Sizing Error Summary. During Sizing: " + NumWarningsDuringSizing + " Warning; " + NumSevereDuringSizing +
+                " Severe Errors.");
 	ShowMessage( "EnergyPlus Terminated--Fatal Error Detected. " + NumWarnings + " Warning; " + NumSevere + " Severe Errors; Elapsed Time=" + Elapsed );
 	DisplayString( "EnergyPlus Run Time=" + Elapsed );
 	tempfl = GetNewUnitNumber();
-	{ IOFlags flags; flags.ACTION( "write" ); gio::open( tempfl, DataStringGlobals::outputEndFileName, flags ); write_stat = flags.ios(); }
+    {
+        IOFlags flags;
+        flags.ACTION("write");
+        gio::open(tempfl, DataStringGlobals::outputEndFileName, flags);
+        write_stat = flags.ios();
+    }
 	if ( write_stat != 0 ) {
 		DisplayString( "AbortEnergyPlus: Could not open file "+ DataStringGlobals::outputEndFileName +" for output (write)." );
 	}
-	gio::write( tempfl, fmtLD ) << "EnergyPlus Terminated--Fatal Error Detected. " + NumWarnings + " Warning; " + NumSevere + " Severe Errors; Elapsed Time=" + Elapsed;
+    gio::write(tempfl, fmtLD) << "EnergyPlus Terminated--Fatal Error Detected. " + NumWarnings + " Warning; " + NumSevere +
+                                     " Severe Errors; Elapsed Time=" + Elapsed;
 
 	gio::close( tempfl );
 #ifdef EP_Detailed_Timings
 	epSummaryTimes( Time_Finish - Time_Start );
 #endif
-	std::cerr << "Program terminated: " << "EnergyPlus Terminated--Error(s) Detected." << std::endl;
+    std::cerr << "Program terminated: "
+              << "EnergyPlus Terminated--Error(s) Detected." << std::endl;
 	CloseOutOpenFiles();
 	// Close the socket used by ExternalInterface. This call also sends the flag "-1" to the ExternalInterface,
 	// indicating that E+ terminated with an error.
 	if ( NumExternalInterfaces > 0 ) CloseSocket( -1 );
 	std::exit( EXIT_FAILURE );
-
 }
 
-void
-CloseMiscOpenFiles()
+void CloseMiscOpenFiles()
 {
 
 	// SUBROUTINE INFORMATION:
@@ -653,10 +623,10 @@ CloseMiscOpenFiles()
 	// na
 
 	// Using/Aliasing
-	using DaylightingManager::CloseReportIllumMaps;
-	using DaylightingManager::CloseDFSFile;
 	using DataGlobals::OutputFileDebug;
 	using DataReportingFlags::DebugOutput;
+    using DaylightingManager::CloseDFSFile;
+    using DaylightingManager::CloseReportIllumMaps;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -684,20 +654,26 @@ CloseMiscOpenFiles()
 	//  position on the INQUIRE will not be 'ASIS' (3 compilers tested)
 	//  So, will want to keep....
 
-	{ IOFlags flags; gio::inquire( OutputFileDebug, flags ); DebugPosition = flags.POSITION(); }
+    {
+        IOFlags flags;
+        gio::inquire(OutputFileDebug, flags);
+        DebugPosition = flags.POSITION();
+    }
 	if ( DebugPosition != "ASIS" ) {
 		DebugOutput = true;
 	}
 	if ( DebugOutput ) {
 		gio::close( OutputFileDebug );
 	} else {
-		{ IOFlags flags; flags.DISPOSE( "DELETE" ); gio::close( OutputFileDebug, flags ); }
+        {
+            IOFlags flags;
+            flags.DISPOSE("DELETE");
+            gio::close(OutputFileDebug, flags);
+        }
 	}
-
 }
 
-void
-CloseOutOpenFiles()
+void CloseOutOpenFiles()
 {
 
 	// SUBROUTINE INFORMATION:
@@ -740,14 +716,18 @@ CloseOutOpenFiles()
 	int ios;
 
 	for ( UnitNumber = 1; UnitNumber <= MaxUnitNumber; ++UnitNumber ) {
-		{ IOFlags flags; gio::inquire( UnitNumber, flags ); exists = flags.exists(); opened = flags.open(); ios = flags.ios(); }
+        {
+            IOFlags flags;
+            gio::inquire(UnitNumber, flags);
+            exists = flags.exists();
+            opened = flags.open();
+            ios = flags.ios();
+        }
 		if ( exists && opened && ios == 0 ) gio::close( UnitNumber );
 	}
-
 }
 
-void
-EndEnergyPlus()
+void EndEnergyPlus()
 {
 
 	// SUBROUTINE INFORMATION:
@@ -776,7 +756,10 @@ EndEnergyPlus()
 	using SolarShading::ReportSurfaceErrors;
 	using ExternalInterface::NumExternalInterfaces;
 	using ExternalInterface::CloseSocket;
+    using ExternalInterface::NumExternalInterfaces;
 	using ExternalInterface::haveExternalInterfaceBCVTB;
+    using General::RoundSigDigits;
+    using SolarShading::ReportSurfaceErrors;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -840,16 +823,24 @@ EndEnergyPlus()
 	if ( Seconds < 0.0 ) Seconds = 0.0;
 	gio::write( Elapsed, ETimeFmt ) << Hours << Minutes << Seconds;
 
-	ShowMessage( "EnergyPlus Warmup Error Summary. During Warmup: " + NumWarningsDuringWarmup + " Warning; " + NumSevereDuringWarmup + " Severe Errors." );
-	ShowMessage( "EnergyPlus Sizing Error Summary. During Sizing: " + NumWarningsDuringSizing + " Warning; " + NumSevereDuringSizing + " Severe Errors." );
+    ShowMessage("EnergyPlus Warmup Error Summary. During Warmup: " + NumWarningsDuringWarmup + " Warning; " + NumSevereDuringWarmup +
+                " Severe Errors.");
+    ShowMessage("EnergyPlus Sizing Error Summary. During Sizing: " + NumWarningsDuringSizing + " Warning; " + NumSevereDuringSizing +
+                " Severe Errors.");
 	ShowMessage( "EnergyPlus Completed Successfully-- " + NumWarnings + " Warning; " + NumSevere + " Severe Errors; Elapsed Time=" + Elapsed );
 	DisplayString( "EnergyPlus Run Time=" + Elapsed );
 	tempfl = GetNewUnitNumber();
-	{ IOFlags flags; flags.ACTION( "write" ); gio::open( tempfl, DataStringGlobals::outputEndFileName, flags ); write_stat = flags.ios(); }
+    {
+        IOFlags flags;
+        flags.ACTION("write");
+        gio::open(tempfl, DataStringGlobals::outputEndFileName, flags);
+        write_stat = flags.ios();
+    }
 	if ( write_stat != 0 ) {
 		DisplayString( "EndEnergyPlus: Could not open file " + DataStringGlobals::outputEndFileName + " for output (write)." );
 	}
-	gio::write( tempfl, fmtA ) << "EnergyPlus Completed Successfully-- " + NumWarnings + " Warning; " + NumSevere + " Severe Errors; Elapsed Time=" + Elapsed;
+    gio::write(tempfl, fmtA) << "EnergyPlus Completed Successfully-- " + NumWarnings + " Warning; " + NumSevere +
+                                    " Severe Errors; Elapsed Time=" + Elapsed;
 	gio::close( tempfl );
 #ifdef EP_Detailed_Timings
 	epSummaryTimes( Time_Finish - Time_Start );
@@ -862,8 +853,7 @@ EndEnergyPlus()
 	std::exit( EXIT_SUCCESS );
 }
 
-int
-GetNewUnitNumber()
+int GetNewUnitNumber()
 {
 
 	// FUNCTION INFORMATION:
@@ -941,8 +931,7 @@ GetNewUnitNumber()
 	return gio::get_unit(); //Autodesk:Note ObjexxFCL::gio system provides this (and protects the F90+ preconnected units {100,101,102})
 }
 
-int
-FindUnitNumber( std::string const & FileName ) // File name to be searched.
+int FindUnitNumber(std::string const &FileName) // File name to be searched.
 {
 
 	// FUNCTION INFORMATION:
@@ -990,10 +979,21 @@ FindUnitNumber( std::string const & FileName ) // File name to be searched.
 	bool opened; // True if file is open
 	int ios; // Status indicator from INQUIRE intrinsic
 
-	{ IOFlags flags; gio::inquire( FileName, flags ); exists = flags.exists(); opened = flags.open(); ios = flags.ios(); }
+    {
+        IOFlags flags;
+        gio::inquire(FileName, flags);
+        exists = flags.exists();
+        opened = flags.open();
+        ios = flags.ios();
+    }
 	if ( ! opened ) {
 		UnitNumber = GetNewUnitNumber();
-		{ IOFlags flags; flags.POSITION( "APPEND" ); gio::open( UnitNumber, FileName, flags ); ios = flags.ios(); }
+        {
+            IOFlags flags;
+            flags.POSITION("APPEND");
+            gio::open(UnitNumber, FileName, flags);
+            ios = flags.ios();
+        }
 		if ( ios != 0 ) {
 			DisplayString( "FindUnitNumber: Could not open file \"" + FileName + "\" for append." );
 		}
@@ -1002,7 +1002,12 @@ FindUnitNumber( std::string const & FileName ) // File name to be searched.
 		std::string::size_type TestFileLength;
 		std::string::size_type Pos; // Position pointer
 		for ( UnitNumber = 1; UnitNumber <= MaxUnitNumber; ++UnitNumber ) {
-			{ IOFlags flags; gio::inquire( UnitNumber, flags ); TestFileName = flags.name(); opened = flags.open(); }
+            {
+                IOFlags flags;
+                gio::inquire(UnitNumber, flags);
+                TestFileName = flags.name();
+                opened = flags.open();
+            }
 			//  Powerstation returns just file name
 			//  DVF (Digital Fortran) returns whole path
 			TestFileLength = len( TestFileName );
@@ -1015,12 +1020,9 @@ FindUnitNumber( std::string const & FileName ) // File name to be searched.
 	}
 
 	return UnitNumber;
-
 }
 
-void
-ConvertCaseToUpper(
-	std::string const & InputString, // Input string
+void ConvertCaseToUpper(std::string const &InputString, // Input string
 	std::string & OutputString // Output string (in UpperCase)
 )
 {
@@ -1068,12 +1070,9 @@ ConvertCaseToUpper(
 			OutputString[ A ] = UpperCase[ B ];
 		}
 	}
-
 }
 
-void
-ConvertCaseToLower(
-	std::string const & InputString, // Input string
+void ConvertCaseToLower(std::string const &InputString, // Input string
 	std::string & OutputString // Output string (in LowerCase)
 )
 {
@@ -1120,11 +1119,9 @@ ConvertCaseToLower(
 			OutputString[ A ] = LowerCase[ B ];
 		}
 	}
-
 }
 
-std::string::size_type
-FindNonSpace( std::string const & String ) // String to be scanned
+std::string::size_type FindNonSpace(std::string const &String) // String to be scanned
 {
 
 	// FUNCTION INFORMATION:
@@ -1163,11 +1160,9 @@ FindNonSpace( std::string const & String ) // String to be scanned
 	// FUNCTION LOCAL VARIABLE DECLARATIONS:
 
 	return String.find_first_not_of( ' ' );
-
 }
 
-bool
-env_var_on( std::string const & env_var_str )
+bool env_var_on(std::string const &env_var_str)
 {
 
 	// FUNCTION INFORMATION:
@@ -1182,12 +1177,7 @@ env_var_on( std::string const & env_var_str )
 	return ( ( ! env_var_str.empty() ) && is_any_of( env_var_str[ 0 ], "YyTt" ) );
 }
 
-void
-ShowFatalError(
-	std::string const & ErrorMessage,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowFatalError(std::string const &ErrorMessage, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1237,15 +1227,9 @@ ShowFatalError(
 		if( sqlite->sqliteWithinTransaction() ) sqlite->sqliteCommit();
 	}
 	throw std::runtime_error( ErrorMessage );
-
 }
 
-void
-ShowSevereError(
-	std::string const & ErrorMessage,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowSevereError(std::string const &ErrorMessage, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1270,6 +1254,7 @@ ShowSevereError(
 	using DataGlobals::WarmupFlag;
 	using DataGlobals::DoingSizing;
 	using DataGlobals::KickOffSimulation;
+    using DataGlobals::WarmupFlag;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1300,15 +1285,9 @@ ShowSevereError(
 	if ( sqlite ) {
 		sqlite->createSQLiteErrorRecord( 1, 1, ErrorMessage, 1 );
 	}
-
 }
 
-void
-ShowSevereMessage(
-	std::string const & ErrorMessage,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowSevereMessage(std::string const &ErrorMessage, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1359,15 +1338,9 @@ ShowSevereMessage(
 	if ( sqlite ) {
 		sqlite->createSQLiteErrorRecord( 1, 1, ErrorMessage, 0 );
 	}
-
 }
 
-void
-ShowContinueError(
-	std::string const & Message,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowContinueError(std::string const &Message, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1405,15 +1378,9 @@ ShowContinueError(
 	if ( sqlite ) {
 		sqlite->updateSQLiteErrorRecord( Message );
 	}
-
 }
 
-void
-ShowContinueErrorTimeStamp(
-	std::string const & Message,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowContinueErrorTimeStamp(std::string const &Message, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1432,11 +1399,11 @@ ShowContinueErrorTimeStamp(
 	// na
 
 	// Using/Aliasing
-	using General::CreateSysTimeIntervalString;
-	using DataEnvironment::EnvironmentName;
 	using DataEnvironment::CurMnDy;
-	using DataGlobals::WarmupFlag;
+    using DataEnvironment::EnvironmentName;
 	using DataGlobals::DoingSizing;
+    using DataGlobals::WarmupFlag;
+    using General::CreateSysTimeIntervalString;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1467,26 +1434,25 @@ ShowContinueErrorTimeStamp(
 	}
 
 	if ( len( Message ) < 50 ) {
-		ShowErrorMessage( " **   ~~~   ** " + Message + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' + CreateSysTimeIntervalString(), OutUnit1, OutUnit2 );
+        ShowErrorMessage(" **   ~~~   ** " + Message + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' +
+                             CreateSysTimeIntervalString(),
+                         OutUnit1, OutUnit2);
 		if ( sqlite ) {
-			sqlite->updateSQLiteErrorRecord( Message + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' + CreateSysTimeIntervalString() );
+            sqlite->updateSQLiteErrorRecord(Message + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' +
+                                            CreateSysTimeIntervalString());
 		}
 	} else {
 		ShowErrorMessage( " **   ~~~   ** " + Message );
-		ShowErrorMessage( " **   ~~~   ** " + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' + CreateSysTimeIntervalString(), OutUnit1, OutUnit2 );
+        ShowErrorMessage(" **   ~~~   ** " + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' + CreateSysTimeIntervalString(),
+                         OutUnit1, OutUnit2);
 		if ( sqlite ) {
-			sqlite->updateSQLiteErrorRecord( Message + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' + CreateSysTimeIntervalString() );
+            sqlite->updateSQLiteErrorRecord(Message + cEnvHeader + EnvironmentName + ", at Simulation time=" + CurMnDy + ' ' +
+                                            CreateSysTimeIntervalString());
 		}
 	}
-
 }
 
-void
-ShowMessage(
-	std::string const & Message,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowMessage(std::string const &Message, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1528,15 +1494,9 @@ ShowMessage(
 			sqlite->createSQLiteErrorRecord( 1, -1, Message, 0 );
 		}
 	}
-
 }
 
-void
-ShowWarningError(
-	std::string const & ErrorMessage,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowWarningError(std::string const &ErrorMessage, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1561,6 +1521,7 @@ ShowWarningError(
 	using DataGlobals::WarmupFlag;
 	using DataGlobals::DoingSizing;
 	using DataGlobals::KickOffSimulation;
+    using DataGlobals::WarmupFlag;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1588,15 +1549,9 @@ ShowWarningError(
 	if ( sqlite ) {
 		sqlite->createSQLiteErrorRecord( 1, 0, ErrorMessage, 1 );
 	}
-
 }
 
-void
-ShowWarningMessage(
-	std::string const & ErrorMessage,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowWarningMessage(std::string const &ErrorMessage, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1643,12 +1598,9 @@ ShowWarningMessage(
 	if ( sqlite ) {
 		sqlite->createSQLiteErrorRecord( 1, 0, ErrorMessage, 0 );
 	}
-
 }
 
-void
-ShowRecurringSevereErrorAtEnd(
-	std::string const & Message, // Message automatically written to "error file" at end of simulation
+void ShowRecurringSevereErrorAtEnd(std::string const &Message,         // Message automatically written to "error file" at end of simulation
 	int & MsgIndex, // Recurring message index, if zero, next available index is assigned
 	Optional< Real64 const > ReportMaxOf, // Track and report the max of the values passed to this argument
 	Optional< Real64 const > ReportMinOf, // Track and report the min of the values passed to this argument
@@ -1702,13 +1654,11 @@ ShowRecurringSevereErrorAtEnd(
 	}
 
 	++TotalSevereErrors;
-	StoreRecurringErrorMessage( " ** Severe  ** " + Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits, ReportSumUnits );
-
+    StoreRecurringErrorMessage(" ** Severe  ** " + Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits,
+                               ReportSumUnits);
 }
 
-void
-ShowRecurringWarningErrorAtEnd(
-	std::string const & Message, // Message automatically written to "error file" at end of simulation
+void ShowRecurringWarningErrorAtEnd(std::string const &Message,         // Message automatically written to "error file" at end of simulation
 	int & MsgIndex, // Recurring message index, if zero, next available index is assigned
 	Optional< Real64 const > ReportMaxOf, // Track and report the max of the values passed to this argument
 	Optional< Real64 const > ReportMinOf, // Track and report the min of the values passed to this argument
@@ -1762,13 +1712,11 @@ ShowRecurringWarningErrorAtEnd(
 	}
 
 	++TotalWarningErrors;
-	StoreRecurringErrorMessage( " ** Warning ** " + Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits, ReportSumUnits );
-
+    StoreRecurringErrorMessage(" ** Warning ** " + Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits,
+                               ReportSumUnits);
 }
 
-void
-ShowRecurringContinueErrorAtEnd(
-	std::string const & Message, // Message automatically written to "error file" at end of simulation
+void ShowRecurringContinueErrorAtEnd(std::string const &Message,         // Message automatically written to "error file" at end of simulation
 	int & MsgIndex, // Recurring message index, if zero, next available index is assigned
 	Optional< Real64 const > ReportMaxOf, // Track and report the max of the values passed to this argument
 	Optional< Real64 const > ReportMinOf, // Track and report the min of the values passed to this argument
@@ -1821,13 +1769,11 @@ ShowRecurringContinueErrorAtEnd(
 		if ( has( Message, MessageSearch( Loop ) ) ) ++MatchCounts( Loop );
 	}
 
-	StoreRecurringErrorMessage( " **   ~~~   ** " + Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits, ReportSumUnits );
-
+    StoreRecurringErrorMessage(" **   ~~~   ** " + Message, MsgIndex, ReportMaxOf, ReportMinOf, ReportSumOf, ReportMaxUnits, ReportMinUnits,
+                               ReportSumUnits);
 }
 
-void
-StoreRecurringErrorMessage(
-	std::string const & ErrorMessage, // Message automatically written to "error file" at end of simulation
+void StoreRecurringErrorMessage(std::string const &ErrorMessage,         // Message automatically written to "error file" at end of simulation
 	int & ErrorMsgIndex, // Recurring message index, if zero, next available index is assigned
 	Optional< Real64 const > ErrorReportMaxOf, // Track and report the max of the values passed to this argument
 	Optional< Real64 const > ErrorReportMinOf, // Track and report the min of the values passed to this argument
@@ -1861,6 +1807,7 @@ StoreRecurringErrorMessage(
 	using namespace ErrorTracking;
 	using DataGlobals::WarmupFlag;
 	using DataGlobals::DoingSizing;
+    using DataGlobals::WarmupFlag;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1930,15 +1877,9 @@ StoreRecurringErrorMessage(
 	} else {
 		// If ErrorMsgIndex < 0, then do nothing
 	}
-
 }
 
-void
-ShowErrorMessage(
-	std::string const & ErrorMessage,
-	Optional_int OutUnit1,
-	Optional_int OutUnit2
-)
+void ShowErrorMessage(std::string const &ErrorMessage, Optional_int OutUnit1, Optional_int OutUnit2)
 {
 
 	// SUBROUTINE INFORMATION:
@@ -1960,11 +1901,11 @@ ShowErrorMessage(
 	// na
 
 	// Using/Aliasing
-	using DataStringGlobals::VerString;
-	using DataStringGlobals::IDDVerString;
-	using DataGlobals::DoingInputProcessing;
 	using DataGlobals::CacheIPErrorFile;
+    using DataGlobals::DoingInputProcessing;
 	using DataGlobals::err_stream;
+    using DataStringGlobals::IDDVerString;
+    using DataStringGlobals::VerString;
 
 	// Locals
 	// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1997,11 +1938,9 @@ ShowErrorMessage(
 	if ( present( OutUnit2 ) ) {
 		gio::write( OutUnit2, ErrorFormat ) << ErrorMessage;
 	}
-
 }
 
-void
-SummarizeErrors()
+void SummarizeErrors()
 {
 
 	// SUBROUTINE INFORMATION:
@@ -2062,11 +2001,9 @@ SummarizeErrors()
 		}
 		ShowMessage( "" );
 	}
-
 }
 
-void
-ShowRecurringErrors()
+void ShowRecurringErrors()
 {
 
 	// SUBROUTINE INFORMATION:
@@ -2161,7 +2098,6 @@ ShowRecurringErrors()
 		}
 		ShowMessage( "" );
 	}
-
 }
 
-} // EnergyPlus
+} // namespace EnergyPlus

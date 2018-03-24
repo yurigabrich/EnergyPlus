@@ -138,18 +138,11 @@ namespace ErrorTracking {
 		bool ReportSum; // Flag to report sum value
 
 		// Default Constructor
-		RecurringErrorData() :
-			Count( 0 ),
-			WarmupCount( 0 ),
-			SizingCount( 0 ),
-			MaxValue( 0.0 ),
-			MinValue( 0.0 ),
-			SumValue( 0.0 ),
-			ReportMax( false ),
-			ReportMin( false ),
+        RecurringErrorData()
+            : Count(0), WarmupCount(0), SizingCount(0), MaxValue(0.0), MinValue(0.0), SumValue(0.0), ReportMax(false), ReportMin(false),
 			ReportSum( false )
-		{}
-
+        {
+        }
 	};
 
 	// Object Data
@@ -178,11 +171,10 @@ namespace ErrorTracking {
 
 	// Clears the global data in DataErrorTracking
 	// Needed for unit tests, should not normally be called.
-	void
-	clear_state();
+    void clear_state();
 
 } // ErrorTracking
 
-} // EnergyPlus
+} // namespace EnergyPlus
 
 #endif

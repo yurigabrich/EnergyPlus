@@ -55,9 +55,10 @@
 #include <ErrorTracking.hh>
 #include <DataPrecisionGlobals.hh>
 #include <DataSystemVariables.hh>
+#include <DataTimings.hh>
 #include <General.hh>
-#include <UtilityRoutines.hh>
 #include <Timer.h>
+#include <UtilityRoutines.hh>
 
 namespace EnergyPlus {
 
@@ -87,8 +88,8 @@ namespace DataTimings {
 
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
-	using DataSystemVariables::tabchar;
 	using DataSystemVariables::DeveloperFlag;
+    using DataSystemVariables::tabchar;
 
 	// Data
 	// -only module should be available to other modules and routines.
@@ -143,8 +144,7 @@ namespace DataTimings {
 
 	// Functions
 
-	void
-	epStartTime(
+    void epStartTime(
 #ifdef EP_NO_Timings
 		std::string const & EP_UNUSED( ctimingElementstring )
 #endif
@@ -223,11 +223,9 @@ namespace DataTimings {
 		TSTART( Timing( found ).rstartTime );
 		++Timing( found ).calls;
 #endif
-
 	}
 
-	void
-	epStopTime(
+    void epStopTime(
 #ifdef EP_NO_Timings
 		std::string const & EP_UNUSED( ctimingElementstring ),
 		Optional_bool_const EP_UNUSED( printit ), // true if it should be printed here.
@@ -295,7 +293,8 @@ namespace DataTimings {
 
 		if ( present( printit ) ) {
 			if ( printit ) {
-				{ auto const SELECT_CASE_var( wprint );
+                {
+                    auto const SELECT_CASE_var(wprint);
 				if ( SELECT_CASE_var == "PRINT_TIME0" ) {
 					gio::write( "(a80,f16.4)" ) << ctimingElementstring << stoptime - Timing( found ).rstartTime;
 				} else if ( SELECT_CASE_var == "PRINT_TIME1" ) {
@@ -320,18 +319,17 @@ namespace DataTimings {
 					gio::write( "(a55,i10,f16.4)" ) << ctimingElementstring << Timing( found ).calls << Timing( found ).currentTimeSum;
 				} else {
 					gio::write( "*" ) << ctimingElementstring << Timing( found ).currentTimeSum;
-				}}
+                    }
+                }
 			}
 			//could not cover:
 			//#define PRINT_TIME_AIIF(a, i1, i2, t) write(*,'(a55,i10,i10,f16.4)') a, i1, i2, t
 			//#define PRINT_TIME_AIIIF(a, i1, i2, i3, t) write(*,'(a55,i10,i10,i10,f16.55)') a, i1, i2, i3, t
 		}
 #endif
-
 	}
 
-	void
-	epSummaryTimes(
+    void epSummaryTimes(
 #ifdef EP_NO_Timings
 		Real64 & EP_UNUSED( TimeUsed_CPUTime )
 #endif
@@ -385,18 +383,19 @@ namespace DataTimings {
 
 		for ( loop = 1; loop <= NumTimingElements; ++loop ) {
 			if ( Timing( loop ).calls > 0 ) {
-				gio::write( EchoInputFile, fmtA ) << Timing( loop ).Element + tabchar + RoundSigDigits( Timing( loop ).calls ) + tabchar + RoundSigDigits( Timing( loop ).currentTimeSum, 3 ) + tabchar + RoundSigDigits( Timing( loop ).currentTimeSum / double( Timing( loop ).calls ), 3 );
+                gio::write(EchoInputFile, fmtA) << Timing(loop).Element + tabchar + RoundSigDigits(Timing(loop).calls) + tabchar +
+                                                       RoundSigDigits(Timing(loop).currentTimeSum, 3) + tabchar +
+                                                       RoundSigDigits(Timing(loop).currentTimeSum / double(Timing(loop).calls), 3);
 			} else {
-				gio::write( EchoInputFile, fmtA ) << Timing( loop ).Element + tabchar + RoundSigDigits( Timing( loop ).calls ) + tabchar + RoundSigDigits( Timing( loop ).currentTimeSum, 3 ) + tabchar + RoundSigDigits( -999.0, 3 );
+                gio::write(EchoInputFile, fmtA) << Timing(loop).Element + tabchar + RoundSigDigits(Timing(loop).calls) + tabchar +
+                                                       RoundSigDigits(Timing(loop).currentTimeSum, 3) + tabchar + RoundSigDigits(-999.0, 3);
 			}
 		}
 		gio::write( EchoInputFile, fmtA ) << "Time from CPU_Time" + tabchar + RoundSigDigits( TimeUsed_CPUTime, 3 );
 #endif
-
 	}
 
-	Real64
-	epGetTimeUsed( std::string const & ctimingElementstring )
+    Real64 epGetTimeUsed(std::string const &ctimingElementstring)
 	{
 
 		// FUNCTION INFORMATION:
@@ -451,11 +450,9 @@ namespace DataTimings {
 		totalTimeUsed = Timing( found ).currentTimeSum;
 
 		return totalTimeUsed;
-
 	}
 
-	Real64
-	epGetTimeUsedperCall( std::string const & ctimingElementstring )
+    Real64 epGetTimeUsedperCall(std::string const &ctimingElementstring)
 	{
 
 		// FUNCTION INFORMATION:
@@ -515,11 +512,9 @@ namespace DataTimings {
 		}
 
 		return averageTimeUsed;
-
 	}
 
-	Real64
-	eptime()
+    Real64 eptime()
 	{
 
 		// FUNCTION INFORMATION:
@@ -566,11 +561,9 @@ namespace DataTimings {
 		calctime = double( icount ) / clockrate; // clockrate is set by main program.
 
 		return calctime;
-
 	}
 
-	Real64
-	epElapsedTime()
+    Real64 epElapsedTime()
 	{
 
 		// FUNCTION INFORMATION:
@@ -622,9 +615,8 @@ namespace DataTimings {
 		calctime = clockvalues( 5 ) * 3600.0 + clockvalues( 6 ) * 60.0 + clockvalues( 7 ) + clockvalues( 8 ) / 1000.0;
 
 		return calctime;
-
 	}
 
-} // DataTimings
+} // namespace DataTimings
 
 } // EnergyPlus

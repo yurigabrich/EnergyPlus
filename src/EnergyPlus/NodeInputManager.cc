@@ -54,20 +54,20 @@
 #include <ObjexxFCL/string.functions.hh>
 
 // EnergyPlus Headers
-#include <NodeInputManager.hh>
 #include <BranchNodeConnections.hh>
 #include <DataContaminantBalance.hh>
 #include <DataEnvironment.hh>
 #include <ErrorTracking.hh>
 #include <DataPrecisionGlobals.hh>
+#include <EMSManager.hh>
 #include <FluidProperties.hh>
 #include <General.hh>
 #include <InputProcessing/InputProcessor.hh>
+#include <NodeInputManager.hh>
 #include <OutputProcessor.hh>
 #include <Psychrometrics.hh>
 #include <ScheduleManager.hh>
 #include <UtilityRoutines.hh>
-#include <EMSManager.hh>
 
 namespace EnergyPlus {
 
@@ -91,8 +91,8 @@ namespace NodeInputManager {
 
 	// Using/Aliasing
 	using namespace DataPrecisionGlobals;
-	using DataGlobals::OutputFileBNDetails;
 	using DataGlobals::DisplayAdvancedReportVariables;
+    using DataGlobals::OutputFileBNDetails;
 	using General::TrimSigDigits;
 	using namespace DataLoopNode;
 	using namespace BranchNodeConnections;
@@ -129,7 +129,7 @@ namespace NodeInputManager {
 		bool CalcMoreNodeInfoMyOneTimeFlag( true ); // one time flag
 		Array1D_int GetOnlySingleNodeNodeNums;
 		bool GetOnlySingleNodeFirstTime( true );
-	}
+    } // namespace
 	// MODULE SUBROUTINES:
 	//*************************************************************************
 
@@ -137,8 +137,7 @@ namespace NodeInputManager {
 
 	// Clears the global data in NodeInputManager.
 	// Needed for unit tests, should not be normally called.
-	void
-	clear_state()
+    void clear_state()
 	{
 		CalcMoreNodeInfoMyOneTimeFlag = true;
 		NumOfNodeLists = 0;
@@ -157,9 +156,7 @@ namespace NodeInputManager {
 		NodeWetBulbRepReq.deallocate();
 	}
 
-	void
-	GetNodeNums(
-		std::string const & Name, // Name for which to obtain information
+    void GetNodeNums(std::string const &Name,                  // Name for which to obtain information
 		int & NumNodes, // Number of nodes accompanying this Name
 		Array1S_int NodeNumbers, // Node Numbers accompanying this Name
 		bool & ErrorsFound, // True when errors are found...
@@ -224,7 +221,8 @@ namespace NodeInputManager {
 			GetNodeInputFlag = false;
 		}
 
-		if ( NodeFluidType != NodeType_Air && NodeFluidType != NodeType_Water && NodeFluidType != NodeType_Electric && NodeFluidType != NodeType_Steam && NodeFluidType != NodeType_Unknown ) {
+        if (NodeFluidType != NodeType_Air && NodeFluidType != NodeType_Water && NodeFluidType != NodeType_Electric &&
+            NodeFluidType != NodeType_Steam && NodeFluidType != NodeType_Unknown) {
 			gio::write( cNodeFluidType, fmtLD ) << NodeFluidType;
 			strip( cNodeFluidType );
 			ShowSevereError( RoutineName + NodeObjectType + "=\"" + NodeObjectName + "\", invalid fluid type." );
@@ -244,7 +242,8 @@ namespace NodeInputManager {
 							ShowSevereError( RoutineName + NodeObjectType + "=\"" + NodeObjectName + "\", invalid data." );
 							if ( present( InputFieldName ) ) ShowContinueError( "...Ref field=" + InputFieldName );
 							ShowContinueError( "Existing Fluid type for node, incorrect for request. Node=" + NodeID( NodeNumbers( Loop ) ) );
-							ShowContinueError( "Existing Fluid type=" + ValidNodeFluidTypes( Node( NodeNumbers( Loop ) ).FluidType ) + ", Requested Fluid Type=" + ValidNodeFluidTypes( NodeFluidType ) );
+                            ShowContinueError("Existing Fluid type=" + ValidNodeFluidTypes(Node(NodeNumbers(Loop)).FluidType) +
+                                              ", Requested Fluid Type=" + ValidNodeFluidTypes(NodeFluidType));
 							ErrorsFound = true;
 						}
 					}
@@ -276,14 +275,12 @@ namespace NodeInputManager {
 			if ( present( IncrementFluidStream ) ) {
 				if ( IncrementFluidStream ) FluidStreamNum = NodeFluidStream + ( Loop - 1 );
 			}
-			RegisterNodeConnection( NodeNumbers( Loop ), NodeID( NodeNumbers( Loop ) ), NodeObjectType, NodeObjectName, ConnectionType, FluidStreamNum, ObjectIsParent, ErrorsFound, InputFieldName );
+            RegisterNodeConnection(NodeNumbers(Loop), NodeID(NodeNumbers(Loop)), NodeObjectType, NodeObjectName, ConnectionType, FluidStreamNum,
+                                   ObjectIsParent, ErrorsFound, InputFieldName);
 		}
-
 	}
 
-	void
-	GetNodeList(
-		std::string const & Name, // Node List Name for which information is obtained
+    void GetNodeList(std::string const &Name,             // Node List Name for which information is obtained
 		int & NumNodes, // Number of nodes accompanying this Name
 		Array1S_int NodeNumbers, // NodeNumbers accompanying this Name
 		bool & errFlag, // Set to true when requested Node List not found
@@ -351,7 +348,8 @@ namespace NodeInputManager {
 		}
 
 		if ( Try != 0 ) {
-			GetNodeNums( Name, NumNodes, NodeNumbers, errFlag, NodeFluidType, NodeObjectType, NodeObjectName, NodeConnectionType, NodeFluidStream, ObjectIsParent, _, InputFieldName );
+            GetNodeNums(Name, NumNodes, NodeNumbers, errFlag, NodeFluidType, NodeObjectType, NodeObjectName, NodeConnectionType, NodeFluidStream,
+                        ObjectIsParent, _, InputFieldName);
 		} else {
 			// only valid "error" here is when the Node List is blank
 			if ( ! Name.empty() ) {
@@ -361,11 +359,9 @@ namespace NodeInputManager {
 				errFlag = true;
 			}
 		}
-
 	}
 
-	void
-	SetupNodeVarsForReporting()
+    void SetupNodeVarsForReporting()
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -388,6 +384,7 @@ namespace NodeInputManager {
 		// Using/Aliasing
 		using ErrorTracking::AbortProcessing; // used here to determine if this routine called during fatal error processing
 		using DataContaminantBalance::Contaminant;
+        using DataErrorTracking::AbortProcessing; // used here to determine if this routine called during fatal error processing
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -421,49 +418,81 @@ namespace NodeInputManager {
 				MoreNodeInfo.allocate( NumOfUniqueNodeNames );
 				for ( NumNode = 1; NumNode <= NumOfUniqueNodeNames; ++NumNode ) {
 					// Setup Report variables for the Nodes for HVAC Reporting, CurrentModuleObject='Node Name'
-					SetupOutputVariable( "System Node Temperature", OutputProcessor::Unit::C, Node( NumNode ).Temp, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRate, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir, Node( NumNode ).HumRat, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Setpoint Temperature", OutputProcessor::Unit::C, Node( NumNode ).TempSetPoint, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Setpoint High Temperature", OutputProcessor::Unit::C, Node( NumNode ).TempSetPointHi, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Setpoint Low Temperature", OutputProcessor::Unit::C, Node( NumNode ).TempSetPointLo, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Setpoint Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir, Node( NumNode ).HumRatSetPoint, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Setpoint Minimum Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir, Node( NumNode ).HumRatMin, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Setpoint Maximum Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir, Node( NumNode ).HumRatMax, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Relative Humidity", OutputProcessor::Unit::Perc, MoreNodeInfo( NumNode ).RelHumidity, "System", "Average", NodeID( NumNode ) );
+                    SetupOutputVariable("System Node Temperature", OutputProcessor::Unit::C, Node(NumNode).Temp, "System", "Average",
+                                        NodeID(NumNode));
+                    SetupOutputVariable("System Node Mass Flow Rate", OutputProcessor::Unit::kg_s, Node(NumNode).MassFlowRate, "System", "Average",
+                                        NodeID(NumNode));
+                    SetupOutputVariable("System Node Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir, Node(NumNode).HumRat, "System",
+                                        "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Setpoint Temperature", OutputProcessor::Unit::C, Node(NumNode).TempSetPoint, "System", "Average",
+                                        NodeID(NumNode));
+                    SetupOutputVariable("System Node Setpoint High Temperature", OutputProcessor::Unit::C, Node(NumNode).TempSetPointHi, "System",
+                                        "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Setpoint Low Temperature", OutputProcessor::Unit::C, Node(NumNode).TempSetPointLo, "System",
+                                        "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Setpoint Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir, Node(NumNode).HumRatSetPoint,
+                                        "System", "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Setpoint Minimum Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir,
+                                        Node(NumNode).HumRatMin, "System", "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Setpoint Maximum Humidity Ratio", OutputProcessor::Unit::kgWater_kgDryAir,
+                                        Node(NumNode).HumRatMax, "System", "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Relative Humidity", OutputProcessor::Unit::Perc, MoreNodeInfo(NumNode).RelHumidity, "System",
+                                        "Average", NodeID(NumNode));
 					SetupOutputVariable( "System Node Pressure", OutputProcessor::Unit::Pa, Node( NumNode ).Press, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Standard Density Volume Flow Rate", OutputProcessor::Unit::m3_s, MoreNodeInfo( NumNode ).VolFlowRateStdRho, "System", "Average", NodeID( NumNode ) );
-					if ( Node( NumNode ).FluidType == NodeType_Air || Node( NumNode ).FluidType == NodeType_Water ) { // setup volume flow rate report for actual/current density
-						SetupOutputVariable( "System Node Current Density Volume Flow Rate", OutputProcessor::Unit::m3_s, MoreNodeInfo( NumNode ).VolFlowRateCrntRho, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Current Density", OutputProcessor::Unit::kg_m3, MoreNodeInfo( NumNode ).Density, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Specific Heat", OutputProcessor::Unit::J_kgK, MoreNodeInfo( NumNode ).SpecificHeat, "System", "Average", NodeID( NumNode ) );
-					}
+                    SetupOutputVariable("System Node Standard Density Volume Flow Rate", OutputProcessor::Unit::m3_s,
+                                        MoreNodeInfo(NumNode).VolFlowRateStdRho, "System", "Average", NodeID(NumNode));
+                    if (Node(NumNode).FluidType == NodeType_Air ||
+                        Node(NumNode).FluidType == NodeType_Water) { // setup volume flow rate report for actual/current density
+                        SetupOutputVariable("System Node Current Density Volume Flow Rate", OutputProcessor::Unit::m3_s,
+                                            MoreNodeInfo(NumNode).VolFlowRateCrntRho, "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Current Density", OutputProcessor::Unit::kg_m3, MoreNodeInfo(NumNode).Density, "System",
+                                            "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Specific Heat", OutputProcessor::Unit::J_kgK, MoreNodeInfo(NumNode).SpecificHeat, "System",
+                                            "Average", NodeID(NumNode));
+                    }
 
-					SetupOutputVariable( "System Node Enthalpy", OutputProcessor::Unit::J_kg, MoreNodeInfo( NumNode ).ReportEnthalpy, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Wetbulb Temperature", OutputProcessor::Unit::C, MoreNodeInfo( NumNode ).WetBulbTemp, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Dewpoint Temperature", OutputProcessor::Unit::C, MoreNodeInfo( NumNode ).AirDewPointTemp, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Wind Speed", OutputProcessor::Unit::m_s, Node( NumNode ).OutAirWindSpeed, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Wind Direction", OutputProcessor::Unit::deg, Node( NumNode ).OutAirWindDir, "System", "Average", NodeID( NumNode ) );
-					SetupOutputVariable( "System Node Quality", OutputProcessor::Unit::None, Node( NumNode ).Quality, "System", "Average", NodeID( NumNode ) );
+                    SetupOutputVariable("System Node Enthalpy", OutputProcessor::Unit::J_kg, MoreNodeInfo(NumNode).ReportEnthalpy, "System",
+                                        "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Wetbulb Temperature", OutputProcessor::Unit::C, MoreNodeInfo(NumNode).WetBulbTemp, "System",
+                                        "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Dewpoint Temperature", OutputProcessor::Unit::C, MoreNodeInfo(NumNode).AirDewPointTemp, "System",
+                                        "Average", NodeID(NumNode));
+                    SetupOutputVariable("System Node Wind Speed", OutputProcessor::Unit::m_s, Node(NumNode).OutAirWindSpeed, "System", "Average",
+                                        NodeID(NumNode));
+                    SetupOutputVariable("System Node Wind Direction", OutputProcessor::Unit::deg, Node(NumNode).OutAirWindDir, "System", "Average",
+                                        NodeID(NumNode));
+                    SetupOutputVariable("System Node Quality", OutputProcessor::Unit::None, Node(NumNode).Quality, "System", "Average",
+                                        NodeID(NumNode));
 					SetupOutputVariable( "System Node Height", OutputProcessor::Unit::m, Node( NumNode ).Height, "System", "Average", NodeID( NumNode ) );
 					if ( DisplayAdvancedReportVariables ) {
-						SetupOutputVariable( "System Node Minimum Temperature", OutputProcessor::Unit::C, Node( NumNode ).TempMin, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Maximum Temperature", OutputProcessor::Unit::C, Node( NumNode ).TempMax, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Minimum Limit Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRateMin, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Maximum Limit Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRateMax, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Minimum Available Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRateMinAvail, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Maximum Available Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRateMaxAvail, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Setpoint Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRateSetPoint, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Requested Mass Flow Rate", OutputProcessor::Unit::kg_s, Node( NumNode ).MassFlowRateRequest, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Last Timestep Temperature", OutputProcessor::Unit::C, Node( NumNode ).TempLastTimestep, "System", "Average", NodeID( NumNode ) );
-						SetupOutputVariable( "System Node Last Timestep Enthalpy", OutputProcessor::Unit::J_kg, Node( NumNode ).EnthalpyLastTimestep, "System", "Average", NodeID( NumNode ) );
-
+                        SetupOutputVariable("System Node Minimum Temperature", OutputProcessor::Unit::C, Node(NumNode).TempMin, "System", "Average",
+                                            NodeID(NumNode));
+                        SetupOutputVariable("System Node Maximum Temperature", OutputProcessor::Unit::C, Node(NumNode).TempMax, "System", "Average",
+                                            NodeID(NumNode));
+                        SetupOutputVariable("System Node Minimum Limit Mass Flow Rate", OutputProcessor::Unit::kg_s, Node(NumNode).MassFlowRateMin,
+                                            "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Maximum Limit Mass Flow Rate", OutputProcessor::Unit::kg_s, Node(NumNode).MassFlowRateMax,
+                                            "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Minimum Available Mass Flow Rate", OutputProcessor::Unit::kg_s,
+                                            Node(NumNode).MassFlowRateMinAvail, "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Maximum Available Mass Flow Rate", OutputProcessor::Unit::kg_s,
+                                            Node(NumNode).MassFlowRateMaxAvail, "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Setpoint Mass Flow Rate", OutputProcessor::Unit::kg_s, Node(NumNode).MassFlowRateSetPoint,
+                                            "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Requested Mass Flow Rate", OutputProcessor::Unit::kg_s, Node(NumNode).MassFlowRateRequest,
+                                            "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Last Timestep Temperature", OutputProcessor::Unit::C, Node(NumNode).TempLastTimestep,
+                                            "System", "Average", NodeID(NumNode));
+                        SetupOutputVariable("System Node Last Timestep Enthalpy", OutputProcessor::Unit::J_kg, Node(NumNode).EnthalpyLastTimestep,
+                                            "System", "Average", NodeID(NumNode));
 					}
 					if ( Contaminant.CO2Simulation ) {
-						SetupOutputVariable( "System Node CO2 Concentration", OutputProcessor::Unit::ppm, Node( NumNode ).CO2, "System", "Average", NodeID( NumNode ) );
+                        SetupOutputVariable("System Node CO2 Concentration", OutputProcessor::Unit::ppm, Node(NumNode).CO2, "System", "Average",
+                                            NodeID(NumNode));
 					}
 					if ( Contaminant.GenericContamSimulation ) {
-						SetupOutputVariable( "System Node Generic Air Contaminant Concentration", OutputProcessor::Unit::ppm, Node( NumNode ).GenContam, "System", "Average", NodeID( NumNode ) );
+                        SetupOutputVariable("System Node Generic Air Contaminant Concentration", OutputProcessor::Unit::ppm, Node(NumNode).GenContam,
+                                            "System", "Average", NodeID(NumNode));
 					}
 				}
 			}
@@ -507,15 +536,14 @@ namespace NodeInputManager {
 					gio::write( ChrOut1, fmtLD ) << NodeRef( NumNode );
 					strip( ChrOut1 );
 					ChrOut2 = ValidNodeFluidTypes( Node( NumNode ).FluidType );
-					gio::write( OutputFileBNDetails, Format_701 ) << " Suspicious Node," + ChrOut + ',' + NodeID( NumNode ) + ',' + ChrOut2 + ',' + ChrOut1;
+                    gio::write(OutputFileBNDetails, Format_701)
+                        << " Suspicious Node," + ChrOut + ',' + NodeID(NumNode) + ',' + ChrOut2 + ',' + ChrOut1;
 				}
 			}
 		}
-
 	}
 
-	void
-	GetNodeListsInput( bool & ErrorsFound )
+    void GetNodeListsInput(bool &ErrorsFound)
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -623,7 +651,9 @@ namespace NodeInputManager {
 						ShowSevereError( RoutineName + CurrentModuleObject + "=\"" + cAlphas( 1 ) + "\" has duplicate nodes:" );
 						flagError = false;
 					}
-					ShowContinueError( "...list item=" + TrimSigDigits( Loop1 ) + ", \"" + NodeID( NodeLists( NCount ).NodeNumbers( Loop1 ) ) + "\", duplicate list item=" + TrimSigDigits( Loop2 ) + ", \"" + NodeID( NodeLists( NCount ).NodeNumbers( Loop2 ) ) + "\"." );
+                    ShowContinueError("...list item=" + TrimSigDigits(Loop1) + ", \"" + NodeID(NodeLists(NCount).NodeNumbers(Loop1)) +
+                                      "\", duplicate list item=" + TrimSigDigits(Loop2) + ", \"" + NodeID(NodeLists(NCount).NodeNumbers(Loop2)) +
+                                      "\".");
 					ErrorsFound = true;
 				}
 			}
@@ -635,7 +665,8 @@ namespace NodeInputManager {
 					if ( Loop == Loop1 ) continue; // within a nodelist have already checked to see if node name duplicates nodelist name
 					if ( ! UtilityRoutines::SameString( NodeLists( Loop ).NodeNames( Loop2 ), NodeLists( Loop1 ).Name ) ) continue;
 					ShowSevereError( RoutineName + CurrentModuleObject + "=\"" + NodeLists( Loop1 ).Name + "\", invalid node name in list." );
-					ShowContinueError( "... Node " + TrimSigDigits( Loop2 ) + " Name=\"" + NodeLists( Loop ).NodeNames( Loop2 ) + "\", duplicates NodeList Name." );
+                    ShowContinueError("... Node " + TrimSigDigits(Loop2) + " Name=\"" + NodeLists(Loop).NodeNames(Loop2) +
+                                      "\", duplicates NodeList Name.");
 					ShowContinueError( "... NodeList=\"" + NodeLists( Loop1 ).Name + "\", is duplicated." );
 					ShowContinueError( "... Items in NodeLists must not be the name of another NodeList." );
 					ErrorsFound = true;
@@ -649,15 +680,11 @@ namespace NodeInputManager {
 		if ( ErrorsFound ) {
 			ShowFatalError( RoutineName + CurrentModuleObject + ": Error getting input - causes termination." );
 		}
-
 	}
 
-	int
-	AssignNodeNumber(
-		std::string const & Name, // Name for assignment
+    int AssignNodeNumber(std::string const &Name, // Name for assignment
 		int const NodeFluidType, // must be valid
-		bool & ErrorsFound
-	)
+                         bool &ErrorsFound)
 	{
 
 		// FUNCTION INFORMATION:
@@ -698,7 +725,8 @@ namespace NodeInputManager {
 		static int NumNode( 0 ); // Loop Variable
 		static std::string cNodeFluidType;
 
-		if ( NodeFluidType != NodeType_Air && NodeFluidType != NodeType_Water && NodeFluidType != NodeType_Electric && NodeFluidType != NodeType_Steam && NodeFluidType != NodeType_Unknown ) {
+        if (NodeFluidType != NodeType_Air && NodeFluidType != NodeType_Water && NodeFluidType != NodeType_Electric &&
+            NodeFluidType != NodeType_Steam && NodeFluidType != NodeType_Unknown) {
 			gio::write( cNodeFluidType, fmtLD ) << NodeFluidType;
 			strip( cNodeFluidType );
 			ShowSevereError( "AssignNodeNumber: Invalid FluidType=" + cNodeFluidType );
@@ -715,7 +743,8 @@ namespace NodeInputManager {
 				if ( NodeFluidType != NodeType_Unknown ) {
 					if ( Node( NumNode ).FluidType != NodeFluidType && Node( NumNode ).FluidType != NodeType_Unknown ) {
 						ShowSevereError( "Existing Fluid type for node, incorrect for request. Node=" + NodeID( NumNode ) );
-						ShowContinueError( "Existing Fluid type=" + ValidNodeFluidTypes( Node( NumNode ).FluidType ) + ", Requested Fluid Type=" + ValidNodeFluidTypes( NodeFluidType ) );
+                        ShowContinueError("Existing Fluid type=" + ValidNodeFluidTypes(Node(NumNode).FluidType) +
+                                          ", Requested Fluid Type=" + ValidNodeFluidTypes(NodeFluidType));
 						ErrorsFound = true;
 					}
 				}
@@ -754,12 +783,9 @@ namespace NodeInputManager {
 		}
 
 		return AssignNodeNumber;
-
 	}
 
-	int
-	GetOnlySingleNode(
-		std::string const & NodeName,
+    int GetOnlySingleNode(std::string const &NodeName,
 		bool & errFlag,
 		std::string const & NodeObjectType, // Node Object Type (i.e. "Chiller:Electric")
 		std::string const & NodeObjectName, // Node Object Name (i.e. "MyChiller")
@@ -823,7 +849,8 @@ namespace NodeInputManager {
 
 		FluidType = NodeFluidType;
 
-		GetNodeNums( NodeName, NumNodes, GetOnlySingleNodeNodeNums, errFlag, FluidType, NodeObjectType, NodeObjectName, NodeConnectionType, NodeFluidStream, ObjectIsParent, _, InputFieldName );
+        GetNodeNums(NodeName, NumNodes, GetOnlySingleNodeNodeNums, errFlag, FluidType, NodeObjectType, NodeObjectName, NodeConnectionType,
+                    NodeFluidStream, ObjectIsParent, _, InputFieldName);
 
 		if ( NumNodes > 1 ) {
 			ShowSevereError( RoutineName + NodeObjectType + "=\"" + NodeObjectName + "\", invalid data." );
@@ -847,11 +874,9 @@ namespace NodeInputManager {
 		GetSingleNodeResult = GetOnlySingleNodeNodeNums( 1 );
 
 		return GetSingleNodeResult;
-
 	}
 
-	void
-	InitUniqueNodeCheck( std::string const & ContextName )
+    void InitUniqueNodeCheck(std::string const &ContextName)
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -896,7 +921,8 @@ namespace NodeInputManager {
 		}
 
 		if ( ! CurCheckContextName.empty() ) {
-			ShowFatalError( "Init Uniqueness called for \"" + ContextName + ", but checks for \"" + CurCheckContextName + "\" was already in progress." );
+            ShowFatalError("Init Uniqueness called for \"" + ContextName + ", but checks for \"" + CurCheckContextName +
+                           "\" was already in progress.");
 		}
 		if ( ContextName == BlankString ) {
 			ShowFatalError( "Init Uniqueness called with Blank Context Name" );
@@ -909,18 +935,14 @@ namespace NodeInputManager {
 		MaxCheckNodes = 100;
 		UniqueNodeNames.allocate( MaxCheckNodes );
 		CurCheckContextName = ContextName;
-
 	}
 
-	void
-	CheckUniqueNodes(
-		std::string const & NodeTypes,
+    void CheckUniqueNodes(std::string const &NodeTypes,
 		std::string const & CheckType,
 		bool & ErrorsFound,
 		Optional_string_const CheckName,
 		Optional_int_const CheckNumber,
-		Optional_string_const ObjectName
-	)
+                          Optional_string_const ObjectName)
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -964,7 +986,8 @@ namespace NodeInputManager {
 		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 		int Found;
 
-		{ auto const nodeType( CheckType );
+        {
+            auto const nodeType(CheckType);
 
 		if ( nodeType == "NodeName" ) {
 			if ( ! present( CheckName ) ) {
@@ -1013,13 +1036,11 @@ namespace NodeInputManager {
 		} else {
 			ShowFatalError( "CheckUniqueNodes called with invalid Check Type=" + CheckType );
 			ErrorsFound = true;
-
-		}}
-
+            }
+        }
 	}
 
-	void
-	EndUniqueNodeCheck( std::string const & ContextName )
+    void EndUniqueNodeCheck(std::string const &ContextName)
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -1065,11 +1086,9 @@ namespace NodeInputManager {
 		if ( allocated( UniqueNodeNames ) ) {
 			UniqueNodeNames.deallocate();
 		}
-
 	}
 
-	void
-	CalcMoreNodeInfo()
+    void CalcMoreNodeInfo()
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -1086,28 +1105,28 @@ namespace NodeInputManager {
 		// stored in MoreNodeInfo.
 
 		// Using/Aliasing
-		using DataEnvironment::StdBaroPress;
 		using DataEnvironment::OutBaroPress;
+        using DataEnvironment::StdBaroPress;
 		using DataEnvironment::StdRhoAir;
-		using Psychrometrics::PsyRhoAirFnPbTdbW;
-		using Psychrometrics::RhoH2O;
-		using Psychrometrics::PsyHFnTdbW;
-		using Psychrometrics::CPCW;
-		using Psychrometrics::PsyTwbFnTdbWPb;
-		using Psychrometrics::PsyRhFnTdbWPb;
-		using Psychrometrics::PsyTdpFnWPb;
-		using Psychrometrics::PsyCpAirFnWTdb;
-		using OutputProcessor::ReqReportVariables;
-		using OutputProcessor::ReqRepVars;
-		using OutputProcessor::NumOfReqVariables;
-		using ScheduleManager::GetCurrentScheduleValue;
+        using FluidProperties::GetDensityGlycol;
+        using FluidProperties::GetGlycolNameByIndex;
 		using FluidProperties::GetSatDensityRefrig;
 		using FluidProperties::GetSatEnthalpyRefrig;
 		using FluidProperties::GetSpecificHeatGlycol;
-		using FluidProperties::GetDensityGlycol;
-		using FluidProperties::GetGlycolNameByIndex;
 		using FluidProperties::NumOfGlycols;
 		using General::RoundSigDigits;
+        using OutputProcessor::NumOfReqVariables;
+        using OutputProcessor::ReqRepVars;
+        using OutputProcessor::ReqReportVariables;
+        using Psychrometrics::CPCW;
+        using Psychrometrics::PsyCpAirFnWTdb;
+        using Psychrometrics::PsyHFnTdbW;
+        using Psychrometrics::PsyRhFnTdbWPb;
+        using Psychrometrics::PsyRhoAirFnPbTdbW;
+        using Psychrometrics::PsyTdpFnWPb;
+        using Psychrometrics::PsyTwbFnTdbWPb;
+        using Psychrometrics::RhoH2O;
+        using ScheduleManager::GetCurrentScheduleValue;
 
 		// SUBROUTINE PARAMETER DEFINITIONS:
 		static std::string const RoutineName( "CalcMoreNodeInfo" );
@@ -1197,8 +1216,6 @@ namespace NodeInputManager {
 					NodeSpecificHeatRepReq( iNode ) = true;
 					NodeSpecificHeatSchedPtr( iNode ) = 0;
 				}
-
-
 			}
 			CalcMoreNodeInfoMyOneTimeFlag = false;
 		}
@@ -1240,7 +1257,8 @@ namespace NodeInputManager {
 				MoreNodeInfo( iNode ).ReportEnthalpy = PsyHFnTdbW( Node( iNode ).Temp, Node( iNode ).HumRat );
 				if ( ReportWetBulb ) {
 					// if Node%Press was reliable could be used here.
-					MoreNodeInfo( iNode ).WetBulbTemp = PsyTwbFnTdbWPb( Node( iNode ).Temp, Node( iNode ).HumRat, OutBaroPress, nodeReportingStrings[iNode - 1] );
+                    MoreNodeInfo(iNode).WetBulbTemp =
+                        PsyTwbFnTdbWPb(Node(iNode).Temp, Node(iNode).HumRat, OutBaroPress, nodeReportingStrings[iNode - 1]);
 				} else {
 					MoreNodeInfo( iNode ).WetBulbTemp = 0.0;
 				}
@@ -1252,7 +1270,8 @@ namespace NodeInputManager {
 				if ( ReportRelHumidity ) {
 					// if Node%Press was reliable could be used here.
 					// following routines don't issue psych errors and may be more reliable.
-					MoreNodeInfo( iNode ).RelHumidity = 100.0 * PsyRhFnTdbWPb( Node( iNode ).Temp, Node( iNode ).HumRat, OutBaroPress, nodeReportingStrings[iNode - 1] );
+                    MoreNodeInfo(iNode).RelHumidity =
+                        100.0 * PsyRhFnTdbWPb(Node(iNode).Temp, Node(iNode).HumRat, OutBaroPress, nodeReportingStrings[iNode - 1]);
 					//        rRhoVapor=PsyRhovFnTdbWPb(Node(iNode)%Temp,Node(iNode)%HumRat,OutBaroPress,'NodeReportingCalc:'//TRIM(NodeID(iNode)))
 					//        MoreNodeInfo(iNode)%RelHumidity = 100.0 * PsyRhFnTdbRhov(Node(iNode)%Temp,rRhoVapor,  &
 					//              'NodeReportingCalc:'//TRIM(NodeID(iNode)))
@@ -1273,7 +1292,8 @@ namespace NodeInputManager {
 					Cp = CPCW( Node( iNode ).Temp );
 				} else {
 					Cp = GetSpecificHeatGlycol( nodeFluidNames[iNode - 1], Node( iNode ).Temp, Node( iNode ).FluidIndex, nodeReportingStrings[iNode - 1] );
-					rhoStd = GetDensityGlycol( nodeFluidNames[iNode - 1], DataGlobals::InitConvTemp, Node( iNode ).FluidIndex, nodeReportingStrings[iNode - 1] );
+                    rhoStd = GetDensityGlycol(nodeFluidNames[iNode - 1], DataGlobals::InitConvTemp, Node(iNode).FluidIndex,
+                                              nodeReportingStrings[iNode - 1]);
 					rho = GetDensityGlycol( nodeFluidNames[iNode - 1], Node( iNode ).Temp, Node( iNode ).FluidIndex, nodeReportingStrings[iNode - 1] );
 				}
 
@@ -1325,16 +1345,12 @@ namespace NodeInputManager {
 				}
 			}
 		}
-
 	}
 
-	void
-	MarkNode(
-		int const NodeNumber, // Node Number to be marked
+    void MarkNode(int const NodeNumber, // Node Number to be marked
 		std::string const & ObjectType,
 		std::string const & ObjectName,
-		std::string const & FieldName
-	)
+                  std::string const &FieldName)
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -1374,11 +1390,9 @@ namespace NodeInputManager {
 		MarkedNode( NodeNumber ).ObjectType = ObjectType;
 		MarkedNode( NodeNumber ).ObjectName = ObjectName;
 		MarkedNode( NodeNumber ).FieldName = FieldName;
-
 	}
 
-	void
-	CheckMarkedNodes( bool & ErrorsFound )
+    void CheckMarkedNodes(bool &ErrorsFound)
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -1418,14 +1432,14 @@ namespace NodeInputManager {
 			if ( MarkedNode( NodeNum ).IsMarked ) {
 				if ( NodeRef( NodeNum ) == 0 ) {
 					ShowSevereError( "Node=\"" + NodeID( NodeNum ) + "\" did not find reference by another object." );
-					ShowContinueError( "Object=\"" + MarkedNode( NodeNum ).ObjectType + "\", Name=\"" + MarkedNode( NodeNum ).ObjectName + "\", Field=[" + MarkedNode( NodeNum ).FieldName + ']' );
+                    ShowContinueError("Object=\"" + MarkedNode(NodeNum).ObjectType + "\", Name=\"" + MarkedNode(NodeNum).ObjectName + "\", Field=[" +
+                                      MarkedNode(NodeNum).FieldName + ']');
 					ErrorsFound = true;
 				}
 			}
 		}
-
 	}
 
-} // NodeInputManager
+} // namespace NodeInputManager
 
-} // EnergyPlus
+} // namespace EnergyPlus
