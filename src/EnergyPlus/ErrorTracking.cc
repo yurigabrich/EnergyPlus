@@ -46,44 +46,44 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 // EnergyPlus Headers
-#include <ErrorTracking.hh>
-#include <DataPrecisionGlobals.hh>
 #include "DataGlobals.hh"
 #include "DataStringGlobals.hh"
 #include "SQLiteProcedures.hh"
+#include <DataPrecisionGlobals.hh>
+#include <ErrorTracking.hh>
 
 namespace EnergyPlus {
 
 namespace ErrorTracking {
 
-	// MODULE INFORMATION:
-	//       AUTHOR         Linda K. Lawrie
-	//       DATE WRITTEN   March 2003
-	//       MODIFIED       na
-	//       RE-ENGINEERED  na
+    // MODULE INFORMATION:
+    //       AUTHOR         Linda K. Lawrie
+    //       DATE WRITTEN   March 2003
+    //       MODIFIED       na
+    //       RE-ENGINEERED  na
 
-	// PURPOSE OF THIS MODULE:
-	// This data-only module is a repository for summary "errors" that are tracked
-	// and used in a summary at the end of a successful run.  Also other variables such
-	// as might be used during "fatal/end" processing.
+    // PURPOSE OF THIS MODULE:
+    // This data-only module is a repository for summary "errors" that are tracked
+    // and used in a summary at the end of a successful run.  Also other variables such
+    // as might be used during "fatal/end" processing.
 
-	// METHODOLOGY EMPLOYED:          ! na
+    // METHODOLOGY EMPLOYED:          ! na
 
-	// REFERENCES:
-	// na
+    // REFERENCES:
+    // na
 
-	// OTHER NOTES:
-	// na
+    // OTHER NOTES:
+    // na
 
-	// Using/Aliasing
-	using namespace DataPrecisionGlobals;
+    // Using/Aliasing
+    using namespace DataPrecisionGlobals;
 
-	// Data
-	// -only module should be available to other modules and routines.
-	// Thus, all variables in this module must be PUBLIC.
+    // Data
+    // -only module should be available to other modules and routines.
+    // Thus, all variables in this module must be PUBLIC.
 
-	// MODULE PARAMETER DEFINITIONS:
-	int const SearchCounts( 20 );
+    // MODULE PARAMETER DEFINITIONS:
+    int const SearchCounts(20);
     Array1D_string const MessageSearch(SearchCounts,
                                        {"InterZone Surface Areas",
                                         "CAUTION -- Interzone",
@@ -126,20 +126,20 @@ namespace ErrorTracking {
                                     "Nominally Unused Constructions",
                                     "Material:InfraredTransparent usage",
                                     "No Reporting Elements requested"});
-	// in below -- simple line end <CR>.  End of Whole message <CRE>
+    // in below -- simple line end <CR>.  End of Whole message <CRE>
     std::string const MoreDetails_1(
         "Area mismatch errors happen when the interzone surface in zone A is<CR>not the same size as it's companion in zone B.<CRE>"); // InterZone
                                                                                                                                        // Surface
                                                                                                                                        // Areas --
                                                                                                                                        // mismatch
-	std::string const MoreDetails_2; // Interzone surfaces - different zones
+    std::string const MoreDetails_2; // Interzone surfaces - different zones
     std::string const
         MoreDetails_3("Node connection errors are often caused by spelling mistakes in a node name field.<CR>To track down the problem, search the "
                       "idf file for each node name listed to see if it<CR>occurs in the expected input fields.<CRE>"); // Node Connection Errors
     std::string const MoreDetails_4("The azimuths (outward facing angle) of two interzone surfaces should not be the same.<CR>Normally, the absolute "
                                     "difference between the two azimuths will be 180 degrees.<CR>You can turn on the report: "
                                     "Output:Surfaces:List,Details; to inspect your surfaces.<CRE>"); // InterZone Surface Azimuths -- mismatch
-	std::string const MoreDetails_5; // InterZone Surface Tilts -- mismatch
+    std::string const MoreDetails_5;                                                                 // InterZone Surface Tilts -- mismatch
     std::string const MoreDetails_6("EnergyPlus Surfaces should be planar. If the error indicates a small increment for the<CR>out of planar bounds, "
                                     "then the calculations are likely okay though you should try to fix<CR>the problem. If a greater increment, the "
                                     "calculations will likely be incorrect.<CRE>"); // Likely non-planar surfaces
@@ -202,218 +202,206 @@ namespace ErrorTracking {
                                                     MoreDetails_19, MoreDetails_20}); // Details 16 applies to both temperature out of bounds |
                                                                                       // errors.
 
-	int const MaxRecurringErrorMsgLength( 250 ); // Maximum error message length for recurring error messages
+    int const MaxRecurringErrorMsgLength(250); // Maximum error message length for recurring error messages
 
-	// DERIVED TYPE DEFINITIONS
+    // DERIVED TYPE DEFINITIONS
 
-	// INTERFACE BLOCK SPECIFICATIONS
-	// na
+    // INTERFACE BLOCK SPECIFICATIONS
+    // na
 
-	// MODULE VARIABLE DECLARATIONS:
-	Array1D_int MatchCounts( SearchCounts, 0 );
-	bool AbortProcessing( false ); // Flag used to if currently in "abort processing"
-	int NumRecurringErrors( 0 ); // Number of stored recurring error messages
-	int TotalSevereErrors( 0 ); // Counter
-	int TotalWarningErrors( 0 ); // Counter
-	int TotalSevereErrorsDuringWarmup( 0 ); // Counter
-	int TotalWarningErrorsDuringWarmup( 0 ); // Counter
-	int TotalSevereErrorsDuringSizing( 0 ); // Counter
-	int TotalWarningErrorsDuringSizing( 0 ); // Counter
-	int TotalMultipliedWindows( 0 ); // Counter
-	int TotalCoincidentVertices( 0 ); // Counter
-	int TotalDegenerateSurfaces( 0 ); // Counter
-	int TotalReceivingNonConvexSurfaces( 0 ); // Counter
-	int TotalCastingNonConvexSurfaces( 0 ); // Counter
-	int TotalRoomAirPatternTooLow( 0 ); // Counter
-	int TotalRoomAirPatternTooHigh( 0 ); // Counter
-	bool AskForConnectionsReport( false ); // Flag used to tell when connections should be reported
-	bool AskForSurfacesReport( false ); // Flag used to tell when surfaces should be reported
-	bool AskForPlantCheckOnAbort( false ); // flag used to tell if plant structure can be checked
-	bool ExitDuringSimulations( false ); // flag used to tell if program is in simulation mode when fatal occurs
-	std::string LastSevereError;
-	bool outputErrorHeader(true);
+    // MODULE VARIABLE DECLARATIONS:
+    Array1D_int MatchCounts(SearchCounts, 0);
+    bool AbortProcessing(false);            // Flag used to if currently in "abort processing"
+    int NumRecurringErrors(0);              // Number of stored recurring error messages
+    int TotalSevereErrors(0);               // Counter
+    int TotalWarningErrors(0);              // Counter
+    int TotalSevereErrorsDuringWarmup(0);   // Counter
+    int TotalWarningErrorsDuringWarmup(0);  // Counter
+    int TotalSevereErrorsDuringSizing(0);   // Counter
+    int TotalWarningErrorsDuringSizing(0);  // Counter
+    int TotalMultipliedWindows(0);          // Counter
+    int TotalCoincidentVertices(0);         // Counter
+    int TotalDegenerateSurfaces(0);         // Counter
+    int TotalReceivingNonConvexSurfaces(0); // Counter
+    int TotalCastingNonConvexSurfaces(0);   // Counter
+    int TotalRoomAirPatternTooLow(0);       // Counter
+    int TotalRoomAirPatternTooHigh(0);      // Counter
+    bool AskForConnectionsReport(false);    // Flag used to tell when connections should be reported
+    bool AskForSurfacesReport(false);       // Flag used to tell when surfaces should be reported
+    bool AskForPlantCheckOnAbort(false);    // flag used to tell if plant structure can be checked
+    bool ExitDuringSimulations(false);      // flag used to tell if program is in simulation mode when fatal occurs
+    std::string LastSevereError;
+    bool outputErrorHeader(true);
 
-	// Object Data
-	Array1D< RecurringErrorData > RecurringErrors;
+    // Object Data
+    Array1D<RecurringErrorData> RecurringErrors;
 
-	static void
-	logMessage(
-		std::string const & ErrorMessage
-	)
-	{
+    static void logMessage(std::string const &ErrorMessage)
+    {
 
-		// SUBROUTINE INFORMATION:
-		//       AUTHOR         Linda K. Lawrie
-		//       DATE WRITTEN   December 1997
-		//       MODIFIED       na
-		//       RE-ENGINEERED  Jason DeGraw, 6/20/2017
+        // SUBROUTINE INFORMATION:
+        //       AUTHOR         Linda K. Lawrie
+        //       DATE WRITTEN   December 1997
+        //       MODIFIED       na
+        //       RE-ENGINEERED  Jason DeGraw, 6/20/2017
 
-		// PURPOSE OF THIS SUBROUTINE:
-		// This subroutine displays the error messages on the "standard error output".
-		// This routine is internal to this file only.
+        // PURPOSE OF THIS SUBROUTINE:
+        // This subroutine displays the error messages on the "standard error output".
+        // This routine is internal to this file only.
 
-		// METHODOLOGY EMPLOYED:
-		// 
+        // METHODOLOGY EMPLOYED:
+        //
 
-		// REFERENCES:
-		// na
+        // REFERENCES:
+        // na
 
-		// Using/Aliasing
-		using DataStringGlobals::VerString;
-		using DataStringGlobals::IDDVerString;
-		//using DataGlobals::DoingInputProcessing;
-		//using DataGlobals::CacheIPErrorFile;
-		using DataGlobals::err_stream;
+        // Using/Aliasing
+        using DataStringGlobals::IDDVerString;
+        using DataStringGlobals::VerString;
+        // using DataGlobals::DoingInputProcessing;
+        // using DataGlobals::CacheIPErrorFile;
+        using DataGlobals::err_stream;
 
-		if ( err_stream ) {
-			if ( outputErrorHeader ) {
-				*err_stream << "Program Version," + VerString + ',' + IDDVerString + DataStringGlobals::NL;
-				outputErrorHeader = false;
-			}
-			*err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
-		} // Maybe add else to std::cerr?
+        if (err_stream) {
+            if (outputErrorHeader) {
+                *err_stream << "Program Version," + VerString + ',' + IDDVerString + DataStringGlobals::NL;
+                outputErrorHeader = false;
+            }
+            *err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
+        } // Maybe add else to std::cerr?
 
-		//if ( ! DoingInputProcessing ) {
-		//	if ( err_stream ) *err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
-		//} else {
-			//gio::write( CacheIPErrorFile, fmtA ) << ErrorMessage; // Remove after input refactor
-		//}
+        // if ( ! DoingInputProcessing ) {
+        //	if ( err_stream ) *err_stream << "  " << ErrorMessage << DataStringGlobals::NL;
+        //} else {
+        // gio::write( CacheIPErrorFile, fmtA ) << ErrorMessage; // Remove after input refactor
+        //}
+    }
 
-	}
+    void error(std::string const &message)
+    {
 
-	void
-	error(
-	std::string const & message
-	)
-	{
+        // SUBROUTINE INFORMATION:
+        //       AUTHOR         Linda K. Lawrie
+        //       DATE WRITTEN   September 1997
+        //       MODIFIED       na
+        //       RE-ENGINEERED  Jason DeGraw, 6/20/2017
 
-		// SUBROUTINE INFORMATION:
-		//       AUTHOR         Linda K. Lawrie
-		//       DATE WRITTEN   September 1997
-		//       MODIFIED       na
-		//       RE-ENGINEERED  Jason DeGraw, 6/20/2017
+        // PURPOSE OF THIS SUBROUTINE:
+        // This subroutine puts ErrorMessage with a Severe designation on
+        // designated output files.
 
-		// PURPOSE OF THIS SUBROUTINE:
-		// This subroutine puts ErrorMessage with a Severe designation on
-		// designated output files.
+        // METHODOLOGY EMPLOYED:
+        // Calls ShowErrorMessage utility routine.
 
-		// METHODOLOGY EMPLOYED:
-		// Calls ShowErrorMessage utility routine.
+        // REFERENCES:
+        // na
 
-		// REFERENCES:
-		// na
+        // Using/Aliasing
+        using namespace DataStringGlobals;
+        using DataGlobals::DoingSizing;
+        using DataGlobals::KickOffSimulation;
+        using DataGlobals::WarmupFlag;
 
-		// Using/Aliasing
-		using namespace DataStringGlobals;
-		using DataGlobals::WarmupFlag;
-		using DataGlobals::DoingSizing;
-		using DataGlobals::KickOffSimulation;
+        // Locals
+        // SUBROUTINE ARGUMENT DEFINITIONS:
 
-		// Locals
-		// SUBROUTINE ARGUMENT DEFINITIONS:
+        // SUBROUTINE PARAMETER DEFINITIONS:
+        // na
 
-		// SUBROUTINE PARAMETER DEFINITIONS:
-		// na
+        // INTERFACE BLOCK SPECIFICATIONS
 
-		// INTERFACE BLOCK SPECIFICATIONS
+        // DERIVED TYPE DEFINITIONS
+        // na
 
-		// DERIVED TYPE DEFINITIONS
-		// na
+        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        int Loop;
 
-		// SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		int Loop;
+        for (Loop = 1; Loop <= SearchCounts; ++Loop) {
+            if (has(message, MessageSearch(Loop))) ++MatchCounts(Loop);
+        }
 
-		for ( Loop = 1; Loop <= SearchCounts; ++Loop ) {
-			if ( has( message, MessageSearch( Loop ) ) ) ++MatchCounts( Loop );
-		}
+        ++TotalSevereErrors;
+        if (DataGlobals::WarmupFlag && !DataGlobals::DoingSizing && !DataGlobals::KickOffSimulation && !AbortProcessing)
+            ++TotalSevereErrorsDuringWarmup;
+        if (DataGlobals::DoingSizing) ++TotalSevereErrorsDuringSizing;
+        logMessage(" ** Severe  ** " + message);
+        LastSevereError = message;
 
-		++TotalSevereErrors;
-		if ( DataGlobals::WarmupFlag && ! DataGlobals::DoingSizing && ! DataGlobals::KickOffSimulation && ! AbortProcessing ) ++TotalSevereErrorsDuringWarmup;
-		if ( DataGlobals::DoingSizing ) ++TotalSevereErrorsDuringSizing;
-		logMessage( " ** Severe  ** " + message );
-		LastSevereError = message;
+        //  This probably needs to be moved into the utility routine
+        if (sqlite) {
+            sqlite->createSQLiteErrorRecord(1, 1, message, 1);
+        }
+    }
 
-		//  This probably needs to be moved into the utility routine
-		if ( sqlite ) {
-			sqlite->createSQLiteErrorRecord( 1, 1, message, 1 );
-		}
+    void error(std::string &message, std::vector<std::string> &additionalmsgs)
+    {
+        // SUBROUTINE INFORMATION:
+        //       AUTHOR         Linda K. Lawrie
+        //       DATE WRITTEN   September 1997
+        //       MODIFIED       na
+        //       RE-ENGINEERED  Jason DeGraw, 6/20/2017
 
-	}
+        // PURPOSE OF THIS SUBROUTINE:
+        // This subroutine puts ErrorMessage with a Severe designation on
+        // designated output files.
 
-	void
-	error(
-		std::string &message, 
-		std::vector< std::string > &additionalmsgs
-	)
-	{
-		// SUBROUTINE INFORMATION:
-		//       AUTHOR         Linda K. Lawrie
-		//       DATE WRITTEN   September 1997
-		//       MODIFIED       na
-		//       RE-ENGINEERED  Jason DeGraw, 6/20/2017
+        // METHODOLOGY EMPLOYED:
+        // Calls ShowErrorMessage utility routine.
 
-		// PURPOSE OF THIS SUBROUTINE:
-		// This subroutine puts ErrorMessage with a Severe designation on
-		// designated output files.
+        int Loop;
 
-		// METHODOLOGY EMPLOYED:
-		// Calls ShowErrorMessage utility routine.
+        for (Loop = 1; Loop <= SearchCounts; ++Loop) {
+            if (has(message, MessageSearch(Loop))) ++MatchCounts(Loop);
+        }
 
-		int Loop;
+        ++TotalSevereErrors;
+        if (DataGlobals::WarmupFlag && !DataGlobals::DoingSizing && !DataGlobals::KickOffSimulation && !AbortProcessing) {
+            ++TotalSevereErrorsDuringWarmup;
+        }
+        if (DataGlobals::DoingSizing) {
+            ++TotalSevereErrorsDuringSizing;
+        }
+        logMessage(" ** Severe  ** " + message);
+        LastSevereError = message;
 
-		for ( Loop = 1; Loop <= SearchCounts; ++Loop ) {
-			if ( has( message, MessageSearch( Loop ) ) ) ++MatchCounts( Loop );
-		}
+        //  This probably needs to be moved into the utility routine
+        if (sqlite) {
+            sqlite->createSQLiteErrorRecord(1, 1, message, 1);
+        }
 
-		++TotalSevereErrors;
-		if ( DataGlobals::WarmupFlag && ! DataGlobals::DoingSizing && ! DataGlobals::KickOffSimulation && ! AbortProcessing ) {
-			++TotalSevereErrorsDuringWarmup;
-		}
-		if ( DataGlobals::DoingSizing ) {
-			++TotalSevereErrorsDuringSizing;
-		}
-		logMessage( " ** Severe  ** " + message );
-		LastSevereError = message;
+        for (std::string &mesg : additionalmsgs) {
+            logMessage(" **   ~~~   ** " + mesg);
+            if (sqlite) {
+                sqlite->updateSQLiteErrorRecord(mesg);
+            }
+        }
+    }
 
-		//  This probably needs to be moved into the utility routine
-		if (sqlite) {
-			sqlite->createSQLiteErrorRecord(1, 1, message, 1);
-		}
-		
-		for ( std::string &mesg : additionalmsgs ) {
-			logMessage( " **   ~~~   ** " + mesg );
-			if ( sqlite ) {
-				sqlite->updateSQLiteErrorRecord( mesg );
-			}
-		}
-
-	}
-
-	// Clears the global data in DataErrorTracking
-	// Needed for unit tests, should not normally be called.
+    // Clears the global data in DataErrorTracking
+    // Needed for unit tests, should not normally be called.
     void clear_state()
-	{
-		NumRecurringErrors = 0; // Number of stored recurring error messages
-		MatchCounts = 0;
-		TotalSevereErrors = 0; // Counter
-		TotalWarningErrors = 0; // Counter
-		TotalSevereErrorsDuringWarmup = 0; // Counter
-		TotalWarningErrorsDuringWarmup = 0; // Counter
-		TotalSevereErrorsDuringSizing = 0; // Counter
-		TotalWarningErrorsDuringSizing = 0; // Counter
-		TotalMultipliedWindows = 0; // Counter
-		TotalCoincidentVertices = 0; // Counter
-		TotalDegenerateSurfaces = 0; // Counter
-		TotalReceivingNonConvexSurfaces = 0; // Counter
-		TotalCastingNonConvexSurfaces = 0; // Counter
-		TotalRoomAirPatternTooLow = 0; // Counter
-		TotalRoomAirPatternTooHigh = 0; // Counter
-		AskForConnectionsReport = false; // Flag used to tell when connections should be reported
-		AskForSurfacesReport = false; // Flag used to tell when surfaces should be reported
-		AskForPlantCheckOnAbort = false; // flag used to tell if plant structure can be checked
-		ExitDuringSimulations = false; // flag used to tell if program is in simulation mode when fatal occurs
-	}
+    {
+        NumRecurringErrors = 0; // Number of stored recurring error messages
+        MatchCounts = 0;
+        TotalSevereErrors = 0;               // Counter
+        TotalWarningErrors = 0;              // Counter
+        TotalSevereErrorsDuringWarmup = 0;   // Counter
+        TotalWarningErrorsDuringWarmup = 0;  // Counter
+        TotalSevereErrorsDuringSizing = 0;   // Counter
+        TotalWarningErrorsDuringSizing = 0;  // Counter
+        TotalMultipliedWindows = 0;          // Counter
+        TotalCoincidentVertices = 0;         // Counter
+        TotalDegenerateSurfaces = 0;         // Counter
+        TotalReceivingNonConvexSurfaces = 0; // Counter
+        TotalCastingNonConvexSurfaces = 0;   // Counter
+        TotalRoomAirPatternTooLow = 0;       // Counter
+        TotalRoomAirPatternTooHigh = 0;      // Counter
+        AskForConnectionsReport = false;     // Flag used to tell when connections should be reported
+        AskForSurfacesReport = false;        // Flag used to tell when surfaces should be reported
+        AskForPlantCheckOnAbort = false;     // flag used to tell if plant structure can be checked
+        ExitDuringSimulations = false;       // flag used to tell if program is in simulation mode when fatal occurs
+    }
 
-} // ErrorTracking
+} // namespace ErrorTracking
 
 } // namespace EnergyPlus
