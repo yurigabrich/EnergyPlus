@@ -52,8 +52,8 @@
 #include <ObjexxFCL/Array1D.hh>
 
 // EnergyPlus Headers
-#include <EnergyPlus.hh>
 #include <DataGlobals.hh>
+#include <EnergyPlus.hh>
 
 namespace EnergyPlus {
 
@@ -181,7 +181,11 @@ namespace DataAirflowNetwork {
 
 	struct AirflowNetworkSimuProp // Basic parameters for AirflowNetwork simulation
 	{
-		enum class Solver {SkylineLU, ConjugateGradient};
+        enum class Solver
+        {
+            SkylineLU,
+            ConjugateGradient
+        };
 		// Members
 		std::string AirflowNetworkSimuName; // Provide a unique object name
 		std::string Control; // AirflowNetwork control: MULTIZONE WITH DISTRIBUTION,
@@ -211,30 +215,15 @@ namespace DataAirflowNetwork {
 		// "ZeroNodePressures", or "LinearInitializationMethod"
 
 		// Default Constructor
-		AirflowNetworkSimuProp() :
-			Control( "NoMultizoneOrDistribution" ),
-			WPCCntr( "Input" ),
-			MaxIteration( 500 ),
-			InitFlag( 0 ),
-			solver( Solver::SkylineLU ),
-			RelTol( 1.0e-5 ),
-			AbsTol( 1.0e-5 ),
-			ConvLimit( -0.5 ),
-			MaxPressure( 500.0 ),
-			Azimuth( 0.0 ),
-			AspectRatio( 1.0 ),
-			DiffP( 1.0e-4 ),
-			ExtLargeOpeningErrCount( 0 ),
-			ExtLargeOpeningErrIndex( 0 ),
-			OpenFactorErrCount( 0 ),
-			OpenFactorErrIndex( 0 ),
-			InitType( "ZeroNodePressures" ),
-			TExtHeightDep( false )
-		{}
+        AirflowNetworkSimuProp()
+            : Control("NoMultizoneOrDistribution"), WPCCntr("Input"), MaxIteration(500), InitFlag(0), solver(Solver::SkylineLU), RelTol(1.0e-5),
+              AbsTol(1.0e-5), ConvLimit(-0.5), MaxPressure(500.0), Azimuth(0.0), AspectRatio(1.0), DiffP(1.0e-4), ExtLargeOpeningErrCount(0),
+              ExtLargeOpeningErrIndex(0), OpenFactorErrCount(0), OpenFactorErrIndex(0), InitType("ZeroNodePressures"), TExtHeightDep(false)
+        {
+        }
 
 		// Member Constructor
-		AirflowNetworkSimuProp(
-			std::string const & AirflowNetworkSimuName, // Provide a unique object name
+        AirflowNetworkSimuProp(std::string const &AirflowNetworkSimuName, // Provide a unique object name
 			std::string const & Control, // AirflowNetwork control: MULTIZONE WITH DISTRIBUTION,
 			std::string const & WPCCntr, // Wind pressure coefficient input control: "SURFACE-AVERAGE CALCULATION", or "INPUT"
 			int const iWPCCntr, // Integer equivalent for WPCCntr field
@@ -256,30 +245,14 @@ namespace DataAirflowNetwork {
 			std::string const & InitType, // Initialization flag type:
 			Solver solver, // Solver type
 			bool const TExtHeightDep // Choice of height dependence of external node temperature
-		) :
-			AirflowNetworkSimuName( AirflowNetworkSimuName ),
-			Control( Control ),
-			WPCCntr( WPCCntr ),
-			iWPCCntr( iWPCCntr ),
-			BldgType( BldgType ),
-			HeightOption( HeightOption ),
-			MaxIteration( MaxIteration ),
-			InitFlag( InitFlag ),
-			solver( solver ),
-			RelTol( RelTol ),
-			AbsTol( AbsTol ),
-			ConvLimit( ConvLimit ),
-			MaxPressure( MaxPressure ),
-			Azimuth( Azimuth ),
-			AspectRatio( AspectRatio ),
-			DiffP( DiffP ),
-			ExtLargeOpeningErrCount( ExtLargeOpeningErrCount ),
-			ExtLargeOpeningErrIndex( ExtLargeOpeningErrIndex ),
-			OpenFactorErrCount( OpenFactorErrCount ),
-			OpenFactorErrIndex( OpenFactorErrIndex ),
-			InitType( InitType ),
-			TExtHeightDep( TExtHeightDep )
-		{}
+                               )
+            : AirflowNetworkSimuName(AirflowNetworkSimuName), Control(Control), WPCCntr(WPCCntr), iWPCCntr(iWPCCntr), BldgType(BldgType),
+              HeightOption(HeightOption), MaxIteration(MaxIteration), InitFlag(InitFlag), solver(solver), RelTol(RelTol), AbsTol(AbsTol),
+              ConvLimit(ConvLimit), MaxPressure(MaxPressure), Azimuth(Azimuth), AspectRatio(AspectRatio), DiffP(DiffP),
+              ExtLargeOpeningErrCount(ExtLargeOpeningErrCount), ExtLargeOpeningErrIndex(ExtLargeOpeningErrIndex),
+              OpenFactorErrCount(OpenFactorErrCount), OpenFactorErrIndex(OpenFactorErrIndex), InitType(InitType), TExtHeightDep(TExtHeightDep)
+        {
+        }
 	};
 
 	struct MultizoneZoneProp // Zone information
@@ -313,26 +286,12 @@ namespace DataAirflowNetwork {
 		int RAFNNodeNum;  // Index of RAFN node number
 
 		// Default Constructor
-		MultizoneZoneProp() :
-			VentControl( "NoVent" ),
-			Height( 0.0 ),
-			OpenFactor( 1.0 ),
-			LowValueTemp( 0.0 ),
-			UpValueTemp( 100.0 ),
-			LowValueEnth( 0.0 ),
-			UpValueEnth( 300000.0 ),
-			ZoneNum( 0 ),
-			VentSchNum( 0 ),
-			VentCtrNum( 0 ),
-			VentingSchNum( 0 ),
-			SingleSidedCpType( "STANDARD" ),
-			BuildWidth( 10.0 ),
-			ASH55PeopleInd( 0 ),
-			CEN15251PeopleInd( 0 ),
-			OccupantVentilationControlNum( 0 ),
-			RAFNNodeNum( 0 )
-		{}
-
+        MultizoneZoneProp()
+            : VentControl("NoVent"), Height(0.0), OpenFactor(1.0), LowValueTemp(0.0), UpValueTemp(100.0), LowValueEnth(0.0), UpValueEnth(300000.0),
+              ZoneNum(0), VentSchNum(0), VentCtrNum(0), VentingSchNum(0), SingleSidedCpType("STANDARD"), BuildWidth(10.0), ASH55PeopleInd(0),
+              CEN15251PeopleInd(0), OccupantVentilationControlNum(0), RAFNNodeNum(0)
+        {
+        }
 	};
 
 	struct MultizoneSurfaceProp // Surface information
@@ -475,40 +434,13 @@ namespace DataAirflowNetwork {
 		int HeightErrIndex; // Height error index
 
 		// Default Constructor
-		MultizoneCompDetOpeningProp() :
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			TypeName( "NONPIVOTED" ),
-			LVOType( 0 ),
-			LVOValue( 0.0 ),
-			NumFac( 0 ),
-			OpenFac1( 0.0 ),
-			DischCoeff1( 0.0 ),
-			WidthFac1( 0.0 ),
-			HeightFac1( 0.0 ),
-			StartHFac1( 0.0 ),
-			OpenFac2( 0.0 ),
-			DischCoeff2( 0.0 ),
-			WidthFac2( 0.0 ),
-			HeightFac2( 0.0 ),
-			StartHFac2( 0.0 ),
-			OpenFac3( 0.0 ),
-			DischCoeff3( 0.0 ),
-			WidthFac3( 0.0 ),
-			HeightFac3( 0.0 ),
-			StartHFac3( 0.0 ),
-			OpenFac4( 0.0 ),
-			DischCoeff4( 0.0 ),
-			WidthFac4( 0.0 ),
-			HeightFac4( 0.0 ),
-			StartHFac4( 0.0 ),
-			OpenFactor( 0.0 ),
-			WidthErrCount( 0 ),
-			WidthErrIndex( 0 ),
-			HeightErrCount( 0 ),
-			HeightErrIndex( 0 )
-		{}
-
+        MultizoneCompDetOpeningProp()
+            : FlowCoef(0.0), FlowExpo(0.0), TypeName("NONPIVOTED"), LVOType(0), LVOValue(0.0), NumFac(0), OpenFac1(0.0), DischCoeff1(0.0),
+              WidthFac1(0.0), HeightFac1(0.0), StartHFac1(0.0), OpenFac2(0.0), DischCoeff2(0.0), WidthFac2(0.0), HeightFac2(0.0), StartHFac2(0.0),
+              OpenFac3(0.0), DischCoeff3(0.0), WidthFac3(0.0), HeightFac3(0.0), StartHFac3(0.0), OpenFac4(0.0), DischCoeff4(0.0), WidthFac4(0.0),
+              HeightFac4(0.0), StartHFac4(0.0), OpenFactor(0.0), WidthErrCount(0), WidthErrIndex(0), HeightErrCount(0), HeightErrIndex(0)
+        {
+        }
 	};
 
 	struct MultizoneCompSimpleOpeningProp // Large simple opening component
@@ -522,14 +454,9 @@ namespace DataAirflowNetwork {
 		Real64 OpenFactor; // Opening factor
 
 		// Default Constructor
-		MultizoneCompSimpleOpeningProp() :
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			MinRhoDiff( 0.0 ),
-			DischCoeff( 0.0 ),
-			OpenFactor( 0.0 )
-		{}
-
+        MultizoneCompSimpleOpeningProp() : FlowCoef(0.0), FlowExpo(0.0), MinRhoDiff(0.0), DischCoeff(0.0), OpenFactor(0.0)
+        {
+        }
 	};
 
 	struct MultizoneCompHorOpeningProp // Large horizontal opening component
@@ -542,13 +469,9 @@ namespace DataAirflowNetwork {
 		Real64 DischCoeff; // Discharge coefficient at full opening
 
 		// Default Constructor
-		MultizoneCompHorOpeningProp() :
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			Slope( 0.0 ),
-			DischCoeff( 0.0 )
-		{}
-
+        MultizoneCompHorOpeningProp() : FlowCoef(0.0), FlowExpo(0.0), Slope(0.0), DischCoeff(0.0)
+        {
+        }
 	};
 
 	struct MultizoneSurfaceCrackStdCndns // Surface crack standard conditions
@@ -560,12 +483,9 @@ namespace DataAirflowNetwork {
 		Real64 StandardW; // Standard humidity ratio for crack data
 
 		// Default Constructor
-		MultizoneSurfaceCrackStdCndns() :
-			StandardT( 0.0 ),
-			StandardP( 0.0 ),
-			StandardW( 0.0 )
-		{}
-
+        MultizoneSurfaceCrackStdCndns() : StandardT(0.0), StandardP(0.0), StandardW(0.0)
+        {
+        }
 	};
 
 	struct MultizoneSurfaceCrackProp // Surface crack component
@@ -580,14 +500,9 @@ namespace DataAirflowNetwork {
 		Real64 StandardW; // Standard humidity ratio for crack data
 
 		// Default Constructor
-		MultizoneSurfaceCrackProp() :
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			StandardT( 0.0 ),
-			StandardP( 0.0 ),
-			StandardW( 0.0 )
-		{}
-
+        MultizoneSurfaceCrackProp() : FlowCoef(0.0), FlowExpo(0.0), StandardT(0.0), StandardP(0.0), StandardW(0.0)
+        {
+        }
 	};
 
 	struct MultizoneSurfaceELAProp // Surface effective leakage area component
@@ -602,15 +517,9 @@ namespace DataAirflowNetwork {
 		Real64 TestDisCoef; // Testing Discharge coefficient
 
 		// Default Constructor
-		MultizoneSurfaceELAProp() :
-			ELA( 0.0 ),
-			DischCoeff( 0.0 ),
-			RefDeltaP( 0.0 ),
-			FlowExpo( 0.0 ),
-			TestDeltaP( 0.0 ),
-			TestDisCoef( 0.0 )
-		{}
-
+        MultizoneSurfaceELAProp() : ELA(0.0), DischCoeff(0.0), RefDeltaP(0.0), FlowExpo(0.0), TestDeltaP(0.0), TestDisCoef(0.0)
+        {
+        }
 	};
 
 	struct MultizoneCompExhaustFanProp // Zone exhaust fan component
@@ -629,19 +538,11 @@ namespace DataAirflowNetwork {
 		int EPlusZoneNum; // Zone number
 
 		// Default Constructor
-		MultizoneCompExhaustFanProp() :
-			FlowRate( 0.0 ),
-			SchedPtr( 0 ),
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			StandardT( 0.0 ),
-			StandardP( 0.0 ),
-			StandardW( 0.0 ),
-			InletNode( 0 ),
-			OutletNode( 0 ),
+        MultizoneCompExhaustFanProp()
+            : FlowRate(0.0), SchedPtr(0), FlowCoef(0.0), FlowExpo(0.0), StandardT(0.0), StandardP(0.0), StandardW(0.0), InletNode(0), OutletNode(0),
 			EPlusZoneNum( 0 )
-		{}
-
+        {
+        }
 	};
 
 	struct MultizoneExternalNodeProp // External node properties
@@ -658,17 +559,10 @@ namespace DataAirflowNetwork {
 		bool useRelativeAngle; // Determines whether the wind angle is relative to the surface or absolute
 
 		// Default Constructor
-		MultizoneExternalNodeProp() :
-			azimuth( 0.0 ),
-			height( 0.0 ),
-			ExtNum( 0 ),
-			OutAirNodeNum( 0 ),
-			facadeNum( 0 ),
-			curve( 0 ),
-			symmetricCurve( false ),
-			useRelativeAngle( false )
-		{}
-
+        MultizoneExternalNodeProp()
+            : azimuth(0.0), height(0.0), ExtNum(0), OutAirNodeNum(0), facadeNum(0), curve(0), symmetricCurve(false), useRelativeAngle(false)
+        {
+        }
 	};
 
 	struct DeltaCpProp
@@ -678,8 +572,8 @@ namespace DataAirflowNetwork {
 
 		// Default Constructor
 		DeltaCpProp()
-		{}
-
+        {
+        }
 	};
 
 	struct IntraZoneNodeProp // Intra zone node data
@@ -693,13 +587,9 @@ namespace DataAirflowNetwork {
 		int AFNZoneNum; // MultiZone number
 
 		// Default Constructor
-		IntraZoneNodeProp() :
-			Height( 0.0 ),
-			RAFNNodeNum( 0 ),
-			ZoneNum( 0 ),
-			AFNZoneNum( 0 )
-		{}
-
+        IntraZoneNodeProp() : Height(0.0), RAFNNodeNum(0), ZoneNum(0), AFNZoneNum(0)
+        {
+        }
 	};
 
 	struct AirflowNetworkLinkage // AirflowNetwork linkage data base class
@@ -729,10 +619,9 @@ namespace DataAirflowNetwork {
 		std::string SurfaceName; // Connection Surface Name
 
 		// Default Constructor
-		IntraZoneLinkageProp() :
-			AirflowNetworkLinkage()
-		{}
-
+        IntraZoneLinkageProp() : AirflowNetworkLinkage()
+        {
+        }
 	};
 
 	struct DisSysNodeProp // CP Value
@@ -745,11 +634,9 @@ namespace DataAirflowNetwork {
 		int EPlusNodeNum; // EPlus node number
 
 		// Default Constructor
-		DisSysNodeProp() :
-			Height( 0.0 ),
-			EPlusNodeNum( 0 )
-		{}
-
+        DisSysNodeProp() : Height(0.0), EPlusNodeNum(0)
+        {
+        }
 	};
 
 	struct DisSysCompLeakProp // duct leak component
@@ -760,11 +647,9 @@ namespace DataAirflowNetwork {
 		Real64 FlowExpo; // Air Mass Flow exponent [dimensionless]
 
 		// Default Constructor
-		DisSysCompLeakProp() :
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 )
-		{}
-
+        DisSysCompLeakProp() : FlowCoef(0.0), FlowExpo(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompELRProp // effective leakage ratio component
@@ -777,13 +662,9 @@ namespace DataAirflowNetwork {
 		Real64 FlowExpo; // Air Mass Flow exponent
 
 		// Default Constructor
-		DisSysCompELRProp() :
-			ELR( 0.0 ),
-			FlowRate( 0.0 ),
-			RefPres( 0.0 ),
-			FlowExpo( 0.0 )
-		{}
-
+        DisSysCompELRProp() : ELR(0.0), FlowRate(0.0), RefPres(0.0), FlowExpo(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompDuctProp // Duct component
@@ -810,27 +691,11 @@ namespace DataAirflowNetwork {
 		Real64 A1; // 1.14 - 0.868589*ln(e/D),
 
 		// Default Constructor
-		DisSysCompDuctProp() :
-			L( 0.0 ),
-			D( 0.0 ),
-			A( 0.0 ),
-			Rough( 0.0 ),
-			TurDynCoef( 0.0 ),
-			UThermConduct( 0.0 ),
-			UMoisture( 0.0 ),
-			InsideConvCoeff( 0.0 ),
-			OutsideConvCoeff( 0.0 ),
-			MThermal( 0.0 ),
-			MMoisture( 0.0 ),
-			LamDynCoef( 0.0 ),
-			LamFriCoef( 0.0 ),
-			InitLamCoef( 0.0 ),
-			RelRough( 0.0 ),
-			RelL( 0.0 ),
-			g( 0.0 ),
-			A1( 0.0 )
-		{}
-
+        DisSysCompDuctProp()
+            : L(0.0), D(0.0), A(0.0), Rough(0.0), TurDynCoef(0.0), UThermConduct(0.0), UMoisture(0.0), InsideConvCoeff(0.0), OutsideConvCoeff(0.0),
+              MThermal(0.0), MMoisture(0.0), LamDynCoef(0.0), LamFriCoef(0.0), InitLamCoef(0.0), RelRough(0.0), RelL(0.0), g(0.0), A1(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompDamperProp // Damper component
@@ -849,19 +714,9 @@ namespace DataAirflowNetwork {
 		Real64 A3; // Fourth polynomial coefficient of the control variable (cubic coefficient)
 
 		// Default Constructor
-		DisSysCompDamperProp() :
-			LTP( 0.0 ),
-			LamFlow( 0.0 ),
-			TurFlow( 0.0 ),
-			FlowExpo( 0.0 ),
-			FlowMin( 0.0 ),
-			FlowMax( 0.0 ),
-			A0( 0.0 ),
-			A1( 0.0 ),
-			A2( 0.0 ),
-			A3( 0.0 )
-		{}
-
+        DisSysCompDamperProp() : LTP(0.0), LamFlow(0.0), TurFlow(0.0), FlowExpo(0.0), FlowMin(0.0), FlowMax(0.0), A0(0.0), A1(0.0), A2(0.0), A3(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompCVFProp // Constant volume fan component
@@ -877,16 +732,9 @@ namespace DataAirflowNetwork {
 		Real64 MaxAirMassFlowRate; // Max Specified MAss Flow Rate of Damper [kg/s]
 
 		// Default Constructor
-		DisSysCompCVFProp() :
-			FlowRate( 0.0 ),
-			Ctrl( 0.0 ),
-			FanTypeNum( 0 ),
-			FanIndex( 0 ),
-			InletNode( 0 ),
-			OutletNode( 0 ),
-			MaxAirMassFlowRate( 0.0 )
-		{}
-
+        DisSysCompCVFProp() : FlowRate(0.0), Ctrl(0.0), FanTypeNum(0), FanIndex(0), InletNode(0), OutletNode(0), MaxAirMassFlowRate(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompDetFanProp // Detailed fan component
@@ -904,15 +752,9 @@ namespace DataAirflowNetwork {
 		//Each range has a min flow rate and 4 coefficients
 
 		// Default Constructor
-		DisSysCompDetFanProp() :
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			RhoAir( 0.0 ),
-			Qfree( 0.0 ),
-			Pshut( 0.0 ),
-			TranRat( 0.0 )
-		{}
-
+        DisSysCompDetFanProp() : FlowCoef(0.0), FlowExpo(0.0), RhoAir(0.0), Qfree(0.0), Pshut(0.0), TranRat(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompCoilProp // Coil component
@@ -924,11 +766,9 @@ namespace DataAirflowNetwork {
 		Real64 D; // Air path hydraulic diameter
 
 		// Default Constructor
-		DisSysCompCoilProp() :
-			L( 0.0 ),
-			D( 0.0 )
-		{}
-
+        DisSysCompCoilProp() : L(0.0), D(0.0)
+        {
+        }
 	};
 
 	struct DisSysCompHXProp // Coil component
@@ -941,12 +781,9 @@ namespace DataAirflowNetwork {
 		bool CoilParentExists; // Is a coil component
 
 		// Default Constructor
-		DisSysCompHXProp() :
-			L( 0.0 ),
-			D( 0.0 ),
-			CoilParentExists( false )
-		{}
-
+        DisSysCompHXProp() : L(0.0), D(0.0), CoilParentExists(false)
+        {
+        }
 	};
 
 	struct DisSysCompTermUnitProp // Terminal unit component
@@ -960,13 +797,9 @@ namespace DataAirflowNetwork {
 		int DamperOutletNode; // Damper outlet node number
 
 		// Default Constructor
-		DisSysCompTermUnitProp() :
-			L( 0.0 ),
-			D( 0.0 ),
-			DamperInletNode( 0 ),
-			DamperOutletNode( 0 )
-		{}
-
+        DisSysCompTermUnitProp() : L(0.0), D(0.0), DamperInletNode(0), DamperOutletNode(0)
+        {
+        }
 	};
 
 	struct DisSysCompCPDProp // Constant pressure drop component
@@ -977,11 +810,9 @@ namespace DataAirflowNetwork {
 		Real64 DP; // Pressure difference across the component
 
 		// Default Constructor
-		DisSysCompCPDProp() :
-			A( 0.0 ),
-			DP( 0.0 )
-		{}
-
+        DisSysCompCPDProp() : A(0.0), DP(0.0)
+        {
+        }
 	};
 
 	struct DisSysLinkageProp : public AirflowNetworkLinkage // Distribution system linkage data
@@ -991,11 +822,9 @@ namespace DataAirflowNetwork {
 		int ZoneNum; // Zone Number
 
 		// Default Constructor
-		DisSysLinkageProp() :
-			AirflowNetworkLinkage(),
-			ZoneNum( 0 )
-		{}
-
+        DisSysLinkageProp() : AirflowNetworkLinkage(), ZoneNum(0)
+        {
+        }
 	};
 
 	struct AirflowNetworkNodeProp // AirflowNetwork nodal data
@@ -1048,13 +877,9 @@ namespace DataAirflowNetwork {
 		int EPlusTypeNum; // Provide EPlus component type
 
 		// Default Constructor
-		AirflowNetworkCompProp() :
-			CompTypeNum( 0 ),
-			TypeNum( 0 ),
-			CompNum( 0 ),
-			EPlusTypeNum( 0 )
-		{}
-
+        AirflowNetworkCompProp() : CompTypeNum(0), TypeNum(0), CompNum(0), EPlusTypeNum(0)
+        {
+        }
 	};
 
 	struct AirflowNetworkLinkageProp : public AirflowNetworkLinkage // AirflowNetwork linkage data
@@ -1068,15 +893,10 @@ namespace DataAirflowNetwork {
 		int LinkageViewFactorObjectNum;
 
 		// Default Constructor
-		AirflowNetworkLinkageProp() :
-			AirflowNetworkLinkage(),
-			ZoneNum( 0 ),
-			DetOpenNum( 0 ),
-			ConnectionFlag( 0 ),
-			VAVTermDamper( false ),
-			LinkageViewFactorObjectNum( 0 )
-		{}
-
+        AirflowNetworkLinkageProp()
+            : AirflowNetworkLinkage(), ZoneNum(0), DetOpenNum(0), ConnectionFlag(0), VAVTermDamper(false), LinkageViewFactorObjectNum(0)
+        {
+        }
 	};
 
 	struct PressureControllerProp
@@ -1093,14 +913,9 @@ namespace DataAirflowNetwork {
 		int PresSetpointSchedPtr; // Pressure setpoint schedule pointer
 
 		// Default Constructor
-		PressureControllerProp( ) :
-			ZoneNum( 0 ),
-			AFNNodeNum( 0 ),
-			ControlTypeSet( 0 ),
-			AvailSchedPtr( 0 ),
-			PresSetpointSchedPtr( 0 )
-		{}
-
+        PressureControllerProp() : ZoneNum(0), AFNNodeNum(0), ControlTypeSet(0), AvailSchedPtr(0), PresSetpointSchedPtr(0)
+        {
+        }
 	};
 
 	struct DisSysCompAirflowProp // OA fan component
@@ -1117,17 +932,10 @@ namespace DataAirflowNetwork {
 		int OutletNode; // Outlet node number
 
 		// Default Constructor
-		DisSysCompAirflowProp( ) :
-			SchedPtr( 0 ),
-			FlowCoef( 0.0 ),
-			FlowExpo( 0.0 ),
-			StandardT( 0.0 ),
-			StandardP( 0.0 ),
-			StandardW( 0.0 ),
-			InletNode( 0 ),
-			OutletNode( 0 )
-		{}
-
+        DisSysCompAirflowProp()
+            : SchedPtr(0), FlowCoef(0.0), FlowExpo(0.0), StandardT(0.0), StandardP(0.0), StandardW(0.0), InletNode(0), OutletNode(0)
+        {
+        }
 	};
 
 	struct AirflowNetworkNodeSimuData // Node variable for simulation
@@ -1140,14 +948,9 @@ namespace DataAirflowNetwork {
 		Real64 GCZ; // Generic contaminant [ppm]
 
 		// Default Constructor
-		AirflowNetworkNodeSimuData() :
-			TZ( 0.0 ),
-			WZ( 0.0 ),
-			PZ( 0.0 ),
-			CO2Z( 0.0 ),
-			GCZ( 0.0 )
-		{}
-
+        AirflowNetworkNodeSimuData() : TZ(0.0), WZ(0.0), PZ(0.0), CO2Z(0.0), GCZ(0.0)
+        {
+        }
 	};
 
 	struct AirflowNetworkLinkSimuData
@@ -1161,15 +964,9 @@ namespace DataAirflowNetwork {
 		Real64 DP1;
 
 		// Default Constructor
-		AirflowNetworkLinkSimuData() :
-			FLOW( 0.0 ),
-			FLOW2( 0.0 ),
-			DP( 0.0 ),
-			VolFLOW( 0.0 ),
-			VolFLOW2( 0.0 ),
-			DP1( 0.0 )
-		{}
-
+        AirflowNetworkLinkSimuData() : FLOW(0.0), FLOW2(0.0), DP(0.0), VolFLOW(0.0), VolFLOW2(0.0), DP1(0.0)
+        {
+        }
 	};
 
 	struct AirflowNetworkLinkReportData
@@ -1188,20 +985,11 @@ namespace DataAirflowNetwork {
 		Real64 DPOFF; // Pressure difference across a component with fan off
 
 		// Default Constructor
-		AirflowNetworkLinkReportData() :
-			FLOW( 0.0 ),
-			FLOW2( 0.0 ),
-			VolFLOW( 0.0 ),
-			VolFLOW2( 0.0 ),
-			FLOWOFF( 0.0 ),
-			FLOW2OFF( 0.0 ),
-			VolFLOWOFF( 0.0 ),
-			VolFLOW2OFF( 0.0 ),
-			DP( 0.0 ),
-			DPON( 0.0 ),
+        AirflowNetworkLinkReportData()
+            : FLOW(0.0), FLOW2(0.0), VolFLOW(0.0), VolFLOW2(0.0), FLOWOFF(0.0), FLOW2OFF(0.0), VolFLOWOFF(0.0), VolFLOW2OFF(0.0), DP(0.0), DPON(0.0),
 			DPOFF( 0.0 )
-		{}
-
+        {
+        }
 	};
 
 	struct AirflowNetworkNodeReportData // Node variable for simulation
@@ -1212,12 +1000,9 @@ namespace DataAirflowNetwork {
 		Real64 PZOFF; // Pressure with fan off [Pa]
 
 		// Default Constructor
-		AirflowNetworkNodeReportData() :
-			PZ( 0.0 ),
-			PZON( 0.0 ),
-			PZOFF( 0.0 )
-		{}
-
+        AirflowNetworkNodeReportData() : PZ(0.0), PZON(0.0), PZOFF(0.0)
+        {
+        }
 	};
 
 	struct AirflowNetworkExchangeProp
@@ -1248,32 +1033,12 @@ namespace DataAirflowNetwork {
 		Real64 TotalGC;
 
 		// Default Constructor
-		AirflowNetworkExchangeProp() :
-			MultiZoneSen( 0.0 ),
-			MultiZoneLat( 0.0 ),
-			LeakSen( 0.0 ),
-			LeakLat( 0.0 ),
-			CondSen( 0.0 ),
-			DiffLat( 0.0 ),
-			RadGain( 0.0 ),
-			TotalSen( 0.0 ),
-			TotalLat( 0.0 ),
-			SumMCp( 0.0 ),
-			SumMCpT( 0.0 ),
-			SumMHr( 0.0 ),
-			SumMHrW( 0.0 ),
-			SumMMCp( 0.0 ),
-			SumMMCpT( 0.0 ),
-			SumMMHr( 0.0 ),
-			SumMMHrW( 0.0 ),
-			SumMHrCO( 0.0 ),
-			SumMMHrCO( 0.0 ),
-			TotalCO2( 0.0 ),
-			SumMHrGC( 0.0 ),
-			SumMMHrGC( 0.0 ),
-			TotalGC( 0.0 )
-		{}
-
+        AirflowNetworkExchangeProp()
+            : MultiZoneSen(0.0), MultiZoneLat(0.0), LeakSen(0.0), LeakLat(0.0), CondSen(0.0), DiffLat(0.0), RadGain(0.0), TotalSen(0.0),
+              TotalLat(0.0), SumMCp(0.0), SumMCpT(0.0), SumMHr(0.0), SumMHrW(0.0), SumMMCp(0.0), SumMMCpT(0.0), SumMMHr(0.0), SumMMHrW(0.0),
+              SumMHrCO(0.0), SumMMHrCO(0.0), TotalCO2(0.0), SumMHrGC(0.0), SumMMHrGC(0.0), TotalGC(0.0)
+        {
+        }
 	};
 
 	struct AiflowNetworkReportProp
@@ -1325,53 +1090,17 @@ namespace DataAirflowNetwork {
 		Real64 TotalLatLossJ;
 
 		// Default Constructor
-		AiflowNetworkReportProp() :
-			MultiZoneInfiSenGainW( 0.0 ),
-			MultiZoneInfiSenGainJ( 0.0 ),
-			MultiZoneInfiSenLossW( 0.0 ),
-			MultiZoneInfiSenLossJ( 0.0 ),
-			MultiZoneMixSenGainW( 0.0 ),
-			MultiZoneMixSenGainJ( 0.0 ),
-			MultiZoneMixSenLossW( 0.0 ),
-			MultiZoneMixSenLossJ( 0.0 ),
-			MultiZoneInfiLatGainW( 0.0 ),
-			MultiZoneInfiLatGainJ( 0.0 ),
-			MultiZoneInfiLatLossW( 0.0 ),
-			MultiZoneInfiLatLossJ( 0.0 ),
-			MultiZoneMixLatGainW( 0.0 ),
-			MultiZoneMixLatGainJ( 0.0 ),
-			MultiZoneMixLatLossW( 0.0 ),
-			MultiZoneMixLatLossJ( 0.0 ),
-			LeakSenGainW( 0.0 ),
-			LeakSenGainJ( 0.0 ),
-			LeakSenLossW( 0.0 ),
-			LeakSenLossJ( 0.0 ),
-			LeakLatGainW( 0.0 ),
-			LeakLatGainJ( 0.0 ),
-			LeakLatLossW( 0.0 ),
-			LeakLatLossJ( 0.0 ),
-			CondSenGainW( 0.0 ),
-			CondSenGainJ( 0.0 ),
-			CondSenLossW( 0.0 ),
-			CondSenLossJ( 0.0 ),
-			DiffLatGainW( 0.0 ),
-			DiffLatGainJ( 0.0 ),
-			DiffLatLossW( 0.0 ),
-			DiffLatLossJ( 0.0 ),
-			RadGainW( 0.0 ),
-			RadGainJ( 0.0 ),
-			RadLossW( 0.0 ),
-			RadLossJ( 0.0 ),
-			TotalSenGainW( 0.0 ),
-			TotalSenGainJ( 0.0 ),
-			TotalSenLossW( 0.0 ),
-			TotalSenLossJ( 0.0 ),
-			TotalLatGainW( 0.0 ),
-			TotalLatGainJ( 0.0 ),
-			TotalLatLossW( 0.0 ),
-			TotalLatLossJ( 0.0 )
-		{}
-
+        AiflowNetworkReportProp()
+            : MultiZoneInfiSenGainW(0.0), MultiZoneInfiSenGainJ(0.0), MultiZoneInfiSenLossW(0.0), MultiZoneInfiSenLossJ(0.0),
+              MultiZoneMixSenGainW(0.0), MultiZoneMixSenGainJ(0.0), MultiZoneMixSenLossW(0.0), MultiZoneMixSenLossJ(0.0), MultiZoneInfiLatGainW(0.0),
+              MultiZoneInfiLatGainJ(0.0), MultiZoneInfiLatLossW(0.0), MultiZoneInfiLatLossJ(0.0), MultiZoneMixLatGainW(0.0),
+              MultiZoneMixLatGainJ(0.0), MultiZoneMixLatLossW(0.0), MultiZoneMixLatLossJ(0.0), LeakSenGainW(0.0), LeakSenGainJ(0.0),
+              LeakSenLossW(0.0), LeakSenLossJ(0.0), LeakLatGainW(0.0), LeakLatGainJ(0.0), LeakLatLossW(0.0), LeakLatLossJ(0.0), CondSenGainW(0.0),
+              CondSenGainJ(0.0), CondSenLossW(0.0), CondSenLossJ(0.0), DiffLatGainW(0.0), DiffLatGainJ(0.0), DiffLatLossW(0.0), DiffLatLossJ(0.0),
+              RadGainW(0.0), RadGainJ(0.0), RadLossW(0.0), RadLossJ(0.0), TotalSenGainW(0.0), TotalSenGainJ(0.0), TotalSenLossW(0.0),
+              TotalSenLossJ(0.0), TotalLatGainW(0.0), TotalLatGainJ(0.0), TotalLatLossW(0.0), TotalLatLossJ(0.0)
+        {
+        }
 	};
 
 	struct LinkageSurfaceProp
@@ -1384,12 +1113,9 @@ namespace DataAirflowNetwork {
 		Real64 SurfaceRadLoad; // Duct radiation load from surface [W]
 
 		// Default constructor
-		LinkageSurfaceProp() :
-			SurfaceNum( 0 ),
-			ViewFactor( 0.0 ),
-			SurfaceResistanceFactor( 0.0 ),
-			SurfaceRadLoad( 0.0 )
-		{}
+        LinkageSurfaceProp() : SurfaceNum(0), ViewFactor(0.0), SurfaceResistanceFactor(0.0), SurfaceRadLoad(0.0)
+        {
+        }
 	};
 
 	struct AirflowNetworkLinkageViewFactorProp
@@ -1403,13 +1129,9 @@ namespace DataAirflowNetwork {
 		Real64 QRad;
 		Real64 QConv;
 
-		AirflowNetworkLinkageViewFactorProp() :
-			DuctExposureFraction( 0.0 ),
-			DuctEmittance( 0.0 ),
-			ObjectNum( 0 ),
-			QRad( 0.0 ),
-			QConv( 0.0 )
-		{}
+        AirflowNetworkLinkageViewFactorProp() : DuctExposureFraction(0.0), DuctEmittance(0.0), ObjectNum(0), QRad(0.0), QConv(0.0)
+        {
+        }
 	};
 
 	// Object Data
@@ -1420,7 +1142,16 @@ namespace DataAirflowNetwork {
 	extern Array1D< AirflowNetworkLinkReportData > AirflowNetworkLinkReport;
 	extern Array1D< AirflowNetworkNodeReportData > AirflowNetworkNodeReport;
 	extern Array1D< AirflowNetworkLinkReportData > AirflowNetworkLinkReport1;
-	extern AirflowNetworkSimuProp AirflowNetworkSimu; // unique object name | AirflowNetwork control | Wind pressure coefficient input control | Integer equivalent for WPCCntr field | CP Array name at WPCCntr = "INPUT" | Building type | Height Selection | Maximum number of iteration | Initialization flag | Relative airflow convergence | Absolute airflow convergence | Convergence acceleration limit | Maximum pressure change in an element [Pa] | Azimuth Angle of Long Axis of Building | Ratio of Building Width Along Short Axis to Width Along Long Axis | Number of wind directions | Minimum pressure difference | Exterior large opening error count during HVAC system operation | Exterior large opening error index during HVAC system operation | Large opening error count at Open factor > 1.0 | Large opening error error index at Open factor > 1.0 | Initialization flag type
+    extern AirflowNetworkSimuProp AirflowNetworkSimu; // unique object name | AirflowNetwork control | Wind pressure coefficient input control |
+                                                      // Integer equivalent for WPCCntr field | CP Array name at WPCCntr = "INPUT" | Building type |
+                                                      // Height Selection | Maximum number of iteration | Initialization flag | Relative airflow
+                                                      // convergence | Absolute airflow convergence | Convergence acceleration limit | Maximum
+                                                      // pressure change in an element [Pa] | Azimuth Angle of Long Axis of Building | Ratio of
+                                                      // Building Width Along Short Axis to Width Along Long Axis | Number of wind directions |
+                                                      // Minimum pressure difference | Exterior large opening error count during HVAC system operation
+                                                      // | Exterior large opening error index during HVAC system operation | Large opening error count
+                                                      // at Open factor > 1.0 | Large opening error error index at Open factor > 1.0 | Initialization
+                                                      // flag type
 	extern Array1D< AirflowNetworkNodeProp > AirflowNetworkNodeData;
 	extern Array1D< AirflowNetworkCompProp > AirflowNetworkCompData;
 	extern Array1D< AirflowNetworkLinkageProp > AirflowNetworkLinkageData;
@@ -1455,11 +1186,10 @@ namespace DataAirflowNetwork {
 	extern Array1D< DisSysCompAirflowProp > DisSysCompReliefAirData;
 	extern Array1D< AirflowNetworkLinkageViewFactorProp > AirflowNetworkLinkageViewFactorData;
 
-	void
-	clear_state();
+    void clear_state();
 
-} // DataAirflowNetwork
+} // namespace DataAirflowNetwork
 
-} // EnergyPlus
+} // namespace EnergyPlus
 
 #endif

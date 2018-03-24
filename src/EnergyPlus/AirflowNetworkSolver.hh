@@ -117,26 +117,19 @@ namespace AirflowNetworkSolver {
 	void
 	AllocateAirflowNetworkSkylineData();
 
-	void
-	InitAirflowNetworkData();
+    void InitAirflowNetworkData();
 
-	void
-	SETSKY();
+    void SETSKY();
 
-	void
-	AIRMOV();
+    void AIRMOV();
 
-	void
-	SOLVZP(
-		Array1A_int IK, // pointer to the top of column/row "K"
+    void SOLVZP(Array1A_int IK,     // pointer to the top of column/row "K"
 		Array1A< Real64 > AD, // the main diagonal of [A] before and after factoring
 		Array1A< Real64 > AU, // the upper triangle of [A] before and after factoring
 		int & ITER // number of iterations
 	);
 
-	void
-	FILJAC(
-		int const NNZE, // number of nonzero entries in the "AU" array.
+    void FILJAC(int const NNZE, // number of nonzero entries in the "AU" array.
 		int const LFLAG // if = 1, use laminar relationship (initialization).
 	);
 
@@ -372,9 +365,7 @@ namespace AirflowNetworkSolver {
 		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	); // Returns number of flows, either 1 or 2
 
-	void
-	FACSKY(
-		Array1A< Real64 > AU, // the upper triangle of [A] before and after factoring
+    void FACSKY(Array1A<Real64> AU,   // the upper triangle of [A] before and after factoring
 		Array1A< Real64 > AD, // the main diagonal of [A] before and after factoring
 		Array1A< Real64 > AL, // the lower triangle of [A] before and after factoring
 		Array1A_int const IK, // pointer to the top of column/row "K"
@@ -382,9 +373,7 @@ namespace AirflowNetworkSolver {
 		int const NSYM // symmetry:  0 = symmetric matrix, 1 = non-symmetric
 	);
 
-	void
-	SLVSKY(
-		Array1A< Real64 > const AU, // the upper triangle of [A] before and after factoring
+    void SLVSKY(Array1A<Real64> const AU, // the upper triangle of [A] before and after factoring
 		Array1A< Real64 > const AD, // the main diagonal of [A] before and after factoring
 		Array1A< Real64 > const AL, // the lower triangle of [A] before and after factoring
 		Array1A< Real64 > B, // "B" vector (input); "X" vector (output).
@@ -403,17 +392,13 @@ namespace AirflowNetworkSolver {
 		int const FLAG // mode of operation
 	);
 
-	void
-	DUMPVD(
-		std::string const & S, // Description
+    void DUMPVD(std::string const &S,    // Description
 		Array1A< Real64 > const V, // Output values
 		int const n, // Array size
 		int const UOUT // Output file unit
 	);
 
-	void
-	DUMPVR(
-		std::string const & S, // Description
+    void DUMPVR(std::string const &S,    // Description
 		Array1A< Real64 > const V, // Output values
 		int const n, // Array size
 		int const UOUT // Output file unit
@@ -431,9 +416,7 @@ namespace AirflowNetworkSolver {
 		std::array< Real64, 2 > &DF // Partial derivative:  DF/DP
 	);
 
-	void
-	PresProfile(
-		int const il, // Linkage number
+    void PresProfile(int const il,                 // Linkage number
 		int const Pprof, // Opening number
 		Real64 const G, // gravitation field strength [N/kg]
 		Array1A< Real64 > const DpF, // Stack pressures at start heights of Layers
@@ -448,12 +431,9 @@ namespace AirflowNetworkSolver {
 		Real64 const OwnHeightFactor // Cosine of deviation angle of the opening plane from the vertical direction
 	);
 
-	void
-	PStack();
+    void PStack();
 
-	Real64
-	psz(
-		Real64 const Pz0, // Pressure at altitude z0 [Pa]
+    Real64 psz(Real64 const Pz0,  // Pressure at altitude z0 [Pa]
 		Real64 const Rho0, // density at altitude z0 [kg/m3]
 		Real64 const beta, // density gradient [kg/m4]
 		Real64 const z0, // reference altitude [m]
@@ -461,9 +441,7 @@ namespace AirflowNetworkSolver {
 		Real64 const g // gravity field strength [N/kg]
 	);
 
-	void
-	LClimb(
-		Real64 const G, // gravity field strength [N/kg]
+    void LClimb(Real64 const G,   // gravity field strength [N/kg]
 		Real64 & Rho, // Density link level (initialized with rho zone) [kg/m3]
 		Real64 const Z, // Height of the link above the zone reference [m]
 		Real64 & T, // temperature at link level [C]
@@ -499,7 +477,7 @@ namespace AirflowNetworkSolver {
 
 	//*****************************************************************************************
 
-} // AirflowNetworkSolver
+} // namespace AirflowNetworkSolver
 
 } // EnergyPlus
 
