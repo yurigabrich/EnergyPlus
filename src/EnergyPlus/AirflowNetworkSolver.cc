@@ -56,14 +56,14 @@
 // EnergyPlus Headers
 #include <AirflowNetworkSolver.hh>
 #include <CommandLineInterface.hh>
-#include <DataAirflowNetwork.hh>
 #include <DataAirLoop.hh>
+#include <DataAirflowNetwork.hh>
 #include <DataEnvironment.hh>
 #include <DataGlobals.hh>
-#include <DataStringGlobals.hh>
 #include <DataHVACGlobals.hh>
 #include <DataLoopNode.hh>
 #include <DataPrecisionGlobals.hh>
+#include <DataStringGlobals.hh>
 #include <DataSurfaces.hh>
 #include <General.hh>
 #include <OutputProcessor.hh>
@@ -155,8 +155,7 @@ namespace AirflowNetworkSolver {
 
 	// Functions
 
-	void
-	AllocateAirflowNetworkData()
+    void AllocateAirflowNetworkData()
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -290,8 +289,7 @@ namespace AirflowNetworkSolver {
 
 	}
 
-	void
-	InitAirflowNetworkData()
+    void InitAirflowNetworkData()
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -344,11 +342,9 @@ namespace AirflowNetworkSolver {
 			WZ( i ) = AirflowNetworkNodeSimu( i ).WZ;
 			PZ( i ) = AirflowNetworkNodeSimu( i ).PZ;
 		}
-
 	}
 
-	void
-	SETSKY()
+    void SETSKY()
 	{
 		// SUBROUTINE INFORMATION:
 		//       AUTHOR         George Walton
@@ -416,11 +412,9 @@ namespace AirflowNetworkSolver {
 			IK( k + 1 ) = IK( k ) + j;
 			j = i;
 		}
-
 	}
 
-	void
-	AIRMOV()
+    void AIRMOV()
 	{
 		// SUBROUTINE INFORMATION:
 		//       AUTHOR         George Walton
@@ -529,7 +523,6 @@ namespace AirflowNetworkSolver {
 
 		for ( i = 1; i <= NetworkNumOfLinks; ++i ) {
 			if ( AFLOW2( i ) != 0.0 ) {
-
 			}
 			if ( AFLOW( i ) > 0.0 ) {
 				AirflowNetworkLinkSimu( i ).FLOW = AFLOW( i );
@@ -567,12 +560,9 @@ namespace AirflowNetworkSolver {
 		for ( i = 1; i <= NetworkNumOfNodes; ++i ) {
 			AirflowNetworkNodeSimu( i ).PZ = PZ( i );
 		}
-
 	}
 
-	void
-	SOLVZP(
-		Array1A_int IK, // pointer to the top of column/row "K"
+    void SOLVZP(Array1A_int IK,     // pointer to the top of column/row "K"
 		Array1A< Real64 > AD, // the main diagonal of [A] before and after factoring
 		Array1A< Real64 > AU, // the upper triangle of [A] before and after factoring
 		int & ITER // number of iterations
@@ -761,7 +751,8 @@ namespace AirflowNetworkSolver {
 			// Data revision dump.
 			if ( LIST >= 2 ) {
 				for ( n = 1; n <= NetworkNumOfNodes; ++n ) {
-					if ( AirflowNetworkNodeData( n ).NodeTypeNum == 0 ) gio::write( Unit21, Format_901 ) << " Rev:" << n << SUMF( n ) << CCF( n ) << CEF( n ) << PZ( n );
+                    if (AirflowNetworkNodeData(n).NodeTypeNum == 0)
+                        gio::write(Unit21, Format_901) << " Rev:" << n << SUMF(n) << CCF(n) << CEF(n) << PZ(n);
 				}
 			}
 		}
@@ -770,14 +761,15 @@ namespace AirflowNetworkSolver {
 		ShowSevereError( "Too many iterations (SOLVZP) in Airflow Network simulation" );
 		++AirflowNetworkSimu.ExtLargeOpeningErrCount;
 		if ( AirflowNetworkSimu.ExtLargeOpeningErrCount < 2 ) {
-			ShowWarningError( "AirflowNetwork: SOLVER, Changing values for initialization flag, Relative airflow convergence, Absolute airflow convergence, Convergence acceleration limit or Maximum Iteration Number may solve the problem." );
+            ShowWarningError("AirflowNetwork: SOLVER, Changing values for initialization flag, Relative airflow convergence, Absolute airflow "
+                             "convergence, Convergence acceleration limit or Maximum Iteration Number may solve the problem.");
 			ShowContinueErrorTimeStamp( "" );
 			ShowContinueError( "..Iterations=" + RoundSigDigits( ITER ) + ", Max allowed=" + RoundSigDigits( AirflowNetworkSimu.MaxIteration ) );
 			ShowFatalError( "AirflowNetwork: SOLVER, The previous error causes termination." );
 		} else {
-			ShowRecurringWarningErrorAtEnd( "AirFlowNetwork: Too many iterations (SOLVZP) in AirflowNetwork simulation continues.", AirflowNetworkSimu.ExtLargeOpeningErrIndex );
+            ShowRecurringWarningErrorAtEnd("AirFlowNetwork: Too many iterations (SOLVZP) in AirflowNetwork simulation continues.",
+                                           AirflowNetworkSimu.ExtLargeOpeningErrIndex);
 		}
-
 	}
 
 	void
@@ -877,7 +869,8 @@ namespace AirflowNetworkSolver {
 			}
 			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << "PS:" << i << N << M << PS( i ) << PW( i ) << AirflowNetworkLinkSimu( i ).DP;
 			j = AirflowNetworkLinkageData( i ).CompNum;
-			{ auto const SELECT_CASE_var( AirflowNetworkCompData( j ).CompTypeNum );
+            {
+                auto const SELECT_CASE_var(AirflowNetworkCompData(j).CompTypeNum);
 			if ( SELECT_CASE_var == CompTypeNum_PLR ) { // Distribution system crack component
 				NF = AFEPLR( j, LFLAG, DP, i, N, M, F, DF );
 			} else if ( SELECT_CASE_var == CompTypeNum_DWC ) { // Distribution system duct component
@@ -918,7 +911,8 @@ namespace AirflowNetworkSolver {
 				NF = AFEREL( j, LFLAG, DP, i, N, M, F, DF );
 			} else {
 				continue;
-			}}
+                }
+            }
 			AirflowNetworkLinkSimu( i ).DP = DP;
 			AFLOW( i ) = F[ 0 ];
 			AFLOW2( i ) = 0.0;
@@ -1029,10 +1023,8 @@ namespace AirflowNetworkSolver {
 			for ( i = 0; i <= ispan - 1; ++i ) {
 				newAU( thisIK + i ) = AU( IK( N ) + i );
 			}
-
 		}
 #endif
-
 	}
 
 	int
@@ -1377,13 +1369,15 @@ namespace AirflowNetworkSolver {
 				// Laminar flow coefficient !=0
 				if ( DisSysCompDuctData( CompNum ).LamFriCoef >= 0.001 ) {
 					A2 = DisSysCompDuctData( CompNum ).LamFriCoef / ( 2.0 * RHOZ( n ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).A );
-					A1 = ( VISCZ( n ) * DisSysCompDuctData( CompNum ).LamDynCoef * ld ) / ( 2.0 * RHOZ( n ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D );
+                    A1 = (VISCZ(n) * DisSysCompDuctData(CompNum).LamDynCoef * ld) /
+                         (2.0 * RHOZ(n) * DisSysCompDuctData(CompNum).A * DisSysCompDuctData(CompNum).D);
 					A0 = -PDROP;
 					CDM = std::sqrt( A1 * A1 - 4.0 * A2 * A0 );
 					FL = ( CDM - A1 ) / ( 2.0 * A2 );
 					CDM = 1.0 / CDM;
 				} else {
-					CDM = ( 2.0 * RHOZ( n ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( n ) * DisSysCompDuctData( CompNum ).LamDynCoef * ld );
+                    CDM = (2.0 * RHOZ(n) * DisSysCompDuctData(CompNum).A * DisSysCompDuctData(CompNum).D) /
+                          (VISCZ(n) * DisSysCompDuctData(CompNum).LamDynCoef * ld);
 					FL = CDM * PDROP;
 				}
 				RE = FL * DisSysCompDuctData( CompNum ).D / ( VISCZ( n ) * DisSysCompDuctData( CompNum ).A );
@@ -1411,13 +1405,15 @@ namespace AirflowNetworkSolver {
 				// Laminar flow coefficient !=0
 				if ( DisSysCompDuctData( CompNum ).LamFriCoef >= 0.001 ) {
 					A2 = DisSysCompDuctData( CompNum ).LamFriCoef / ( 2.0 * RHOZ( M ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).A );
-					A1 = ( VISCZ( M ) * DisSysCompDuctData( CompNum ).LamDynCoef * ld ) / ( 2.0 * RHOZ( M ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D );
+                    A1 = (VISCZ(M) * DisSysCompDuctData(CompNum).LamDynCoef * ld) /
+                         (2.0 * RHOZ(M) * DisSysCompDuctData(CompNum).A * DisSysCompDuctData(CompNum).D);
 					A0 = PDROP;
 					CDM = std::sqrt( A1 * A1 - 4.0 * A2 * A0 );
 					FL = -( CDM - A1 ) / ( 2.0 * A2 );
 					CDM = 1.0 / CDM;
 				} else {
-					CDM = ( 2.0 * RHOZ( M ) * DisSysCompDuctData( CompNum ).A * DisSysCompDuctData( CompNum ).D ) / ( VISCZ( M ) * DisSysCompDuctData( CompNum ).LamDynCoef * ld );
+                    CDM = (2.0 * RHOZ(M) * DisSysCompDuctData(CompNum).A * DisSysCompDuctData(CompNum).D) /
+                          (VISCZ(M) * DisSysCompDuctData(CompNum).LamDynCoef * ld);
 					FL = CDM * PDROP;
 				}
 				RE = -FL * DisSysCompDuctData( CompNum ).D / ( VISCZ( M ) * DisSysCompDuctData( CompNum ).A );
@@ -1656,14 +1652,14 @@ namespace AirflowNetworkSolver {
 		// na
 
 		// Using/Aliasing
-		using DataLoopNode::Node;
-		using DataAirLoop::LoopSystemOnMassFlowrate;
-		using DataAirLoop::LoopSystemOffMassFlowrate;
-		using DataAirLoop::LoopFanOperationMode;
 		using DataAirLoop::LoopCompCycRatio;
-		using DataHVACGlobals::FanType_SimpleOnOff;
+        using DataAirLoop::LoopFanOperationMode;
+        using DataAirLoop::LoopSystemOffMassFlowrate;
+        using DataAirLoop::LoopSystemOnMassFlowrate;
 		using DataHVACGlobals::FanType_SimpleConstVolume;
+        using DataHVACGlobals::FanType_SimpleOnOff;
 		using DataHVACGlobals::FanType_SimpleVAV;
+        using DataLoopNode::Node;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1829,19 +1825,26 @@ namespace AirflowNetworkSolver {
 			// Initialization by linear approximation.
 			F[ 0 ] = -DisSysCompDetFanData( CompNum ).Qfree * AFECTL( i ) * ( 1.0 - PRISE / DisSysCompDetFanData( CompNum ).Pshut );
 			DPDF = -DisSysCompDetFanData( CompNum ).Pshut / DisSysCompDetFanData( CompNum ).Qfree;
-			if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " fni:" << JA << DisSysCompDetFanData( CompNum ).Qfree << DisSysCompDetFanData( CompNum ).Pshut;
+            if (LIST >= 4)
+                gio::write(Unit21, Format_901) << " fni:" << JA << DisSysCompDetFanData(CompNum).Qfree << DisSysCompDetFanData(CompNum).Pshut;
 		} else {
 			// Solution of the fan performance curve.
 			// Determine curve fit range.
 			j = 1;
 			k = 5 * ( j - 1 ) + 1;
 			BX = DisSysCompDetFanData( CompNum ).Coeff( k );
-			BY = DisSysCompDetFanData( CompNum ).Coeff( k + 1 ) + BX * ( DisSysCompDetFanData( CompNum ).Coeff( k + 2 ) + BX * ( DisSysCompDetFanData( CompNum ).Coeff( k + 3 ) + BX * DisSysCompDetFanData( CompNum ).Coeff( k + 4 ) ) ) - PRISE;
+            BY = DisSysCompDetFanData(CompNum).Coeff(k + 1) +
+                 BX * (DisSysCompDetFanData(CompNum).Coeff(k + 2) +
+                       BX * (DisSysCompDetFanData(CompNum).Coeff(k + 3) + BX * DisSysCompDetFanData(CompNum).Coeff(k + 4))) -
+                 PRISE;
 			if ( BY < 0.0 ) ShowFatalError( "Out of range, too low in an AirflowNetwork detailed Fan" );
 
 			while ( true ) {
 				DX = DisSysCompDetFanData( CompNum ).Coeff( k + 5 );
-				DY = DisSysCompDetFanData( CompNum ).Coeff( k + 1 ) + DX * ( DisSysCompDetFanData( CompNum ).Coeff( k + 2 ) + DX * ( DisSysCompDetFanData( CompNum ).Coeff( k + 3 ) + DX * DisSysCompDetFanData( CompNum ).Coeff( k + 5 ) ) ) - PRISE;
+                DY = DisSysCompDetFanData(CompNum).Coeff(k + 1) +
+                     DX * (DisSysCompDetFanData(CompNum).Coeff(k + 2) +
+                           DX * (DisSysCompDetFanData(CompNum).Coeff(k + 3) + DX * DisSysCompDetFanData(CompNum).Coeff(k + 5))) -
+                     PRISE;
 				if ( LIST >= 4 ) gio::write( Unit21, Format_901 ) << " fp0:" << j << BX << BY << DX << DY;
 				if ( BY * DY <= 0.0 ) break;
 				++j;
@@ -1858,7 +1861,10 @@ Label40: ;
 			if ( L > 100 ) ShowFatalError( "Too many iterations (FAN) in AirflowNtework simulation" );
 			CCY = CY;
 			CX = BX - BY * ( ( DX - BX ) / ( DY - BY ) );
-			CY = DisSysCompDetFanData( CompNum ).Coeff( k + 1 ) + CX * ( DisSysCompDetFanData( CompNum ).Coeff( k + 2 ) + CX * ( DisSysCompDetFanData( CompNum ).Coeff( k + 3 ) + CX * DisSysCompDetFanData( CompNum ).Coeff( k + 4 ) ) ) - PRISE;
+            CY = DisSysCompDetFanData(CompNum).Coeff(k + 1) +
+                 CX * (DisSysCompDetFanData(CompNum).Coeff(k + 2) +
+                       CX * (DisSysCompDetFanData(CompNum).Coeff(k + 3) + CX * DisSysCompDetFanData(CompNum).Coeff(k + 4))) -
+                 PRISE;
 			if ( BY * CY == 0.0 ) goto Label90;
 			if ( BY * CY > 0.0 ) goto Label60;
 			DX = CX;
@@ -2098,7 +2104,8 @@ Label90: ;
 		// Get component properties
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
 		FlowExpo = MultizoneSurfaceELAData( CompNum ).FlowExpo;
-		FlowCoef = MultizoneSurfaceELAData( CompNum ).ELA * MultizoneSurfaceELAData( CompNum ).DischCoeff * sqrt_2 * std::pow( MultizoneSurfaceELAData( CompNum ).RefDeltaP, 0.5 - FlowExpo );
+        FlowCoef = MultizoneSurfaceELAData(CompNum).ELA * MultizoneSurfaceELAData(CompNum).DischCoeff * sqrt_2 *
+                   std::pow(MultizoneSurfaceELAData(CompNum).RefDeltaP, 0.5 - FlowExpo);
 
 		if ( LFLAG ) {
 			// Initialization by linear relation.
@@ -2205,7 +2212,8 @@ Label90: ;
 		// FLOW:
 		// Get component properties
 		CompNum = AirflowNetworkCompData( j ).TypeNum;
-		FlowCoef = DisSysCompELRData( CompNum ).ELR * DisSysCompELRData( CompNum ).FlowRate / RHOZ( n ) * std::pow( DisSysCompELRData( CompNum ).RefPres, -DisSysCompELRData( CompNum ).FlowExpo );
+        FlowCoef = DisSysCompELRData(CompNum).ELR * DisSysCompELRData(CompNum).FlowRate / RHOZ(n) *
+                   std::pow(DisSysCompELRData(CompNum).RefPres, -DisSysCompELRData(CompNum).FlowExpo);
 
 		if ( LFLAG ) {
 			// Initialization by linear relation.
@@ -2717,8 +2725,8 @@ Label90: ;
 		// na
 
 		// Using/Aliasing
-		using DataLoopNode::Node;
 		using DataHVACGlobals::VerySmallMassFlow;
+        using DataLoopNode::Node;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3166,15 +3174,14 @@ Label90: ;
 		// PURPOSE OF THIS SUBROUTINE:
 		// This subroutine solves airflow for a constant flow rate airflow component -- using standard interface.
 
-
 		// Using/Aliasing
-		using DataLoopNode::Node;
-		using DataHVACGlobals::VerySmallMassFlow;
-		using DataAirLoop::LoopSystemOnMassFlowrate;
-		using DataAirLoop::LoopSystemOffMassFlowrate;
 		using DataAirLoop::LoopFanOperationMode;
 		using DataAirLoop::LoopOnOffFanPartLoadRatio;
+        using DataAirLoop::LoopSystemOffMassFlowrate;
+        using DataAirLoop::LoopSystemOnMassFlowrate;
 		using DataHVACGlobals::FanType_SimpleOnOff;
+        using DataHVACGlobals::VerySmallMassFlow;
+        using DataLoopNode::Node;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3306,8 +3313,8 @@ Label90: ;
 		// This subroutine solves airflow for a constant flow rate airflow component -- using standard interface.
 
 		// Using/Aliasing
-		using DataLoopNode::Node;
 		using DataHVACGlobals::VerySmallMassFlow;
+        using DataLoopNode::Node;
 
 		// Locals
 		// SUBROUTINE ARGUMENT DEFINITIONS:
@@ -3545,9 +3552,7 @@ Label90: ;
 		return NF;
 	}
 
-	void
-	FACSKY(
-		Array1A< Real64 > AU, // the upper triangle of [A] before and after factoring
+    void FACSKY(Array1A<Real64> AU,   // the upper triangle of [A] before and after factoring
 		Array1A< Real64 > AD, // the main diagonal of [A] before and after factoring
 		Array1A< Real64 > AL, // the lower triangle of [A] before and after factoring
 		Array1A_int const IK, // pointer to the top of column/row "K"
@@ -3683,8 +3688,10 @@ Label90: ;
 			if ( AD( k ) - SUMD == 0.0 ) {
 				ShowSevereError( "AirflowNetworkSolver: L-U factorization in Subroutine FACSKY." );
 				ShowContinueError( "The denominator used in L-U factorizationis equal to 0.0 at node = " + AirflowNetworkNodeData( k ).Name + '.' );
-				ShowContinueError( "One possible cause is that this node may not be connected directly, or indirectly via airflow network connections " );
-				ShowContinueError( "(e.g., AirflowNetwork:Multizone:SurfaceCrack, AirflowNetwork:Multizone:Component:SimpleOpening, etc.), to an external" );
+                ShowContinueError(
+                    "One possible cause is that this node may not be connected directly, or indirectly via airflow network connections ");
+                ShowContinueError(
+                    "(e.g., AirflowNetwork:Multizone:SurfaceCrack, AirflowNetwork:Multizone:Component:SimpleOpening, etc.), to an external");
 				ShowContinueError( "node (AirflowNetwork:MultiZone:Surface)." );
 				ShowContinueError( "Please send your input file and weather file to EnergyPlus support/development team for further investigation." );
 				ShowFatalError( "Preceding condition causes termination." );
@@ -3694,9 +3701,7 @@ Label90: ;
 		}
 	}
 
-	void
-	SLVSKY(
-		Array1A< Real64 > const AU, // the upper triangle of [A] before and after factoring
+    void SLVSKY(Array1A<Real64> const AU, // the upper triangle of [A] before and after factoring
 		Array1A< Real64 > const AD, // the main diagonal of [A] before and after factoring
 		Array1A< Real64 > const AL, // the lower triangle of [A] before and after factoring
 		Array1A< Real64 > B, // "B" vector (input); "X" vector (output).
@@ -3796,7 +3801,6 @@ Label90: ;
 			}
 			JHK1 = JHK;
 		}
-
 	}
 
 	void
@@ -3878,9 +3882,7 @@ Label90: ;
 		}
 	}
 
-	void
-	DUMPVD(
-		std::string const & S, // Description
+    void DUMPVD(std::string const &S,    // Description
 		Array1A< Real64 > const V, // Output values
 		int const n, // Array size
 		int const UOUT // Output file unit
@@ -3938,9 +3940,7 @@ Label90: ;
 		gio::write( UOUT );
 	}
 
-	void
-	DUMPVR(
-		std::string const & S, // Description
+    void DUMPVR(std::string const &S,    // Description
 		Array1A< Real64 > const V, // Output values
 		int const n, // Array size
 		int const UOUT // Output file unit
@@ -4128,43 +4128,103 @@ Label90: ;
 
 		if ( iNum == 2 ) {
 			if ( Fact <= MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) {
-				WFact = MultizoneCompDetOpeningData( CompNum ).WidthFac1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).WidthFac2 - MultizoneCompDetOpeningData( CompNum ).WidthFac1 );
-				HFact = MultizoneCompDetOpeningData( CompNum ).HeightFac1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).HeightFac2 - MultizoneCompDetOpeningData( CompNum ).HeightFac1 );
-				Cfact = MultizoneCompDetOpeningData( CompNum ).DischCoeff1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).DischCoeff2 - MultizoneCompDetOpeningData( CompNum ).DischCoeff1 );
+                WFact = MultizoneCompDetOpeningData(CompNum).WidthFac1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).WidthFac2 - MultizoneCompDetOpeningData(CompNum).WidthFac1);
+                HFact = MultizoneCompDetOpeningData(CompNum).HeightFac1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).HeightFac2 - MultizoneCompDetOpeningData(CompNum).HeightFac1);
+                Cfact = MultizoneCompDetOpeningData(CompNum).DischCoeff1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).DischCoeff2 - MultizoneCompDetOpeningData(CompNum).DischCoeff1);
 			} else {
-				ShowFatalError( "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " + MultizoneCompDetOpeningData( CompNum ).Name );
+                ShowFatalError(
+                    "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " +
+                    MultizoneCompDetOpeningData(CompNum).Name);
 			}
 		}
 
 		if ( iNum == 3 ) {
 			if ( Fact <= MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) {
-				WFact = MultizoneCompDetOpeningData( CompNum ).WidthFac1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).WidthFac2 - MultizoneCompDetOpeningData( CompNum ).WidthFac1 );
-				HFact = MultizoneCompDetOpeningData( CompNum ).HeightFac1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).HeightFac2 - MultizoneCompDetOpeningData( CompNum ).HeightFac1 );
-				Cfact = MultizoneCompDetOpeningData( CompNum ).DischCoeff1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).DischCoeff2 - MultizoneCompDetOpeningData( CompNum ).DischCoeff1 );
+                WFact = MultizoneCompDetOpeningData(CompNum).WidthFac1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).WidthFac2 - MultizoneCompDetOpeningData(CompNum).WidthFac1);
+                HFact = MultizoneCompDetOpeningData(CompNum).HeightFac1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).HeightFac2 - MultizoneCompDetOpeningData(CompNum).HeightFac1);
+                Cfact = MultizoneCompDetOpeningData(CompNum).DischCoeff1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).DischCoeff2 - MultizoneCompDetOpeningData(CompNum).DischCoeff1);
 			} else if ( Fact <= MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) {
-				WFact = MultizoneCompDetOpeningData( CompNum ).WidthFac2 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac3 - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) * ( MultizoneCompDetOpeningData( CompNum ).WidthFac3 - MultizoneCompDetOpeningData( CompNum ).WidthFac2 );
-				HFact = MultizoneCompDetOpeningData( CompNum ).HeightFac2 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac3 - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) * ( MultizoneCompDetOpeningData( CompNum ).HeightFac3 - MultizoneCompDetOpeningData( CompNum ).HeightFac2 );
-				Cfact = MultizoneCompDetOpeningData( CompNum ).DischCoeff2 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac3 - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) * ( MultizoneCompDetOpeningData( CompNum ).DischCoeff3 - MultizoneCompDetOpeningData( CompNum ).DischCoeff2 );
+                WFact = MultizoneCompDetOpeningData(CompNum).WidthFac2 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac2) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac3 - MultizoneCompDetOpeningData(CompNum).OpenFac2) *
+                            (MultizoneCompDetOpeningData(CompNum).WidthFac3 - MultizoneCompDetOpeningData(CompNum).WidthFac2);
+                HFact = MultizoneCompDetOpeningData(CompNum).HeightFac2 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac2) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac3 - MultizoneCompDetOpeningData(CompNum).OpenFac2) *
+                            (MultizoneCompDetOpeningData(CompNum).HeightFac3 - MultizoneCompDetOpeningData(CompNum).HeightFac2);
+                Cfact = MultizoneCompDetOpeningData(CompNum).DischCoeff2 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac2) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac3 - MultizoneCompDetOpeningData(CompNum).OpenFac2) *
+                            (MultizoneCompDetOpeningData(CompNum).DischCoeff3 - MultizoneCompDetOpeningData(CompNum).DischCoeff2);
 			} else {
-				ShowFatalError( "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " + MultizoneCompDetOpeningData( CompNum ).Name );
+                ShowFatalError(
+                    "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " +
+                    MultizoneCompDetOpeningData(CompNum).Name);
 			}
 		}
 
 		if ( iNum == 4 ) {
 			if ( Fact <= MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) {
-				WFact = MultizoneCompDetOpeningData( CompNum ).WidthFac1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).WidthFac2 - MultizoneCompDetOpeningData( CompNum ).WidthFac1 );
-				HFact = MultizoneCompDetOpeningData( CompNum ).HeightFac1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).HeightFac2 - MultizoneCompDetOpeningData( CompNum ).HeightFac1 );
-				Cfact = MultizoneCompDetOpeningData( CompNum ).DischCoeff1 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac2 - MultizoneCompDetOpeningData( CompNum ).OpenFac1 ) * ( MultizoneCompDetOpeningData( CompNum ).DischCoeff2 - MultizoneCompDetOpeningData( CompNum ).DischCoeff1 );
+                WFact = MultizoneCompDetOpeningData(CompNum).WidthFac1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).WidthFac2 - MultizoneCompDetOpeningData(CompNum).WidthFac1);
+                HFact = MultizoneCompDetOpeningData(CompNum).HeightFac1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).HeightFac2 - MultizoneCompDetOpeningData(CompNum).HeightFac1);
+                Cfact = MultizoneCompDetOpeningData(CompNum).DischCoeff1 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac1) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac2 - MultizoneCompDetOpeningData(CompNum).OpenFac1) *
+                            (MultizoneCompDetOpeningData(CompNum).DischCoeff2 - MultizoneCompDetOpeningData(CompNum).DischCoeff1);
 			} else if ( Fact <= MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) {
-				WFact = MultizoneCompDetOpeningData( CompNum ).WidthFac2 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac3 - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) * ( MultizoneCompDetOpeningData( CompNum ).WidthFac3 - MultizoneCompDetOpeningData( CompNum ).WidthFac2 );
-				HFact = MultizoneCompDetOpeningData( CompNum ).HeightFac2 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac3 - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) * ( MultizoneCompDetOpeningData( CompNum ).HeightFac3 - MultizoneCompDetOpeningData( CompNum ).HeightFac2 );
-				Cfact = MultizoneCompDetOpeningData( CompNum ).DischCoeff2 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac3 - MultizoneCompDetOpeningData( CompNum ).OpenFac2 ) * ( MultizoneCompDetOpeningData( CompNum ).DischCoeff3 - MultizoneCompDetOpeningData( CompNum ).DischCoeff2 );
+                WFact = MultizoneCompDetOpeningData(CompNum).WidthFac2 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac2) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac3 - MultizoneCompDetOpeningData(CompNum).OpenFac2) *
+                            (MultizoneCompDetOpeningData(CompNum).WidthFac3 - MultizoneCompDetOpeningData(CompNum).WidthFac2);
+                HFact = MultizoneCompDetOpeningData(CompNum).HeightFac2 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac2) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac3 - MultizoneCompDetOpeningData(CompNum).OpenFac2) *
+                            (MultizoneCompDetOpeningData(CompNum).HeightFac3 - MultizoneCompDetOpeningData(CompNum).HeightFac2);
+                Cfact = MultizoneCompDetOpeningData(CompNum).DischCoeff2 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac2) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac3 - MultizoneCompDetOpeningData(CompNum).OpenFac2) *
+                            (MultizoneCompDetOpeningData(CompNum).DischCoeff3 - MultizoneCompDetOpeningData(CompNum).DischCoeff2);
 			} else if ( Fact <= MultizoneCompDetOpeningData( CompNum ).OpenFac4 ) {
-				WFact = MultizoneCompDetOpeningData( CompNum ).WidthFac3 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac4 - MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) * ( MultizoneCompDetOpeningData( CompNum ).WidthFac4 - MultizoneCompDetOpeningData( CompNum ).WidthFac3 );
-				HFact = MultizoneCompDetOpeningData( CompNum ).HeightFac3 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac4 - MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) * ( MultizoneCompDetOpeningData( CompNum ).HeightFac4 - MultizoneCompDetOpeningData( CompNum ).HeightFac3 );
-				Cfact = MultizoneCompDetOpeningData( CompNum ).DischCoeff3 + ( Fact - MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) / ( MultizoneCompDetOpeningData( CompNum ).OpenFac4 - MultizoneCompDetOpeningData( CompNum ).OpenFac3 ) * ( MultizoneCompDetOpeningData( CompNum ).DischCoeff4 - MultizoneCompDetOpeningData( CompNum ).DischCoeff3 );
+                WFact = MultizoneCompDetOpeningData(CompNum).WidthFac3 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac3) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac4 - MultizoneCompDetOpeningData(CompNum).OpenFac3) *
+                            (MultizoneCompDetOpeningData(CompNum).WidthFac4 - MultizoneCompDetOpeningData(CompNum).WidthFac3);
+                HFact = MultizoneCompDetOpeningData(CompNum).HeightFac3 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac3) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac4 - MultizoneCompDetOpeningData(CompNum).OpenFac3) *
+                            (MultizoneCompDetOpeningData(CompNum).HeightFac4 - MultizoneCompDetOpeningData(CompNum).HeightFac3);
+                Cfact = MultizoneCompDetOpeningData(CompNum).DischCoeff3 +
+                        (Fact - MultizoneCompDetOpeningData(CompNum).OpenFac3) /
+                            (MultizoneCompDetOpeningData(CompNum).OpenFac4 - MultizoneCompDetOpeningData(CompNum).OpenFac3) *
+                            (MultizoneCompDetOpeningData(CompNum).DischCoeff4 - MultizoneCompDetOpeningData(CompNum).DischCoeff3);
 			} else {
-				ShowFatalError( "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " + MultizoneCompDetOpeningData( CompNum ).Name );
+                ShowFatalError(
+                    "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " +
+                    MultizoneCompDetOpeningData(CompNum).Name);
 			}
 		}
 
@@ -4209,22 +4269,28 @@ Label90: ;
 			if ( ActLw == 0.0 ) {
 				++MultizoneCompDetOpeningData( CompNum ).WidthErrCount;
 				if ( MultizoneCompDetOpeningData( CompNum ).WidthErrCount < 2 ) {
-					ShowWarningError( "The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + MultizoneCompDetOpeningData( CompNum ).Name + " is 0." );
+                    ShowWarningError("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " +
+                                     MultizoneCompDetOpeningData(CompNum).Name + " is 0.");
 					ShowContinueError( "The actual width is set to 1.0E-6 m." );
 					ShowContinueErrorTimeStamp( "Occurrence info:" );
 				} else {
-					ShowRecurringWarningErrorAtEnd( "The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + MultizoneCompDetOpeningData( CompNum ).Name + " is 0 error continues.", MultizoneCompDetOpeningData( CompNum ).WidthErrIndex, ActLw, ActLw );
+                    ShowRecurringWarningErrorAtEnd("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " +
+                                                       MultizoneCompDetOpeningData(CompNum).Name + " is 0 error continues.",
+                                                   MultizoneCompDetOpeningData(CompNum).WidthErrIndex, ActLw, ActLw);
 				}
 				ActLw = 1.0e-6;
 			}
 			if ( ActLh == 0.0 ) {
 				++MultizoneCompDetOpeningData( CompNum ).HeightErrCount;
 				if ( MultizoneCompDetOpeningData( CompNum ).HeightErrCount < 2 ) {
-					ShowWarningError( "The actual height of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + MultizoneCompDetOpeningData( CompNum ).Name + " is 0." );
+                    ShowWarningError("The actual height of the AirflowNetwork:MultiZone:Component:DetailedOpening of " +
+                                     MultizoneCompDetOpeningData(CompNum).Name + " is 0.");
 					ShowContinueError( "The actual height is set to 1.0E-6 m." );
 					ShowContinueErrorTimeStamp( "Occurrence info:" );
 				} else {
-					ShowRecurringWarningErrorAtEnd( "The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + MultizoneCompDetOpeningData( CompNum ).Name + " is 0 error continues.", MultizoneCompDetOpeningData( CompNum ).HeightErrIndex, ActLh, ActLh );
+                    ShowRecurringWarningErrorAtEnd("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " +
+                                                       MultizoneCompDetOpeningData(CompNum).Name + " is 0 error continues.",
+                                                   MultizoneCompDetOpeningData(CompNum).HeightErrIndex, ActLh, ActLh);
 				}
 				ActLh = 1.0e-6;
 			}
@@ -4343,7 +4409,6 @@ Label90: ;
 			fma21 *= Prefact;
 			dp1fma12 *= Prefact;
 			dp1fma21 *= Prefact;
-
 		}
 
 		// Open LO, type 2
@@ -4411,7 +4476,6 @@ Label90: ;
 					dp1fma21 += dfmasum;
 				}
 			}
-
 		}
 
 		// Calculate some velocity in the large opening
@@ -4454,9 +4518,7 @@ Label90: ;
 		return NF;
 	}
 
-	void
-	PresProfile(
-		int const il, // Linkage number
+    void PresProfile(int const il,                 // Linkage number
 		int const Pprof, // Opening number
 		Real64 const G, // gravitation field strength [N/kg]
 		Array1A< Real64 > const DpF, // Stack pressures at start heights of Layers
@@ -4656,13 +4718,12 @@ Label90: ;
 			RhoProfF( i + Pprof ) = RhoStF( lF ) + BetaF( lF ) * delzF;
 			RhoProfT( i + Pprof ) = RhoStT( lT ) + BetaT( lT ) * delzT;
 
-			DpProf( i + Pprof ) = DpF( lF ) - DpT( lT ) - G * ( RhoStF( lF ) * delzF + BetaF( lF ) * pow_2( delzF ) / 2.0 ) + G * ( RhoStT( lT ) * delzT + BetaT( lT ) * pow_2( delzT ) / 2.0 );
+            DpProf(i + Pprof) = DpF(lF) - DpT(lT) - G * (RhoStF(lF) * delzF + BetaF(lF) * pow_2(delzF) / 2.0) +
+                                G * (RhoStT(lT) * delzT + BetaT(lT) * pow_2(delzT) / 2.0);
 		}
-
 	}
 
-	void
-	PStack()
+    void PStack()
 	{
 
 		// SUBROUTINE INFORMATION:
@@ -4969,14 +5030,10 @@ Label90: ;
 				PresProfile( i, Pprof, G, DpF, DpT, BetaStF, BetaStT, RhoStF, RhoStT, From, To, ActLh, Hfl( i ) );
 				++OpenNum;
 			}
-
 		}
-
 	}
 
-	Real64
-	psz(
-		Real64 const Pz0, // Pressure at altitude z0 [Pa]
+    Real64 psz(Real64 const Pz0,  // Pressure at altitude z0 [Pa]
 		Real64 const Rho0, // density at altitude z0 [kg/m3]
 		Real64 const beta, // density gradient [kg/m4]
 		Real64 const z0, // reference altitude [m]
@@ -5030,9 +5087,7 @@ Label90: ;
 		return psz;
 	}
 
-	void
-	LClimb(
-		Real64 const G, // gravity field strength [N/kg]
+    void LClimb(Real64 const G,   // gravity field strength [N/kg]
 		Real64 & Rho, // Density link level (initialized with rho zone) [kg/m3]
 		Real64 const Z, // Height of the link above the zone reference [m]
 		Real64 & T, // temperature at link level [C]
@@ -5251,7 +5306,6 @@ Label90: ;
 				// ENDIF H<Z
 			}
 		}
-
 	}
 
 	void airMovement()
@@ -5459,6 +5513,6 @@ Label90: ;
 
 	//*****************************************************************************************
 
-} // AirflowNetworkSolver
+} // namespace AirflowNetworkSolver
 
 } // EnergyPlus
