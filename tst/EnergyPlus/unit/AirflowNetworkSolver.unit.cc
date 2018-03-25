@@ -51,7 +51,6 @@
 #include <gtest/gtest.h>
 
 // EnergyPlus Headers
-#include <DataAirflowNetwork.hh>
 #include <AirflowNetworkBalanceManager.hh>
 #include <AirflowNetworkSolver.hh>
 #include <Psychrometrics.hh>
@@ -77,7 +76,6 @@ TEST_F( EnergyPlusFixture, AirflowNetworkSolverTest_HorizontalOpening )
 
 	n = 1;
 	m = 2;
-
 
 	AirflowNetworkCompData.allocate( j );
 	AirflowNetworkCompData( j ).TypeNum = 1;
