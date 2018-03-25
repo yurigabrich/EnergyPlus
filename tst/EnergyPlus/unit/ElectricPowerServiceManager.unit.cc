@@ -51,27 +51,26 @@
 #include <gtest/gtest.h>
 
 // C++ Headers
-#include <vector>
 #include <memory>
+#include <vector>
 
 // EnergyPlus Headers
-#include <EnergyPlus/ExteriorEnergyUse.hh>
-#include <EnergyPlus/ElectricPowerServiceManager.hh>
+#include <DataErrorTracking.hh>
 #include <EnergyPlus/CurveManager.hh>
-#include <EnergyPlus/UtilityRoutines.hh>
-#include <EnergyPlus/ScheduleManager.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 //#include <DataErrorTracking.hh>
 #include <EnergyPlus/DataGlobals.hh>
+#include <EnergyPlus/ElectricPowerServiceManager.hh>
+#include <EnergyPlus/ExteriorEnergyUse.hh>
 #include <EnergyPlus/General.hh>
+#include <EnergyPlus/ScheduleManager.hh>
+#include <EnergyPlus/UtilityRoutines.hh>
 #include <OutputProcessor.hh>
-
 
 #include "Fixtures/EnergyPlusFixture.hh"
 
 using namespace EnergyPlus;
 using namespace ObjexxFCL;
-
 
 TEST_F( EnergyPlusFixture, ManageElectricPowerTest_BatteryDischargeTest )
 {
@@ -215,7 +214,8 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_BatteryDischargeTest )
 	Real64 Pw = 2.0;
 	Real64 q0 = 60.2;
 
-	EXPECT_TRUE( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->storageObj->determineCurrentForBatteryDischarge( I0, T0, Volt, Pw, q0, CurveNum1, k, c, qmax, E0c, InternalR ) );
+    EXPECT_TRUE(facilityElectricServiceObj->elecLoadCenterObjs[0]->storageObj->determineCurrentForBatteryDischarge(I0, T0, Volt, Pw, q0, CurveNum1, k,
+                                                                                                                   c, qmax, E0c, InternalR));
 
 	I0 = -222.7;
 	T0 = -0.145;
@@ -223,8 +223,8 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_BatteryDischargeTest )
 	Pw = 48000;
 	q0 = 0;
 
-	EXPECT_FALSE( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->storageObj->determineCurrentForBatteryDischarge( I0, T0, Volt, Pw, q0, CurveNum1, k, c, qmax, E0c, InternalR ) );
-
+    EXPECT_FALSE(facilityElectricServiceObj->elecLoadCenterObjs[0]->storageObj->determineCurrentForBatteryDischarge(I0, T0, Volt, Pw, q0, CurveNum1,
+                                                                                                                    k, c, qmax, E0c, InternalR));
 }
 
 TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case1 )
@@ -257,7 +257,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case1
 "    ALWAYS_ON,               !- Generator 2 Availability Schedule Name",
 "    ;                        !- Generator 2 Rated Thermal to Electrical Power Ratio",
 
-
 "  Schedule:Compact,",
 "    ALWAYS_ON,               !- Name",
 "    On/Off,                  !- Schedule Type Limits Name",
@@ -270,7 +269,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case1
 
 	createFacilityElectricPowerServiceObject();
 	facilityElectricServiceObj->elecLoadCenterObjs.emplace_back( new ElectPowerLoadCenter ( 1 ) );
-
 
 	// Case 1 ACBuss - Generators 1000+2000=3000, thermal 500+750=1250
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->bussType = ElectPowerLoadCenter::ElectricBussType::aCBuss;
@@ -291,7 +289,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case1
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->genElectricProd, 3000.0*3600.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->thermalProdRate, 1250.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->thermalProd, 1250.0*3600.0, 0.1 );
-
 }
 
 TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case2 )
@@ -349,7 +346,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case2
 	createFacilityElectricPowerServiceObject();
 	facilityElectricServiceObj->elecLoadCenterObjs.emplace_back( new ElectPowerLoadCenter ( 1 ) );
 
-
 	// Case 2 ACBussStorage - Generators 1000+2000=3000, Storage 200-150=50
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->bussType = ElectPowerLoadCenter::ElectricBussType::aCBussStorage;
 //	ElectricPowerService::facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->storagePresent
@@ -369,16 +365,13 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case2
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->storOpCVDischargeRate   = 200.0;
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->storOpCVChargeRate      = 150.0;
 
-
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->updateLoadCenterGeneratorRecords();
 
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->genElectProdRate,   3000.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->genElectricProd,    3000.0*3600.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->subpanelFeedInRate, 3050.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->subpanelDrawRate,      0.0, 0.1 );
-
 	}
-
 
 TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case3 )
 {
@@ -409,14 +402,12 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case3
 "    ,                        !- Storage Control Utility Demand Target",
 "    ;                        !- Storage Control Utility Demand Target Fraction Schedule Name  ",
 
-
 "  ElectricLoadCenter:Inverter:Simple,",
 "    Test Inverter,",
 "    ALWAYS_ON, !- availability schedule",
 "    , !- zone name"   ,
 "    , !- radiative fraction",
 "    1.0 ; !- Inverter efficiency",
-
 
 "  ElectricLoadCenter:Generators,",
 "    Test Generator List,     !- Name",
@@ -456,7 +447,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case3
 
 	createFacilityElectricPowerServiceObject();
 	facilityElectricServiceObj->elecLoadCenterObjs.emplace_back( new ElectPowerLoadCenter ( 1 ) );
-
 
 	// Case 3 DCBussInverter   Inverter = 3000,
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->bussType = ElectPowerLoadCenter::ElectricBussType::dCBussInverter;
@@ -574,7 +564,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case4
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->inverterObj = std::unique_ptr < DCtoACInverter >( new DCtoACInverter( "TEST INVERTER") );
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->inverterPresent = true;
 
-
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->elecGenCntrlObj[ 0 ]->electProdRate = 2000.0;
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->elecGenCntrlObj[ 1 ]->electProdRate = 3000.0;
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->elecGenCntrlObj[ 0 ]->electricityProd = 2000.0*3600.0;
@@ -583,7 +572,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case4
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->updateLoadCenterGeneratorRecords();
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->inverterObj->simulate( 5000.0 );
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->updateLoadCenterGeneratorRecords();
-
 
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->genElectProdRate,   5000.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->genElectricProd, 5000.0*3600.0, 0.1 );
@@ -667,7 +655,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case5
 	createFacilityElectricPowerServiceObject();
 	facilityElectricServiceObj->elecLoadCenterObjs.emplace_back( new ElectPowerLoadCenter ( 1 ) );
 
-
 	// Case 5 DCBussInverterACStorage     Inverter = 5000, , Storage 200-150=50, thermal should still be same as Case 1
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->bussType =  ( ElectPowerLoadCenter::ElectricBussType::dCBussInverterACStorage );
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->inverterObj = std::unique_ptr < DCtoACInverter >( new DCtoACInverter( "TEST INVERTER") );
@@ -688,13 +675,10 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_UpdateLoadCenterRecords_Case5
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->inverterObj->simulate( 5000.0 );
 	facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->updateLoadCenterGeneratorRecords();
 
-
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->subpanelFeedInRate, 5050.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->subpanelDrawRate,      0.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->thermalProdRate, 1250.0, 0.1 );
 	EXPECT_NEAR( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->thermalProd, 1250.0*3600.0, 0.1 );
-
-
 }
 TEST_F( EnergyPlusFixture, ManageElectricPowerTest_CheckOutputReporting )
 {
@@ -717,6 +701,6 @@ TEST_F( EnergyPlusFixture, ManageElectricPowerTest_CheckOutputReporting )
 	// GetInput and other code will be executed and SimElectricCircuits will be true
 	facilityElectricServiceObj->manageElectricPowerService( true, SimElecCircuitsFlag, false );
 	EXPECT_TRUE( SimElecCircuitsFlag );
-	EXPECT_EQ( facilityElectricServiceObj->elecLoadCenterObjs[ 0 ]->numGenerators, 0 ); // dummy generator has been added and report variables are available
-
+    EXPECT_EQ(facilityElectricServiceObj->elecLoadCenterObjs[0]->numGenerators,
+              0); // dummy generator has been added and report variables are available
 }
