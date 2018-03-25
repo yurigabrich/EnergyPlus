@@ -51,14 +51,14 @@
 #include <gtest/gtest.h>
 
 // EnergyPlus Headers
-#include <DataZoneEnergyDemands.hh>
 #include <DataLoopNode.hh>
-#include <ScheduleManager.hh>
-#include <Psychrometrics.hh>
-#include <InputProcessing/InputProcessor.hh>
-#include <HWBaseboardRadiator.hh>
-#include <FluidProperties.hh>
 #include <DataPlant.hh>
+#include <DataZoneEnergyDemands.hh>
+#include <FluidProperties.hh>
+#include <HWBaseboardRadiator.hh>
+#include <InputProcessing/InputProcessor.hh>
+#include <Psychrometrics.hh>
+#include <ScheduleManager.hh>
 
 #include "Fixtures/EnergyPlusFixture.hh"
 
@@ -117,10 +117,10 @@ TEST_F( EnergyPlusFixture, HWBaseboardRadiator_CalcHWBaseboard)
 	CurDeadBandOrSetback.deallocate();
 	PlantLoop.deallocate();
 	QBBRadSource.deallocate();
-
 }
 
-TEST_F( EnergyPlusFixture, HWBaseboardRadiator_HWBaseboardWaterFlowResetTest ) {
+TEST_F(EnergyPlusFixture, HWBaseboardRadiator_HWBaseboardWaterFlowResetTest)
+{
 	Real64 LoadMet;
 	int BBNum;
 
@@ -133,7 +133,6 @@ TEST_F( EnergyPlusFixture, HWBaseboardRadiator_HWBaseboardWaterFlowResetTest ) {
 	CurDeadBandOrSetback.allocate( 1 );
 	PlantLoop.allocate( 1 );
 	QBBRadSource.allocate( 1 );
-
 
 	CurDeadBandOrSetback( 1 ) = false;
 	ZoneSysEnergyDemand( 1 ).RemainingOutputReqToHeatSP = 0.0; // zero load test
@@ -212,5 +211,4 @@ TEST_F( EnergyPlusFixture, HWBaseboardRadiator_HWBaseboardWaterFlowResetTest ) {
 	CurDeadBandOrSetback.deallocate();
 	PlantLoop.deallocate();
 	QBBRadSource.deallocate();
-
 }
