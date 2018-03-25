@@ -55,22 +55,22 @@
 #include <EnergyPlus/DataAirflowNetwork.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataGlobals.hh>
+#include <EnergyPlus/DataHVACGlobals.hh>
+#include <EnergyPlus/DataHeatBalFanSys.hh>
+#include <EnergyPlus/DataHeatBalSurface.hh>
+#include <EnergyPlus/DataHeatBalance.hh>
 #include <EnergyPlus/DataLoopNode.hh>
-#include <EnergyPlus/DataMoistureBalanceEMPD.hh>
 #include <EnergyPlus/DataMoistureBalance.hh>
+#include <EnergyPlus/DataMoistureBalanceEMPD.hh>
 #include <EnergyPlus/DataRoomAirModel.hh>
 #include <EnergyPlus/DataSizing.hh>
-#include <EnergyPlus/DataHeatBalance.hh>
-#include <EnergyPlus/DataHVACGlobals.hh>
 #include <EnergyPlus/DataSurfaces.hh>
-#include <EnergyPlus/DataHeatBalSurface.hh>
 #include <EnergyPlus/DataZoneControls.hh>
-#include <Psychrometrics.hh>
+#include <EnergyPlus/DataZoneEquipment.hh>
 #include <EnergyPlus/RoomAirModelAirflowNetwork.hh>
 #include <EnergyPlus/RoomAirModelManager.hh>
 #include <EnergyPlus/UtilityRoutines.hh>
-#include <EnergyPlus/DataZoneEquipment.hh>
-#include <EnergyPlus/DataHeatBalFanSys.hh>
+#include <Psychrometrics.hh>
 
 #include "Fixtures/EnergyPlusFixture.hh"
 
@@ -98,7 +98,8 @@ using DataZoneEquipment::ZoneEquipList;
 class RoomAirflowNetworkTest : public EnergyPlusFixture
 {
 protected:
-	virtual void SetUp() {
+    virtual void SetUp()
+    {
 		EnergyPlusFixture::SetUp();  // Sets up the base fixture first.
 
 		CurZoneEqNum = 0;
@@ -135,7 +136,8 @@ protected:
 		RAFN.allocate( NumOfZones );
 	}
 
-	virtual void TearDown() {
+    virtual void TearDown()
+    {
 		EnergyPlusFixture::TearDown();  // Remember to tear down the base fixture after cleaning up derived fixture!
 	}
 };
@@ -291,8 +293,10 @@ TEST_F( RoomAirflowNetworkTest, RAFNTest )
 	TempSurfInTmp( 2 ) = 30.0;
 	RhoVaporAirIn( 1 ) = PsyRhovFnTdbWPb( MAT( ZoneNum ), ZoneAirHumRat( ZoneNum ), OutBaroPress );
 	RhoVaporAirIn( 2 ) = PsyRhovFnTdbWPb( MAT( ZoneNum ), ZoneAirHumRat( ZoneNum ), OutBaroPress );
-	HMassConvInFD( 1 ) = HConvIn( 1 ) / ( ( PsyRhoAirFnPbTdbW( OutBaroPress, MAT( ZoneNum ), ZoneAirHumRat( ZoneNum ) ) + RhoVaporAirIn( 1 ) ) * PsyCpAirFnWTdb( ZoneAirHumRat( ZoneNum ), MAT( ZoneNum ) ) );
-	HMassConvInFD( 2 ) = HConvIn( 2 ) / ( ( PsyRhoAirFnPbTdbW( OutBaroPress, MAT( ZoneNum ), ZoneAirHumRat( ZoneNum ) ) + RhoVaporAirIn( 2 ) ) * PsyCpAirFnWTdb( ZoneAirHumRat( ZoneNum ), MAT( ZoneNum ) ) );
+    HMassConvInFD(1) = HConvIn(1) / ((PsyRhoAirFnPbTdbW(OutBaroPress, MAT(ZoneNum), ZoneAirHumRat(ZoneNum)) + RhoVaporAirIn(1)) *
+                                     PsyCpAirFnWTdb(ZoneAirHumRat(ZoneNum), MAT(ZoneNum)));
+    HMassConvInFD(2) = HConvIn(2) / ((PsyRhoAirFnPbTdbW(OutBaroPress, MAT(ZoneNum), ZoneAirHumRat(ZoneNum)) + RhoVaporAirIn(2)) *
+                                     PsyCpAirFnWTdb(ZoneAirHumRat(ZoneNum), MAT(ZoneNum)));
 
 	RoomAirNode = 1;
 	auto & thisRAFN( RAFN( ZoneNum ) );
@@ -353,5 +357,4 @@ TEST_F( RoomAirflowNetworkTest, RAFNTest )
 
 	EXPECT_NEAR( 24.397538, Node( 2 ).Temp, 0.00001 );
 	EXPECT_NEAR( 0.0024802305, Node( 2 ).HumRat, 0.000001 );
-
 }
