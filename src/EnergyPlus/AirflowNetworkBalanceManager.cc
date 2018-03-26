@@ -134,7 +134,7 @@ namespace AirflowNetworkBalanceManager {
     using General::RoundSigDigits;
     using namespace DataAirflowNetwork;
     using AirflowNetworkSolver::AIRMOV;
-    using AirflowNetworkSolver::AllocateAirflowNetworkData;
+    //using AirflowNetworkSolver::AllocateAirflowNetworkData;
     using AirflowNetworkSolver::InitAirflowNetworkData;
     using AirflowNetworkSolver::NetworkNumOfLinks;
     using AirflowNetworkSolver::NetworkNumOfNodes;
@@ -186,7 +186,18 @@ namespace AirflowNetworkBalanceManager {
     using DataLoopNode::NumOfNodes;
     using DataRoomAirModel::AirModel;
     using DataRoomAirModel::AirNode;
+    using DataRoomAirModel::RoomAirflowNetworkZoneInfo;
     using DataRoomAirModel::RoomAirModel_AirflowNetwork;
+    using DataSurfaces::cExtBoundCondition;
+    using DataSurfaces::ExternalEnvironment;
+    using DataSurfaces::OtherSideCoefNoCalcExt;
+    using DataSurfaces::Surface;
+    using DataSurfaces::SurfaceClass_Door;
+    using DataSurfaces::SurfaceClass_GlassDoor;
+    using DataSurfaces::SurfaceClass_Window;
+    using DataSurfaces::SurfaceWindow;
+    using DataSurfaces::WorldCoordSystem;
+    using DataZoneEquipment::ZoneEquipConfig;
     using Psychrometrics::PsyCpAirFnWTdb;
     using Psychrometrics::PsyHFnTdbW;
     using Psychrometrics::PsyRhoAirFnPbTdbW;
