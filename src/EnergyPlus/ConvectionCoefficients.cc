@@ -113,6 +113,7 @@ namespace ConvectionCoefficients {
     using namespace DataHeatBalance;
     using namespace DataSurfaces;
     using namespace DataVectorTypes;
+    using namespace ScheduleManager;
     using General::RoundSigDigits;
 
     // Data

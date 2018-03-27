@@ -218,11 +218,9 @@ void ManageHVACSizingSimulation(bool &ErrorsFound)
     using DataEnvironment::CurrentOverallSimDay;
     using DataEnvironment::EnvironmentName;
     using DataEnvironment::TotalOverallSimDays;
-    using DataErrorTracking::ExitDuringSimulations;
-    using DataSystemVariables::ReportDuringHVACSizingSimulation;
+    using ErrorTracking::ExitDuringSimulations;
     using DataSystemVariables::ReportDuringHVACSizingSimulation;
     using EMSManager::ManageEMS;
-    using ErrorTracking::ExitDuringSimulations;
     using ExteriorEnergyUse::ManageExteriorEnergyUse;
 
     using namespace WeatherManager;
@@ -313,7 +311,7 @@ void ManageHVACSizingSimulation(bool &ErrorsFound)
 
                 if (WarmupFlag) {
                     ++NumOfWarmupDays;
-                    cWarmupDay = TrimSigDigits(NumOfWarmupDays);
+                    cWarmupDay = General::TrimSigDigits(NumOfWarmupDays);
                     DisplayString("Warming up {" + cWarmupDay + '}');
                 } else if (DayOfSim == 1) {
                     DisplayString("Starting HVAC Sizing Simulation at " + CurMnDy + " for " + EnvironmentName);
@@ -330,7 +328,7 @@ void ManageHVACSizingSimulation(bool &ErrorsFound)
 
                     for (TimeStep = 1; TimeStep <= NumOfTimeStepInHour; ++TimeStep) {
                         if (AnySlabsInModel || AnyBasementsInModel) {
-                            SimulateGroundDomains(false);
+                            PlantPipingSystemsManager::SimulateGroundDomains(false);
                         }
 
                         BeginTimeStepFlag = true;

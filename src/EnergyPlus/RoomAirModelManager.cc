@@ -316,9 +316,6 @@ namespace RoomAirModelManager {
         // Using/Aliasing
         using DataGlobals::NumOfZones;
         using namespace DataIPShortCuts;
-        using DataErrorTracking::TotalRoomAirPatternTooHigh;
-        using DataErrorTracking::TotalRoomAirPatternTooLow;
-        using DataErrorTracking::TotalWarningErrors;
         using DataHeatBalance::Zone;
         using DataSurfaces::Surface;
         using DataSurfaces::SurfaceClass_IntMass;
@@ -626,13 +623,13 @@ namespace RoomAirModelManager {
         for (i = 1; i <= NumOfZones; ++i) {
             if (AirPatternZoneInfo(i).IsUsed) {
                 // first get return and exhaust air node index
-                found = UtilityRoutines::FindItemInList(AirPatternZoneInfo(i).ZoneName, ZoneEquipConfig, &EquipConfiguration::ZoneName);
+                found = UtilityRoutines::FindItemInList(AirPatternZoneInfo(i).ZoneName, DataZoneEquipment::ZoneEquipConfig, &EquipConfiguration::ZoneName);
                 if (found != 0) {
 
-                    AirPatternZoneInfo(i).ZoneNodeID = ZoneEquipConfig(found).ZoneNode;
-                    if (allocated(ZoneEquipConfig(found).ExhaustNode)) {
-                        AirPatternZoneInfo(i).ExhaustAirNodeID.allocate(ZoneEquipConfig(found).NumExhaustNodes);
-                        AirPatternZoneInfo(i).ExhaustAirNodeID = ZoneEquipConfig(found).ExhaustNode;
+                    AirPatternZoneInfo(i).ZoneNodeID = DataZoneEquipment::ZoneEquipConfig(found).ZoneNode;
+                    if (allocated(DataZoneEquipment::ZoneEquipConfig(found).ExhaustNode)) {
+                        AirPatternZoneInfo(i).ExhaustAirNodeID.allocate(DataZoneEquipment::ZoneEquipConfig(found).NumExhaustNodes);
+                        AirPatternZoneInfo(i).ExhaustAirNodeID = DataZoneEquipment::ZoneEquipConfig(found).ExhaustNode;
                     } // exhaust nodes present
                 }     // found ZoneEquipConf
 

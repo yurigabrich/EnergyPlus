@@ -6091,7 +6091,7 @@ namespace SurfaceGeometry {
 
         // Using/Aliasing
         using namespace DataIPShortCuts;
-        using namespace DataErrorTracking;
+        using namespace ErrorTracking;
 
         using NodeInputManager::GetOnlySingleNode;
         using OutAirNodeManager::CheckOutAirNodeNumber;
@@ -6239,7 +6239,7 @@ namespace SurfaceGeometry {
 
         // Using/Aliasing
         using namespace DataIPShortCuts;
-        using namespace DataErrorTracking;
+        using namespace ErrorTracking;
 
         using NodeInputManager::GetOnlySingleNode;
         using OutAirNodeManager::CheckOutAirNodeNumber;

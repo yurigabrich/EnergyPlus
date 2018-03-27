@@ -754,7 +754,6 @@ void EndEnergyPlus()
     using namespace ErrorTracking;
     using ExternalInterface::CloseSocket;
     using ExternalInterface::NumExternalInterfaces;
-    using ExternalInterface::NumExternalInterfaces;
     using ExternalInterface::haveExternalInterfaceBCVTB;
     using General::RoundSigDigits;
     using General::RoundSigDigits;
@@ -1254,7 +1253,6 @@ void ShowSevereError(std::string const &ErrorMessage, Optional_int OutUnit1, Opt
     using DataGlobals::DoingSizing;
     using DataGlobals::KickOffSimulation;
     using DataGlobals::WarmupFlag;
-    using DataGlobals::WarmupFlag;
 
     // Locals
     // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1520,7 +1518,6 @@ void ShowWarningError(std::string const &ErrorMessage, Optional_int OutUnit1, Op
     using namespace ErrorTracking;
     using DataGlobals::DoingSizing;
     using DataGlobals::KickOffSimulation;
-    using DataGlobals::WarmupFlag;
     using DataGlobals::WarmupFlag;
 
     // Locals
@@ -1806,7 +1803,6 @@ void StoreRecurringErrorMessage(std::string const &ErrorMessage,         // Mess
     using namespace DataStringGlobals;
     using namespace ErrorTracking;
     using DataGlobals::DoingSizing;
-    using DataGlobals::WarmupFlag;
     using DataGlobals::WarmupFlag;
 
     // Locals

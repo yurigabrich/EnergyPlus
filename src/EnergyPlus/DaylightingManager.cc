@@ -69,6 +69,7 @@
 #include <DataDaylighting.hh>
 #include <DataDaylightingDevices.hh>
 #include <DataEnvironment.hh>
+#include <ErrorTracking.hh>
 #include <DataGlobals.hh>
 #include <DataHeatBalance.hh>
 #include <DataIPShortCuts.hh>
@@ -9680,11 +9681,10 @@ namespace DaylightingManager {
         // na
 
         // Using/Aliasing
-        using DataErrorTracking::AbortProcessing;
+        using ErrorTracking::AbortProcessing;
         using DataStringGlobals::CharComma;
         using DataStringGlobals::CharSpace;
         using DataStringGlobals::CharTab;
-        using ErrorTracking::AbortProcessing;
         using General::TrimSigDigits;
 
         // Locals

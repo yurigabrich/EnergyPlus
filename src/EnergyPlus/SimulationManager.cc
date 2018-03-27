@@ -344,7 +344,7 @@ namespace SimulationManager {
         SetupTimePointers("Zone", TimeStepZone); // Set up Time pointer for HB/Zone Simulation
         SetupTimePointers("HVAC", TimeStepSys);
 
-        CheckIfAnyEMS();
+        EMSManager::CheckIfAnyEMS();
         CheckIfAnyPlant();
         CheckIfAnySlabs();
         CheckIfAnyBasements();
@@ -352,7 +352,7 @@ namespace SimulationManager {
         createFacilityElectricPowerServiceObject();
         createCoilSelectionReportObj();
 
-        ManageBranchInput(); // just gets input and returns.
+        BranchInputManager::ManageBranchInput(); // just gets input and returns.
 
         DoingSizing = true;
         ManageSizing();
@@ -370,7 +370,7 @@ namespace SimulationManager {
         }
         Available = true;
 
-        if (InvalidBranchDefinitions) {
+        if (BranchInputManager::InvalidBranchDefinitions) {
             ShowFatalError("Preceding error(s) in Branch Input cause termination.");
         }
 
@@ -388,7 +388,7 @@ namespace SimulationManager {
 
         CheckAndReadFaults();
 
-        InitCurveReporting();
+        CurveManager::InitCurveReporting();
 
         AskForConnectionsReport = true; // set to true now that input processing and sizing is done.
         KickOffSimulation = false;
@@ -409,17 +409,17 @@ namespace SimulationManager {
             CheckPollutionMeterReporting();
             facilityElectricServiceObj->verifyCustomMetersElecPowerMgr();
             SetupPollutionCalculations();
-            InitDemandManagers();
+            DemandManager::InitDemandManagers();
 
-            TestBranchIntegrity(ErrFound);
+            BranchInputManager::TestBranchIntegrity(ErrFound);
             if (ErrFound) TerminalError = true;
             TestAirPathIntegrity(ErrFound);
             if (ErrFound) TerminalError = true;
             CheckMarkedNodes(ErrFound);
             if (ErrFound) TerminalError = true;
-            CheckNodeConnections(ErrFound);
+            BranchNodeConnections::CheckNodeConnections(ErrFound);
             if (ErrFound) TerminalError = true;
-            TestCompSetInletOutletNodes(ErrFound);
+            BranchNodeConnections::TestCompSetInletOutletNodes(ErrFound);
             if (ErrFound) TerminalError = true;
             CheckControllerLists(ErrFound);
             if (ErrFound) TerminalError = true;
@@ -435,7 +435,7 @@ namespace SimulationManager {
 
             CreateEnergyReportStructure();
             bool anyEMSRan;
-            ManageEMS(emsCallFromSetupSimulation, anyEMSRan); // point to finish setup processing EMS, sensor ready now
+            EMSManager::ManageEMS(emsCallFromSetupSimulation, anyEMSRan); // point to finish setup processing EMS, sensor ready now
 
             ProduceRDDMDD();
 
@@ -450,7 +450,7 @@ namespace SimulationManager {
             sqlite->sqliteCommit();
         }
 
-        GetInputForLifeCycleCost(); // must be prior to WriteTabularReports -- do here before big simulation stuff.
+        EconomicLifeCycleCost::GetInputForLifeCycleCost(); // must be prior to WriteTabularReports -- do here before big simulation stuff.
 
         // check for variable latitude/location/etc
         WeatherManager::ReadVariableLocationOrientation();
@@ -506,7 +506,7 @@ namespace SimulationManager {
             HVACManager::ResetNodeData(); // Reset here, because some zone calcs rely on node data (e.g. ZoneITEquip)
 
             bool anyEMSRan;
-            ManageEMS(emsCallFromBeginNewEvironment, anyEMSRan); // calling point
+            EMSManager::ManageEMS(emsCallFromBeginNewEvironment, anyEMSRan); // calling point
 
             while ((DayOfSim < NumOfDayInEnvrn) || (WarmupFlag)) { // Begin day loop ...
 
@@ -647,7 +647,7 @@ namespace SimulationManager {
 
         WriteTabularTariffReports();
 
-        ComputeLifeCycleCostAndReport(); // must be after WriteTabularReports and WriteTabularTariffReports
+        EconomicLifeCycleCost::ComputeLifeCycleCostAndReport(); // must be after WriteTabularReports and WriteTabularTariffReports
 
         CloseOutputTabularFile();
 
@@ -1882,8 +1882,6 @@ namespace SimulationManager {
         using ErrorTracking::AbortProcessing; // used here to turn off Node Connection Error reporting
         using ErrorTracking::AskForConnectionsReport;
         using OutAirNodeManager::NumOutsideAirNodes;
-        using OutAirNodeManager::NumOutsideAirNodes;
-        using OutAirNodeManager::OutsideAirNodeList;
         using OutAirNodeManager::OutsideAirNodeList;
 
         // SUBROUTINE PARAMETER DEFINITIONS:

@@ -383,7 +383,6 @@ namespace NodeInputManager {
 
         // Using/Aliasing
         using DataContaminantBalance::Contaminant;
-        using DataErrorTracking::AbortProcessing; // used here to determine if this routine called during fatal error processing
         using ErrorTracking::AbortProcessing;     // used here to determine if this routine called during fatal error processing
 
         // Locals

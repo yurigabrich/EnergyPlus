@@ -832,8 +832,6 @@ namespace RoomAirModelUserTempPattern {
         // USE STATEMENTS:
         // na
         // Using/Aliasing
-        using DataErrorTracking::TotalRoomAirPatternTooHigh;
-        using DataErrorTracking::TotalRoomAirPatternTooLow;
         using DataHeatBalance::Zone;
         using DataSurfaces::Surface;
         using DataSurfaces::SurfaceClass_Floor;
