@@ -53,6 +53,7 @@
 // EnergyPlus Headers
 #include <AirflowNetworkBalanceManager.hh>
 #include <AirflowNetworkSolver.hh>
+#include <DataAirflowNetwork.hh>
 #include <EnergyPlus/UtilityRoutines.hh>
 #include <Psychrometrics.hh>
 
