@@ -59,13 +59,13 @@
 #include <DataBranchAirLoopPlant.hh>
 #include <DataConvergParams.hh>
 #include <DataEnvironment.hh>
+#include <ErrorTracking.hh>
 #include <DataHVACGlobals.hh>
 #include <DataIPShortCuts.hh>
 #include <DataLoopNode.hh>
 #include <DataPrecisionGlobals.hh>
 #include <DataSizing.hh>
 #include <EMSManager.hh>
-#include <ErrorTracking.hh>
 #include <FluidProperties.hh>
 #include <General.hh>
 #include <GroundHeatExchangers.hh>
@@ -620,7 +620,7 @@ namespace PlantManager {
                 //"Plant Demand Side Outlet Node Name"
                 ShowContinueError("is not the same as the " + cAlphaFieldNames(11) + '=' + Alpha(11));
                 ShowContinueError("Branch List Outlet Node Name=" + GetLastBranchOutletNodeName(this_demand_side.BranchList)); // TODO rename point
-                                                                                                                               // TODO rename point
+                // TODO rename point
                 ShowContinueError(
                     "Branches in a BRANCH LIST must be listed in flow order: inlet branch, then parallel branches, then outlet branch.");
                 ErrorsFound = true;
@@ -633,7 +633,7 @@ namespace PlantManager {
                 //"Plant Supply Side Inlet Node Name
                 ShowContinueError("is not the same as the " + cAlphaFieldNames(6) + '=' + Alpha(6));
                 ShowContinueError("Branch List Inlet Node Name=" + GetFirstBranchInletNodeName(this_supply_side.BranchList)); // TODO rename point
-                                                                                                                              // TODO rename point
+                // TODO rename point
                 ShowContinueError(
                     "Branches in a BRANCH LIST must be listed in flow order: inlet branch, then parallel branches, then outlet branch.");
                 ErrorsFound = true;
@@ -646,7 +646,7 @@ namespace PlantManager {
                 //"Plant Supply Side Outlet Node Name"
                 ShowContinueError("is not the same as the " + cAlphaFieldNames(7) + '=' + Alpha(7));
                 ShowContinueError("Branch List Outlet Node Name=" + GetLastBranchOutletNodeName(this_supply_side.BranchList)); // TODO rename point
-                                                                                                                               // TODO rename point
+                // TODO rename point
                 ShowContinueError(
                     "Branches in a BRANCH LIST must be listed in flow order: inlet branch, then parallel branches, then outlet branch.");
                 ErrorsFound = true;

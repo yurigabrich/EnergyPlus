@@ -130,8 +130,10 @@ namespace NodeInputManager {
         Array1D_int GetOnlySingleNodeNodeNums;
         bool GetOnlySingleNodeFirstTime(true);
     } // namespace
-      // MODULE SUBROUTINES:
-      //*************************************************************************
+
+    //*************************************************************************
+    // MODULE SUBROUTINES:
+    //*************************************************************************
 
     // Functions
 
