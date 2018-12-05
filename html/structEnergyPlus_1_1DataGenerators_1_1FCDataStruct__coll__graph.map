@@ -1,0 +1,12 @@
+<map id="EnergyPlus::DataGenerators::FCDataStruct" name="EnergyPlus::DataGenerators::FCDataStruct">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1DataGenerators_1_1FCAuxilHeatDataStruct.html" title="EnergyPlus::DataGenerators\l::FCAuxilHeatDataStruct" alt="" coords="289,5,479,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1DataGenerators_1_1FCReportDataStruct.html" title="EnergyPlus::DataGenerators\l::FCReportDataStruct" alt="" coords="289,71,479,112"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1DataGenerators_1_1FCInverterDataStruct.html" title="EnergyPlus::DataGenerators\l::FCInverterDataStruct" alt="" coords="289,136,479,177"/>
+<area shape="rect" id="node5" href="$structEnergyPlus_1_1DataGenerators_1_1FCWaterSupplyDataStruct.html" title="EnergyPlus::DataGenerators\l::FCWaterSupplyDataStruct" alt="" coords="289,201,479,243"/>
+<area shape="rect" id="node6" href="$structEnergyPlus_1_1DataGenerators_1_1FCElecStorageDataStruct.html" title="EnergyPlus::DataGenerators\l::FCElecStorageDataStruct" alt="" coords="289,267,479,308"/>
+<area shape="rect" id="node7" href="$structEnergyPlus_1_1DataGenerators_1_1BatteryDichargeDataStruct.html" title="EnergyPlus::DataGenerators\l::BatteryDichargeDataStruct" alt="" coords="5,267,195,308"/>
+<area shape="rect" id="node8" href="$structEnergyPlus_1_1DataGenerators_1_1FCAirSupplyDataStruct.html" title="EnergyPlus::DataGenerators\l::FCAirSupplyDataStruct" alt="" coords="289,332,479,373"/>
+<area shape="rect" id="node9" href="$structEnergyPlus_1_1DataGenerators_1_1FCStackCoolerDataStruct.html" title="EnergyPlus::DataGenerators\l::FCStackCoolerDataStruct" alt="" coords="289,397,479,439"/>
+<area shape="rect" id="node10" href="$structEnergyPlus_1_1DataGenerators_1_1FCPowerModuleStruct.html" title="EnergyPlus::DataGenerators\l::FCPowerModuleStruct" alt="" coords="289,463,479,504"/>
+<area shape="rect" id="node11" href="$structEnergyPlus_1_1DataGenerators_1_1FCExhaustHXDataStruct.html" title="EnergyPlus::DataGenerators\l::FCExhaustHXDataStruct" alt="" coords="289,528,479,569"/>
+</map>

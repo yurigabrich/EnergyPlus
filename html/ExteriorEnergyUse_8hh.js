@@ -1,0 +1,26 @@
+var ExteriorEnergyUse_8hh =
+[
+    [ "ExteriorLightUsage", "structEnergyPlus_1_1ExteriorEnergyUse_1_1ExteriorLightUsage.html", "structEnergyPlus_1_1ExteriorEnergyUse_1_1ExteriorLightUsage" ],
+    [ "ExteriorEquipmentUsage", "structEnergyPlus_1_1ExteriorEnergyUse_1_1ExteriorEquipmentUsage.html", "structEnergyPlus_1_1ExteriorEnergyUse_1_1ExteriorEquipmentUsage" ],
+    [ "clear_state", "ExteriorEnergyUse_8hh.html#ab3384475f1966631d4e264571c87a6dd", null ],
+    [ "GetExteriorEnergyUseInput", "ExteriorEnergyUse_8hh.html#aadc9ae26d69d7e492b9bb29fc206123e", null ],
+    [ "ManageExteriorEnergyUse", "ExteriorEnergyUse_8hh.html#aecb0d3763cb1799153331c80502c81c2", null ],
+    [ "ReportExteriorEnergyUse", "ExteriorEnergyUse_8hh.html#a787fbab7d859d08a60ba2b1c7aaeb919", null ],
+    [ "ValidateFuelType", "ExteriorEnergyUse_8hh.html#a91a9a52eeb592b4a25b0c743a003e740", null ],
+    [ "AstroClockOverride", "ExteriorEnergyUse_8hh.html#a27687b36233f3d75b1721381552566c2", null ],
+    [ "CoalUse", "ExteriorEnergyUse_8hh.html#a07c7a6345cbc8f8aa5be23e6ae38ceac", null ],
+    [ "DieselUse", "ExteriorEnergyUse_8hh.html#a13ef428a603a80dd18fa74baab0e6ce1", null ],
+    [ "DistrictCoolUse", "ExteriorEnergyUse_8hh.html#acbc52ac079c0dfd8bdcdbd5ac43b21a3", null ],
+    [ "DistrictHeatUse", "ExteriorEnergyUse_8hh.html#a552143597d49e13d2d369cfd8d02812d", null ],
+    [ "ElecUse", "ExteriorEnergyUse_8hh.html#ae4ac0e5d99134001f36091d7cbdbce03", null ],
+    [ "FuelOil1Use", "ExteriorEnergyUse_8hh.html#abf565ffbee4514e5887fca0607496396", null ],
+    [ "FuelOil2Use", "ExteriorEnergyUse_8hh.html#a67563decba673a5626361baf32a1b200", null ],
+    [ "GasolineUse", "ExteriorEnergyUse_8hh.html#a034783f5f0b5cbe6457b0e20f8c9a4b6", null ],
+    [ "GasUse", "ExteriorEnergyUse_8hh.html#aba5e027632cbd9fb21005349ea9a1052", null ],
+    [ "LPGUse", "ExteriorEnergyUse_8hh.html#afe0fa464842b23f1eeaa13ae6d91dceb", null ],
+    [ "OtherFuel1Use", "ExteriorEnergyUse_8hh.html#a23009b28bdd7b2769d1cf61596e67782", null ],
+    [ "OtherFuel2Use", "ExteriorEnergyUse_8hh.html#a412906c38d075b5be8f223fe490281fa", null ],
+    [ "ScheduleOnly", "ExteriorEnergyUse_8hh.html#a99811778230d3227e5c7bc32cda92591", null ],
+    [ "SteamUse", "ExteriorEnergyUse_8hh.html#a5b02aa5a970e335b2b948d3e17e9777e", null ],
+    [ "WaterUse", "ExteriorEnergyUse_8hh.html#a7ca9f4c1ee10e05ca239f593a67bb30a", null ]
+];

@@ -1,0 +1,37 @@
+<map id="src/EnergyPlus/PackagedThermalStorageCoil.cc" name="src/EnergyPlus/PackagedThermalStorageCoil.cc">
+<area shape="rect" id="node5" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="4222,244,4408,271"/>
+<area shape="rect" id="node11" href="$CurveManager_8hh.html" title="CurveManager.hh" alt="" coords="5076,244,5202,271"/>
+<area shape="rect" id="node17" href="$DataAirSystems_8hh.html" title="DataAirSystems.hh" alt="" coords="1586,95,1722,121"/>
+<area shape="rect" id="node18" href="$DataPlant_8hh.html" title="DataPlant.hh" alt="" coords="1918,169,2016,196"/>
+<area shape="rect" id="node19" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="490,244,617,271"/>
+<area shape="rect" id="node20" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="1928,244,2067,271"/>
+<area shape="rect" id="node23" href="$DataBranchAirLoopPlant_8hh.html" title="DataBranchAirLoopPlant.hh" alt="" coords="1670,244,1853,271"/>
+<area shape="rect" id="node24" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="3918,244,4059,271"/>
+<area shape="rect" id="node25" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="324,244,466,271"/>
+<area shape="rect" id="node28" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="4761,244,4901,271"/>
+<area shape="rect" id="node29" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="5665,95,5832,121"/>
+<area shape="rect" id="node30" href="$DataSizing_8hh.html" title="DataSizing.hh" alt="" coords="1135,244,1239,271"/>
+<area shape="rect" id="node31" href="$DataWater_8hh.html" title="DataWater.hh" alt="" coords="197,244,300,271"/>
+<area shape="rect" id="node32" href="$DataZoneEquipment_8hh.html" title="DataZoneEquipment.hh" alt="" coords="1734,169,1893,196"/>
+<area shape="rect" id="node33" href="$EMSManager_8hh.html" title="EMSManager.hh" alt="" coords="3530,244,3649,271"/>
+<area shape="rect" id="node34" href="$FluidProperties_8hh.html" title="FluidProperties.hh" alt="" coords="4925,244,5052,271"/>
+<area shape="rect" id="node35" href="$General_8hh.html" title="General.hh" alt="" coords="4432,244,4518,271"/>
+<area shape="rect" id="node36" href="$GeneralRoutines_8hh.html" title="GeneralRoutines.hh" alt="" coords="5226,244,5364,271"/>
+<area shape="rect" id="node37" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="54,244,173,271"/>
+<area shape="rect" id="node38" href="$HeatBalanceInternalHeatGains_8hh.html" title="HeatBalanceInternalHeatGains.hh" alt="" coords="3673,244,3893,271"/>
+<area shape="rect" id="node39" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="2376,244,2603,271"/>
+<area shape="rect" id="node40" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="630,169,781,196"/>
+<area shape="rect" id="node41" href="$OutAirNodeManager_8hh.html" title="OutAirNodeManager.hh" alt="" coords="2193,244,2352,271"/>
+<area shape="rect" id="node42" href="$OutputReportPredefined_8hh.html" title="OutputReportPredefined.hh" alt="" coords="1264,244,1444,271"/>
+<area shape="rect" id="node43" href="$PackagedThermalStorageCoil_8hh.html" title="PackagedThermalStorageCoil.hh" alt="" coords="2627,244,2840,271"/>
+<area shape="rect" id="node44" href="$PlantUtilities_8hh.html" title="PlantUtilities.hh" alt="" coords="4083,244,4198,271"/>
+<area shape="rect" id="node45" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="3236,169,3367,196"/>
+<area shape="rect" id="node46" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="3238,244,3365,271"/>
+<area shape="rect" id="node47" href="$ReportSizingManager_8hh.html" title="ReportSizingManager.hh" alt="" coords="743,244,908,271"/>
+<area shape="rect" id="node48" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="4542,244,4686,271"/>
+<area shape="rect" id="node49" href="$WaterManager_8hh.html" title="WaterManager.hh" alt="" coords="5332,95,5458,121"/>
+<area shape="rect" id="node50" href="$WaterThermalTanks_8hh.html" title="WaterThermalTanks.hh" alt="" coords="5482,95,5641,121"/>
+<area shape="rect" id="node10" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2680,393,2787,420"/>
+<area shape="rect" id="node16" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1298,319,1410,345"/>
+<area shape="rect" id="node22" href="$UnitarySystem_8hh.html" title="UnitarySystem.hh" alt="" coords="1468,244,1594,271"/>
+</map>

@@ -1,0 +1,36 @@
+<map id="src/EnergyPlus/DualDuct.cc" name="src/EnergyPlus/DualDuct.cc">
+<area shape="rect" id="node8" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="4887,229,5073,256"/>
+<area shape="rect" id="node14" href="$DataAirLoop_8hh.html" title="DataAirLoop.hh" alt="" coords="315,229,427,256"/>
+<area shape="rect" id="node17" href="$DataContaminantBalance_8hh.html" title="DataContaminantBalance.hh" alt="" coords="1781,229,1971,256"/>
+<area shape="rect" id="node18" href="$DataConvergParams_8hh.html" title="DataConvergParams.hh" alt="" coords="1099,229,1261,256"/>
+<area shape="rect" id="node19" href="$DataDefineEquip_8hh.html" title="DataDefineEquip.hh" alt="" coords="533,229,672,256"/>
+<area shape="rect" id="node22" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="1117,304,1259,331"/>
+<area shape="rect" id="node23" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="923,229,1074,256"/>
+<area shape="rect" id="node24" href="$DataHeatBalFanSys_8hh.html" title="DataHeatBalFanSys.hh" alt="" coords="2192,304,2352,331"/>
+<area shape="rect" id="node25" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="2887,80,3030,107"/>
+<area shape="rect" id="node34" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="1537,304,1677,331"/>
+<area shape="rect" id="node35" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="2529,229,2655,256"/>
+<area shape="rect" id="node36" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="5119,80,5286,107"/>
+<area shape="rect" id="node37" href="$DataSizing_8hh.html" title="DataSizing.hh" alt="" coords="2197,229,2301,256"/>
+<area shape="rect" id="node38" href="$DataZoneEnergyDemands_8hh.html" title="DataZoneEnergyDemands.hh" alt="" coords="848,304,1043,331"/>
+<area shape="rect" id="node39" href="$DataZoneEquipment_8hh.html" title="DataZoneEquipment.hh" alt="" coords="2243,155,2402,181"/>
+<area shape="rect" id="node40" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3477,229,3616,256"/>
+<area shape="rect" id="node41" href="$DualDuct_8hh.html" title="DualDuct.hh" alt="" coords="3945,229,4039,256"/>
+<area shape="rect" id="node42" href="$General_8hh.html" title="General.hh" alt="" coords="5097,229,5183,256"/>
+<area shape="rect" id="node43" href="$GeneralRoutines_8hh.html" title="GeneralRoutines.hh" alt="" coords="4726,229,4863,256"/>
+<area shape="rect" id="node44" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="1387,229,1506,256"/>
+<area shape="rect" id="node45" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="1531,229,1757,256"/>
+<area shape="rect" id="node46" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="4103,155,4254,181"/>
+<area shape="rect" id="node47" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="1080,155,1211,181"/>
+<area shape="rect" id="node48" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="3742,229,3869,256"/>
+<area shape="rect" id="node49" href="$ReportSizingManager_8hh.html" title="ReportSizingManager.hh" alt="" coords="4384,229,4549,256"/>
+<area shape="rect" id="node50" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="4216,229,4360,256"/>
+<area shape="rect" id="node13" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2513,379,2620,405"/>
+<area shape="rect" id="node15" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1955,304,2067,331"/>
+<area shape="rect" id="node16" href="$UnitarySystem_8hh.html" title="UnitarySystem.hh" alt="" coords="145,304,271,331"/>
+<area shape="rect" id="node21" href="$AirTerminalUnit_8hh.html" title="AirTerminalUnit.hh" alt="" coords="541,304,672,331"/>
+<area shape="rect" id="node30" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="2883,229,3034,256"/>
+<area shape="rect" id="node31" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="2681,304,2823,331"/>
+<area shape="rect" id="node32" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="3109,229,3301,256"/>
+<area shape="rect" id="node33" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="2785,155,2905,181"/>
+</map>

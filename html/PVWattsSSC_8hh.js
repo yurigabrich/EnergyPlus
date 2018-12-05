@@ -1,0 +1,35 @@
+var PVWattsSSC_8hh =
+[
+    [ "pvwatts_celltemp", "classEnergyPlus_1_1PVWatts_1_1pvwatts__celltemp.html", "classEnergyPlus_1_1PVWatts_1_1pvwatts__celltemp" ],
+    [ "poaDecompReq", "structEnergyPlus_1_1PVWatts_1_1poaDecompReq.html", "structEnergyPlus_1_1PVWatts_1_1poaDecompReq" ],
+    [ "irrad", "classEnergyPlus_1_1PVWatts_1_1irrad.html", "classEnergyPlus_1_1PVWatts_1_1irrad" ],
+    [ "IRRADPROC_NO_INTERPOLATE_SUNRISE_SUNSET", "PVWattsSSC_8hh.html#a83b5712bf06653d13bb97cac593d4188", null ],
+    [ "RADMODE", "PVWattsSSC_8hh.html#a476884bf820f76e21e57797a133df13b", [
+      [ "DN_DF", "PVWattsSSC_8hh.html#a476884bf820f76e21e57797a133df13ba7955ddbea4ccde166e33e14947871382", null ],
+      [ "DN_GH", "PVWattsSSC_8hh.html#a476884bf820f76e21e57797a133df13baa24c739e6ea7087347377f09597d3538", null ],
+      [ "GH_DF", "PVWattsSSC_8hh.html#a476884bf820f76e21e57797a133df13ba7416f6f3b9c8f1f8818233abe7ac7e30", null ],
+      [ "POA_R", "PVWattsSSC_8hh.html#a476884bf820f76e21e57797a133df13ba2698eb25d7df9ae0eec3d73cc5d57065", null ],
+      [ "POA_P", "PVWattsSSC_8hh.html#a476884bf820f76e21e57797a133df13ba0d90086208f96e63081cc19036e80bce", null ]
+    ] ],
+    [ "AOI_MAX", "PVWattsSSC_8hh.html#a8f28ccb683aead315b755c6ead62a15f", null ],
+    [ "AOI_MIN", "PVWattsSSC_8hh.html#a75bd52dab80b5da3674c540455e15010", null ],
+    [ "backtrack", "PVWattsSSC_8hh.html#aba65e4b302bb9f4b21e691207228ec45", null ],
+    [ "diffuse_reduce", "PVWattsSSC_8hh.html#a96ecac4d35ccc9d9dd191661d5b24d4f", null ],
+    [ "DTOR", "PVWattsSSC_8hh.html#a85f838017842d5cbd2c2d442a8ad0ea5", null ],
+    [ "GTI_DIRINT", "PVWattsSSC_8hh.html#a2caa5954c0eba59d71a9d828b5473860", null ],
+    [ "hdkr", "PVWattsSSC_8hh.html#a0bbf8026b8b6737c4c3bd5ad8e69d95c", null ],
+    [ "iam", "PVWattsSSC_8hh.html#a3732af7a2dd63718b96214b262d5b484", null ],
+    [ "iam_nonorm", "PVWattsSSC_8hh.html#aa69748f632852d6e0397729af49f6b1e", null ],
+    [ "incidence", "PVWattsSSC_8hh.html#a5e8e8e152f8199ce855dbbcf27401b57", null ],
+    [ "isotropic", "PVWattsSSC_8hh.html#a2840a550057a2395cf3b63a35dd99494", null ],
+    [ "Max", "PVWattsSSC_8hh.html#a03a33bc03f13fd6073b956011be1f372", null ],
+    [ "Min", "PVWattsSSC_8hh.html#aac0378c1b74ee85a0ed1d86a2100378e", null ],
+    [ "ModifiedDISC", "PVWattsSSC_8hh.html#a738d69b8fec501187a5f7668e57effd1", null ],
+    [ "ModifiedDISC", "PVWattsSSC_8hh.html#a084c395d64aff41d12431aa2296e157b", null ],
+    [ "perez", "PVWattsSSC_8hh.html#a7a9352f5b5e9664082fbe74a39e5dca6", null ],
+    [ "poaDecomp", "PVWattsSSC_8hh.html#a31e325ba8b3b6f8311972465dc7ef6fd", null ],
+    [ "shade_fraction_1x", "PVWattsSSC_8hh.html#a938e0f4143af70f7e597f1743a3c9a7d", null ],
+    [ "SMALL", "PVWattsSSC_8hh.html#a4d9b6367bdc2d24788955a8cfa3a198c", null ],
+    [ "solarpos", "PVWattsSSC_8hh.html#add858d6f1f0063c68b62417c0dc9bc2a", null ],
+    [ "transmittance", "PVWattsSSC_8hh.html#ade08b2fa9fe4908ef3d0bc82f06aad2b", null ]
+];

@@ -1,0 +1,25 @@
+var DesiccantDehumidifiers_8hh =
+[
+    [ "DesiccantDehumidifierData", "structEnergyPlus_1_1DesiccantDehumidifiers_1_1DesiccantDehumidifierData.html", "structEnergyPlus_1_1DesiccantDehumidifiers_1_1DesiccantDehumidifierData" ],
+    [ "CalcGenericDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#af467128471ac3e4e40ec7ec793693896", null ],
+    [ "CalcNonDXHeatingCoils", "DesiccantDehumidifiers_8hh.html#aeb90a875a73178437edf3c761c856a44", null ],
+    [ "CalcSolidDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#af6eb4065dc84c975aa7540e7be3f92af", null ],
+    [ "clear_state", "DesiccantDehumidifiers_8hh.html#aed24592e66cd723f31378721cf3a11c1", null ],
+    [ "ControlDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#a1affb6d5e237d32da89232bdd7bb7463", null ],
+    [ "GetDesiccantDehumidifierInput", "DesiccantDehumidifiers_8hh.html#a3ae96c4ab2f6fe3fc468ff11a28966b7", null ],
+    [ "HotWaterCoilResidual", "DesiccantDehumidifiers_8hh.html#a976ea7e7634536a15da9de6f6d416c6a", null ],
+    [ "InitDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#ad789dea59a74480532b00fc82e95f4a4", null ],
+    [ "ReportDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#a38704fed07a20ad2ad819a7d88701f88", null ],
+    [ "SimDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#a4a43db62fe1f8a18aa912c8b565773f4", null ],
+    [ "UpdateDesiccantDehumidifier", "DesiccantDehumidifiers_8hh.html#ac369b58202a8dec0f54d79b5a52296e3", null ],
+    [ "BalancedHX", "DesiccantDehumidifiers_8hh.html#a2bfdada1f9ae7eb4570d827f4befbd2a", null ],
+    [ "FixedHumratBypass", "DesiccantDehumidifiers_8hh.html#ac301f8d770a04b8b789cc8953f8e4a3d", null ],
+    [ "Generic", "DesiccantDehumidifiers_8hh.html#a048a75e87b71bf81ddfd06b30055473d", null ],
+    [ "No", "DesiccantDehumidifiers_8hh.html#aba5cc40932c606c386977f1c0c544f29", null ],
+    [ "NodeHumratBypass", "DesiccantDehumidifiers_8hh.html#a91eb346ce960cfbc00893f9d3a331f25", null ],
+    [ "PM_Default", "DesiccantDehumidifiers_8hh.html#ad5e3b92539f677f3501f594a67409da0", null ],
+    [ "PM_UserCurves", "DesiccantDehumidifiers_8hh.html#a2af5a49d4365471cfd3b7a4b3739e1e9", null ],
+    [ "Solid", "DesiccantDehumidifiers_8hh.html#ac2e3eac537693916cd9457fc794e4bcd", null ],
+    [ "TempSteamIn", "DesiccantDehumidifiers_8hh.html#a6f128c6685a976f6d1afb8c16e7c896f", null ],
+    [ "Yes", "DesiccantDehumidifiers_8hh.html#a2e871870682db9eb74a19ece34f09e36", null ]
+];

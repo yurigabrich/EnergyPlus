@@ -1,0 +1,25 @@
+var structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars =
+[
+    [ "ReportVars", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a7699e2906b72850b9cdfe8ea0fd5c8f2", null ],
+    [ "AirFlowRatio", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#adbddf83feb8dcdade8169d26b445bd2f", null ],
+    [ "BlowdownVdot", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a17afe94950d18d960497962563b6692d", null ],
+    [ "BlowdownVol", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#ab5b4407295e6f9bae411cb6b6d7b7151", null ],
+    [ "BypassFraction", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#aee78f7a053644a35e0f27e1e0cd855d0", null ],
+    [ "DriftVdot", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a0769b6ef04346d5583a8806ca6315a42", null ],
+    [ "DriftVol", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a916d38ebda03806f497e18f2a727d06b", null ],
+    [ "EvaporationVdot", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a5477802d5226a9eceab6130c296a553c", null ],
+    [ "EvaporationVol", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#ad6e49b7eb377104c16a9847846bf1f4b", null ],
+    [ "FanEnergy", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#adaed2d60193305fbb766a54d4bed8a22", null ],
+    [ "FanPower", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#abd486c73de48f8f939eae32b48595677", null ],
+    [ "InletWaterTemp", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a9c366cef8ee8e5042c0083667a735257", null ],
+    [ "MakeUpVdot", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a42021683db1f9270fa1cf9772604fdc8", null ],
+    [ "MakeUpVol", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#af1bbf363a4499f94e4ea6c149fa966db", null ],
+    [ "OutletWaterTemp", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#af6bdd82adada29c5d64992698acac4d5", null ],
+    [ "Qactual", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#aea6f8fa243a5cc2af9ae2114706008b2", null ],
+    [ "StarvedMakeUpVdot", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a06e3473dd359a07301096f4c2bf63d42", null ],
+    [ "StarvedMakeUpVol", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a842e0fe199a35accf944aa21558f82b1", null ],
+    [ "TankSupplyVdot", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a42eb873249ec5f303ac7a955bdcb2a28", null ],
+    [ "TankSupplyVol", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#af69c3c7629b61f2a3adbb69a6695dd97", null ],
+    [ "WaterAmountUsed", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a4ea0e23d057502f35a8047cc68f7c752", null ],
+    [ "WaterMassFlowRate", "structEnergyPlus_1_1EvaporativeFluidCoolers_1_1ReportVars.html#a3af21505cc51e4ab3fee1674a8bb55cf", null ]
+];

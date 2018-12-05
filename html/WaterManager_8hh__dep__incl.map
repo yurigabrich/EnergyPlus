@@ -1,0 +1,19 @@
+<map id="src/EnergyPlus/WaterManager.hh" name="src/EnergyPlus/WaterManager.hh">
+<area shape="rect" id="node2" href="$CondenserLoopTowers_8cc.html" title="src/EnergyPlus/Condenser\lLoopTowers.cc" alt="" coords="5,80,184,121"/>
+<area shape="rect" id="node3" href="$CoolTower_8cc.html" title="src/EnergyPlus/CoolTower.cc" alt="" coords="209,87,405,114"/>
+<area shape="rect" id="node4" href="$DXCoils_8cc.html" title="src/EnergyPlus/DXCoils.cc" alt="" coords="429,87,611,114"/>
+<area shape="rect" id="node5" href="$EvaporativeCoolers_8cc.html" title="src/EnergyPlus/Evaporative\lCoolers.cc" alt="" coords="636,80,820,121"/>
+<area shape="rect" id="node6" href="$EvaporativeFluidCoolers_8cc.html" title="src/EnergyPlus/Evaporative\lFluidCoolers.cc" alt="" coords="844,80,1028,121"/>
+<area shape="rect" id="node7" href="$Humidifiers_8cc.html" title="src/EnergyPlus/Humidifiers.cc" alt="" coords="1053,87,1251,114"/>
+<area shape="rect" id="node8" href="$HVACManager_8cc.html" title="src/EnergyPlus/HVACManager.cc" alt="" coords="1276,87,1497,114"/>
+<area shape="rect" id="node9" href="$HVACVariableRefrigerantFlow_8cc.html" title="src/EnergyPlus/HVACVariable\lRefrigerantFlow.cc" alt="" coords="1521,80,1721,121"/>
+<area shape="rect" id="node10" href="$HybridUnitaryAirConditioners_8cc.html" title="src/EnergyPlus/HybridUnitary\lAirConditioners.cc" alt="" coords="1745,80,1940,121"/>
+<area shape="rect" id="node11" href="$PackagedThermalStorageCoil_8cc.html" title="src/EnergyPlus/PackagedThermal\lStorageCoil.cc" alt="" coords="1965,80,2185,121"/>
+<area shape="rect" id="node12" href="$RefrigeratedCase_8cc.html" title="src/EnergyPlus/Refrigerated\lCase.cc" alt="" coords="2209,80,2396,121"/>
+<area shape="rect" id="node13" href="$UserDefinedComponents_8cc.html" title="src/EnergyPlus/UserDefined\lComponents.cc" alt="" coords="2421,80,2609,121"/>
+<area shape="rect" id="node14" href="$VariableSpeedCoils_8cc.html" title="src/EnergyPlus/VariableSpeed\lCoils.cc" alt="" coords="2633,80,2831,121"/>
+<area shape="rect" id="node15" href="$WaterCoils_8cc.html" title="src/EnergyPlus/WaterCoils.cc" alt="" coords="2855,87,3054,114"/>
+<area shape="rect" id="node16" href="$WaterManager_8cc.html" title="src/EnergyPlus/WaterManager.cc" alt="" coords="3079,87,3297,114"/>
+<area shape="rect" id="node17" href="$WaterUse_8cc.html" title="src/EnergyPlus/WaterUse.cc" alt="" coords="3321,87,3513,114"/>
+<area shape="rect" id="node18" href="$ZoneDehumidifier_8cc.html" title="src/EnergyPlus/ZoneDehumidifier.cc" alt="" coords="3537,87,3772,114"/>
+</map>

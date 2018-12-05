@@ -1,0 +1,4 @@
+<map id="EnergyPlus::FaultsManager::FaultPropertiesChillerFouling" name="EnergyPlus::FaultsManager::FaultPropertiesChillerFouling">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesFouling.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesFouling" alt="" coords="13,95,195,136"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1FaultsManager_1_1FaultProperties.html" title="EnergyPlus::FaultsManager\l::FaultProperties" alt="" coords="13,5,195,47"/>
+</map>

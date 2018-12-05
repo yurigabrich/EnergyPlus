@@ -1,0 +1,8 @@
+<map id="src/EnergyPlus/SolarShading.hh" name="src/EnergyPlus/SolarShading.hh">
+<area shape="rect" id="node2" href="$CommandLineInterface_8cc.html" title="src/EnergyPlus/CommandLine\lInterface.cc" alt="" coords="5,80,204,121"/>
+<area shape="rect" id="node3" href="$HeatBalanceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lManager.cc" alt="" coords="228,80,419,121"/>
+<area shape="rect" id="node4" href="$HeatBalanceSurfaceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lSurfaceManager.cc" alt="" coords="443,80,633,121"/>
+<area shape="rect" id="node5" href="$SimulationManager_8cc.html" title="src/EnergyPlus/Simulation\lManager.cc" alt="" coords="658,80,834,121"/>
+<area shape="rect" id="node6" href="$SolarShading_8cc.html" title="src/EnergyPlus/SolarShading.cc" alt="" coords="858,87,1069,114"/>
+<area shape="rect" id="node7" href="$UtilityRoutines_8cc.html" title="src/EnergyPlus/UtilityRoutines.cc" alt="" coords="1093,87,1311,114"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="src/EnergyPlus/HeatBalanceInternalHeatGains.cc" name="src/EnergyPlus/HeatBalanceInternalHeatGains.cc">
+<area shape="rect" id="node3" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1104,95,1247,121"/>
+<area shape="rect" id="node28" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="423,95,590,121"/>
+<area shape="rect" id="node29" href="$HeatBalanceInternalHeatGains_8hh.html" title="HeatBalanceInternalHeatGains.hh" alt="" coords="1520,95,1740,121"/>
+<area shape="rect" id="node30" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="2080,95,2207,121"/>
+<area shape="rect" id="node9" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="1416,259,1567,285"/>
+<area shape="rect" id="node10" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="944,333,1087,360"/>
+<area shape="rect" id="node15" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="650,408,757,435"/>
+<area shape="rect" id="node17" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="104,177,296,203"/>
+<area shape="rect" id="node18" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="472,259,584,285"/>
+<area shape="rect" id="node21" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="1314,177,1434,203"/>
+<area shape="rect" id="node26" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="552,177,760,203"/>
+<area shape="rect" id="node27" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="320,169,476,211"/>
+<area shape="rect" id="node22" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="1136,259,1213,285"/>
+</map>

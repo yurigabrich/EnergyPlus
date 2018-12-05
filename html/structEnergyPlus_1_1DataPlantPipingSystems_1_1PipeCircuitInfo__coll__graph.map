@@ -1,0 +1,6 @@
+<map id="EnergyPlus::DataPlantPipingSystems::PipeCircuitInfo" name="EnergyPlus::DataPlantPipingSystems::PipeCircuitInfo">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1DataPlantPipingSystems_1_1RadialSizing.html" title="EnergyPlus::DataPlantPiping\lSystems::RadialSizing" alt="" coords="351,5,542,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1DataPlantPipingSystems_1_1BaseThermalPropertySet.html" title="EnergyPlus::DataPlantPiping\lSystems::BaseThermalPropertySet" alt="" coords="5,107,233,148"/>
+<area shape="rect" id="node5" href="$structEnergyPlus_1_1DataPlantPipingSystems_1_1ExtendedFluidProperties.html" title="EnergyPlus::DataPlantPiping\lSystems::ExtendedFluidProperties" alt="" coords="335,149,559,191"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1DataPlantPipingSystems_1_1Point3DInteger.html" title="EnergyPlus::DataPlantPiping\lSystems::Point3DInteger" alt="" coords="351,215,542,256"/>
+</map>

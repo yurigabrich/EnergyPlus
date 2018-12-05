@@ -1,0 +1,27 @@
+<map id="src/EnergyPlus/HeatRecovery.cc" name="src/EnergyPlus/HeatRecovery.cc">
+<area shape="rect" id="node4" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="2244,155,2429,181"/>
+<area shape="rect" id="node10" href="$DXCoils_8hh.html" title="DXCoils.hh" alt="" coords="1132,80,1221,107"/>
+<area shape="rect" id="node11" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="458,155,599,181"/>
+<area shape="rect" id="node15" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="1101,155,1252,181"/>
+<area shape="rect" id="node16" href="$DataContaminantBalance_8hh.html" title="DataContaminantBalance.hh" alt="" coords="623,155,813,181"/>
+<area shape="rect" id="node17" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="293,155,433,181"/>
+<area shape="rect" id="node18" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="1276,155,1403,181"/>
+<area shape="rect" id="node19" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="5,80,172,107"/>
+<area shape="rect" id="node20" href="$DataSizing_8hh.html" title="DataSizing.hh" alt="" coords="165,155,269,181"/>
+<area shape="rect" id="node23" href="$EMSManager_8hh.html" title="EMSManager.hh" alt="" coords="3519,155,3637,181"/>
+<area shape="rect" id="node24" href="$General_8hh.html" title="General.hh" alt="" coords="2454,155,2539,181"/>
+<area shape="rect" id="node28" href="$GeneralRoutines_8hh.html" title="GeneralRoutines.hh" alt="" coords="3207,155,3344,181"/>
+<area shape="rect" id="node30" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="1881,155,2000,181"/>
+<area shape="rect" id="node33" href="$HeatRecovery_8hh.html" title="HeatRecovery.hh" alt="" coords="1631,155,1755,181"/>
+<area shape="rect" id="node34" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="3850,155,4077,181"/>
+<area shape="rect" id="node41" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="1731,80,1881,107"/>
+<area shape="rect" id="node42" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="837,155,975,181"/>
+<area shape="rect" id="node44" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="2755,80,2886,107"/>
+<area shape="rect" id="node47" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="3368,155,3495,181"/>
+<area shape="rect" id="node48" href="$ReportSizingManager_8hh.html" title="ReportSizingManager.hh" alt="" coords="3661,155,3826,181"/>
+<area shape="rect" id="node49" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="2075,155,2219,181"/>
+<area shape="rect" id="node50" href="$VariableSpeedCoils_8hh.html" title="VariableSpeedCoils.hh" alt="" coords="207,80,362,107"/>
+<area shape="rect" id="node9" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="1563,304,1670,331"/>
+<area shape="rect" id="node12" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1283,229,1395,256"/>
+<area shape="rect" id="node40" href="$DataStorage_8hh.html" title="InputProcessing/DataStorage.hh" alt="" coords="3715,229,3926,256"/>
+</map>

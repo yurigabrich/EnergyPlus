@@ -1,0 +1,9 @@
+<map id="src/EnergyPlus/SplitterComponent.hh" name="src/EnergyPlus/SplitterComponent.hh">
+<area shape="rect" id="node2" href="$AirflowNetworkBalanceManager_8cc.html" title="src/EnergyPlus/AirflowNetwork\lBalanceManager.cc" alt="" coords="5,80,209,121"/>
+<area shape="rect" id="node3" href="$DirectAirManager_8cc.html" title="src/EnergyPlus/DirectAir\lManager.cc" alt="" coords="233,80,400,121"/>
+<area shape="rect" id="node4" href="$GeneralRoutines_8cc.html" title="src/EnergyPlus/GeneralRoutines.cc" alt="" coords="424,87,655,114"/>
+<area shape="rect" id="node5" href="$SimAirServingZones_8cc.html" title="src/EnergyPlus/SimAirServing\lZones.cc" alt="" coords="679,80,877,121"/>
+<area shape="rect" id="node6" href="$SplitterComponent_8cc.html" title="src/EnergyPlus/SplitterComponent.cc" alt="" coords="901,87,1143,114"/>
+<area shape="rect" id="node7" href="$SystemReports_8cc.html" title="src/EnergyPlus/SystemReports.cc" alt="" coords="1167,87,1391,114"/>
+<area shape="rect" id="node8" href="$ZoneEquipmentManager_8cc.html" title="src/EnergyPlus/ZoneEquipment\lManager.cc" alt="" coords="1416,80,1623,121"/>
+</map>

@@ -1,0 +1,28 @@
+var structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData =
+[
+    [ "StratifiedNodeData", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a9f10228e663d0047eb2fe0e327ebaf31", null ],
+    [ "CondCoeffDn", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#aff56c1fe4b839fd9238abb00551b817c", null ],
+    [ "CondCoeffUp", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a71c39a6a96282bd0e9df4bc772a52655", null ],
+    [ "Height", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a4fe4a8822a6c3756d0250ec29111756a", null ],
+    [ "HPWHWrappedCondenserHeatingFrac", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a822ef43735ff61b075d3120aa255e00d", null ],
+    [ "Inlets", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#ac7d78eca70e50361d983289353eca8ad", null ],
+    [ "Mass", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a267a069dce087ca902337440b11036b3", null ],
+    [ "MassFlowFromLower", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a326d31be59dd3b95e575d4fac876c90b", null ],
+    [ "MassFlowFromUpper", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#abf3bbbe51fb5e9e10a2c20e69b9b0762", null ],
+    [ "MassFlowToLower", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a0c1fe6ad04b759e3094d4e96790f8f71", null ],
+    [ "MassFlowToUpper", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a8da56eec6c30194872fc1d8f1b2206c6", null ],
+    [ "MaxCapacity", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#aa6cd83319fdcf91040242b00adbe1ff2", null ],
+    [ "NewTemp", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#adb3ec577187d52630201a035225c1302", null ],
+    [ "OffCycLossCoeff", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#aa6908643c4497214bbd22aeebbd02edc", null ],
+    [ "OffCycParaLoad", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#af2479a06f905688829f05f2750ad3f38", null ],
+    [ "OnCycLossCoeff", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a8caa7bbcf89ee41363b9ada2ac5333c3", null ],
+    [ "OnCycParaLoad", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a0211ac247d8c1f406e481867ce28bc90", null ],
+    [ "Outlets", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a63131f7e7b4b2baa6b744259dacdb4eb", null ],
+    [ "SavedTemp", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#ae4498d96436534c665cfccf2aa0bf03f", null ],
+    [ "SourceMassFlowRate", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a97513edaf6a0fb98bd7d798d6da7f71a", null ],
+    [ "Temp", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a39969146cbaa7bd71497fad0ed3b42f4", null ],
+    [ "TempAvg", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#ac5433fdb3fd44bfb03506922aa664ea3", null ],
+    [ "TempSum", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a9491133b865ed9245703b330c7541e41", null ],
+    [ "UseMassFlowRate", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#a41e1086cc9fc48b2688aec3001116cc5", null ],
+    [ "Volume", "structEnergyPlus_1_1WaterThermalTanks_1_1StratifiedNodeData.html#ae705f97880fccbe719aac6755f3c61fa", null ]
+];

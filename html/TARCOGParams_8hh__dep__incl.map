@@ -1,0 +1,12 @@
+<map id="src/EnergyPlus/TARCOGParams.hh" name="src/EnergyPlus/TARCOGParams.hh">
+<area shape="rect" id="node2" href="$TARCOGArgs_8cc.html" title="src/EnergyPlus/TARCOGArgs.cc" alt="" coords="5,87,223,114"/>
+<area shape="rect" id="node3" href="$TARCOGCommon_8cc.html" title="src/EnergyPlus/TARCOGCommon.cc" alt="" coords="247,87,490,114"/>
+<area shape="rect" id="node4" href="$TARCOGDeflection_8cc.html" title="src/EnergyPlus/TARCOGDeflection.cc" alt="" coords="515,87,764,114"/>
+<area shape="rect" id="node5" href="$TARCOGMain_8cc.html" title="src/EnergyPlus/TARCOGMain.cc" alt="" coords="789,87,1007,114"/>
+<area shape="rect" id="node6" href="$TARCOGOutput_8cc.html" title="src/EnergyPlus/TARCOGOutput.cc" alt="" coords="1031,87,1261,114"/>
+<area shape="rect" id="node7" href="$TARCOGParams_8cc.html" title="src/EnergyPlus/TARCOGParams.cc" alt="" coords="1285,87,1519,114"/>
+<area shape="rect" id="node8" href="$TarcogShading_8cc.html" title="src/EnergyPlus/TarcogShading.cc" alt="" coords="1544,87,1764,114"/>
+<area shape="rect" id="node9" href="$ThermalEN673Calc_8cc.html" title="src/EnergyPlus/ThermalEN673\lCalc.cc" alt="" coords="1789,80,1991,121"/>
+<area shape="rect" id="node10" href="$ThermalISO15099Calc_8cc.html" title="src/EnergyPlus/ThermalISO15099\lCalc.cc" alt="" coords="2016,80,2236,121"/>
+<area shape="rect" id="node11" href="$WindowComplexManager_8cc.html" title="src/EnergyPlus/WindowComplex\lManager.cc" alt="" coords="2260,80,2475,121"/>
+</map>

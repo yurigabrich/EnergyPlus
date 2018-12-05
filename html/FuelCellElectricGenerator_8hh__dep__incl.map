@@ -1,0 +1,6 @@
+<map id="src/EnergyPlus/FuelCellElectricGenerator.hh" name="src/EnergyPlus/FuelCellElectricGenerator.hh">
+<area shape="rect" id="node2" href="$ElectricPowerServiceManager_8cc.html" title="src/EnergyPlus/ElectricPower\lServiceManager.cc" alt="" coords="5,95,201,136"/>
+<area shape="rect" id="node3" href="$FuelCellElectricGenerator_8cc.html" title="src/EnergyPlus/FuelCellElectric\lGenerator.cc" alt="" coords="225,95,432,136"/>
+<area shape="rect" id="node4" href="$InternalHeatGains_8cc.html" title="src/EnergyPlus/InternalHeat\lGains.cc" alt="" coords="457,95,643,136"/>
+<area shape="rect" id="node5" href="$PlantLoopEquip_8cc.html" title="src/EnergyPlus/PlantLoop\lEquip.cc" alt="" coords="667,95,841,136"/>
+</map>

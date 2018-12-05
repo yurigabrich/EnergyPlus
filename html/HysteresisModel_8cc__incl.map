@@ -1,0 +1,16 @@
+<map id="src/EnergyPlus/PhaseChangeModeling/HysteresisModel.cc" name="src/EnergyPlus/PhaseChangeModeling/HysteresisModel.cc">
+<area shape="rect" id="node3" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1029,95,1171,121"/>
+<area shape="rect" id="node15" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="1208,408,1315,435"/>
+<area shape="rect" id="node27" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="1874,169,2030,211"/>
+<area shape="rect" id="node28" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="145,333,285,360"/>
+<area shape="rect" id="node29" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="2617,177,2844,203"/>
+<area shape="rect" id="node38" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="2054,177,2181,203"/>
+<area shape="rect" id="node9" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="769,259,919,285"/>
+<area shape="rect" id="node10" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="878,333,1021,360"/>
+<area shape="rect" id="node17" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="1228,177,1420,203"/>
+<area shape="rect" id="node18" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1299,259,1411,285"/>
+<area shape="rect" id="node21" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="700,177,820,203"/>
+<area shape="rect" id="node26" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="996,177,1204,203"/>
+<area shape="rect" id="node22" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="400,259,477,285"/>
+<area shape="rect" id="node35" href="$DataStorage_8hh.html" title="InputProcessing/DataStorage.hh" alt="" coords="2859,259,3069,285"/>
+</map>

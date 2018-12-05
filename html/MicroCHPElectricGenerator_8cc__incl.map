@@ -1,0 +1,35 @@
+<map id="src/EnergyPlus/MicroCHPElectricGenerator.cc" name="src/EnergyPlus/MicroCHPElectricGenerator.cc">
+<area shape="rect" id="node5" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="2620,244,2805,271"/>
+<area shape="rect" id="node11" href="$CurveManager_8hh.html" title="CurveManager.hh" alt="" coords="1366,244,1491,271"/>
+<area shape="rect" id="node16" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="4942,326,5054,353"/>
+<area shape="rect" id="node19" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="2547,326,2689,353"/>
+<area shape="rect" id="node20" href="$DataGenerators_8hh.html" title="DataGenerators.hh" alt="" coords="5396,244,5528,271"/>
+<area shape="rect" id="node21" href="$DataGlobalConstants_8hh.html" title="DataGlobalConstants.hh" alt="" coords="2131,326,2297,353"/>
+<area shape="rect" id="node22" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="5552,244,5703,271"/>
+<area shape="rect" id="node23" href="$DataHeatBalFanSys_8hh.html" title="DataHeatBalFanSys.hh" alt="" coords="2865,326,3025,353"/>
+<area shape="rect" id="node24" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1768,95,1911,121"/>
+<area shape="rect" id="node34" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="3433,326,3573,353"/>
+<area shape="rect" id="node35" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="4689,244,4816,271"/>
+<area shape="rect" id="node36" href="$DataPlant_8hh.html" title="DataPlant.hh" alt="" coords="4462,169,4561,196"/>
+<area shape="rect" id="node37" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3294,244,3433,271"/>
+<area shape="rect" id="node38" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="5655,95,5821,121"/>
+<area shape="rect" id="node39" href="$DataSizing_8hh.html" title="DataSizing.hh" alt="" coords="3457,244,3561,271"/>
+<area shape="rect" id="node40" href="$FluidProperties_8hh.html" title="FluidProperties.hh" alt="" coords="2043,244,2169,271"/>
+<area shape="rect" id="node41" href="$General_8hh.html" title="General.hh" alt="" coords="2830,244,2915,271"/>
+<area shape="rect" id="node42" href="$GeneratorDynamicsManager_8hh.html" title="GeneratorDynamicsManager.hh" alt="" coords="5807,326,6013,353"/>
+<area shape="rect" id="node43" href="$GeneratorFuelSupply_8hh.html" title="GeneratorFuelSupply.hh" alt="" coords="3590,95,3753,121"/>
+<area shape="rect" id="node44" href="$HeatBalanceInternalHeatGains_8hh.html" title="HeatBalanceInternalHeatGains.hh" alt="" coords="3868,244,4088,271"/>
+<area shape="rect" id="node45" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="4891,244,5118,271"/>
+<area shape="rect" id="node46" href="$MicroCHPElectricGenerator_8hh.html" title="MicroCHPElectricGenerator.hh" alt="" coords="2321,326,2523,353"/>
+<area shape="rect" id="node47" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="3919,169,4069,196"/>
+<area shape="rect" id="node48" href="$PlantUtilities_8hh.html" title="PlantUtilities.hh" alt="" coords="4113,244,4227,271"/>
+<area shape="rect" id="node49" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="2299,244,2443,271"/>
+<area shape="rect" id="node50" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="2991,244,3117,271"/>
+<area shape="rect" id="node10" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="3970,408,4077,435"/>
+<area shape="rect" id="node28" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="271,244,421,271"/>
+<area shape="rect" id="node29" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="228,326,371,353"/>
+<area shape="rect" id="node30" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="4302,244,4494,271"/>
+<area shape="rect" id="node31" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="403,169,523,196"/>
+<area shape="rect" id="node32" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="3585,244,3793,271"/>
+<area shape="rect" id="node33" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="5332,319,5488,360"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="src/EnergyPlus/HeatRecovery.hh" name="src/EnergyPlus/HeatRecovery.hh">
+<area shape="rect" id="node2" href="$DesiccantDehumidifiers_8cc.html" title="src/EnergyPlus/Desiccant\lDehumidifiers.cc" alt="" coords="5,80,180,121"/>
+<area shape="rect" id="node3" href="$HeatRecovery_8cc.html" title="src/EnergyPlus/HeatRecovery.cc" alt="" coords="204,87,421,114"/>
+<area shape="rect" id="node4" href="$HVACHXAssistedCoolingCoil_8cc.html" title="src/EnergyPlus/HVACHXAssisted\lCoolingCoil.cc" alt="" coords="445,80,668,121"/>
+<area shape="rect" id="node5" href="$HVACStandAloneERV_8cc.html" title="src/EnergyPlus/HVACStand\lAloneERV.cc" alt="" coords="693,80,879,121"/>
+<area shape="rect" id="node6" href="$MixedAir_8cc.html" title="src/EnergyPlus/MixedAir.cc" alt="" coords="903,87,1087,114"/>
+<area shape="rect" id="node7" href="$OutdoorAirUnit_8cc.html" title="src/EnergyPlus/OutdoorAir\lUnit.cc" alt="" coords="1112,80,1289,121"/>
+<area shape="rect" id="node8" href="$SimAirServingZones_8cc.html" title="src/EnergyPlus/SimAirServing\lZones.cc" alt="" coords="1313,80,1512,121"/>
+<area shape="rect" id="node9" href="$ZoneEquipmentManager_8cc.html" title="src/EnergyPlus/ZoneEquipment\lManager.cc" alt="" coords="1536,80,1743,121"/>
+</map>

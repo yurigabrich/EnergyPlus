@@ -1,0 +1,31 @@
+<map id="src/EnergyPlus/HVACHXAssistedCoolingCoil.cc" name="src/EnergyPlus/HVACHXAssistedCoolingCoil.cc">
+<area shape="rect" id="node4" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="647,251,833,278"/>
+<area shape="rect" id="node10" href="$DXCoils_8hh.html" title="DXCoils.hh" alt="" coords="3054,169,3143,196"/>
+<area shape="rect" id="node14" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="3338,251,3489,278"/>
+<area shape="rect" id="node15" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="3986,95,4129,121"/>
+<area shape="rect" id="node27" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="2049,251,2175,278"/>
+<area shape="rect" id="node28" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="2275,95,2442,121"/>
+<area shape="rect" id="node29" href="$General_8hh.html" title="General.hh" alt="" coords="288,251,373,278"/>
+<area shape="rect" id="node33" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="1406,251,1525,278"/>
+<area shape="rect" id="node36" href="$HVACControllers_8hh.html" title="HVACControllers.hh" alt="" coords="1933,169,2075,196"/>
+<area shape="rect" id="node40" href="$HVACHXAssistedCoolingCoil_8hh.html" title="HVACHXAssistedCoolingCoil.hh" alt="" coords="1167,251,1382,278"/>
+<area shape="rect" id="node41" href="$HeatRecovery_8hh.html" title="HeatRecovery.hh" alt="" coords="1702,251,1826,278"/>
+<area shape="rect" id="node42" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="2835,251,3061,278"/>
+<area shape="rect" id="node46" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="1054,169,1205,196"/>
+<area shape="rect" id="node47" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="4824,169,4955,196"/>
+<area shape="rect" id="node48" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="3187,251,3314,278"/>
+<area shape="rect" id="node49" href="$VariableSpeedCoils_8hh.html" title="VariableSpeedCoils.hh" alt="" coords="2467,95,2621,121"/>
+<area shape="rect" id="node50" href="$WaterCoils_8hh.html" title="WaterCoils.hh" alt="" coords="909,251,1014,278"/>
+<area shape="rect" id="node9" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2549,408,2656,435"/>
+<area shape="rect" id="node11" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="3017,333,3159,360"/>
+<area shape="rect" id="node12" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="2593,333,2705,360"/>
+<area shape="rect" id="node20" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="4333,251,4483,278"/>
+<area shape="rect" id="node21" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="4082,333,4225,360"/>
+<area shape="rect" id="node22" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="4660,251,4852,278"/>
+<area shape="rect" id="node23" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="4145,169,4265,196"/>
+<area shape="rect" id="node25" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="3564,251,3772,278"/>
+<area shape="rect" id="node26" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="3898,244,4054,285"/>
+<area shape="rect" id="node37" href="$DataAirSystems_8hh.html" title="DataAirSystems.hh" alt="" coords="2200,251,2336,278"/>
+<area shape="rect" id="node38" href="$DataHVACControllers_8hh.html" title="DataHVACControllers.hh" alt="" coords="1909,333,2078,360"/>
+<area shape="rect" id="node39" href="$DataRootFinder_8hh.html" title="DataRootFinder.hh" alt="" coords="1753,333,1885,360"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="src/EnergyPlus/SystemAvailabilityManager.hh" name="src/EnergyPlus/SystemAvailabilityManager.hh">
+<area shape="rect" id="node2" href="$HeatBalanceAirManager_8cc.html" title="src/EnergyPlus/HeatBalance\lAirManager.cc" alt="" coords="5,95,196,136"/>
+<area shape="rect" id="node3" href="$HVACManager_8cc.html" title="src/EnergyPlus/HVACManager.cc" alt="" coords="221,102,442,129"/>
+<area shape="rect" id="node4" href="$PlantManager_8cc.html" title="src/EnergyPlus/Plant\l/PlantManager.cc" alt="" coords="467,95,612,136"/>
+<area shape="rect" id="node5" href="$SimAirServingZones_8cc.html" title="src/EnergyPlus/SimAirServing\lZones.cc" alt="" coords="636,95,835,136"/>
+<area shape="rect" id="node6" href="$SystemAvailabilityManager_8cc.html" title="src/EnergyPlus/SystemAvailability\lManager.cc" alt="" coords="859,95,1081,136"/>
+<area shape="rect" id="node7" href="$ZoneEquipmentManager_8cc.html" title="src/EnergyPlus/ZoneEquipment\lManager.cc" alt="" coords="1105,95,1312,136"/>
+</map>

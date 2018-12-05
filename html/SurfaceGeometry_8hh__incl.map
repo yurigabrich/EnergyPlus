@@ -1,0 +1,13 @@
+<map id="src/EnergyPlus/SurfaceGeometry.hh" name="src/EnergyPlus/SurfaceGeometry.hh">
+<area shape="rect" id="node4" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="624,237,744,263"/>
+<area shape="rect" id="node9" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="219,393,362,420"/>
+<area shape="rect" id="node13" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="1275,468,1381,495"/>
+<area shape="rect" id="node22" href="$HeatBalanceKivaManager_8hh.html" title="HeatBalanceKivaManager.hh" alt="" coords="830,80,1021,107"/>
+<area shape="rect" id="node5" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="897,319,1047,345"/>
+<area shape="rect" id="node15" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1252,319,1364,345"/>
+<area shape="rect" id="node18" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="273,319,351,345"/>
+<area shape="rect" id="node24" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1022,155,1165,181"/>
+<area shape="rect" id="node28" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="997,237,1189,263"/>
+<area shape="rect" id="node29" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="1264,237,1472,263"/>
+<area shape="rect" id="node30" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="2058,229,2214,271"/>
+</map>

@@ -1,0 +1,25 @@
+var structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp =
+[
+    [ "MultizoneZoneProp", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#ad83f207a755a587506d207c43bab19eb", null ],
+    [ "ASH55PeopleInd", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a9541bc93255c0e6df75724209e8bb289", null ],
+    [ "BuildWidth", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#ab94fc368abc00e34e175b3aa58f647af", null ],
+    [ "CEN15251PeopleInd", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a0f1057db754f79a5d6c47e886b93f657", null ],
+    [ "Height", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#aba35758c0944a275d02f54ec1a5e8ddc", null ],
+    [ "LowValueEnth", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#af285c61a9cd35b96aeec7016fdc1af97", null ],
+    [ "LowValueTemp", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a937ada28b7e2c2ff4c10d0b22eb75649", null ],
+    [ "OccupantVentilationControlName", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a40b9bf44b1f7b7bd53026aa87be66155", null ],
+    [ "OccupantVentilationControlNum", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a40f583a7d9ab9de25d232a8cd464a93d", null ],
+    [ "OpenFactor", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#ac870dae14f9da66a0836bec3f370ef6c", null ],
+    [ "RAFNNodeNum", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#aa0a22e008365875f0c0114a9a7e3bf0d", null ],
+    [ "SingleSidedCpType", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#afc4e80d0434f07350eb16ecc6970aa3b", null ],
+    [ "UpValueEnth", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a7d15776f62bf178782babefef69c93f4", null ],
+    [ "UpValueTemp", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a765b9a26178e18e05cd436773644788f", null ],
+    [ "VentControl", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a66d957a5af7324d26b11fe8e5f2b6142", null ],
+    [ "VentCtrNum", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a9532a7e5c80d95bf45ffb384959eab03", null ],
+    [ "VentingSchName", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a6e56743a2f6ba3a7ca16bc2369573298", null ],
+    [ "VentingSchNum", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a8138f6852cabac615d1ef7838845d10c", null ],
+    [ "VentSchName", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a767a7640e9b9792d6121d2426c3998dd", null ],
+    [ "VentSchNum", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#ae3bd600dfb0f7ab2ddddb414240ee4df", null ],
+    [ "ZoneName", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a02df713262c9426f4daad4fdd2a60be8", null ],
+    [ "ZoneNum", "structEnergyPlus_1_1DataAirflowNetwork_1_1MultizoneZoneProp.html#a15a2c8d7d599464551a08baf99bac8e5", null ]
+];

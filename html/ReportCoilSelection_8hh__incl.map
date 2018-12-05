@@ -1,0 +1,32 @@
+<map id="src/EnergyPlus/ReportCoilSelection.hh" name="src/EnergyPlus/ReportCoilSelection.hh">
+<area shape="rect" id="node7" href="$DataAirSystems_8hh.html" title="DataAirSystems.hh" alt="" coords="323,95,459,121"/>
+<area shape="rect" id="node11" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2348,841,2455,868"/>
+<area shape="rect" id="node9" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1425,767,1537,793"/>
+<area shape="rect" id="node13" href="$DataPlant_8hh.html" title="DataPlant.hh" alt="" coords="1917,169,2016,196"/>
+<area shape="rect" id="node43" href="$UnitarySystem_8hh.html" title="UnitarySystem.hh" alt="" coords="201,169,327,196"/>
+<area shape="rect" id="node15" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="1674,617,1801,644"/>
+<area shape="rect" id="node16" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="1900,617,2039,644"/>
+<area shape="rect" id="node20" href="$CallingOrder_8hh.html" title="Plant/CallingOrder.hh" alt="" coords="1947,393,2093,420"/>
+<area shape="rect" id="node22" href="$Enums_8hh.html" title="Plant/Enums.hh" alt="" coords="672,617,787,644"/>
+<area shape="rect" id="node23" href="$Loop_8hh.html" title="Plant/Loop.hh" alt="" coords="1826,244,1929,271"/>
+<area shape="rect" id="node34" href="$PlantLoopSolver_8hh.html" title="Plant/PlantLoopSolver.hh" alt="" coords="1927,319,2097,345"/>
+<area shape="rect" id="node35" href="$PlantAvailManager_8hh.html" title="Plant/PlantAvailManager.hh" alt="" coords="2351,244,2534,271"/>
+<area shape="rect" id="node36" href="$ReportLoopData_8hh.html" title="Plant/ReportLoopData.hh" alt="" coords="2106,244,2275,271"/>
+<area shape="rect" id="node41" href="$ReportVars_8hh.html" title="Plant/ReportVars.hh" alt="" coords="2558,244,2698,271"/>
+<area shape="rect" id="node21" href="$MeterData_8hh.html" title="Plant/MeterData.hh" alt="" coords="1927,543,2062,569"/>
+<area shape="rect" id="node24" href="$LoopSide_8hh.html" title="Plant/LoopSide.hh" alt="" coords="1263,393,1391,420"/>
+<area shape="rect" id="node25" href="$Branch_8hh.html" title="Plant/Branch.hh" alt="" coords="453,468,568,495"/>
+<area shape="rect" id="node29" href="$ConnectedLoopData_8hh.html" title="Plant/ConnectedLoopData.hh" alt="" coords="593,468,786,495"/>
+<area shape="rect" id="node30" href="$LoopSidePumpInformation_8hh.html" title="Plant/LoopSidePumpInformation.hh" alt="" coords="811,468,1037,495"/>
+<area shape="rect" id="node31" href="$MixerData_8hh.html" title="Plant/MixerData.hh" alt="" coords="1062,468,1197,495"/>
+<area shape="rect" id="node32" href="$PlantConvergencePoint_8hh.html" title="Plant/PlantConvergencePoint.hh" alt="" coords="1221,468,1432,495"/>
+<area shape="rect" id="node33" href="$SplitterData_8hh.html" title="Plant/SplitterData.hh" alt="" coords="1455,468,1598,495"/>
+<area shape="rect" id="node26" href="$Component_8hh.html" title="Plant/Component.hh" alt="" coords="460,543,601,569"/>
+<area shape="rect" id="node27" href="$EquipAndOperations_8hh.html" title="Plant/EquipAndOperations.hh" alt="" coords="454,617,647,644"/>
+<area shape="rect" id="node28" href="$PlantComponent_8hh.html" title="PlantComponent.hh" alt="" coords="482,692,619,719"/>
+<area shape="rect" id="node37" href="$ReportBranchData_8hh.html" title="Plant/ReportBranchData.hh" alt="" coords="2173,319,2355,345"/>
+<area shape="rect" id="node38" href="$ReportCompData_8hh.html" title="Plant/ReportCompData.hh" alt="" coords="2156,393,2332,420"/>
+<area shape="rect" id="node39" href="$Connection_8hh.html" title="Plant/Connection.hh" alt="" coords="2223,468,2363,495"/>
+<area shape="rect" id="node40" href="$Subcomponents_8hh.html" title="Plant/Subcomponents.hh" alt="" coords="2031,468,2199,495"/>
+<area shape="rect" id="node42" href="$LoopSideReportVars_8hh.html" title="Plant/LoopSideReportVars.hh" alt="" coords="2504,319,2699,345"/>
+</map>

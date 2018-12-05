@@ -1,0 +1,27 @@
+var structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp =
+[
+    [ "AirflowNetworkExchangeProp", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a5f236d25d70c05b6967ae6201c689ed8", null ],
+    [ "CondSen", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#abfe40baf0bfed29a7ffa54ae2ceca06e", null ],
+    [ "DiffLat", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a6f12ffae5a628005e79714b6ee5e0867", null ],
+    [ "LeakLat", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a855e59de70a8ab7114d3d8807d975267", null ],
+    [ "LeakSen", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a6a13b7691d621dcf23e0cc3314ed167f", null ],
+    [ "MultiZoneLat", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#ab392c6462542f99c1b4bcf42245c7f80", null ],
+    [ "MultiZoneSen", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a57ae951974757348f575f963099a21d1", null ],
+    [ "RadGain", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#af7f191fa6f3bdd48e22d0b86411aa2f7", null ],
+    [ "SumMCp", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#aa18c1a41ab3941c79fac500f859f346f", null ],
+    [ "SumMCpT", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#ad5b3b2ef712e1eea00d9bff85c5f2460", null ],
+    [ "SumMHr", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a5b4ed24226c2907cc4171a886b66cb02", null ],
+    [ "SumMHrCO", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#ad40a256ce17aa32317321c076fa84cd3", null ],
+    [ "SumMHrGC", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a0658ffc3a2e2a6b55cb1f90b7b7a14b2", null ],
+    [ "SumMHrW", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a49d1cdbfe1858ec4b51bb56c6b911bdd", null ],
+    [ "SumMMCp", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a5c10ab9586dba21d7d6afa8eaadd34da", null ],
+    [ "SumMMCpT", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#aaa584845dbaaffef1f7b94940b7e6b65", null ],
+    [ "SumMMHr", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a2946fa1e5732eda903ce893f8c3e950f", null ],
+    [ "SumMMHrCO", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#add1c5bc52a613b2e07191ec374994f46", null ],
+    [ "SumMMHrGC", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#aff34c163214b3f8fb8d61fc2c951c680", null ],
+    [ "SumMMHrW", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a3578fcd11a2ad944b2971f194e24253e", null ],
+    [ "TotalCO2", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#ac940cf9e59ebdcf296afdbc3062b781f", null ],
+    [ "TotalGC", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#a0678341ca49973ff9945b0bf8f395aed", null ],
+    [ "TotalLat", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#ab8207c46794c0803a0f3fac64e62657e", null ],
+    [ "TotalSen", "structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkExchangeProp.html#ab1a9f4c8c8adc30d9bface84a28fb397", null ]
+];

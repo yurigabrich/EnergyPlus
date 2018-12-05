@@ -1,0 +1,26 @@
+var IntegratedHeatPump_8cc =
+[
+    [ "clear_state", "IntegratedHeatPump_8cc.html#a6ed20886e992a27fda61dc9072e09db2", null ],
+    [ "ClearCoils", "IntegratedHeatPump_8cc.html#a5e265bed2fb372a6cdbf16fac2c2a792", null ],
+    [ "DecideWorkMode", "IntegratedHeatPump_8cc.html#a0344bf76b0df0324153a6e91aaadca3f", null ],
+    [ "GetAirMassFlowRateIHP", "IntegratedHeatPump_8cc.html#a1ab422dec687dd8642f43f8250a2f73e", null ],
+    [ "GetAirVolFlowRateIHP", "IntegratedHeatPump_8cc.html#ad4796237eef2062b424af5b627df6042", null ],
+    [ "GetCoilIndexIHP", "IntegratedHeatPump_8cc.html#ab4008dcf2fed4a37e04fa49b779b9563", null ],
+    [ "GetCoilInletNodeIHP", "IntegratedHeatPump_8cc.html#abdbb60311b0cc11954f3dac4053bf298", null ],
+    [ "GetCoilsInputFlag", "IntegratedHeatPump_8cc.html#addf47092fc7c37cc753ce745be5e5ec9", null ],
+    [ "GetCurWorkMode", "IntegratedHeatPump_8cc.html#a05bdc13167570856393eb2cfb32dba9b", null ],
+    [ "GetDWHCoilCapacityIHP", "IntegratedHeatPump_8cc.html#a9d9929bf9fecdf7faae561e94288c733", null ],
+    [ "GetDWHCoilInletNodeIHP", "IntegratedHeatPump_8cc.html#a0f78f870e8936d69a3a2d992c0b7bb4b", null ],
+    [ "GetDWHCoilOutletNodeIHP", "IntegratedHeatPump_8cc.html#a789a4ae4608f0ac459ab34a6ea473acf", null ],
+    [ "GetIHPDWHCoilPLFFPLR", "IntegratedHeatPump_8cc.html#aa38c7598226aa904170eed99bd01322f", null ],
+    [ "GetIHPInput", "IntegratedHeatPump_8cc.html#ac626e65ad569f15df74cde61059c1a2d", null ],
+    [ "GetLowSpeedNumIHP", "IntegratedHeatPump_8cc.html#afcdfe5ec207223e79e684ff77451e410", null ],
+    [ "GetMaxSpeedNumIHP", "IntegratedHeatPump_8cc.html#afd1c20ccaf5cbb7e84b807dfb5aabf57", null ],
+    [ "GetWaterVolFlowRateIHP", "IntegratedHeatPump_8cc.html#aa99dab20dcd594069516fb90b77148d9", null ],
+    [ "IHPInModel", "IntegratedHeatPump_8cc.html#a6a52f497eb313b279dff48c6387f5a06", null ],
+    [ "InitializeIHP", "IntegratedHeatPump_8cc.html#ac533e2f77bb64da937b37801cdb337fa", null ],
+    [ "SimIHP", "IntegratedHeatPump_8cc.html#a0592d2370e233e78851a675dce809968", null ],
+    [ "SizeIHP", "IntegratedHeatPump_8cc.html#a2b3490bd49f23502ed5de091e5834ef4", null ],
+    [ "UpdateIHP", "IntegratedHeatPump_8cc.html#a4ba75fb688f9e38f74f0bb8a71074826", null ],
+    [ "IntegratedHeatPumps", "IntegratedHeatPump_8cc.html#ad3674e66e362552853040dbeeac18204", null ]
+];

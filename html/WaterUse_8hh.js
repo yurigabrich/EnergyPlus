@@ -1,0 +1,28 @@
+var WaterUse_8hh =
+[
+    [ "WaterEquipmentType", "structEnergyPlus_1_1WaterUse_1_1WaterEquipmentType.html", "structEnergyPlus_1_1WaterUse_1_1WaterEquipmentType" ],
+    [ "WaterConnectionsType", "structEnergyPlus_1_1WaterUse_1_1WaterConnectionsType.html", "structEnergyPlus_1_1WaterUse_1_1WaterConnectionsType" ],
+    [ "CalcConnectionsDrainTemp", "WaterUse_8hh.html#ae38dd8175517dd588a9a2bc267a52b54", null ],
+    [ "CalcConnectionsFlowRates", "WaterUse_8hh.html#ad59658522b8241cfe9f743d048d458b5", null ],
+    [ "CalcConnectionsHeatRecovery", "WaterUse_8hh.html#a2160126e43b17133cdda26917250143f", null ],
+    [ "CalcEquipmentDrainTemp", "WaterUse_8hh.html#a4523a083dd4529c5497c3f8db58bfc08", null ],
+    [ "CalcEquipmentFlowRates", "WaterUse_8hh.html#aa2f3e72271f19fcf11ae1ee18207b3a0", null ],
+    [ "CalcWaterUseZoneGains", "WaterUse_8hh.html#a5bd686f2bd7a9eeb487d01d124959c9d", null ],
+    [ "clear_state", "WaterUse_8hh.html#aa08af504c60a45c9d99bff081f41b970", null ],
+    [ "GetWaterUseInput", "WaterUse_8hh.html#a4435bcfdc0dcb37cf494705503866e10", null ],
+    [ "InitConnections", "WaterUse_8hh.html#a8db87aab6829165ea6cd6bdb62b4bcc0", null ],
+    [ "ReportStandAloneWaterUse", "WaterUse_8hh.html#a0680a95516443c740bfed11f05d7a894", null ],
+    [ "ReportWaterUse", "WaterUse_8hh.html#afec6683cb20fffe7669fd06b5e7a35fc", null ],
+    [ "SimulateWaterUse", "WaterUse_8hh.html#aa45a8eed36ac080124367188d83acf1b", null ],
+    [ "SimulateWaterUseConnection", "WaterUse_8hh.html#ad93f65149108fba19932c0c4a8749233", null ],
+    [ "UpdateWaterConnections", "WaterUse_8hh.html#a1b6c019c71bdf745a0afde3c2215d6ae", null ],
+    [ "GetWaterUseInputFlag", "WaterUse_8hh.html#a2eb92ea81627d0e547ff3c4742d44c43", null ],
+    [ "HeatRecoveryConfigEquipment", "WaterUse_8hh.html#aa290a0372fecfbff07cacbef0f9240ab", null ],
+    [ "HeatRecoveryConfigPlant", "WaterUse_8hh.html#ae7660e686cdf99c477ba81feca2ac8d3", null ],
+    [ "HeatRecoveryConfigPlantAndEquip", "WaterUse_8hh.html#a8e13304077b68025a2bf40ffdba50f95", null ],
+    [ "HeatRecoveryHXCounterFlow", "WaterUse_8hh.html#a52ac3826bb7375b339c707498c1bddbd", null ],
+    [ "HeatRecoveryHXCrossFlow", "WaterUse_8hh.html#aac546e31c0f5c6444345bc355d32e97d", null ],
+    [ "HeatRecoveryHXIdeal", "WaterUse_8hh.html#af2360c7b16ae5303a456bc968bf70d6f", null ],
+    [ "NumWaterConnections", "WaterUse_8hh.html#a836860caab7c0479c5ea008d94c03deb", null ],
+    [ "NumWaterEquipment", "WaterUse_8hh.html#a5ae70f48abc049de0113a3e9d7ca6f3c", null ]
+];

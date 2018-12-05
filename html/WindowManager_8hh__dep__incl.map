@@ -1,0 +1,10 @@
+<map id="src/EnergyPlus/WindowManager.hh" name="src/EnergyPlus/WindowManager.hh">
+<area shape="rect" id="node2" href="$DataSurfaces_8cc.html" title="src/EnergyPlus/DataSurfaces.cc" alt="" coords="5,87,219,114"/>
+<area shape="rect" id="node3" href="$HeatBalanceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lManager.cc" alt="" coords="243,80,434,121"/>
+<area shape="rect" id="node4" href="$HeatBalanceSurfaceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lSurfaceManager.cc" alt="" coords="458,80,649,121"/>
+<area shape="rect" id="node5" href="$SolarShading_8cc.html" title="src/EnergyPlus/SolarShading.cc" alt="" coords="673,87,884,114"/>
+<area shape="rect" id="node6" href="$WindowManager_8cc.html" title="src/EnergyPlus/WindowManager.cc" alt="" coords="909,87,1139,114"/>
+<area shape="rect" id="node7" href="$WindowManagerExteriorData_8cc.html" title="src/EnergyPlus/WindowManager\lExteriorData.cc" alt="" coords="1163,80,1375,121"/>
+<area shape="rect" id="node8" href="$WindowManagerExteriorOptical_8cc.html" title="src/EnergyPlus/WindowManager\lExteriorOptical.cc" alt="" coords="1399,80,1611,121"/>
+<area shape="rect" id="node9" href="$WindowManagerExteriorThermal_8cc.html" title="src/EnergyPlus/WindowManager\lExteriorThermal.cc" alt="" coords="1635,80,1847,121"/>
+</map>

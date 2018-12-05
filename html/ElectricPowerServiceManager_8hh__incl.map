@@ -1,0 +1,15 @@
+<map id="src/EnergyPlus/ElectricPowerServiceManager.hh" name="src/EnergyPlus/ElectricPowerServiceManager.hh">
+<area shape="rect" id="node5" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1180,95,1323,121"/>
+<area shape="rect" id="node18" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="1381,408,1487,435"/>
+<area shape="rect" id="node29" href="$EMSManager_8hh.html" title="EMSManager.hh" alt="" coords="2409,177,2528,203"/>
+<area shape="rect" id="node30" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="2005,177,2143,203"/>
+<area shape="rect" id="node32" href="$PlantLocation_8hh.html" title="Plant/PlantLocation.hh" alt="" coords="2107,95,2260,121"/>
+<area shape="rect" id="node12" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="992,259,1143,285"/>
+<area shape="rect" id="node13" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="119,333,261,360"/>
+<area shape="rect" id="node20" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="1687,177,1879,203"/>
+<area shape="rect" id="node21" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="1573,259,1685,285"/>
+<area shape="rect" id="node23" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="906,177,1026,203"/>
+<area shape="rect" id="node27" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="1405,177,1613,203"/>
+<area shape="rect" id="node28" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="1173,169,1329,211"/>
+<area shape="rect" id="node24" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="839,259,917,285"/>
+</map>

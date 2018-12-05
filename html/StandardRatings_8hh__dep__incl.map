@@ -1,0 +1,6 @@
+<map id="src/EnergyPlus/StandardRatings.hh" name="src/EnergyPlus/StandardRatings.hh">
+<area shape="rect" id="node2" href="$ChillerElectricEIR_8cc.html" title="src/EnergyPlus/ChillerElectric\lEIR.cc" alt="" coords="5,80,201,121"/>
+<area shape="rect" id="node3" href="$ChillerReformulatedEIR_8cc.html" title="src/EnergyPlus/ChillerReformulated\lEIR.cc" alt="" coords="225,80,456,121"/>
+<area shape="rect" id="node4" href="$DXCoils_8cc.html" title="src/EnergyPlus/DXCoils.cc" alt="" coords="480,87,663,114"/>
+<area shape="rect" id="node5" href="$StandardRatings_8cc.html" title="src/EnergyPlus/StandardRatings.cc" alt="" coords="687,87,917,114"/>
+</map>

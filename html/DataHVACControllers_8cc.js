@@ -1,0 +1,26 @@
+var DataHVACControllers_8cc =
+[
+    [ "ActionTypes", "DataHVACControllers_8cc.html#a657fdc3a0e3ac3b65e9e65c34e08666f", null ],
+    [ "ControllerModeTypes", "DataHVACControllers_8cc.html#afaf0a926a683ceb79e950f7981297be4", null ],
+    [ "ControllerSimple_Type", "DataHVACControllers_8cc.html#a9f69f4afe16f2d34e2571b3ec675a5b3", null ],
+    [ "ControllerTypes", "DataHVACControllers_8cc.html#aadbd3b61640413a7aee83e8d40ae65db", null ],
+    [ "iControllerOpColdStart", "DataHVACControllers_8cc.html#a0713b5ac5c79e899aa9fc2f52ddd4c69", null ],
+    [ "iControllerOpEnd", "DataHVACControllers_8cc.html#a9d520f3b958d19e874943d95e949819a", null ],
+    [ "iControllerOpIterate", "DataHVACControllers_8cc.html#a276e008282b7801a217dc5d67ef6cdbc", null ],
+    [ "iControllerOpWarmRestart", "DataHVACControllers_8cc.html#af1f58c93b2e89765edace149c36dc7bf", null ],
+    [ "iControllerWarmRestartFail", "DataHVACControllers_8cc.html#ad7028b4360b330e650e7b8fee6d20e1a", null ],
+    [ "iControllerWarmRestartNone", "DataHVACControllers_8cc.html#ac9603359b157a5b4a667abf98d306008", null ],
+    [ "iControllerWarmRestartSuccess", "DataHVACControllers_8cc.html#a91832abd3e628a092d186b6f909c5a6e", null ],
+    [ "iFirstMode", "DataHVACControllers_8cc.html#a762da934ae5290d60091ed2348190ef0", null ],
+    [ "iLastMode", "DataHVACControllers_8cc.html#adaf9c953c911f0eb99c0ac980bed2555", null ],
+    [ "iModeActive", "DataHVACControllers_8cc.html#a7f065f26bb75d811f45ae58768f23e70", null ],
+    [ "iModeInactive", "DataHVACControllers_8cc.html#a7cc1ea121c37c7ba2ed9f1231490fd71", null ],
+    [ "iModeMaxActive", "DataHVACControllers_8cc.html#ada6672407a2831b797509f5ce049d56d", null ],
+    [ "iModeMinActive", "DataHVACControllers_8cc.html#ad7361c6ec6ecbdfe555d6075bade7a3d", null ],
+    [ "iModeNone", "DataHVACControllers_8cc.html#a41108c04d3e0086638952be0eb8c71bf", null ],
+    [ "iModeOff", "DataHVACControllers_8cc.html#afc979ee33228b74f47efb88c04a10802", null ],
+    [ "iModeWrongAction", "DataHVACControllers_8cc.html#a76bc8629a48ab47f62d859f54a5d350d", null ],
+    [ "iNoAction", "DataHVACControllers_8cc.html#a9daea1646a67d13944c0b5a881f2d9bb", null ],
+    [ "iNormalAction", "DataHVACControllers_8cc.html#af61f98ac52eaa0f495c50733476866d5", null ],
+    [ "iReverseAction", "DataHVACControllers_8cc.html#adcfcfd9c1fce7f5324c6ab253ed378e2", null ]
+];

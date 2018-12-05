@@ -1,0 +1,26 @@
+var structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData =
+[
+    [ "BBHeatData", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a74394c5e8e382c29d64c60a6faa72a83", null ],
+    [ "CapatHighTemperature", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#ace4e58b5014193945aa407cd50b4c5bf", null ],
+    [ "CapatLowTemperature", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a14761e58dc4887cc0f273dc58fdd2d5f", null ],
+    [ "ConGainEnergy", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a2e4bdca30ad9ba7d432ef41c08890750", null ],
+    [ "ConGainRate", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a35c5f46a0ce539e6d25ebde83f3266d0", null ],
+    [ "Consumption", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a50b062da0140901196f9ffec1be8b9e7", null ],
+    [ "DemandLimit", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#aedb442e6eaf5996420d30fc42e5b0ef7", null ],
+    [ "EMSZoneBaseboardOverrideOn", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a0634d423071845d7abc7da3f736dc57f", null ],
+    [ "EMSZoneBaseboardPower", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a1914b598e1d96afeffa2b0d42d2c72db", null ],
+    [ "EndUseSubcategory", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a4088a5e49575e29989beb35e531b0b4c", null ],
+    [ "FractionConvected", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#aaf87d53db3652dd711623810f7c51064", null ],
+    [ "FractionRadiant", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#ad7be6b30ed849fb3df1b40875f4707af", null ],
+    [ "HighTemperature", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#ade364a66aa50fc8265d0cbbc01f55317", null ],
+    [ "LowTemperature", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a04ba9aa131089303c060e56d52993973", null ],
+    [ "ManageDemand", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a8c2501eada1240707cb556d0cd2b312d", null ],
+    [ "Name", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a9a3037795481a9706bd0624a1b084147", null ],
+    [ "Power", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a0b4394aecdf31c120ce325556c2a60dd", null ],
+    [ "RadGainEnergy", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a7be88b05282e0ddbeb017d7fc7f6e372", null ],
+    [ "RadGainRate", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a59d511af38a651d71828900bc23ff1f9", null ],
+    [ "SchedPtr", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#abad2d127547262e65acbff21a4223ae8", null ],
+    [ "TotGainEnergy", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#a01c69219522e39c92024429cc8f43552", null ],
+    [ "TotGainRate", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#abdd3bfaefeda2cd96471e8e976661330", null ],
+    [ "ZonePtr", "structEnergyPlus_1_1DataHeatBalance_1_1BBHeatData.html#adaf62139e6244f041d8c42bc8c508ec5", null ]
+];

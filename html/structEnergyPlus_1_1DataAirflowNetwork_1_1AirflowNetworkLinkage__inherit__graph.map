@@ -1,0 +1,5 @@
+<map id="EnergyPlus::DataAirflowNetwork::AirflowNetworkLinkage" name="EnergyPlus::DataAirflowNetwork::AirflowNetworkLinkage">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1DataAirflowNetwork_1_1AirflowNetworkLinkageProp.html" title="EnergyPlus::DataAirflowNetwork\l::AirflowNetworkLinkageProp" alt="" coords="268,5,483,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1DataAirflowNetwork_1_1DisSysLinkageProp.html" title="EnergyPlus::DataAirflowNetwork\l::DisSysLinkageProp" alt="" coords="268,71,483,112"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1DataAirflowNetwork_1_1IntraZoneLinkageProp.html" title="EnergyPlus::DataAirflowNetwork\l::IntraZoneLinkageProp" alt="" coords="268,136,483,177"/>
+</map>

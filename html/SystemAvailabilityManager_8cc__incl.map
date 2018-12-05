@@ -1,0 +1,36 @@
+<map id="src/EnergyPlus/SystemAvailabilityManager.cc" name="src/EnergyPlus/SystemAvailabilityManager.cc">
+<area shape="rect" id="node7" href="$AirflowNetworkBalanceManager_8hh.html" title="AirflowNetworkBalanceManager.hh" alt="" coords="5103,259,5329,285"/>
+<area shape="rect" id="node11" href="$CurveManager_8hh.html" title="CurveManager.hh" alt="" coords="4059,259,4184,285"/>
+<area shape="rect" id="node18" href="$DataAirLoop_8hh.html" title="DataAirLoop.hh" alt="" coords="2967,177,3079,203"/>
+<area shape="rect" id="node20" href="$DataAirSystems_8hh.html" title="DataAirSystems.hh" alt="" coords="3279,95,3415,121"/>
+<area shape="rect" id="node21" href="$DataPlant_8hh.html" title="DataPlant.hh" alt="" coords="3528,177,3627,203"/>
+<area shape="rect" id="node22" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="3907,259,4034,285"/>
+<area shape="rect" id="node23" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3213,259,3352,285"/>
+<area shape="rect" id="node25" href="$DataAirflowNetwork_8hh.html" title="DataAirflowNetwork.hh" alt="" coords="1723,259,1880,285"/>
+<area shape="rect" id="node26" href="$DataContaminantBalance_8hh.html" title="DataContaminantBalance.hh" alt="" coords="2259,259,2448,285"/>
+<area shape="rect" id="node27" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="808,333,949,360"/>
+<area shape="rect" id="node28" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="3630,259,3781,285"/>
+<area shape="rect" id="node29" href="$DataHeatBalFanSys_8hh.html" title="DataHeatBalFanSys.hh" alt="" coords="1344,333,1504,360"/>
+<area shape="rect" id="node30" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1449,95,1591,121"/>
+<area shape="rect" id="node39" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="410,333,550,360"/>
+<area shape="rect" id="node40" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="5478,95,5645,121"/>
+<area shape="rect" id="node41" href="$DataZoneControls_8hh.html" title="DataZoneControls.hh" alt="" coords="2472,259,2619,285"/>
+<area shape="rect" id="node42" href="$DataZoneEquipment_8hh.html" title="DataZoneEquipment.hh" alt="" coords="3205,177,3363,203"/>
+<area shape="rect" id="node43" href="$General_8hh.html" title="General.hh" alt="" coords="5353,259,5439,285"/>
+<area shape="rect" id="node44" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="4208,259,4435,285"/>
+<area shape="rect" id="node45" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="4454,177,4605,203"/>
+<area shape="rect" id="node46" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="528,177,659,203"/>
+<area shape="rect" id="node47" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="1905,259,2031,285"/>
+<area shape="rect" id="node48" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="4884,259,5028,285"/>
+<area shape="rect" id="node49" href="$SystemAvailabilityManager_8hh.html" title="SystemAvailabilityManager.hh" alt="" coords="4661,259,4859,285"/>
+<area shape="rect" id="node50" href="$ThermalComfort_8hh.html" title="ThermalComfort.hh" alt="" coords="5615,259,5750,285"/>
+<area shape="rect" id="node10" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="3052,408,3159,435"/>
+<area shape="rect" id="node17" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="3273,333,3385,360"/>
+<area shape="rect" id="node19" href="$UnitarySystem_8hh.html" title="UnitarySystem.hh" alt="" coords="3062,259,3189,285"/>
+<area shape="rect" id="node33" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="910,259,1061,285"/>
+<area shape="rect" id="node34" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="1177,333,1319,360"/>
+<area shape="rect" id="node35" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="2795,259,2987,285"/>
+<area shape="rect" id="node36" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="1043,177,1163,203"/>
+<area shape="rect" id="node37" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="1389,259,1597,285"/>
+<area shape="rect" id="node38" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="1675,169,1831,211"/>
+</map>

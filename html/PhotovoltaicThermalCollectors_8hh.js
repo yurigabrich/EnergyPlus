@@ -1,0 +1,25 @@
+var PhotovoltaicThermalCollectors_8hh =
+[
+    [ "SimplePVTModelStruct", "structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1SimplePVTModelStruct.html", "structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1SimplePVTModelStruct" ],
+    [ "PVTReportStruct", "structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1PVTReportStruct.html", "structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1PVTReportStruct" ],
+    [ "PVTCollectorStruct", "structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1PVTCollectorStruct.html", "structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1PVTCollectorStruct" ],
+    [ "CalcPVTcollectors", "PhotovoltaicThermalCollectors_8hh.html#abd83d4603752501660effcc5afdcafd0", null ],
+    [ "ControlPVTcollector", "PhotovoltaicThermalCollectors_8hh.html#ad0b8a74beeaf50ae67f0840b29199092", null ],
+    [ "GetPVTcollectorsInput", "PhotovoltaicThermalCollectors_8hh.html#a55be2590b69466d34156c1867a4e4ebd", null ],
+    [ "GetPVTThermalPowerProduction", "PhotovoltaicThermalCollectors_8hh.html#a56a756f7bbe94356b082c17b2537d959", null ],
+    [ "InitPVTcollectors", "PhotovoltaicThermalCollectors_8hh.html#ad6dfabc94e0f207ff7505098e45e93c3", null ],
+    [ "SimPVTcollectors", "PhotovoltaicThermalCollectors_8hh.html#a990e2d27d9b2f7e52b7877616bc9dd40", null ],
+    [ "SizePVT", "PhotovoltaicThermalCollectors_8hh.html#af45a06150f0933836c85425632fe0244", null ],
+    [ "UpdatePVTcollectors", "PhotovoltaicThermalCollectors_8hh.html#a0fb985056572ddc8fd27a9c8ee265fba", null ],
+    [ "AirWorkingFluid", "PhotovoltaicThermalCollectors_8hh.html#a6ef3cc2fb2f2892bc1d8fe9baed085a7", null ],
+    [ "CalledFromOutsideAirSystem", "PhotovoltaicThermalCollectors_8hh.html#afb71111e89de477c6ee7f700386ed339", null ],
+    [ "CalledFromPlantLoopEquipMgr", "PhotovoltaicThermalCollectors_8hh.html#a4d00859b78a4fffb1c44998711437ec4", null ],
+    [ "FixedThermEffic", "PhotovoltaicThermalCollectors_8hh.html#ab4ceb909b9e5b89157a4669027e646af", null ],
+    [ "LayerByLayerPVTmodel", "PhotovoltaicThermalCollectors_8hh.html#ae9f57d64d488da9d6d1ec7634947fae1", null ],
+    [ "LiquidWorkingFluid", "PhotovoltaicThermalCollectors_8hh.html#af1f0dc8e6c1a285a1b9288cc138b21de", null ],
+    [ "NumPVT", "PhotovoltaicThermalCollectors_8hh.html#a0b811a94419b95c1523e928912f4eb4b", null ],
+    [ "NumSimplePVTPerform", "PhotovoltaicThermalCollectors_8hh.html#a227bcd98b2c41195a866f9e2271190db", null ],
+    [ "ScheduledThermEffic", "PhotovoltaicThermalCollectors_8hh.html#a2ff4eda93be4680ff88b37042f0abf87", null ],
+    [ "SimplePVTmodel", "PhotovoltaicThermalCollectors_8hh.html#ad0f4d5f93d8da13e305c888d466c3864", null ],
+    [ "SimplePVTWaterSizeFactor", "PhotovoltaicThermalCollectors_8hh.html#a18b45868ebc4a1ff59df83a80ef18249", null ]
+];

@@ -1,0 +1,6 @@
+<map id="EnergyPlus::DataRoomAirModel::TemperaturePatternStruct" name="EnergyPlus::DataRoomAirModel::TemperaturePatternStruct">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1DataRoomAirModel_1_1TempVsHeightPattern.html" title="EnergyPlus::DataRoomAirModel\l::TempVsHeightPattern" alt="" coords="5,5,216,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1DataRoomAirModel_1_1ConstGradPattern.html" title="EnergyPlus::DataRoomAirModel\l::ConstGradPattern" alt="" coords="5,71,216,112"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1DataRoomAirModel_1_1SurfMapPattern.html" title="EnergyPlus::DataRoomAirModel\l::SurfMapPattern" alt="" coords="5,136,216,177"/>
+<area shape="rect" id="node5" href="$structEnergyPlus_1_1DataRoomAirModel_1_1TwoVertGradInterpolPattern.html" title="EnergyPlus::DataRoomAirModel\l::TwoVertGradInterpolPattern" alt="" coords="5,201,216,243"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="EnergyPlus::SystemReports::SummarizeLoads" name="EnergyPlus::SystemReports::SummarizeLoads">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1SystemReports_1_1CoilType.html" title="EnergyPlus::SystemReports\l::CoilType" alt="" coords="5,183,193,224"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1SystemReports_1_1Energy.html" title="EnergyPlus::SystemReports\l::Energy" alt="" coords="5,5,193,47"/>
+</map>

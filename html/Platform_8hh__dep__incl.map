@@ -1,0 +1,6 @@
+<map id="src/EnergyPlus/Platform.hh" name="src/EnergyPlus/Platform.hh">
+<area shape="rect" id="node2" href="$PierceSurface_8hh.html" title="src/EnergyPlus/PierceSurface.hh" alt="" coords="204,80,419,107"/>
+<area shape="rect" id="node3" href="$DaylightingManager_8cc.html" title="src/EnergyPlus/Daylighting\lManager.cc" alt="" coords="5,155,185,196"/>
+<area shape="rect" id="node4" href="$SolarReflectionManager_8cc.html" title="src/EnergyPlus/SolarReflection\lManager.cc" alt="" coords="209,155,413,196"/>
+<area shape="rect" id="node5" href="$WindowComplexManager_8cc.html" title="src/EnergyPlus/WindowComplex\lManager.cc" alt="" coords="437,155,652,196"/>
+</map>

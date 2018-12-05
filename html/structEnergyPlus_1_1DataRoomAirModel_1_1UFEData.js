@@ -1,0 +1,26 @@
+var structEnergyPlus_1_1DataRoomAirModel_1_1UFEData =
+[
+    [ "UFEData", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a87f0b6698cb4957a8137024ff4a5a8a2", null ],
+    [ "A_Kc", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a48082e6e3d14c227a9e29651e6a8a218", null ],
+    [ "B_Kc", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#ad8843dddd11571dd0a6a786571d9328c", null ],
+    [ "C_Kc", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a97a125d97476d63a2b083e5ae200d8fa", null ],
+    [ "CalcTransHeight", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a846989c8b0efed9bb80332e61ccc89a3", null ],
+    [ "ComfortHeight", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#ac1fec7a2da2bb9277deba9945ba96472", null ],
+    [ "D_Kc", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#acab81d0cec4d38984930d5620580c468", null ],
+    [ "DiffAngle", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#ac979b316935c0576cfe4a573cb4b08fa", null ],
+    [ "DiffArea", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a7c2320ee9dc87b6626bc679e3760f5e6", null ],
+    [ "DiffusersPerZone", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#aa4527671d3c0e1e317b544dc90b1c2db", null ],
+    [ "DiffuserType", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#aa24a9aa99665e3989435a51dfab49fe3", null ],
+    [ "E_Kc", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a432359fd58dfb7d37e99027d0d30202d", null ],
+    [ "HeatSrcHeight", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a426375b6f13283aa11d91cd8cbdc5e3c", null ],
+    [ "NumExtWin", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#ab20072927532ed756dd35ac96dd362ef", null ],
+    [ "PowerPerPlume", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#ad99d0d5ffb91feab907436229434281e", null ],
+    [ "ShadeDown", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a292dc81e61d884009acfb2348f43a413", null ],
+    [ "TempTrigger", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a0aa7f7d66d8eef0a0d81fb07021b3830", null ],
+    [ "ThermostatHeight", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#ae52fdd6b2ec3e7db9ef9254fc4db8618", null ],
+    [ "TransHeight", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#a8a3cdb997bead58c3a4d3c639862471c", null ],
+    [ "WinWidth", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#af437fa5233883cc121432f21628eb139", null ],
+    [ "ZoneEquipPtr", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#af4e70a8269463ec38de5415f8b3797ae", null ],
+    [ "ZoneName", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#adfc89dad6426a43d2862f81ed855d791", null ],
+    [ "ZonePtr", "structEnergyPlus_1_1DataRoomAirModel_1_1UFEData.html#af80f31ea8c13805dbfd2fc11bf0858ca", null ]
+];

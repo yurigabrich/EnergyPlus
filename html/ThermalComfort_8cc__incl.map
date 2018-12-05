@@ -1,0 +1,33 @@
+<map id="src/EnergyPlus/ThermalComfort.cc" name="src/EnergyPlus/ThermalComfort.cc">
+<area shape="rect" id="node8" href="$CommandLineInterface_8hh.html" title="CommandLineInterface.hh" alt="" coords="5327,80,5502,107"/>
+<area shape="rect" id="node11" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="1213,319,1355,345"/>
+<area shape="rect" id="node14" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="1525,237,1675,263"/>
+<area shape="rect" id="node16" href="$DataHeatBalFanSys_8hh.html" title="DataHeatBalFanSys.hh" alt="" coords="1813,319,1973,345"/>
+<area shape="rect" id="node17" href="$DataHeatBalSurface_8hh.html" title="DataHeatBalSurface.hh" alt="" coords="4031,237,4191,263"/>
+<area shape="rect" id="node20" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="3738,80,3881,107"/>
+<area shape="rect" id="node27" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="2348,155,2468,181"/>
+<area shape="rect" id="node34" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="1649,319,1789,345"/>
+<area shape="rect" id="node35" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="1401,80,1567,107"/>
+<area shape="rect" id="node36" href="$DataRoomAirModel_8hh.html" title="DataRoomAirModel.hh" alt="" coords="4815,237,4969,263"/>
+<area shape="rect" id="node37" href="$DataStringGlobals_8hh.html" title="DataStringGlobals.hh" alt="" coords="5004,319,5151,345"/>
+<area shape="rect" id="node38" href="$DataZoneEnergyDemands_8hh.html" title="DataZoneEnergyDemands.hh" alt="" coords="1429,319,1624,345"/>
+<area shape="rect" id="node39" href="$General_8hh.html" title="General.hh" alt="" coords="905,237,991,263"/>
+<area shape="rect" id="node42" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="1700,237,1927,263"/>
+<area shape="rect" id="node43" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3388,237,3527,263"/>
+<area shape="rect" id="node44" href="$OutputReportPredefined_8hh.html" title="OutputReportPredefined.hh" alt="" coords="1269,237,1449,263"/>
+<area shape="rect" id="node45" href="$OutputReportTabular_8hh.html" title="OutputReportTabular.hh" alt="" coords="3274,155,3435,181"/>
+<area shape="rect" id="node46" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="451,155,581,181"/>
+<area shape="rect" id="node47" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="751,237,878,263"/>
+<area shape="rect" id="node48" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="2001,237,2145,263"/>
+<area shape="rect" id="node49" href="$ThermalComfort_8hh.html" title="ThermalComfort.hh" alt="" coords="2845,237,2979,263"/>
+<area shape="rect" id="node50" href="$ZoneTempPredictorCorrector_8hh.html" title="ZoneTempPredictorCorrector.hh" alt="" coords="3156,237,3364,263"/>
+<area shape="rect" id="node9" href="$EnergyPlusAPI_8hh.html" title="EnergyPlusAPI.hh" alt="" coords="5378,155,5507,181"/>
+<area shape="rect" id="node13" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2815,393,2921,420"/>
+<area shape="rect" id="node15" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="2961,319,3073,345"/>
+<area shape="rect" id="node24" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="3754,237,3905,263"/>
+<area shape="rect" id="node25" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="2637,319,2779,345"/>
+<area shape="rect" id="node26" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="4599,237,4791,263"/>
+<area shape="rect" id="node32" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="4367,237,4575,263"/>
+<area shape="rect" id="node33" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="4994,229,5150,271"/>
+<area shape="rect" id="node28" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="2361,237,2439,263"/>
+</map>

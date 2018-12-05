@@ -1,0 +1,33 @@
+<map id="src/EnergyPlus/ElectricBaseboardRadiator.cc" name="src/EnergyPlus/ElectricBaseboardRadiator.cc">
+<area shape="rect" id="node4" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="3673,251,3824,278"/>
+<area shape="rect" id="node8" href="$DataHeatBalFanSys_8hh.html" title="DataHeatBalFanSys.hh" alt="" coords="1798,333,1958,360"/>
+<area shape="rect" id="node9" href="$DataHeatBalSurface_8hh.html" title="DataHeatBalSurface.hh" alt="" coords="298,251,458,278"/>
+<area shape="rect" id="node12" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="2025,95,2168,121"/>
+<area shape="rect" id="node20" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="1137,169,1257,196"/>
+<area shape="rect" id="node27" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="1364,333,1504,360"/>
+<area shape="rect" id="node28" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="3303,251,3429,278"/>
+<area shape="rect" id="node29" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="4493,95,4660,121"/>
+<area shape="rect" id="node30" href="$DataSizing_8hh.html" title="DataSizing.hh" alt="" coords="482,251,586,278"/>
+<area shape="rect" id="node32" href="$DataZoneEnergyDemands_8hh.html" title="DataZoneEnergyDemands.hh" alt="" coords="1579,333,1774,360"/>
+<area shape="rect" id="node33" href="$DataZoneEquipment_8hh.html" title="DataZoneEquipment.hh" alt="" coords="3109,169,3268,196"/>
+<area shape="rect" id="node34" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3139,251,3278,278"/>
+<area shape="rect" id="node37" href="$ElectricBaseboardRadiator_8hh.html" title="ElectricBaseboardRadiator.hh" alt="" coords="3454,251,3649,278"/>
+<area shape="rect" id="node38" href="$General_8hh.html" title="General.hh" alt="" coords="5147,251,5233,278"/>
+<area shape="rect" id="node42" href="$GeneralRoutines_8hh.html" title="GeneralRoutines.hh" alt="" coords="4847,251,4984,278"/>
+<area shape="rect" id="node44" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="1993,251,2112,278"/>
+<area shape="rect" id="node45" href="$HeatBalanceSurfaceManager_8hh.html" title="HeatBalanceSurfaceManager.hh" alt="" coords="4203,251,4414,278"/>
+<area shape="rect" id="node46" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="2419,251,2646,278"/>
+<area shape="rect" id="node47" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="2954,169,3085,196"/>
+<area shape="rect" id="node48" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="3900,251,4027,278"/>
+<area shape="rect" id="node49" href="$ReportSizingManager_8hh.html" title="ReportSizingManager.hh" alt="" coords="4438,251,4603,278"/>
+<area shape="rect" id="node50" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="4678,251,4822,278"/>
+<area shape="rect" id="node6" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="2854,333,2966,360"/>
+<area shape="rect" id="node7" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2810,408,2917,435"/>
+<area shape="rect" id="node16" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="611,251,761,278"/>
+<area shape="rect" id="node17" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="1197,333,1340,360"/>
+<area shape="rect" id="node19" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="2721,251,2913,278"/>
+<area shape="rect" id="node25" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="2137,251,2345,278"/>
+<area shape="rect" id="node26" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="1663,244,1819,285"/>
+<area shape="rect" id="node21" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="786,251,863,278"/>
+<area shape="rect" id="node36" href="$UnitarySystem_8hh.html" title="UnitarySystem.hh" alt="" coords="1843,251,1969,278"/>
+</map>

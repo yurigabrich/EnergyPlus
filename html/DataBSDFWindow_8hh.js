@@ -1,0 +1,28 @@
+var DataBSDFWindow_8hh =
+[
+    [ "BasisElemDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BasisElemDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BasisElemDescr" ],
+    [ "BSDFDaylghtPosition", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFDaylghtPosition.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFDaylghtPosition" ],
+    [ "BasisStruct", "structEnergyPlus_1_1DataBSDFWindow_1_1BasisStruct.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BasisStruct" ],
+    [ "BSDFGeomDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFGeomDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFGeomDescr" ],
+    [ "BSDFRefPoints", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFRefPoints.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFRefPoints" ],
+    [ "BSDFDaylghtGeomDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFDaylghtGeomDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFDaylghtGeomDescr" ],
+    [ "BSDFBkSurfDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFBkSurfDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFBkSurfDescr" ],
+    [ "BSDFStateDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFStateDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFStateDescr" ],
+    [ "BSDFRefPointsGeomDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFRefPointsGeomDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFRefPointsGeomDescr" ],
+    [ "BSDFWindowGeomDescr", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFWindowGeomDescr.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFWindowGeomDescr" ],
+    [ "BSDFWindowDescript", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFWindowDescript.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFWindowDescript" ],
+    [ "BSDFLayerAbsorpStruct", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFLayerAbsorpStruct.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFLayerAbsorpStruct" ],
+    [ "BSDFWindowInputStruct", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFWindowInputStruct.html", "structEnergyPlus_1_1DataBSDFWindow_1_1BSDFWindowInputStruct" ],
+    [ "BasisSymmetry_Axisymmetric", "DataBSDFWindow_8hh.html#ae82be8f58d0736c6f52ebcbc4c438b14", null ],
+    [ "BasisSymmetry_None", "DataBSDFWindow_8hh.html#a76224b382171ef805549dcaa470ca644", null ],
+    [ "BasisType_Custom", "DataBSDFWindow_8hh.html#a77c8f23658b8bb4b36e1c5615b8e5419", null ],
+    [ "BasisType_WINDOW", "DataBSDFWindow_8hh.html#a9aebc43ef84f6e9a6150da9fd4e72b96", null ],
+    [ "FirstBSDF", "DataBSDFWindow_8hh.html#ade1907fe3d08fa7b0360186729c074e8", null ],
+    [ "MaxBkSurf", "DataBSDFWindow_8hh.html#a1ff8373186f9d90e9c7c99a5d6386075", null ],
+    [ "noCondition", "DataBSDFWindow_8hh.html#a18e176680cdf1e0dde11d46e05e92fa3", null ],
+    [ "summerCondition", "DataBSDFWindow_8hh.html#a142556beab0e53a32a6a82965dbdc63d", null ],
+    [ "SUNCOSTS", "DataBSDFWindow_8hh.html#ad86b62ee7859abc4d2774fe7503d37a8", null ],
+    [ "TotComplexFenStates", "DataBSDFWindow_8hh.html#acc1b8e324484562c898e603da2a4d3d8", null ],
+    [ "TotThermalModels", "DataBSDFWindow_8hh.html#aa23341036344b1660c0ef9df5184ebc2", null ],
+    [ "winterCondition", "DataBSDFWindow_8hh.html#a9bb086e2749ff4d5901acd56fe6735c7", null ]
+];

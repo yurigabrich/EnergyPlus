@@ -1,0 +1,5 @@
+<map id="EnergyPlus::UserDefinedComponents::UserAirTerminalComponentStruct" name="EnergyPlus::UserDefinedComponents::UserAirTerminalComponentStruct">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1UserDefinedComponents_1_1ZoneInternalGainsStruct.html" title="EnergyPlus::UserDefinedComponents\l::ZoneInternalGainsStruct" alt="" coords="5,5,249,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1UserDefinedComponents_1_1WaterUseTankConnectionStruct.html" title="EnergyPlus::UserDefinedComponents\l::WaterUseTankConnectionStruct" alt="" coords="5,71,249,112"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1UserDefinedComponents_1_1AirConnectionStruct.html" title="EnergyPlus::UserDefinedComponents\l::AirConnectionStruct" alt="" coords="5,136,249,177"/>
+</map>

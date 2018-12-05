@@ -1,0 +1,23 @@
+<map id="src/EnergyPlus/SolarReflectionManager.cc" name="src/EnergyPlus/SolarReflectionManager.cc">
+<area shape="rect" id="node5" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="1725,333,1867,360"/>
+<area shape="rect" id="node9" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="1993,95,2135,121"/>
+<area shape="rect" id="node16" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="1507,333,1650,360"/>
+<area shape="rect" id="node23" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="2339,177,2459,203"/>
+<area shape="rect" id="node30" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="2611,95,2778,121"/>
+<area shape="rect" id="node31" href="$DataSystemVariables_8hh.html" title="DataSystemVariables.hh" alt="" coords="3857,333,4023,360"/>
+<area shape="rect" id="node32" href="$DisplayRoutines_8hh.html" title="DisplayRoutines.hh" alt="" coords="3696,333,3832,360"/>
+<area shape="rect" id="node33" href="$General_8hh.html" title="General.hh" alt="" coords="376,259,461,285"/>
+<area shape="rect" id="node38" href="$PierceSurface_8hh.html" title="PierceSurface.hh" alt="" coords="3193,95,3316,121"/>
+<area shape="rect" id="node43" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="971,259,1115,285"/>
+<area shape="rect" id="node45" href="$SolarReflectionManager_8hh.html" title="SolarReflectionManager.hh" alt="" coords="3341,259,3520,285"/>
+<area shape="rect" id="node50" href="$Vectors_8hh.html" title="Vectors.hh" alt="" coords="1309,259,1395,285"/>
+<area shape="rect" id="node7" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2636,408,2743,435"/>
+<area shape="rect" id="node15" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="1809,259,1959,285"/>
+<area shape="rect" id="node19" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="3075,259,3267,285"/>
+<area shape="rect" id="node20" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="3104,333,3216,360"/>
+<area shape="rect" id="node28" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="2512,259,2720,285"/>
+<area shape="rect" id="node29" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="2483,169,2639,211"/>
+<area shape="rect" id="node24" href="$Shape_8hh.html" title="Shape.hh" alt="" coords="2227,259,2304,285"/>
+<area shape="rect" id="node39" href="$Platform_8hh.html" title="Platform.hh" alt="" coords="3227,177,3317,203"/>
+<area shape="rect" id="node46" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="3342,333,3469,360"/>
+</map>

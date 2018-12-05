@@ -1,0 +1,6 @@
+<map id="src/EnergyPlus/PhotovoltaicThermalCollectors.hh" name="src/EnergyPlus/PhotovoltaicThermalCollectors.hh">
+<area shape="rect" id="node2" href="$MixedAir_8cc.html" title="src/EnergyPlus/MixedAir.cc" alt="" coords="5,102,189,129"/>
+<area shape="rect" id="node3" href="$Photovoltaics_8cc.html" title="src/EnergyPlus/Photovoltaics.cc" alt="" coords="214,102,426,129"/>
+<area shape="rect" id="node4" href="$PhotovoltaicThermalCollectors_8cc.html" title="src/EnergyPlus/Photovoltaic\lThermalCollectors.cc" alt="" coords="451,95,637,136"/>
+<area shape="rect" id="node5" href="$PlantLoopEquip_8cc.html" title="src/EnergyPlus/PlantLoop\lEquip.cc" alt="" coords="661,95,835,136"/>
+</map>

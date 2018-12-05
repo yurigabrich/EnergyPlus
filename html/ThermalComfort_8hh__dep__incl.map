@@ -1,0 +1,10 @@
+<map id="src/EnergyPlus/ThermalComfort.hh" name="src/EnergyPlus/ThermalComfort.hh">
+<area shape="rect" id="node2" href="$AirflowNetworkBalanceManager_8cc.html" title="src/EnergyPlus/AirflowNetwork\lBalanceManager.cc" alt="" coords="5,80,209,121"/>
+<area shape="rect" id="node3" href="$HeatBalanceKivaManager_8cc.html" title="src/EnergyPlus/HeatBalance\lKivaManager.cc" alt="" coords="233,80,424,121"/>
+<area shape="rect" id="node4" href="$HeatBalanceSurfaceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lSurfaceManager.cc" alt="" coords="448,80,639,121"/>
+<area shape="rect" id="node5" href="$OutputReportTabular_8cc.html" title="src/EnergyPlus/OutputReport\lTabular.cc" alt="" coords="663,80,856,121"/>
+<area shape="rect" id="node6" href="$SystemAvailabilityManager_8cc.html" title="src/EnergyPlus/SystemAvailability\lManager.cc" alt="" coords="880,80,1103,121"/>
+<area shape="rect" id="node7" href="$ThermalComfort_8cc.html" title="src/EnergyPlus/ThermalComfort.cc" alt="" coords="1127,87,1354,114"/>
+<area shape="rect" id="node8" href="$WeatherManager_8cc.html" title="src/EnergyPlus/WeatherManager.cc" alt="" coords="1378,87,1610,114"/>
+<area shape="rect" id="node9" href="$ZoneTempPredictorCorrector_8cc.html" title="src/EnergyPlus/ZoneTempPredictor\lCorrector.cc" alt="" coords="1634,80,1863,121"/>
+</map>

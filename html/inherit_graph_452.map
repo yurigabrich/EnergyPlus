@@ -1,0 +1,16 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structEnergyPlus_1_1FaultsManager_1_1FaultProperties.html" title="EnergyPlus::FaultsManager\l::FaultProperties" alt="" coords="5,300,188,341"/>
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesAirFilter.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesAirFilter" alt="" coords="250,5,433,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesChillerSWT.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesChillerSWT" alt="" coords="249,71,434,112"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesCoilSAT.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesCoilSAT" alt="" coords="250,136,433,177"/>
+<area shape="rect" id="node5" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesCondenserSWT.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesCondenserSWT" alt="" coords="236,201,447,243"/>
+<area shape="rect" id="node6" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesEconomizer.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesEconomizer" alt="" coords="248,267,435,308"/>
+<area shape="rect" id="node7" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesFouling.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesFouling" alt="" coords="250,332,433,373"/>
+<area shape="rect" id="node11" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesFoulingCoil.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesFoulingCoil" alt="" coords="250,397,433,439"/>
+<area shape="rect" id="node12" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesHumidistat.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesHumidistat" alt="" coords="250,463,433,504"/>
+<area shape="rect" id="node13" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesThermostat.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesThermostat" alt="" coords="249,528,433,569"/>
+<area shape="rect" id="node14" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesTowerFouling.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesTowerFouling" alt="" coords="243,593,439,635"/>
+<area shape="rect" id="node8" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesBoilerFouling.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesBoilerFouling" alt="" coords="512,267,705,308"/>
+<area shape="rect" id="node9" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesChillerFouling.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesChillerFouling" alt="" coords="510,332,707,373"/>
+<area shape="rect" id="node10" href="$structEnergyPlus_1_1FaultsManager_1_1FaultPropertiesEvapCoolerFouling.html" title="EnergyPlus::FaultsManager\l::FaultPropertiesEvapCoolerFouling" alt="" coords="495,397,723,439"/>
+</map>

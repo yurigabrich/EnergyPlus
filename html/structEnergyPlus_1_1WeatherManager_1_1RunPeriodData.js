@@ -1,0 +1,28 @@
+var structEnergyPlus_1_1WeatherManager_1_1RunPeriodData =
+[
+    [ "RunPeriodData", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a1a2381aef8de3157dd36da7cd7509118", null ],
+    [ "actualWeather", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#aba67532bb4a62b2ce9eea531c17dc990", null ],
+    [ "applyWeekendRule", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a096d31536576a2f55fca523f0be7d967", null ],
+    [ "dayOfWeek", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a44a09763fef9dd1e28bb25c424b37e6c", null ],
+    [ "endDay", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a6c1d4025af4df0cb469c7c9c2fa38bd1", null ],
+    [ "endJulianDate", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#ae41705faa6ec6a80a88a71ba45c2015c", null ],
+    [ "endMonth", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a2dfd4e255374143497ff9e40e4a0d6bb", null ],
+    [ "endYear", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a4def3f310450e8a1adb3dc0e5445b191", null ],
+    [ "isLeapYear", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a165f5398c59ffbafb976d5320a4b8623", null ],
+    [ "monWeekDay", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#abef459e24f4eea9505bea1357da6c069", null ],
+    [ "numSimYears", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#adc3b68264cb67377caab73fe2f0a3259", null ],
+    [ "periodType", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a0c8ac3d9ffcf1869b7cf322280b789e6", null ],
+    [ "RollDayTypeOnRepeat", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#abfa7fdf338d44ef3639fcf292575445e", null ],
+    [ "startDay", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a09a36774eb89c180de1c7ecc7d491e5e", null ],
+    [ "startJulianDate", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#aed817826b48fad65adfa488f7167dd84", null ],
+    [ "startMonth", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a5e2015fd1841d5147c269a0061e79c6a", null ],
+    [ "startWeekDay", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a04de022c24dd165c942682f294eef2f6", null ],
+    [ "startYear", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#afbe13faadc8d6e84d9fadd05e0cb9d36", null ],
+    [ "title", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a8dac31c731f18d9f29075e1aca470a9b", null ],
+    [ "totalDays", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a432a066c083904c932b4e6569e7ec9fb", null ],
+    [ "TreatYearsAsConsecutive", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#ad9f33f6688b80c4d9a2b3b97995293d0", null ],
+    [ "useDST", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#ada86b0c3bcbf9fe4c17b262a6be76725", null ],
+    [ "useHolidays", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a6d7fa295f8ac6b078543409d1e82ce21", null ],
+    [ "useRain", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a5a78ea90231e159a1f50b46b71710ba4", null ],
+    [ "useSnow", "structEnergyPlus_1_1WeatherManager_1_1RunPeriodData.html#a6cc2e4cc8a94c7fd2382cd79c45c7b11", null ]
+];

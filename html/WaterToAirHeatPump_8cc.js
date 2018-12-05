@@ -1,0 +1,25 @@
+var WaterToAirHeatPump_8cc =
+[
+    [ "CalcCompSuctionTempResidual", "WaterToAirHeatPump_8cc.html#ad1a14c6e75323329dd205db1ffa2d6ca", null ],
+    [ "CalcEffectiveSHR", "WaterToAirHeatPump_8cc.html#a7f720e948aa40ca5c102db096432435f", null ],
+    [ "CalcWatertoAirHPCooling", "WaterToAirHeatPump_8cc.html#a2e9640d0c9e923d52dbb7420a12916ff", null ],
+    [ "CalcWatertoAirHPHeating", "WaterToAirHeatPump_8cc.html#a9940ce785b0f5f7989af3c5bc24dc1eb", null ],
+    [ "CompressorType_Reciprocating", "WaterToAirHeatPump_8cc.html#a8619dd5556130ffeb40243fcd283223e", null ],
+    [ "CompressorType_Rotary", "WaterToAirHeatPump_8cc.html#ad845f2a225baf5de7c2a5f183b81c999", null ],
+    [ "CompressorType_Scroll", "WaterToAirHeatPump_8cc.html#aa71bffd4898bb22e2415112b8267091c", null ],
+    [ "DegradF", "WaterToAirHeatPump_8cc.html#afaac3e3a1b2bb70d9e0f49df297346cc", null ],
+    [ "GetCoilCapacity", "WaterToAirHeatPump_8cc.html#a9cb662fff8aff0ac0ab093f1825586ba", null ],
+    [ "GetCoilIndex", "WaterToAirHeatPump_8cc.html#a5a1a6f71fc6524f83a7ab87c8d2331f6", null ],
+    [ "GetCoilInletNode", "WaterToAirHeatPump_8cc.html#a20ed6df4b98bc022d5f73aeec2842a77", null ],
+    [ "GetCoilOutletNode", "WaterToAirHeatPump_8cc.html#a6fadd7ad31dc11e0a6997ac31f0f5538", null ],
+    [ "GetCoilsInputFlag", "WaterToAirHeatPump_8cc.html#a711fb77edc3aedfc9874cf57fabbd72e", null ],
+    [ "GetWatertoAirHPInput", "WaterToAirHeatPump_8cc.html#acf04c6897b75bbaa526324880a7eb99e", null ],
+    [ "InitWatertoAirHP", "WaterToAirHeatPump_8cc.html#aed1e8db1f61340f5ec7c92001d0e00c3", null ],
+    [ "NumWatertoAirHPs", "WaterToAirHeatPump_8cc.html#a585ca847bac7b95370d9e467a503f89a", null ],
+    [ "RefrigIndex", "WaterToAirHeatPump_8cc.html#ae94197c491ceb995990ae9e01d842c69", null ],
+    [ "SimWatertoAirHP", "WaterToAirHeatPump_8cc.html#ae107ac76d230510212bffc008156fba9", null ],
+    [ "UpdateWatertoAirHP", "WaterToAirHeatPump_8cc.html#a35fbdb88cd14a73291364e7619ff1139", null ],
+    [ "WaterIndex", "WaterToAirHeatPump_8cc.html#a128bc82d330ed8570c378cde25179c72", null ],
+    [ "CheckEquipName", "WaterToAirHeatPump_8cc.html#aa03ad3f298f7ca9a76d7bf3069847258", null ],
+    [ "WatertoAirHP", "WaterToAirHeatPump_8cc.html#afa3ee4c8d37383dc42bf05e76d878b49", null ]
+];

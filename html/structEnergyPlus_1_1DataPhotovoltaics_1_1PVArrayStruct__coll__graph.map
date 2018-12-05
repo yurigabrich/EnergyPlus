@@ -1,0 +1,9 @@
+<map id="EnergyPlus::DataPhotovoltaics::PVArrayStruct" name="EnergyPlus::DataPhotovoltaics::PVArrayStruct">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1SNLPVCalcStruct.html" title="EnergyPlus::DataPhotovoltaics\l::SNLPVCalcStruct" alt="" coords="16,5,220,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1SNLModuleParamsStuct.html" title="EnergyPlus::DataPhotovoltaics\l::SNLModuleParamsStuct" alt="" coords="16,71,220,112"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1TRNSYSPVModuleParamsStruct.html" title="EnergyPlus::DataPhotovoltaics\l::TRNSYSPVModuleParamsStruct" alt="" coords="5,136,231,177"/>
+<area shape="rect" id="node5" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1SNLPVInputStruct.html" title="EnergyPlus::DataPhotovoltaics\l::SNLPVInputStruct" alt="" coords="16,201,220,243"/>
+<area shape="rect" id="node6" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1TRNSYSPVCalcStruct.html" title="EnergyPlus::DataPhotovoltaics\l::TRNSYSPVCalcStruct" alt="" coords="16,267,220,308"/>
+<area shape="rect" id="node7" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1SimplePVParamsStruct.html" title="EnergyPlus::DataPhotovoltaics\l::SimplePVParamsStruct" alt="" coords="16,332,220,373"/>
+<area shape="rect" id="node8" href="$structEnergyPlus_1_1DataPhotovoltaics_1_1PVReportVariables.html" title="EnergyPlus::DataPhotovoltaics\l::PVReportVariables" alt="" coords="16,397,220,439"/>
+</map>

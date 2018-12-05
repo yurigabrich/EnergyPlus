@@ -1,0 +1,5 @@
+<map id="EnergyPlus::HeatBalanceKivaManager::KivaManager" name="EnergyPlus::HeatBalanceKivaManager::KivaManager">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1HeatBalanceKivaManager_1_1KivaManager_1_1Settings.html" title="EnergyPlus::HeatBalanceKiva\lManager::KivaManager::Settings" alt="" coords="5,5,217,47"/>
+<area shape="rect" id="node3" href="$classEnergyPlus_1_1HeatBalanceKivaManager_1_1FoundationKiva.html" title="EnergyPlus::HeatBalanceKiva\lManager::FoundationKiva" alt="" coords="12,71,211,112"/>
+<area shape="rect" id="node4" href="$classEnergyPlus_1_1HeatBalanceKivaManager_1_1KivaWeatherData.html" title="EnergyPlus::HeatBalanceKiva\lManager::KivaWeatherData" alt="" coords="12,136,211,177"/>
+</map>

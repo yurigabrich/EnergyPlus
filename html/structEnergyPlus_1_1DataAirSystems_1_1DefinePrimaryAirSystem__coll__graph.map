@@ -1,0 +1,4 @@
+<map id="EnergyPlus::DataAirSystems::DefinePrimaryAirSystem" name="EnergyPlus::DataAirSystems::DefinePrimaryAirSystem">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1DataAirSystems_1_1AirLoopMixerData.html" title="EnergyPlus::DataAirSystems\l::AirLoopMixerData" alt="" coords="5,5,199,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1DataAirSystems_1_1AirLoopSplitterData.html" title="EnergyPlus::DataAirSystems\l::AirLoopSplitterData" alt="" coords="5,71,199,112"/>
+</map>

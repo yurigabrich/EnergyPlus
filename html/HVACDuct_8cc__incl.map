@@ -1,0 +1,17 @@
+<map id="src/EnergyPlus/HVACDuct.cc" name="src/EnergyPlus/HVACDuct.cc">
+<area shape="rect" id="node2" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="1321,155,1507,181"/>
+<area shape="rect" id="node9" href="$DataContaminantBalance_8hh.html" title="DataContaminantBalance.hh" alt="" coords="438,155,627,181"/>
+<area shape="rect" id="node13" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="263,155,413,181"/>
+<area shape="rect" id="node14" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="99,155,239,181"/>
+<area shape="rect" id="node15" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="652,155,779,181"/>
+<area shape="rect" id="node16" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="5,80,172,107"/>
+<area shape="rect" id="node17" href="$General_8hh.html" title="General.hh" alt="" coords="1701,155,1786,181"/>
+<area shape="rect" id="node21" href="$HVACDuct_8hh.html" title="HVACDuct.hh" alt="" coords="803,155,910,181"/>
+<area shape="rect" id="node22" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="2249,155,2475,181"/>
+<area shape="rect" id="node31" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="895,80,1045,107"/>
+<area shape="rect" id="node32" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="1035,155,1174,181"/>
+<area shape="rect" id="node35" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="2507,155,2633,181"/>
+<area shape="rect" id="node7" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="359,304,466,331"/>
+<area shape="rect" id="node10" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="450,229,562,256"/>
+<area shape="rect" id="node29" href="$DataStorage_8hh.html" title="InputProcessing/DataStorage.hh" alt="" coords="2607,229,2818,256"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="src/EnergyPlus/WaterUse.hh" name="src/EnergyPlus/WaterUse.hh">
+<area shape="rect" id="node2" href="$InternalHeatGains_8cc.html" title="src/EnergyPlus/InternalHeat\lGains.cc" alt="" coords="5,80,192,121"/>
+<area shape="rect" id="node3" href="$NonZoneEquipmentManager_8cc.html" title="src/EnergyPlus/NonZoneEquipment\lManager.cc" alt="" coords="217,80,447,121"/>
+<area shape="rect" id="node4" href="$PlantLoopEquip_8cc.html" title="src/EnergyPlus/PlantLoop\lEquip.cc" alt="" coords="472,80,645,121"/>
+<area shape="rect" id="node5" href="$WaterUse_8cc.html" title="src/EnergyPlus/WaterUse.cc" alt="" coords="669,87,861,114"/>
+</map>

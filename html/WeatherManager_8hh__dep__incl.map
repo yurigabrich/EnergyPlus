@@ -1,0 +1,24 @@
+<map id="src/EnergyPlus/WeatherManager.hh" name="src/EnergyPlus/WeatherManager.hh">
+<area shape="rect" id="node2" href="$FiniteDifferenceGroundTemperatureModel_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/FiniteDifferenceGroundTemperature\lModel.cc" alt="" coords="5,80,291,136"/>
+<area shape="rect" id="node3" href="$KusudaAchenbachGroundTemperatureModel_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/KusudaAchenbachGroundTemperature\lModel.cc" alt="" coords="315,80,618,136"/>
+<area shape="rect" id="node4" href="$SiteBuildingSurfaceGroundTemperatures_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/SiteBuildingSurfaceGround\lTemperatures.cc" alt="" coords="643,80,877,136"/>
+<area shape="rect" id="node5" href="$SiteDeepGroundTemperatures_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/SiteDeepGroundTemperatures.cc" alt="" coords="901,87,1173,129"/>
+<area shape="rect" id="node6" href="$SiteFCFactorMethodGroundTemperatures_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/SiteFCFactorMethodGroundTemperatures.cc" alt="" coords="1197,87,1536,129"/>
+<area shape="rect" id="node7" href="$SiteShallowGroundTemperatures_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/SiteShallowGroundTemperatures.cc" alt="" coords="1561,87,1847,129"/>
+<area shape="rect" id="node8" href="$XingGroundTemperatureModel_8cc.html" title="src/EnergyPlus/GroundTemperature\lModeling/XingGroundTemperatureModel.cc" alt="" coords="1872,87,2144,129"/>
+<area shape="rect" id="node9" href="$HeatBalanceKivaManager_8cc.html" title="src/EnergyPlus/HeatBalance\lKivaManager.cc" alt="" coords="2169,87,2359,129"/>
+<area shape="rect" id="node10" href="$HVACSizingSimulationManager_8cc.html" title="src/EnergyPlus/HVACSizing\lSimulationManager.cc" alt="" coords="2104,184,2293,225"/>
+<area shape="rect" id="node11" href="$HVACSizingSimulationManager_8hh.html" title="src/EnergyPlus/HVACSizing\lSimulationManager.hh" alt="" coords="2435,87,2624,129"/>
+<area shape="rect" id="node14" href="$SimulationManager_8cc.html" title="src/EnergyPlus/Simulation\lManager.cc" alt="" coords="2779,184,2955,225"/>
+<area shape="rect" id="node15" href="$OutputReportTabular_8cc.html" title="src/EnergyPlus/OutputReport\lTabular.cc" alt="" coords="2699,87,2893,129"/>
+<area shape="rect" id="node16" href="$PVWatts_8cc.html" title="src/EnergyPlus/PVWatts.cc" alt="" coords="2917,95,3104,121"/>
+<area shape="rect" id="node17" href="$ReportCoilSelection_8cc.html" title="src/EnergyPlus/ReportCoil\lSelection.cc" alt="" coords="3129,87,3306,129"/>
+<area shape="rect" id="node18" href="$ReportSizingManager_8cc.html" title="src/EnergyPlus/ReportSizing\lManager.cc" alt="" coords="3330,87,3521,129"/>
+<area shape="rect" id="node19" href="$SizingAnalysisObjects_8cc.html" title="src/EnergyPlus/SizingAnalysis\lObjects.cc" alt="" coords="3545,87,3746,129"/>
+<area shape="rect" id="node20" href="$SizingManager_8cc.html" title="src/EnergyPlus/SizingManager.cc" alt="" coords="3771,95,3989,121"/>
+<area shape="rect" id="node21" href="$SurfaceGeometry_8cc.html" title="src/EnergyPlus/SurfaceGeometry.cc" alt="" coords="4013,95,4248,121"/>
+<area shape="rect" id="node22" href="$WeatherManager_8cc.html" title="src/EnergyPlus/WeatherManager.cc" alt="" coords="4272,95,4504,121"/>
+<area shape="rect" id="node23" href="$ZoneTempPredictorCorrector_8cc.html" title="src/EnergyPlus/ZoneTempPredictor\lCorrector.cc" alt="" coords="4528,87,4757,129"/>
+<area shape="rect" id="node12" href="$HeatBalanceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lManager.cc" alt="" coords="2318,184,2509,225"/>
+<area shape="rect" id="node13" href="$HVACManager_8cc.html" title="src/EnergyPlus/HVACManager.cc" alt="" coords="2533,191,2755,218"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="EnergyPlus::PollutionModule::PollutionProps" name="EnergyPlus::PollutionModule::PollutionProps">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1PollutionModule_1_1CoefficientProps.html" title="EnergyPlus::PollutionModule\l::CoefficientProps" alt="" coords="5,138,195,179"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1PollutionModule_1_1ComponentProps.html" title="EnergyPlus::PollutionModule\l::ComponentProps" alt="" coords="5,330,195,371"/>
+</map>

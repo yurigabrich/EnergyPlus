@@ -1,0 +1,28 @@
+var structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties =
+[
+    [ "SurfaceScreenProperties", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#af10ac4baeb9dd9d53b24e11093b95d7d", null ],
+    [ "AbsorpSolarBeamBack", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#ae63a964c626d3d71b77a0dbc737eafaf", null ],
+    [ "AbsorpSolarBeamFront", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a07b9327e81af5a6338b450d6ff40c834", null ],
+    [ "BmBmTrans", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#aa37f27dce6e4969b53b98087055698d6", null ],
+    [ "BmBmTransBack", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#aa3fe9520632cdd3f84223de5968ee4a5", null ],
+    [ "BmBmTransVis", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a77bb6ea8f08257bae705a16be73b7afa", null ],
+    [ "BmDifTrans", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a63852978192ee8882453853939e38758", null ],
+    [ "BmDifTransBack", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#ae1f4abd76f1ef5459402f2a0aada28c5", null ],
+    [ "BmDifTransVis", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a6fcd6f4c4e769dde2dbe6587321a408d", null ],
+    [ "DifDifTrans", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a0117f5383f8e66046a5e7a05054f7f5a", null ],
+    [ "DifDifTransVis", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#ac942c0c49f25e31ec6e0641fcf79d443", null ],
+    [ "DifReflect", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a2a2c434454b98c550f28c178ae76bc01", null ],
+    [ "DifReflectVis", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a1d6d8925407e5910be6fc5ef04593984", null ],
+    [ "DifScreenAbsorp", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a02246c9b4a6548b01527c83063cdb700", null ],
+    [ "MaterialNumber", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a67f2d5a7813b0b6d3114da249e7874c2", null ],
+    [ "ReflectCylinder", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a413bdf2a4a8ada9a947a7c6a885f4f3b", null ],
+    [ "ReflectCylinderVis", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a5d61ef09d7cdcd7ed92f94a63f642a93", null ],
+    [ "ReflectScreen", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a090dcdc42763b918a22f82d38dcda21b", null ],
+    [ "ReflectScreenVis", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#afdffa9299109fa6342ea38f285936a1c", null ],
+    [ "ReflectSolBeamBack", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a1abe8e8f760e9e38dbbc2a2765d67457", null ],
+    [ "ReflectSolBeamFront", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#ac834ac3840eaa15913a938a8bbeb11b1", null ],
+    [ "ReflectVisBeamBack", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#aafbd9a0380048ed3c789685a1c036147", null ],
+    [ "ReflectVisBeamFront", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a2bf8ca7fc6c8ebab04d2a89d737b7795", null ],
+    [ "ScreenBeamReflectanceAccounting", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a2cee179b97818211d5d5cd7d76228c4e", null ],
+    [ "ScreenDiameterToSpacingRatio", "structEnergyPlus_1_1DataHeatBalance_1_1SurfaceScreenProperties.html#a7ab5a4248608aa9462b65b8c41323e99", null ]
+];

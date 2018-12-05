@@ -1,0 +1,22 @@
+<map id="src/EnergyPlus/DXCoils.hh" name="src/EnergyPlus/DXCoils.hh">
+<area shape="rect" id="node2" href="$AirflowNetworkBalanceManager_8cc.html" title="src/EnergyPlus/AirflowNetwork\lBalanceManager.cc" alt="" coords="5,80,209,121"/>
+<area shape="rect" id="node3" href="$CostEstimateManager_8cc.html" title="src/EnergyPlus/CostEstimate\lManager.cc" alt="" coords="234,80,429,121"/>
+<area shape="rect" id="node4" href="$DesiccantDehumidifiers_8cc.html" title="src/EnergyPlus/Desiccant\lDehumidifiers.cc" alt="" coords="453,80,628,121"/>
+<area shape="rect" id="node5" href="$DXCoils_8cc.html" title="src/EnergyPlus/DXCoils.cc" alt="" coords="652,87,835,114"/>
+<area shape="rect" id="node6" href="$Furnaces_8cc.html" title="src/EnergyPlus/Furnaces.cc" alt="" coords="859,87,1046,114"/>
+<area shape="rect" id="node7" href="$HeatingCoils_8cc.html" title="src/EnergyPlus/HeatingCoils.cc" alt="" coords="1070,87,1278,114"/>
+<area shape="rect" id="node8" href="$HeatRecovery_8cc.html" title="src/EnergyPlus/HeatRecovery.cc" alt="" coords="1303,87,1520,114"/>
+<area shape="rect" id="node9" href="$HVACDXHeatPumpSystem_8cc.html" title="src/EnergyPlus/HVACDXHeat\lPumpSystem.cc" alt="" coords="1545,80,1745,121"/>
+<area shape="rect" id="node10" href="$HVACDXSystem_8cc.html" title="src/EnergyPlus/HVACDXSystem.cc" alt="" coords="1769,87,2003,114"/>
+<area shape="rect" id="node11" href="$HVACHXAssistedCoolingCoil_8cc.html" title="src/EnergyPlus/HVACHXAssisted\lCoolingCoil.cc" alt="" coords="2027,80,2249,121"/>
+<area shape="rect" id="node12" href="$HVACMultiSpeedHeatPump_8cc.html" title="src/EnergyPlus/HVACMulti\lSpeedHeatPump.cc" alt="" coords="2274,80,2455,121"/>
+<area shape="rect" id="node13" href="$HVACUnitaryBypassVAV_8cc.html" title="src/EnergyPlus/HVACUnitary\lBypassVAV.cc" alt="" coords="2479,80,2674,121"/>
+<area shape="rect" id="node14" href="$HVACVariableRefrigerantFlow_8cc.html" title="src/EnergyPlus/HVACVariable\lRefrigerantFlow.cc" alt="" coords="2698,80,2898,121"/>
+<area shape="rect" id="node15" href="$OutdoorAirUnit_8cc.html" title="src/EnergyPlus/OutdoorAir\lUnit.cc" alt="" coords="2923,80,3100,121"/>
+<area shape="rect" id="node16" href="$PackagedTerminalHeatPump_8cc.html" title="src/EnergyPlus/PackagedTerminal\lHeatPump.cc" alt="" coords="3124,80,3347,121"/>
+<area shape="rect" id="node17" href="$ReportSizingManager_8cc.html" title="src/EnergyPlus/ReportSizing\lManager.cc" alt="" coords="3371,80,3561,121"/>
+<area shape="rect" id="node18" href="$UnitarySystem_8cc.html" title="src/EnergyPlus/UnitarySystem.cc" alt="" coords="3585,87,3805,114"/>
+<area shape="rect" id="node19" href="$VariableSpeedCoils_8cc.html" title="src/EnergyPlus/VariableSpeed\lCoils.cc" alt="" coords="3829,80,4028,121"/>
+<area shape="rect" id="node20" href="$WaterThermalTanks_8cc.html" title="src/EnergyPlus/WaterThermal\lTanks.cc" alt="" coords="4053,80,4250,121"/>
+<area shape="rect" id="node21" href="$WindowAC_8cc.html" title="src/EnergyPlus/WindowAC.cc" alt="" coords="4275,87,4473,114"/>
+</map>

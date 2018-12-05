@@ -1,0 +1,33 @@
+<map id="src/EnergyPlus/HVACDXHeatPumpSystem.cc" name="src/EnergyPlus/HVACDXHeatPumpSystem.cc">
+<area shape="rect" id="node3" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="646,244,831,271"/>
+<area shape="rect" id="node9" href="$DXCoils_8hh.html" title="DXCoils.hh" alt="" coords="2514,169,2603,196"/>
+<area shape="rect" id="node10" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="2160,326,2301,353"/>
+<area shape="rect" id="node13" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="3279,244,3430,271"/>
+<area shape="rect" id="node14" href="$DataAirLoop_8hh.html" title="DataAirLoop.hh" alt="" coords="4887,244,4999,271"/>
+<area shape="rect" id="node17" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="4046,95,4189,121"/>
+<area shape="rect" id="node28" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="1457,326,1597,353"/>
+<area shape="rect" id="node29" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="2774,244,2901,271"/>
+<area shape="rect" id="node30" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="4938,95,5105,121"/>
+<area shape="rect" id="node31" href="$EMSManager_8hh.html" title="EMSManager.hh" alt="" coords="2315,244,2434,271"/>
+<area shape="rect" id="node32" href="$FaultsManager_8hh.html" title="FaultsManager.hh" alt="" coords="2925,244,3051,271"/>
+<area shape="rect" id="node33" href="$General_8hh.html" title="General.hh" alt="" coords="427,244,512,271"/>
+<area shape="rect" id="node37" href="$GeneralRoutines_8hh.html" title="GeneralRoutines.hh" alt="" coords="907,244,1045,271"/>
+<area shape="rect" id="node39" href="$HVACDXHeatPumpSystem_8hh.html" title="HVACDXHeatPumpSystem.hh" alt="" coords="1542,244,1746,271"/>
+<area shape="rect" id="node40" href="$HVACHXAssistedCoolingCoil_8hh.html" title="HVACHXAssistedCoolingCoil.hh" alt="" coords="1923,244,2138,271"/>
+<area shape="rect" id="node41" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="3556,244,3783,271"/>
+<area shape="rect" id="node45" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="2186,169,2337,196"/>
+<area shape="rect" id="node46" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="2560,244,2699,271"/>
+<area shape="rect" id="node47" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="1249,169,1380,196"/>
+<area shape="rect" id="node48" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="1339,244,1466,271"/>
+<area shape="rect" id="node49" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="1069,244,1213,271"/>
+<area shape="rect" id="node50" href="$VariableSpeedCoils_8hh.html" title="VariableSpeedCoils.hh" alt="" coords="5129,95,5284,121"/>
+<area shape="rect" id="node8" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2691,408,2797,435"/>
+<area shape="rect" id="node11" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="3027,326,3139,353"/>
+<area shape="rect" id="node15" href="$UnitarySystem_8hh.html" title="UnitarySystem.hh" alt="" coords="5114,326,5241,353"/>
+<area shape="rect" id="node22" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="4111,244,4262,271"/>
+<area shape="rect" id="node23" href="$DataVectorTypes_8hh.html" title="DataVectorTypes.hh" alt="" coords="3638,326,3781,353"/>
+<area shape="rect" id="node24" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="4620,244,4812,271"/>
+<area shape="rect" id="node25" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="3960,169,4080,196"/>
+<area shape="rect" id="node26" href="$DataWindowEquivalentLayer_8hh.html" title="DataWindowEquivalentLayer.hh" alt="" coords="4337,244,4545,271"/>
+<area shape="rect" id="node27" href="$HysteresisModel_8hh.html" title="PhaseChangeModeling\l/HysteresisModel.hh" alt="" coords="4934,319,5090,360"/>
+</map>

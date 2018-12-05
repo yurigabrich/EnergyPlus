@@ -1,0 +1,36 @@
+var Enums_8hh =
+[
+    [ "OpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74", [
+      [ "UnknownStatusOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a9a15797ee176df2c7ae8a6b6b678f90d", null ],
+      [ "NoControlOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a0a293c0a9fd227b72071b9dc85e07189", null ],
+      [ "HeatingRBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a05375e9283a86c952b79b6fc52769177", null ],
+      [ "CoolingRBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74afe08f4b4edfa148f9d56b4f6457d937a", null ],
+      [ "WetBulbRBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74ab2cdaec33b5d1f1dc1feb6c8d2f01064", null ],
+      [ "DryBulbRBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a2200d002ad22b1ec29b7b0f095ecc85c", null ],
+      [ "DewPointRBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a47374f7b6dc8cfca0b586ccba06207db", null ],
+      [ "RelHumRBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74ac565731a9dbd07c1aa6966dd460c9b5b", null ],
+      [ "DryBulbTDBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a4b9153eee21732ad997a8b993dd392fc", null ],
+      [ "WetBulbTDBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a3185993149126c2f10930efee57611dc", null ],
+      [ "DewPointTDBOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a750f0c087d8d00d45fb0e534cfd6f059", null ],
+      [ "CompSetPtBasedSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a5af1cfc422dfa255348ad00d209c561c", null ],
+      [ "UncontrolledOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74ab084fdd43f4edcbcc03d53484a4bec47", null ],
+      [ "EMSOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a7eff1f5089645ab7965b15d61b7f8188", null ],
+      [ "PumpOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74acfd5d34c6ec08d2d092fbf13e9a08ced", null ],
+      [ "DemandOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74aa5f60d17c2fc80b214566ee686a25768", null ],
+      [ "FreeRejectionOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74aeb525476fd34e33c5dc023d843c57098", null ],
+      [ "WSEconOpSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a680f1aae449cb2a7c5de3d3f9f745569", null ],
+      [ "ThermalEnergyStorageSchemeType", "Enums_8hh.html#ab64a5d816c8ac9fbc01700c97ab81b74a61650b6f31e2ce4d60ad6a44fee6037f", null ]
+    ] ],
+    [ "HowMet_ByNominalCap", "Enums_8hh.html#a6b3a10de291a11fcfefab31ae514fcb8", null ],
+    [ "HowMet_ByNominalCapFreeCoolCntrl", "Enums_8hh.html#a7ece0a3448d9a6a0c07688c48a5aca52", null ],
+    [ "HowMet_ByNominalCapHiOutLimit", "Enums_8hh.html#ab04fa9210f651516bec800fcb60c3d89", null ],
+    [ "HowMet_ByNominalCapLowOutLimit", "Enums_8hh.html#affc086a6b862807e69923dd40395b7d5", null ],
+    [ "HowMet_ByNominalCapLowOutLimitFreeCoolCntrl", "Enums_8hh.html#a2aef1c4aae0723c4bf845a5290f65d4a", null ],
+    [ "HowMet_NoneDemand", "Enums_8hh.html#a6811dc449c00f670c73632dfab4f73e5", null ],
+    [ "HowMet_PassiveCap", "Enums_8hh.html#ace2ad9945f2775807682b029fd83954f", null ],
+    [ "HowMet_Unknown", "Enums_8hh.html#a4942dd05b22b301946be3331f6efcb02", null ],
+    [ "LoopFlowStatus_NeedyAndTurnsLoopOn", "Enums_8hh.html#aa3b7c1d2b2ff267db6da5130e13a0efe", null ],
+    [ "LoopFlowStatus_NeedyIfLoopOn", "Enums_8hh.html#a349c725588755fab388e134520ce5346", null ],
+    [ "LoopFlowStatus_TakesWhatGets", "Enums_8hh.html#a940e04ad813e6b39a148f01a9cb75a78", null ],
+    [ "LoopFlowStatus_Unknown", "Enums_8hh.html#a24f0b3baf5a2c27435fdfa043e8a8673", null ]
+];

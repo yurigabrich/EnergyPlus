@@ -1,0 +1,8 @@
+<map id="src/EnergyPlus/HVACVariableRefrigerantFlow.hh" name="src/EnergyPlus/HVACVariableRefrigerantFlow.hh">
+<area shape="rect" id="node2" href="$DXCoils_8cc.html" title="src/EnergyPlus/DXCoils.cc" alt="" coords="5,102,188,129"/>
+<area shape="rect" id="node3" href="$HVACVariableRefrigerantFlow_8cc.html" title="src/EnergyPlus/HVACVariable\lRefrigerantFlow.cc" alt="" coords="213,95,413,136"/>
+<area shape="rect" id="node4" href="$PlantLoopEquip_8cc.html" title="src/EnergyPlus/PlantLoop\lEquip.cc" alt="" coords="437,95,610,136"/>
+<area shape="rect" id="node5" href="$ReportCoilSelection_8cc.html" title="src/EnergyPlus/ReportCoil\lSelection.cc" alt="" coords="635,95,812,136"/>
+<area shape="rect" id="node6" href="$SystemReports_8cc.html" title="src/EnergyPlus/SystemReports.cc" alt="" coords="837,102,1061,129"/>
+<area shape="rect" id="node7" href="$ZoneEquipmentManager_8cc.html" title="src/EnergyPlus/ZoneEquipment\lManager.cc" alt="" coords="1085,95,1292,136"/>
+</map>

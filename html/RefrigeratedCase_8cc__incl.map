@@ -1,0 +1,34 @@
+<map id="src/EnergyPlus/RefrigeratedCase.cc" name="src/EnergyPlus/RefrigeratedCase.cc">
+<area shape="rect" id="node9" href="$BranchNodeConnections_8hh.html" title="BranchNodeConnections.hh" alt="" coords="1729,169,1915,196"/>
+<area shape="rect" id="node15" href="$CurveManager_8hh.html" title="CurveManager.hh" alt="" coords="1190,169,1315,196"/>
+<area shape="rect" id="node20" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="2787,244,2929,271"/>
+<area shape="rect" id="node21" href="$DataHVACGlobals_8hh.html" title="DataHVACGlobals.hh" alt="" coords="3233,169,3384,196"/>
+<area shape="rect" id="node22" href="$DataHeatBalFanSys_8hh.html" title="DataHeatBalFanSys.hh" alt="" coords="2953,244,3113,271"/>
+<area shape="rect" id="node23" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="393,95,536,121"/>
+<area shape="rect" id="node30" href="$DataLoopNode_8hh.html" title="DataLoopNode.hh" alt="" coords="4792,169,4919,196"/>
+<area shape="rect" id="node31" href="$DataPlant_8hh.html" title="DataPlant.hh" alt="" coords="3479,95,3578,121"/>
+<area shape="rect" id="node32" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3070,169,3209,196"/>
+<area shape="rect" id="node33" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="4747,95,4913,121"/>
+<area shape="rect" id="node34" href="$DataWater_8hh.html" title="DataWater.hh" alt="" coords="4252,169,4355,196"/>
+<area shape="rect" id="node35" href="$DataZoneEnergyDemands_8hh.html" title="DataZoneEnergyDemands.hh" alt="" coords="3289,244,3483,271"/>
+<area shape="rect" id="node36" href="$DataZoneEquipment_8hh.html" title="DataZoneEquipment.hh" alt="" coords="3287,95,3445,121"/>
+<area shape="rect" id="node37" href="$EMSManager_8hh.html" title="EMSManager.hh" alt="" coords="3865,169,3984,196"/>
+<area shape="rect" id="node38" href="$FluidProperties_8hh.html" title="FluidProperties.hh" alt="" coords="1527,169,1653,196"/>
+<area shape="rect" id="node39" href="$General_8hh.html" title="General.hh" alt="" coords="1939,169,2025,196"/>
+<area shape="rect" id="node40" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="4379,169,4497,196"/>
+<area shape="rect" id="node41" href="$HeatBalanceInternalHeatGains_8hh.html" title="HeatBalanceInternalHeatGains.hh" alt="" coords="4008,169,4228,196"/>
+<area shape="rect" id="node42" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="5133,169,5359,196"/>
+<area shape="rect" id="node43" href="$NodeInputManager_8hh.html" title="NodeInputManager.hh" alt="" coords="4460,95,4611,121"/>
+<area shape="rect" id="node44" href="$OutAirNodeManager_8hh.html" title="OutAirNodeManager.hh" alt="" coords="2105,244,2264,271"/>
+<area shape="rect" id="node45" href="$PlantUtilities_8hh.html" title="PlantUtilities.hh" alt="" coords="4994,169,5109,196"/>
+<area shape="rect" id="node46" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="2543,95,2674,121"/>
+<area shape="rect" id="node47" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="2596,169,2723,196"/>
+<area shape="rect" id="node48" href="$RefrigeratedCase_8hh.html" title="RefrigeratedCase.hh" alt="" coords="4573,169,4716,196"/>
+<area shape="rect" id="node49" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="1358,169,1502,196"/>
+<area shape="rect" id="node50" href="$WaterManager_8hh.html" title="WaterManager.hh" alt="" coords="5359,244,5485,271"/>
+<area shape="rect" id="node14" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="3518,319,3625,345"/>
+<area shape="rect" id="node19" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="3659,244,3771,271"/>
+<area shape="rect" id="node27" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="75,244,225,271"/>
+<area shape="rect" id="node28" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="527,169,719,196"/>
+<area shape="rect" id="node29" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="282,169,402,196"/>
+</map>

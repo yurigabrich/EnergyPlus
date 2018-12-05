@@ -1,0 +1,33 @@
+<map id="src/EnergyPlus/WeatherManager.cc" name="src/EnergyPlus/WeatherManager.cc">
+<area shape="rect" id="node12" href="$CommandLineInterface_8hh.html" title="CommandLineInterface.hh" alt="" coords="4327,87,4502,114"/>
+<area shape="rect" id="node15" href="$DataEnvironment_8hh.html" title="DataEnvironment.hh" alt="" coords="984,244,1125,271"/>
+<area shape="rect" id="node18" href="$DataGlobals_8hh.html" title="DataGlobals.hh" alt="" coords="2608,244,2720,271"/>
+<area shape="rect" id="node20" href="$DataHeatBalance_8hh.html" title="DataHeatBalance.hh" alt="" coords="2845,87,2987,114"/>
+<area shape="rect" id="node28" href="$DataSurfaces_8hh.html" title="DataSurfaces.hh" alt="" coords="2719,169,2839,196"/>
+<area shape="rect" id="node29" href="$DataIPShortCuts_8hh.html" title="DataIPShortCuts.hh" alt="" coords="819,244,959,271"/>
+<area shape="rect" id="node30" href="$DataPrecisionGlobals_8hh.html" title="DataPrecisionGlobals.hh" alt="" coords="1942,244,2109,271"/>
+<area shape="rect" id="node31" href="$DataReportingFlags_8hh.html" title="DataReportingFlags.hh" alt="" coords="4191,244,4347,271"/>
+<area shape="rect" id="node32" href="$DataSizing_8hh.html" title="DataSizing.hh" alt="" coords="2324,169,2428,196"/>
+<area shape="rect" id="node33" href="$DataStringGlobals_8hh.html" title="DataStringGlobals.hh" alt="" coords="4372,244,4519,271"/>
+<area shape="rect" id="node34" href="$DataSystemVariables_8hh.html" title="DataSystemVariables.hh" alt="" coords="4543,244,4710,271"/>
+<area shape="rect" id="node35" href="$DisplayRoutines_8hh.html" title="DisplayRoutines.hh" alt="" coords="4031,244,4167,271"/>
+<area shape="rect" id="node36" href="$EMSManager_8hh.html" title="EMSManager.hh" alt="" coords="1205,169,1323,196"/>
+<area shape="rect" id="node37" href="$General_8hh.html" title="General.hh" alt="" coords="891,169,976,196"/>
+<area shape="rect" id="node38" href="$GlobalNames_8hh.html" title="GlobalNames.hh" alt="" coords="2079,169,2198,196"/>
+<area shape="rect" id="node39" href="$GroundTemperatureModelManager_8hh.html" title="GroundTemperatureModeling\l/GroundTemperatureModelManager.hh" alt="" coords="3437,80,3681,121"/>
+<area shape="rect" id="node40" href="$InputProcessor_8hh.html" title="InputProcessing/InputProcessor.hh" alt="" coords="1777,169,2004,196"/>
+<area shape="rect" id="node41" href="$OutputProcessor_8hh.html" title="OutputProcessor.hh" alt="" coords="3351,169,3489,196"/>
+<area shape="rect" id="node42" href="$OutputReportPredefined_8hh.html" title="OutputReportPredefined.hh" alt="" coords="1001,169,1181,196"/>
+<area shape="rect" id="node43" href="$OutputReportTabular_8hh.html" title="OutputReportTabular.hh" alt="" coords="3199,87,3361,114"/>
+<area shape="rect" id="node44" href="$Psychrometrics_8hh.html" title="Psychrometrics.hh" alt="" coords="383,87,513,114"/>
+<area shape="rect" id="node45" href="$UtilityRoutines_8hh.html" title="UtilityRoutines.hh" alt="" coords="486,169,613,196"/>
+<area shape="rect" id="node46" href="$ScheduleManager_8hh.html" title="ScheduleManager.hh" alt="" coords="1609,169,1753,196"/>
+<area shape="rect" id="node47" href="$SurfaceGeometry_8hh.html" title="SurfaceGeometry.hh" alt="" coords="2283,87,2426,114"/>
+<area shape="rect" id="node48" href="$ThermalComfort_8hh.html" title="ThermalComfort.hh" alt="" coords="1450,169,1585,196"/>
+<area shape="rect" id="node49" href="$Vectors_8hh.html" title="Vectors.hh" alt="" coords="709,244,795,271"/>
+<area shape="rect" id="node50" href="$WeatherManager_8hh.html" title="WeatherManager.hh" alt="" coords="3615,169,3753,196"/>
+<area shape="rect" id="node13" href="$EnergyPlusAPI_8hh.html" title="EnergyPlusAPI.hh" alt="" coords="4786,169,4915,196"/>
+<area shape="rect" id="node17" href="$EnergyPlus_8hh.html" title="EnergyPlus.hh" alt="" coords="2245,319,2352,345"/>
+<area shape="rect" id="node26" href="$DataBSDFWindow_8hh.html" title="DataBSDFWindow.hh" alt="" coords="2885,244,3035,271"/>
+<area shape="rect" id="node27" href="$DataComplexFenestration_8hh.html" title="DataComplexFenestration.hh" alt="" coords="2503,169,2695,196"/>
+</map>

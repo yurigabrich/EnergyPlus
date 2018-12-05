@@ -1,0 +1,4 @@
+<map id="EnergyPlus::PhotovoltaicThermalCollectors::PVTCollectorStruct" name="EnergyPlus::PhotovoltaicThermalCollectors::PVTCollectorStruct">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1SimplePVTModelStruct.html" title="EnergyPlus::Photovoltaic\lThermalCollectors::SimplePVTModel\lStruct" alt="" coords="5,5,243,61"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1PhotovoltaicThermalCollectors_1_1PVTReportStruct.html" title="EnergyPlus::Photovoltaic\lThermalCollectors::PVTReport\lStruct" alt="" coords="23,85,225,141"/>
+</map>

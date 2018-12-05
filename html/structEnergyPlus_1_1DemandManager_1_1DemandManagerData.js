@@ -1,0 +1,25 @@
+var structEnergyPlus_1_1DemandManager_1_1DemandManagerData =
+[
+    [ "DemandManagerData", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#af9cfa0fc5b36c32f58c3917d6999078c", null ],
+    [ "Activate", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a23151b68f61fb38b74afdc56ac6a4552", null ],
+    [ "Active", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#ae964e8ed795d35f2c0b7c19f06e16974", null ],
+    [ "Available", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a3cff6d7c7d282bb9940eeb04d12f306d", null ],
+    [ "AvailSchedule", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a71707401cc3fa377cf107da6983416cd", null ],
+    [ "CanReduceDemand", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a29625fdccdd450165b055cbaa470c1ca", null ],
+    [ "DemandManagerList", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#ac524376d3db3b3171dee7bf03d0dff8a", null ],
+    [ "ElapsedRotationTime", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#af4a0438a1308facc5ceafd273db6d8a9", null ],
+    [ "ElapsedTime", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#af07b8620e345d437636b49193484d472", null ],
+    [ "FixedRate", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a2f2cb08ab9fc8c3b0c7e78fe3654cac2", null ],
+    [ "LimitControl", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#afd0c9295cfc6d9bdd08420bbfe4bc4fa", null ],
+    [ "LimitDuration", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a12bfc2ca7b0b8a1d7b05c1563b68c2c5", null ],
+    [ "Load", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#ab60b595f582ef4691084cb0d7b39f06e", null ],
+    [ "LowerLimit", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a42de70a7622722d9c4d7ad23585972c8", null ],
+    [ "Name", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#adcec5fe0c30d455fb33da8e4a6d5a534", null ],
+    [ "NumOfLoads", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a0bf19a9414fa49bd2d953aaf1d9e2f98", null ],
+    [ "ReductionRatio", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a1e2f887d11bae58f1b25808211e5ab0e", null ],
+    [ "RotatedLoadNum", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a71bbbd4fe4b3201ea78d1bc075711906", null ],
+    [ "RotationDuration", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a1a9417ebbd0df629c46740aced7c6789", null ],
+    [ "SelectionControl", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a13cf88d99d88efd509d07b24dbba41fa", null ],
+    [ "Type", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a963c31631668f266d791f12939e5de4d", null ],
+    [ "UpperLimit", "structEnergyPlus_1_1DemandManager_1_1DemandManagerData.html#a8814b1a1f7143fda64919bb9a5d9b84b", null ]
+];

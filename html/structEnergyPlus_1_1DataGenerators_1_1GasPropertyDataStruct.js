@@ -1,0 +1,27 @@
+var structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct =
+[
+    [ "GasPropertyDataStruct", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a5c83bdec865de84e3e742daa946324e9", null ],
+    [ "ConstituentFormula", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a17f2243a1704fad304ab4d15bf941d26", null ],
+    [ "ConstituentName", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a1bd8af0599c9467843413ef8c55e50f5", null ],
+    [ "MolecularWeight", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#ace79e3553c63abd02fd9664b0d4478be", null ],
+    [ "NASA_A1", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a72198f14878fb7b6c305a29afa83fd71", null ],
+    [ "NASA_A2", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a8c5e9b7884921b7406dfed9e07b5a8c0", null ],
+    [ "NASA_A3", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#af79c6be222d97b93e7ba47b13955d2ec", null ],
+    [ "NASA_A4", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#acdefc405767eaf8c0d3a5415928c8481", null ],
+    [ "NASA_A5", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a0fa59a50724ca3d1f92a41a35527b91b", null ],
+    [ "NASA_A6", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a368fe87b3717f633f07306156bb7fd96", null ],
+    [ "NASA_A7", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a585f6a4714f928091e6885eb52e2961e", null ],
+    [ "NumCarbons", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#aa67cdd53c82642db964b9a27f2c439b8", null ],
+    [ "NumHydrogens", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a87cb00c2df1419e65694f13bb79cbb55", null ],
+    [ "NumOxygens", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#acf38979225e61a5138d00fecb9144c13", null ],
+    [ "ShomateA", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#afe5907696c3c55f269ec4c1f768043c5", null ],
+    [ "ShomateB", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a61b8e1c72b0137178209df62ef4de593", null ],
+    [ "ShomateC", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#ae52dec9ecb7c7720fa981c7f8128d6cd", null ],
+    [ "ShomateD", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a470271e84555a701183d50ca283d72dd", null ],
+    [ "ShomateE", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a1d943379a426eaad5748942d3e931a3a", null ],
+    [ "ShomateF", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a15aef75061301925b6643f635200f605", null ],
+    [ "ShomateG", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a5f8fa2813d9fd1fb895c19f30ac88ef7", null ],
+    [ "ShomateH", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a842217494be1f1c6e894cf9034b93fce", null ],
+    [ "StdRefMolarEnthOfForm", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a21a60bdde18defa2a80037844396d3fb", null ],
+    [ "ThermoMode", "structEnergyPlus_1_1DataGenerators_1_1GasPropertyDataStruct.html#a3407bc23baefda3a12d29bdf2e230789", null ]
+];

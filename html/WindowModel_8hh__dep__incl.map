@@ -1,0 +1,7 @@
+<map id="src/EnergyPlus/WindowModel.hh" name="src/EnergyPlus/WindowModel.hh">
+<area shape="rect" id="node2" href="$HeatBalanceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lManager.cc" alt="" coords="5,80,196,121"/>
+<area shape="rect" id="node3" href="$HeatBalanceSurfaceManager_8cc.html" title="src/EnergyPlus/HeatBalance\lSurfaceManager.cc" alt="" coords="220,80,411,121"/>
+<area shape="rect" id="node4" href="$SolarShading_8cc.html" title="src/EnergyPlus/SolarShading.cc" alt="" coords="435,87,646,114"/>
+<area shape="rect" id="node5" href="$WindowManager_8cc.html" title="src/EnergyPlus/WindowManager.cc" alt="" coords="671,87,901,114"/>
+<area shape="rect" id="node6" href="$WindowModel_8cc.html" title="src/EnergyPlus/WindowModel.cc" alt="" coords="925,87,1140,114"/>
+</map>

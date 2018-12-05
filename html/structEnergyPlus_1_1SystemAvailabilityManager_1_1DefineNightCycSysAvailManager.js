@@ -1,0 +1,27 @@
+var structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager =
+[
+    [ "DefineNightCycSysAvailManager", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a967a59fc544850452e89df6892e51eb6", null ],
+    [ "AvailStatus", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a1c24013b48e8cba98d892e8a04a33933", null ],
+    [ "CoolingZoneListName", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a3e1be775f82139908ae49b10f4c099f1", null ],
+    [ "CoolingZonePtrs", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#ada370779f46ac3e402a1f960a4162961", null ],
+    [ "CtrlType", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a1f6306b946c78999d12c8fa788e8a13b", null ],
+    [ "CtrlZoneListName", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a121404c576fb4da2060c0a6b641b88a7", null ],
+    [ "CtrlZonePtrs", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#abadbc6c8b0648a72b32c8a7b5ab377f2", null ],
+    [ "CyclingTimeSteps", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#af397ec5fddde10b9e9c5214aec5fb3fa", null ],
+    [ "CycRunTimeCntrlType", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a3cf7f13226aee82f0ccc5623c6e35eca", null ],
+    [ "FanSched", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#ad698590b539e8476fe019b80fc350761", null ],
+    [ "FanSchedPtr", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#ace757ab675d366b6cd4726a6d70de697", null ],
+    [ "HeatingZoneListName", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#ab7ce2f9cb6265589763e049336a58173", null ],
+    [ "HeatingZonePtrs", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a392461abde635aad92c99d782f578834", null ],
+    [ "HeatZnFanZoneListName", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a9a1592d429a54436aa1d1e8712e66ebf", null ],
+    [ "HeatZnFanZonePtrs", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#abdf5c25031df36858aa052217008e2c7", null ],
+    [ "MgrType", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a9ccd8aef9e2978177cb12e1e96d34131", null ],
+    [ "Name", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a3e5f45b22a1408ff7cb16ea42f60c19d", null ],
+    [ "NumOfCoolingZones", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a9966b00f7d6e0a716b2f7a76f7523b6d", null ],
+    [ "NumOfCtrlZones", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#adf8e70e771e890a54cc8f32061d03fb4", null ],
+    [ "NumOfHeatingZones", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a7d4ee594bf03bc90f976b72887d1a96b", null ],
+    [ "NumOfHeatZnFanZones", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#ab419a49e64a8468ac022a0ab583cbc3f", null ],
+    [ "PriorAvailStatus", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a4d9d147e7bca1458e34cddd3575584b7", null ],
+    [ "SchedPtr", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a38fff1b6f3228e308439dea78df1c01a", null ],
+    [ "TempTolRange", "structEnergyPlus_1_1SystemAvailabilityManager_1_1DefineNightCycSysAvailManager.html#a8b3854820aad0cc0d3e680ef9de03376", null ]
+];

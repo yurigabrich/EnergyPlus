@@ -1,0 +1,11 @@
+<map id="src/EnergyPlus/RefrigeratedCase.hh" name="src/EnergyPlus/RefrigeratedCase.hh">
+<area shape="rect" id="node2" href="$HeatingCoils_8cc.html" title="src/EnergyPlus/HeatingCoils.cc" alt="" coords="5,102,213,129"/>
+<area shape="rect" id="node3" href="$HVACManager_8cc.html" title="src/EnergyPlus/HVACManager.cc" alt="" coords="237,102,459,129"/>
+<area shape="rect" id="node4" href="$InternalHeatGains_8cc.html" title="src/EnergyPlus/InternalHeat\lGains.cc" alt="" coords="483,95,669,136"/>
+<area shape="rect" id="node5" href="$PlantLoopEquip_8cc.html" title="src/EnergyPlus/PlantLoop\lEquip.cc" alt="" coords="693,95,867,136"/>
+<area shape="rect" id="node6" href="$RefrigeratedCase_8cc.html" title="src/EnergyPlus/Refrigerated\lCase.cc" alt="" coords="891,95,1077,136"/>
+<area shape="rect" id="node7" href="$RoomAirModelAirflowNetwork_8cc.html" title="src/EnergyPlus/RoomAirModel\lAirflowNetwork.cc" alt="" coords="1102,95,1303,136"/>
+<area shape="rect" id="node8" href="$SimulationManager_8cc.html" title="src/EnergyPlus/Simulation\lManager.cc" alt="" coords="1328,95,1504,136"/>
+<area shape="rect" id="node9" href="$WaterThermalTanks_8cc.html" title="src/EnergyPlus/WaterThermal\lTanks.cc" alt="" coords="1528,95,1725,136"/>
+<area shape="rect" id="node10" href="$ZoneEquipmentManager_8cc.html" title="src/EnergyPlus/ZoneEquipment\lManager.cc" alt="" coords="1750,95,1957,136"/>
+</map>

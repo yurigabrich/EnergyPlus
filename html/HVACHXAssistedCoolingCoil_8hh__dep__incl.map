@@ -1,0 +1,19 @@
+<map id="src/EnergyPlus/HVACHXAssistedCoolingCoil.hh" name="src/EnergyPlus/HVACHXAssistedCoolingCoil.hh">
+<area shape="rect" id="node2" href="$AirflowNetworkBalanceManager_8cc.html" title="src/EnergyPlus/AirflowNetwork\lBalanceManager.cc" alt="" coords="5,95,209,136"/>
+<area shape="rect" id="node3" href="$FanCoilUnits_8cc.html" title="src/EnergyPlus/FanCoilUnits.cc" alt="" coords="233,102,443,129"/>
+<area shape="rect" id="node4" href="$Furnaces_8cc.html" title="src/EnergyPlus/Furnaces.cc" alt="" coords="467,102,654,129"/>
+<area shape="rect" id="node5" href="$HVACDXHeatPumpSystem_8cc.html" title="src/EnergyPlus/HVACDXHeat\lPumpSystem.cc" alt="" coords="678,95,878,136"/>
+<area shape="rect" id="node6" href="$HVACDXSystem_8cc.html" title="src/EnergyPlus/HVACDXSystem.cc" alt="" coords="902,102,1137,129"/>
+<area shape="rect" id="node7" href="$HVACHXAssistedCoolingCoil_8cc.html" title="src/EnergyPlus/HVACHXAssisted\lCoolingCoil.cc" alt="" coords="1160,95,1383,136"/>
+<area shape="rect" id="node8" href="$HVACUnitaryBypassVAV_8cc.html" title="src/EnergyPlus/HVACUnitary\lBypassVAV.cc" alt="" coords="1407,95,1602,136"/>
+<area shape="rect" id="node9" href="$HVACVariableRefrigerantFlow_8cc.html" title="src/EnergyPlus/HVACVariable\lRefrigerantFlow.cc" alt="" coords="1626,95,1826,136"/>
+<area shape="rect" id="node10" href="$MixedAir_8cc.html" title="src/EnergyPlus/MixedAir.cc" alt="" coords="1850,102,2034,129"/>
+<area shape="rect" id="node11" href="$OutdoorAirUnit_8cc.html" title="src/EnergyPlus/OutdoorAir\lUnit.cc" alt="" coords="2059,95,2236,136"/>
+<area shape="rect" id="node12" href="$PackagedTerminalHeatPump_8cc.html" title="src/EnergyPlus/PackagedTerminal\lHeatPump.cc" alt="" coords="2260,95,2483,136"/>
+<area shape="rect" id="node13" href="$SimAirServingZones_8cc.html" title="src/EnergyPlus/SimAirServing\lZones.cc" alt="" coords="2507,95,2705,136"/>
+<area shape="rect" id="node14" href="$UnitarySystem_8cc.html" title="src/EnergyPlus/UnitarySystem.cc" alt="" coords="2729,102,2949,129"/>
+<area shape="rect" id="node15" href="$UnitVentilator_8cc.html" title="src/EnergyPlus/UnitVentilator.cc" alt="" coords="2973,102,3185,129"/>
+<area shape="rect" id="node16" href="$VentilatedSlab_8cc.html" title="src/EnergyPlus/Ventilated\lSlab.cc" alt="" coords="3210,95,3383,136"/>
+<area shape="rect" id="node17" href="$WaterCoils_8cc.html" title="src/EnergyPlus/WaterCoils.cc" alt="" coords="3408,102,3607,129"/>
+<area shape="rect" id="node18" href="$WindowAC_8cc.html" title="src/EnergyPlus/WindowAC.cc" alt="" coords="3631,102,3829,129"/>
+</map>

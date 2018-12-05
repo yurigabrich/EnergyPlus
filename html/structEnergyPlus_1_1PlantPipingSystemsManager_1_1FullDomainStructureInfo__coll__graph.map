@@ -1,0 +1,13 @@
+<map id="EnergyPlus::PlantPipingSystemsManager::FullDomainStructureInfo" name="EnergyPlus::PlantPipingSystemsManager::FullDomainStructureInfo">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1BasementZoneInfo.html" title="EnergyPlus::PlantPipingSystems\lManager::BasementZoneInfo" alt="" coords="287,7,502,49"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1FarfieldInfo.html" title="EnergyPlus::PlantPipingSystems\lManager::FarfieldInfo" alt="" coords="287,73,502,114"/>
+<area shape="rect" id="node4" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1MoistureInfo.html" title="EnergyPlus::PlantPipingSystems\lManager::MoistureInfo" alt="" coords="287,138,502,179"/>
+<area shape="rect" id="node5" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1BaseThermalPropertySet.html" title="EnergyPlus::PlantPipingSystems\lManager::BaseThermalPropertySet" alt="" coords="281,203,508,245"/>
+<area shape="rect" id="node6" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1MeshProperties.html" title="EnergyPlus::PlantPipingSystems\lManager::MeshProperties" alt="" coords="287,269,502,310"/>
+<area shape="rect" id="node7" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1DistributionStructure.html" title="EnergyPlus::PlantPipingSystems\lManager::DistributionStructure" alt="" coords="5,269,220,310"/>
+<area shape="rect" id="node8" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1MeshExtents.html" title="EnergyPlus::PlantPipingSystems\lManager::MeshExtents" alt="" coords="287,334,502,375"/>
+<area shape="rect" id="node9" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1SimulationControl.html" title="EnergyPlus::PlantPipingSystems\lManager::SimulationControl" alt="" coords="287,399,502,441"/>
+<area shape="rect" id="node10" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1CurSimConditionsInfo.html" title="EnergyPlus::PlantPipingSystems\lManager::CurSimConditionsInfo" alt="" coords="287,465,502,506"/>
+<area shape="rect" id="node11" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1MeshPartitions.html" title="EnergyPlus::PlantPipingSystems\lManager::MeshPartitions" alt="" coords="287,530,502,571"/>
+<area shape="rect" id="node12" href="$structEnergyPlus_1_1PlantPipingSystemsManager_1_1ReportingInformation.html" title="EnergyPlus::PlantPipingSystems\lManager::ReportingInformation" alt="" coords="287,595,502,637"/>
+</map>

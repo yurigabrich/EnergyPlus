@@ -1,0 +1,25 @@
+var DataSurfaceColors_8cc =
+[
+    [ "colorkeyptr", "DataSurfaceColors_8cc.html#af93249aa851c2b76ad0d66150fc8c87f", null ],
+    [ "colorkeys", "DataSurfaceColors_8cc.html#a0d03319dbb9b994c34c3ad99b6d77944", null ],
+    [ "ColorNo_DaylSensor1", "DataSurfaceColors_8cc.html#ae0d5fc3ccf5178b16bba74f34c79c107", null ],
+    [ "ColorNo_DaylSensor2", "DataSurfaceColors_8cc.html#a534a66f5e32db50b570e979b564c434a", null ],
+    [ "ColorNo_Door", "DataSurfaceColors_8cc.html#a8f71a7da9e28af08e6a57c65bfa3a36f", null ],
+    [ "ColorNo_Floor", "DataSurfaceColors_8cc.html#aefe157c641c0c9620a4957e43c0e9fc1", null ],
+    [ "ColorNo_GlassDoor", "DataSurfaceColors_8cc.html#aa2ac5bea5cdfa2a9f8be36cae0602ec6", null ],
+    [ "ColorNo_PV", "DataSurfaceColors_8cc.html#ab3d9cb9e7d380fa90594835484cd0d04", null ],
+    [ "ColorNo_Roof", "DataSurfaceColors_8cc.html#a6714733fcafa04a9ad2d46201648625f", null ],
+    [ "ColorNo_ShdAtt", "DataSurfaceColors_8cc.html#a6adb6d7554f65e72889ee8116b02ec8e", null ],
+    [ "ColorNo_ShdDetBldg", "DataSurfaceColors_8cc.html#a84b4564c371628f5955f9f5e09e28d62", null ],
+    [ "ColorNo_ShdDetFix", "DataSurfaceColors_8cc.html#ad181630e1b8fd57f381459a26122c8d5", null ],
+    [ "ColorNo_TDDDiffuser", "DataSurfaceColors_8cc.html#a73621acb43b46591d7f34257ac2030c1", null ],
+    [ "ColorNo_TDDDome", "DataSurfaceColors_8cc.html#a41f596a96a367d88ec501e2c3e009a83", null ],
+    [ "ColorNo_Text", "DataSurfaceColors_8cc.html#acd063bf08954a8bf256f1fd0c60571d0", null ],
+    [ "ColorNo_Wall", "DataSurfaceColors_8cc.html#a8af91f30c67d17a3950abdaa08182ec6", null ],
+    [ "ColorNo_Window", "DataSurfaceColors_8cc.html#abe2f13cde00e67f07fd7290ac9ddb4b5", null ],
+    [ "defaultcolorno", "DataSurfaceColors_8cc.html#aef684199004f00d1338022c94ac5244c", null ],
+    [ "DXFcolorno", "DataSurfaceColors_8cc.html#a80c81ff4c5b8c0ce2db20e90bfc68547", null ],
+    [ "MatchAndSetColorTextString", "DataSurfaceColors_8cc.html#a617e43292f25827b1a5048ca569715e4", null ],
+    [ "NumColors", "DataSurfaceColors_8cc.html#a80849daa9da03e86660486e877b87599", null ],
+    [ "SetUpSchemeColors", "DataSurfaceColors_8cc.html#a4415f377b759c9f1828afc78703f3789", null ]
+];

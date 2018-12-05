@@ -1,0 +1,4 @@
+<map id="EnergyPlus::PlantHeatExchangerFluidToFluid::HeatExchangerStruct" name="EnergyPlus::PlantHeatExchangerFluidToFluid::HeatExchangerStruct">
+<area shape="rect" id="node2" href="$structEnergyPlus_1_1PlantHeatExchangerFluidToFluid_1_1PlantConnectionStruct.html" title="EnergyPlus::PlantHeatExchanger\lFluidToFluid::PlantConnectionStruct" alt="" coords="5,5,237,47"/>
+<area shape="rect" id="node3" href="$structEnergyPlus_1_1PlantHeatExchangerFluidToFluid_1_1PlantLocatorStruct.html" title="EnergyPlus::PlantHeatExchanger\lFluidToFluid::PlantLocatorStruct" alt="" coords="13,71,230,112"/>
+</map>

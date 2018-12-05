@@ -1,0 +1,27 @@
+var structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData =
+[
+    [ "RefrigCompressorData", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a333a9b2b98088692c3e4e6c7b3a4acbc", null ],
+    [ "reset_init", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a73be852a4b65fffe58078ad7aa48144f", null ],
+    [ "Capacity", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#acb06de02fe89ad3fb1e15b324ac5c213", null ],
+    [ "CapacityCurvePtr", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ad9e276fc9024eb1189949be2f811ba8b", null ],
+    [ "CoilFlag", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a2da3b45c0be4f34965b78d28e49ec886", null ],
+    [ "CoolingEnergy", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a7b2dc3916d09b8a608387a06fe7dfed7", null ],
+    [ "Efficiency", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ac75dae01935a2e74a0b84a592924b7f2", null ],
+    [ "ElecConsumption", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ae53613630d7e029cbece5a53cf273d0f", null ],
+    [ "ElecPowerCurvePtr", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#aebe0c4e9329a81c63d463b69d5a8fc47", null ],
+    [ "EndUseSubcategory", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a0ff090d69ba17734be5aa60db90a3caf", null ],
+    [ "LoadFactor", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#af11b463b766aa3d86fecae1bb504d09a", null ],
+    [ "MassFlow", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a408372922b800b5dc1e7d01a06fcb4a5", null ],
+    [ "MassFlowCurvePtr", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ad6f358192cdbab3e4ef8d1908973e730", null ],
+    [ "Name", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a797460858f08794ab4c18b8e6710e2c1", null ],
+    [ "NomCap", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#aa54150eceea1a6fe34134d7cd240177e", null ],
+    [ "NumSysAttach", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ac485709a909cc5768782d1b613365c84", null ],
+    [ "Power", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ae94ad4d8f43e4f0e8e6e1bce4de877dc", null ],
+    [ "RatedSubcool", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ab49c69f6e30cbdccdcf094f77ad7a825", null ],
+    [ "RatedSuperheat", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#ab57d087bd5a2927f8a4dda2d44df4c21", null ],
+    [ "SubcoolRatingType", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a87fa4f63eb3c7d1a33393868c7c32361", null ],
+    [ "SuperheatRatingType", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#aad3bf579eba8cfb672ba8ffe16c96ecb", null ],
+    [ "TransCapacityCurvePtr", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a32afeb80f6e1780b37ebb4e348ebbec2", null ],
+    [ "TransElecPowerCurvePtr", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a818f0f44ae279cd9020e1f34ad2a11b5", null ],
+    [ "TransFlag", "structEnergyPlus_1_1RefrigeratedCase_1_1RefrigCompressorData.html#a8ba5d6294628633b5e258dbe9156759f", null ]
+];

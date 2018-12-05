@@ -1,0 +1,9 @@
+<map id="src/EnergyPlus/WaterThermalTanks.hh" name="src/EnergyPlus/WaterThermalTanks.hh">
+<area shape="rect" id="node2" href="$IntegratedHeatPump_8cc.html" title="src/EnergyPlus/Integrated\lHeatPump.cc" alt="" coords="5,95,179,136"/>
+<area shape="rect" id="node3" href="$InternalHeatGains_8cc.html" title="src/EnergyPlus/InternalHeat\lGains.cc" alt="" coords="203,95,389,136"/>
+<area shape="rect" id="node4" href="$NonZoneEquipmentManager_8cc.html" title="src/EnergyPlus/NonZoneEquipment\lManager.cc" alt="" coords="414,95,645,136"/>
+<area shape="rect" id="node5" href="$PackagedThermalStorageCoil_8cc.html" title="src/EnergyPlus/PackagedThermal\lStorageCoil.cc" alt="" coords="669,95,889,136"/>
+<area shape="rect" id="node6" href="$PlantLoopEquip_8cc.html" title="src/EnergyPlus/PlantLoop\lEquip.cc" alt="" coords="913,95,1087,136"/>
+<area shape="rect" id="node7" href="$WaterThermalTanks_8cc.html" title="src/EnergyPlus/WaterThermal\lTanks.cc" alt="" coords="1111,95,1308,136"/>
+<area shape="rect" id="node8" href="$ZoneEquipmentManager_8cc.html" title="src/EnergyPlus/ZoneEquipment\lManager.cc" alt="" coords="1333,95,1539,136"/>
+</map>
