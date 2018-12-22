@@ -56,6 +56,7 @@ file, described below.
 # ------------------------------------------
 # SURFACE = WALL, ROOF, floor, or a ceiling
 # SUBSURFACE = window, door, or glassdoor
+# A BACK SURFACE – an inside surface – is one that may be partially sunlit/receive solar transmission for interior solar distribution.
 # ------------------------------------------
 
 
@@ -1061,9 +1062,9 @@ def EnergyPlus():
 		            e.InsRevealDiffOntoFrameReport = 0.0
 		            e.BmSolAbsdInsRevealReport = 0.0
 
-		        DisplayString("Initializing Zone Report Variables")
+		        print("Initializing Zone Report Variables")
 		        # CurrentModuleObject='Zone'
-		        for (ZoneLoop = 1 ZoneLoop <= NumOfZones ++ZoneLoop):
+		        for ZoneLoop in range(1, NumOfZones+1):
 		            SetupOutputVariable("Zone Windows Total Transmitted Solar Radiation Rate",
 		                                OutputProcessor::Unit::W,
 		                                ZoneTransSolar(ZoneLoop),
@@ -1170,9 +1171,9 @@ def EnergyPlus():
 		                                    "Sum",
 		                                    Zone(ZoneLoop).Name)
 
-		        DisplayString("Initializing Surface (Shading) Report Variables")
+		        print("Initializing Surface (Shading) Report Variables")
 		        # CurrentModuleObject='Surfaces'
-		        for (SurfLoop = 1 SurfLoop <= TotSurfaces ++SurfLoop):
+		        for SurfLoop in range(1, TotSurfaces+1):
 		            SetupOutputVariable("Surface Outside Normal Azimuth Angle",
 		                                OutputProcessor::Unit::deg,
 		                                Surface(SurfLoop).Azimuth,
@@ -1180,8 +1181,12 @@ def EnergyPlus():
 		                                "Average",
 		                                Surface(SurfLoop).Name)
 		            if (Surface(SurfLoop).ExtSolar):
-		                SetupOutputVariable(
-		                    "Surface Outside Face Sunlit Area", OutputProcessor::Unit::m2, SurfSunlitArea(SurfLoop), "Zone", "State", Surface(SurfLoop).Name)
+		                SetupOutputVariable("Surface Outside Face Sunlit Area",
+		                					OutputProcessor::Unit::m2,
+		                					SurfSunlitArea(SurfLoop),
+		                					"Zone",
+		                					"State",
+		                					Surface(SurfLoop).Name)
 		                SetupOutputVariable("Surface Outside Face Sunlit Fraction",
 		                                    OutputProcessor::Unit::None,
 		                                    SurfSunlitFrac(SurfLoop),
@@ -1273,7 +1278,7 @@ def EnergyPlus():
 		                                    "Average",
 		                                    Surface(SurfLoop).Name)
 
-		            if (!Surface(SurfLoop).HeatTransSurf) continue
+		            if (!Surface(SurfLoop).HeatTransSurf): continue
 
 		            if (Surface(SurfLoop).Class == SurfaceClass_Window):
 		                # CurrentModuleObject='Windows/GlassDoors'
@@ -1296,7 +1301,7 @@ def EnergyPlus():
 		                    else:
 		                        NumOfLayers = Construct(Surface(SurfLoop).Construction).TotLayers
 		                    
-		                    for (I = 1 I <= NumOfLayers ++I):
+		                    for I in range(1, NumOfLayers+1):
 		                        SetupOutputVariable("Surface Window Total Absorbed Shortwave Radiation Rate Layer " + RoundSigDigits(I) + "",
 		                                            OutputProcessor::Unit::W,
 		                                            QRadSWwinAbsLayer(I, SurfLoop),
@@ -1794,6 +1799,7 @@ def EnergyPlus():
 		                                        "Zone",
 		                                        "State",
 		                                        Surface(SurfLoop).Name)
+
 		                elif (!Surface(SurfLoop).ExtSolar): # Not ExtSolar
 		                    if (DisplayAdvancedReportVariables):
 		                        # CurrentModuleObject='InteriorWindows(Advanced)'
@@ -1804,6 +1810,7 @@ def EnergyPlus():
 		                                                "Zone",
 		                                                "Average",
 		                                                Surface(SurfLoop).Name)
+
 		                        SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Shortwave Radiation Rate",
 		                                            OutputProcessor::Unit::W,
 		                                            SWwinAbsTotalReport(SurfLoop),
@@ -2237,8 +2244,8 @@ def EnergyPlus():
 		                                    "Sum",
 		                                    Surface(SurfLoop).Name)
 
-		        for (SurfLoop = 1 SurfLoop <= TotSurfaces ++SurfLoop):
-		            if (!Surface(SurfLoop).HeatTransSurf) continue
+		        for SurfLoop in range(1, TotSurfaces+1):
+		            if (!Surface(SurfLoop).HeatTransSurf): continue
 		            # CurrentModuleObject='Surfaces'
 		            SetupOutputVariable("Surface Inside Face Exterior Windows Incident Beam Solar Radiation Rate per Area",
 		                                OutputProcessor::Unit::W_m2,
@@ -2295,244 +2302,6 @@ def EnergyPlus():
 		                                "Zone",
 		                                "Sum",
 		                                Surface(SurfLoop).Name)
-		    	return None
-
-		    def AnisoSkyViewFactors():
-		    	'''
-		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Fred Winkelmann
-		        //       DATE WRITTEN   April 1999
-		        //       MODIFIED       LKL Dec 2002 -- Anisotropic is only sky radiance option
-		        //       RE-ENGINEERED  na
-
-		        // PURPOSE OF THIS SUBROUTINE:
-		        // Calculates view factor multiplier, AnisoSkyMult, for diffuse
-		        // sky irradiance on exterior surfaces taking into account
-		        // anisotropic radiance of the sky. Called by InitSurfaceHeatBalance
-		        // In this case the diffuse sky irradiance on a surface is given by
-		        //  AnisoSkyMult(SurfNum) * DifSolarRad
-		        // AnisoSkyMult accounts not only for the sky radiance distribution but
-		        // also for the effects of shading of sky diffuse radiation by
-		        // shadowing surfaces such as overhangs. It does not account for reflection
-		        // of sky diffuse radiation from shadowing surfaces.
-		        // Based on an empirical model described in
-		        // R. Perez, P. Ineichen, R. Seals, J. Michalsky and R. Stewart,
-		        // "Modeling Daylight Availability and Irradiance Components from Direct
-		        // and Global Irradiance," Solar Energy 44, 271-289, 1990.
-		        // In this model the radiance of the sky consists of three distributions
-		        // that are superimposed:
-
-		        // (1) An isotropic distribution that covers the entire sky dome
-		        // (2) A circumsolar brightening centered around the position of the sun
-		        // (3) A horizon brightening
-		        // The circumsolar brightening is assumed to be concentrated at a point
-		        // source at the center of the sun although this region actually begins at the
-		        // periphery of the solar disk and falls off in intensity with increasing
-		        // angular distance from the periphery.
-		        // The horizon brightening is assumed to be concentrated at the horizon and
-		        // to be independent of azimuth. In actuality, for clear skies, the horizon
-		        // brightening is highest at the horizon and decreases in intensity away from
-		        // the horizon. For overcast skies the horizon brightening has a negative value
-		        // since for such skies the sky radiance increases rather than decreases away
-		        // from the horizon.
-		        // The F11R, F12R, etc. values were provided by R. Perez, private communication,
-		        // 5/21/99. These values have higher precision than those listed in the above
-		        // paper.
-		        '''
-
-		        # Using/Aliasing
-		        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
-		        using General::TrimSigDigits
-
-		        # Locals
-		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        static Array1D<Real64> const EpsilonLimit(
-		            7, {1.065, 1.23, 1.5, 1.95, 2.8, 4.5, 6.2}) # Upper limit of bins of the sky clearness parameter, Epsilon
-		        # Circumsolar brightening coefficients index corresponds to range of Epsilon, the sky clearness parameter
-		        static Array1D<Real64> const F11R(8, {-0.0083117, 0.1299457, 0.3296958, 0.5682053, 0.8730280, 1.1326077, 1.0601591, 0.6777470})
-		        static Array1D<Real64> const F12R(8, {0.5877285, 0.6825954, 0.4868735, 0.1874525, -0.3920403, -1.2367284, -1.5999137, -0.3272588})
-		        static Array1D<Real64> const F13R(8, {-0.0620636, -0.1513752, -0.2210958, -0.2951290, -0.3616149, -0.4118494, -0.3589221, -0.2504286})
-		        # Horizon/zenith brightening coefficient array index corresponds to range of Epsilon, the sky clearness parameter
-		        static Array1D<Real64> const F21R(8, {-0.0596012, -0.0189325, 0.0554140, 0.1088631, 0.2255647, 0.2877813, 0.2642124, 0.1561313})
-		        static Array1D<Real64> const F22R(8, {0.0721249, 0.0659650, -0.0639588, -0.1519229, -0.4620442, -0.8230357, -1.1272340, -1.3765031})
-		        static Array1D<Real64> const F23R(8, {-0.0220216, -0.0288748, -0.0260542, -0.0139754, 0.0012448, 0.0558651, 0.1310694, 0.2506212})
-
-		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-
-		        Real64 CosZenithAng           # Cosine of solar zenith angle
-		        Real64 ZenithAng              # Solar zenith angle (radians)
-		        Real64 ZenithAngDeg           # Solar zenith angle (degrees)
-		        Real64 F1                     # Circumsolar brightening coefficient
-		        Real64 F2                     # Horizon/zenith brightening coefficient
-		        Real64 Epsilon                # Sky clearness parameter
-		        Real64 Delta                  # Sky brightness parameter
-		        Real64 CosIncAngBeamOnSurface # Cosine of incidence angle of beam solar on surface
-		        Real64 IncAng                 # Incidence angle of beam solar on surface (radians)
-		        int SurfNum                   # Surface number
-		        int EpsilonBin                # Sky clearness (Epsilon) bin index
-		        Real64 AirMass                # Relative air mass
-		        Real64 AirMassH               # Intermediate variable for relative air mass calculation
-		        Real64 CircumSolarFac         # Ratio of cosine of incidence angle to cosine of zenith angle
-		        Real64 KappaZ3                # Intermediate variable
-		        Real64 ViewFactorSkyGeom      # Geometrical sky view factor
-		        Real64 const cosine_tolerance(0.0001)
-
-		        # FLOW:
-				#ifdef EP_Count_Calls
-		        ++NumAnisoSky_Calls
-				#endif
-
-		        CosZenithAng = SOLCOS(3)
-		        ZenithAng = std::acos(CosZenithAng)
-		        ZenithAngDeg = ZenithAng / DegToRadians
-
-		        AnisoSkyMult = 0.0
-
-		        # Relative air mass
-		        AirMassH = (1.0 - 0.1 * Elevation / 1000.0)
-		        if (ZenithAngDeg <= 75.0):
-		            AirMass = AirMassH / CosZenithAng
-		        else:
-		            AirMass = AirMassH / (CosZenithAng + 0.15 * std::pow(93.9 - ZenithAngDeg, -1.253))
-
-		        KappaZ3 = 1.041 * pow_3(ZenithAng)
-		        Epsilon = ((BeamSolarRad + DifSolarRad) / DifSolarRad + KappaZ3) / (1.0 + KappaZ3)
-		        Delta = DifSolarRad * AirMass / 1353.0 # 1353 is average extraterrestrial irradiance (W/m2)
-		        # Circumsolar (F1) and horizon/zenith (F2) brightening coefficients
-		        for (EpsilonBin = 1 EpsilonBin <= 8 ++EpsilonBin):
-		            if (EpsilonBin == 8) break
-		            if (Epsilon < EpsilonLimit(EpsilonBin)) break
-
-		        F1 = max(0.0, F11R(EpsilonBin) + F12R(EpsilonBin) * Delta + F13R(EpsilonBin) * ZenithAng)
-		        F2 = F21R(EpsilonBin) + F22R(EpsilonBin) * Delta + F23R(EpsilonBin) * ZenithAng
-
-		        for (SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
-		            if (!Surface(SurfNum).ExtSolar) continue
-
-		            CosIncAngBeamOnSurface = SOLCOS(1) * Surface(SurfNum).OutNormVec(1) + SOLCOS(2) * Surface(SurfNum).OutNormVec(2) + SOLCOS(3) * Surface(SurfNum).OutNormVec(3)
-
-		            # So I believe this should only be a diagnostic error...the calcs should always be within -1,+1 it's just round-off that we need to trap
-		            # for
-		            if (CosIncAngBeamOnSurface > 1.0):
-		                if (CosIncAngBeamOnSurface > (1.0 + cosine_tolerance)):
-		                    ShowSevereError("Cosine of incident angle of beam solar on surface out of range...too high")
-		                    ShowContinueError("This is a diagnostic error that should not be encountered under normal circumstances")
-		                    ShowContinueError("Occurs on surface: " + Surface(SurfNum).Name)
-		                    ShowContinueError("Current value = " + TrimSigDigits(CosIncAngBeamOnSurface) + " ... should be within [-1, +1]")
-		                    ShowFatalError("Anisotropic solar calculation causes fatal error")
-		                CosIncAngBeamOnSurface = 1.0
-		            elif (CosIncAngBeamOnSurface < -1.0):
-		                if (CosIncAngBeamOnSurface < (-1.0 - cosine_tolerance)):
-		                    ShowSevereError("Cosine of incident angle of beam solar on surface out of range...too low")
-		                    ShowContinueError("This is a diagnostic error that should not be encountered under normal circumstances")
-		                    ShowContinueError("Occurs on surface: " + Surface(SurfNum).Name)
-		                    ShowContinueError("Current value = " + TrimSigDigits(CosIncAngBeamOnSurface) + " ... should be within [-1, +1]")
-		                    ShowFatalError("Anisotropic solar calculation causes fatal error")
-		                CosIncAngBeamOnSurface = -1.0
-
-		            IncAng = std::acos(CosIncAngBeamOnSurface)
-
-		            ViewFactorSkyGeom = Surface(SurfNum).ViewFactorSky
-		            MultIsoSky(SurfNum) = ViewFactorSkyGeom * (1.0 - F1)
-		            #           0.0871557 below corresponds to a zenith angle of 85 deg
-		            CircumSolarFac = max(0.0, CosIncAngBeamOnSurface) / max(0.0871557, CosZenithAng)
-		            #           For near-horizontal roofs, model has an inconsistency that gives sky diffuse
-		            #           irradiance significantly different from DifSolarRad when zenith angle is
-		            #           above 85 deg. The following forces irradiance to be very close to DifSolarRad
-		            #           in this case.
-		            if (CircumSolarFac > 0.0 && CosZenithAng < 0.0871557 && Surface(SurfNum).Tilt < 2.0) CircumSolarFac = 1.0
-		            MultCircumSolar(SurfNum) = F1 * CircumSolarFac
-		            MultHorizonZenith(SurfNum) = F2 * Surface(SurfNum).SinTilt
-
-		            if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
-		                AnisoSkyMult(SurfNum) = MultIsoSky(SurfNum) * DifShdgRatioIsoSky(SurfNum) +
-		                                        MultCircumSolar(SurfNum) * SunlitFrac(TimeStep, HourOfDay, SurfNum) +
-		                                        MultHorizonZenith(SurfNum) * DifShdgRatioHoriz(SurfNum)
-		            else:
-		                AnisoSkyMult(SurfNum) = MultIsoSky(SurfNum) * DifShdgRatioIsoSkyHRTS(TimeStep, HourOfDay, SurfNum) +
-		                                        MultCircumSolar(SurfNum) * SunlitFrac(TimeStep, HourOfDay, SurfNum) +
-		                                        MultHorizonZenith(SurfNum) * DifShdgRatioHorizHRTS(TimeStep, HourOfDay, SurfNum)
-		                curDifShdgRatioIsoSky(SurfNum) = DifShdgRatioIsoSkyHRTS(TimeStep, HourOfDay, SurfNum)
-		            AnisoSkyMult(SurfNum) = max(0.0, AnisoSkyMult(SurfNum)) // make sure not negative.
-
-		    	return None
-
-		    def CHKBKS(NBS, NRS):
-		    	'''
-		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Legacy Code
-		        //       DATE WRITTEN
-		        //       MODIFIED       Nov 2001, FW: Reverse subroutine arguments NRS and NBS to
-		        //                                    correspond to how CHKBKS is called
-		        //                      Jan 2002, FW: change error message
-		        //       RE-ENGINEERED  Lawrie, Oct 2000
-
-		        // PURPOSE OF THIS SUBROUTINE:
-		        // Determines whether a any vertices of the back surface are in front of the receiving surface
-		        // if so, gives severe error.  Only base heat transfer surfaces are checked.
-		        - int const NBS, # Surface Number of the potential back surface
-		        - int const NRS  # Surface Number of the potential shadow receiving surface
-
-		        // METHODOLOGY EMPLOYED:
-		        # na
-
-		        // REFERENCES:
-		        // BLAST/IBLAST code, original author George Walton
-		        '''
-
-		        # Using/Aliasing
-		        using namespace Vectors
-
-		        # Locals
-		        # SUBROUTINE ARGUMENT DEFINITIONS:
-
-		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        static gio::Fmt ValFmt("(F20.4)")
-
-		        # INTERFACE BLOCK SPECIFICATIONS
-		        # na
-
-		        # DERIVED TYPE DEFINITIONS
-		        # na
-
-		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int N                # Loop Control (vertex counter)
-		        int NVRS             # Number of vertices of the receiving surface
-		        int NVBS             # Number of vertices of the back surface
-		        Real64 DOTP          # Dot product of C and D
-		        std::string CharDotP # for error messages
-		        std::string VTString
-
-		        # Object Data
-		        Vector AVec # Vector from vertex 2 to vertex 1, both same surface
-		        Vector BVec # Vector from vertex 2 to vertex 3, both same surface
-		        Vector CVec # Vector perpendicular to surface at vertex 2
-		        Vector DVec # Vector from vertex 2 of first surface to vertex 'n' of second surface
-
-		        NVRS = Surface(NRS).Sides
-		        NVBS = Surface(NBS).Sides
-
-		        # SEE IF ANY VERTICES OF THE back surface ARE IN FRONT OF THE receiving surface
-
-		        AVec = Surface(NRS).Vertex(1) - Surface(NRS).Vertex(2)
-		        BVec = Surface(NRS).Vertex(3) - Surface(NRS).Vertex(2)
-
-		        CVec = cross(BVec, AVec)
-
-		        for (N = 1 N <= NVBS ++N):
-		            DVec = Surface(NBS).Vertex(N) - Surface(NRS).Vertex(2)
-		            DOTP = dot(CVec, DVec)
-		            if (DOTP > 0.0009):
-		                ShowSevereError("Problem in interior solar distribution calculation (CHKBKS)")
-		                ShowContinueError("   Solar Distribution = FullInteriorExterior will not work in Zone=" + Surface(NRS).ZoneName)
-		                gio::write(VTString, "(I4)") << N
-		                strip(VTString)
-		                ShowContinueError("   because vertex " + VTString + " of back surface=" + Surface(NBS).Name +
-		                                  " is in front of receiving surface=" + Surface(NRS).Name)
-		                gio::write(CharDotP, ValFmt) << DOTP
-		                strip(CharDotP)
-		                ShowContinueError("   (Dot Product indicator=" + CharDotP + ')')
-		                ShowContinueError("   Check surface geometry if OK, use Solar Distribution = FullExterior instead.")
 
 		    	return None
 
@@ -2571,7 +2340,7 @@ def EnergyPlus():
 		        # SUBROUTINE ARGUMENT DEFINITIONS:
 
 		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        static Real64 TolValue(0.0003)
+		        TolValue = 0.0003
 
 		        # INTERFACE BLOCK SPECIFICATIONS
 		        # na
@@ -2586,18 +2355,22 @@ def EnergyPlus():
 		        CannotShade = True
 
 		        # see if no point of shadow casting surface is above low point of receiving surface
-
 		        auto const &surface_C(Surface(NSS))
-		        if (surface_C.OutNormVec(3) > 0.9999) return # Shadow Casting Surface is horizontal and facing upward
+		        if (surface_C.OutNormVec(3) > 0.9999):
+		        	# Shadow Casting Surface is horizontal and facing upward
+		        	return None
+
 		        auto const &vertex_C(surface_C.Vertex)
 		        Real64 ZMAX(vertex_C(1).z)
-		        for (int i = 2, e = surface_C.Sides i <= e ++i):
+		        # for (int i = 2, e = surface_C.Sides i <= e ++i):
+		        e = surface_C.Sides
+		        for i in range(2, e+1):
 		            ZMAX = std::max(ZMAX, vertex_C(i).z)
 
-		        if (ZMAX <= ZMIN) return
+		        if (ZMAX <= ZMIN):
+		        	return None
 
 		        # SEE IF ANY VERTICES OF THE Shadow Casting Surface ARE ABOVE THE PLANE OF THE receiving surface
-
 		        auto const &surface_R(Surface(NRS))
 		        auto const &vertex_R(surface_R.Vertex)
 		        auto const vertex_R_2(vertex_R(2))
@@ -2606,28 +2379,27 @@ def EnergyPlus():
 
 		        Vector const CVec(cross(BVec, AVec)) # Vector perpendicular to surface at vertex 2
 
-		        int const NVSS = surface_C.Sides # Number of vertices of the shadow casting surface
-		        Real64 DOTP(0.0)                 # Dot Product
-		        for (int I = 1 I <= NVSS ++I):
+		        NVSS = surface_C.Sides # Number of vertices of the shadow casting surface
+		        DOTP = 0.0             # Dot Product
+		        for I in range(1, NVSS+1):
 		            DOTP = dot(CVec, vertex_C(I) - vertex_R_2)
-		            if (DOTP > TolValue) break # DO loop
+		            if (DOTP > TolValue):
+		            	break # DOTP loop
 
 		        # SEE IF ANY VERTICES OF THE receiving surface ARE ABOVE THE PLANE OF THE S.S.
-
 		        if (DOTP > TolValue):
-
 		            auto const vertex_C_2(vertex_C(2))
 		            Vector const AVec(vertex_C(1) - vertex_C_2)
 		            Vector const BVec(vertex_C(3) - vertex_C_2)
 
 		            Vector const CVec(cross(BVec, AVec))
 
-		            int const NVRS = surface_R.Sides # Number of vertices of the receiving surface
-		            for (int I = 1 I <= NVRS ++I):
+		            NVRS = surface_R.Sides # Number of vertices of the receiving surface
+		            for I in range(1, NVRS+1):
 		                DOTP = dot(CVec, vertex_R(I) - vertex_C_2)
 		                if (DOTP > TolValue):
 		                    CannotShade = False
-		                    break # DO loop
+		                    break # DOTP loop
 
 		    	return None
 
@@ -2725,163 +2497,6 @@ def EnergyPlus():
 
 		        return inside # bool statement
 
-		    def ComputeIntSolarAbsorpFactors():
-		    	'''
-		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Legacy Code
-		        //       DATE WRITTEN
-		        //       MODIFIED       B. Griffith, Oct 2010, deal with no floor case
-		        //                      L. Lawrie, Mar 2012, relax >154 tilt even further (>120 considered non-wall by ASHRAE)
-		        //       RE-ENGINEERED  Lawrie, Oct 2000
-
-		        // PURPOSE OF THIS SUBROUTINE:
-		        // This routine computes the fractions of diffusely transmitted
-		        // solar energy absorbed by each zone surface.
-
-		        // METHODOLOGY EMPLOYED:
-		        // It is assumed that all transmitted solar energy is incident
-		        // on the floors of the zone.  The fraction directly absorbed in
-		        // the floor is given by 'ISABSF'.  It is proportional to the
-		        // area * solar absorptance.  The remaining solar energy is then
-		        // distributed uniformly around the room according to
-		        // area*absorptance product
-
-		        // REFERENCES:
-		        // BLAST/IBLAST code, original author George Walton
-		        '''
-
-		        # Using/Aliasing
-		        using General::RoundSigDigits
-		        using namespace DataWindowEquivalentLayer
-
-		        # Locals
-		        # SUBROUTINE ARGUMENT DEFINITIONS:
-		        # na
-
-		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        # na
-
-		        # INTERFACE BLOCK SPECIFICATIONS
-		        # na
-
-		        # DERIVED TYPE DEFINITIONS
-		        # na
-
-		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int ConstrNum        # Index for constructions
-		        int FirstZoneSurf    # Index of first surface in current zone
-		        int LastZoneSurf     # Index of last surface in current zone
-		        Real64 AreaSum       # Intermediate calculation value
-		        int SurfNum          # DO loop counter for zone surfaces
-		        int ZoneNum          # Loop Counter for Zones
-		        int Lay              # Window glass layer number
-		        Real64 AbsDiffTotWin # Sum of a window's glass layer solar absorptances
-		        Real64 TestFractSum
-		        Real64 HorizAreaSum
-
-		        # FLOW:
-
-		        if (!allocated(ISABSF)):
-		            ISABSF.allocate(TotSurfaces)
-
-		        ISABSF = 0.0
-
-		        for (ZoneNum = 1 ZoneNum <= NumOfZones ++ZoneNum):
-		            FirstZoneSurf = Zone(ZoneNum).SurfaceFirst
-		            LastZoneSurf = Zone(ZoneNum).SurfaceLast
-		            AreaSum = 0.0
-
-		            for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
-		                if (!Surface(SurfNum).HeatTransSurf) continue
-		                # CR 8229, relaxed from -0.99 to -0.5  (Tilt > 154)
-		                # CR8769   !use ASHRAE std of >120, -0.9 to -0.5  (Tilt > 120)
-		                #      IF (Surface(SurfNum)%Class == SurfaceClass_Floor) THEN
-		                #        write(outputfiledebug,*) 'surf=',TRIM(surface(SurfNum)%name),Surface(SurfNum)%CosTilt
-		                #      endif
-		                if (Zone(ZoneNum).OfType == StandardZone && Surface(SurfNum).CosTilt < -0.5) AreaSum += Surface(SurfNum).Area
-		                #  Next is not implemented but would be:
-		                # IF ((Zone(ZoneNum)%OfType .eq. SolarWallZone .or Zone(ZoneNum)%OfType .eq. RoofPondZone) .and.     &
-		                #      Surface(SurfNum)%ExtBoundCond > 0)    AreaSum = AreaSum + Surface(SurfNum)%Area
-
-		            HorizAreaSum = AreaSum
-
-		            if ((!Zone(ZoneNum).HasFloor) && (HorizAreaSum > 0.0)):
-		                # fill floor area even though surfs not called "Floor", they are roughly horizontal and face upwards.
-		                Zone(ZoneNum).FloorArea = HorizAreaSum
-		                ShowWarningError("ComputeIntSolarAbsorpFactors: Solar distribution model is set to place solar gains on the zone floor,")
-		                ShowContinueError("...Zone=\"" + Zone(ZoneNum).Name + "\" has no floor, but has approximate horizontal surfaces.")
-		                ShowContinueError("...these Tilt > 120 degrees, (area=[" + RoundSigDigits(HorizAreaSum, 2) + "] m2) will be used.")
-
-		            # Compute ISABSF
-		            for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
-		                if (!Surface(SurfNum).HeatTransSurf) continue
-
-		                # only horizontal surfaces. !      !CR 8229, relaxed from -0.99 to -0.5  (Tilt > 154)
-		                # only horizontal surfaces. !      !CR8769 use ASHRAE std of >120, -0.9 to -0.5  (Tilt > 120)
-		                if ((Zone(ZoneNum).OfType != StandardZone || Surface(SurfNum).CosTilt < -0.5) && (Zone(ZoneNum).OfType == StandardZone || Surface(SurfNum).ExtBoundCond > 0)):
-		                    ConstrNum = Surface(SurfNum).Construction
-		                    # last minute V3.1
-		                    if (Construct(ConstrNum).TransDiff <= 0.0) { # Opaque surface
-		                        if (AreaSum > 0.0) ISABSF(SurfNum) = Surface(SurfNum).Area * Construct(ConstrNum).InsideAbsorpSolar / AreaSum
-		                    else: # Window (floor windows are assumed to have no shading device and no divider,
-		                        # and assumed to be non-switchable)
-		                        if (SurfaceWindow(SurfNum).StormWinFlag == 1):
-		                        	ConstrNum = Surface(SurfNum).StormWinConstruction
-		                        	AbsDiffTotWin = 0.0
-		                        if (!Construct(Surface(SurfNum).Construction).WindowTypeEQL):
-		                            for (Lay = 1 Lay <= Construct(ConstrNum).TotGlassLayers ++Lay):
-		                                AbsDiffTotWin += Construct(ConstrNum).AbsDiffBack(Lay)
-		                        else:
-		                            for (Lay = 1 Lay <= CFS(Construct(ConstrNum).EQLConsPtr).NL ++Lay):
-		                                AbsDiffTotWin += Construct(ConstrNum).AbsDiffBackEQL(Lay)
-		                        if (AreaSum > 0.0):
-		                        	ISABSF(SurfNum) = Surface(SurfNum).Area * AbsDiffTotWin / AreaSum
-
-		            # CR 8229  test ISABSF for problems
-		            TestFractSum = sum(ISABSF({FirstZoneSurf, LastZoneSurf}))
-
-		            if (TestFractSum <= 0.0):
-		                if (Zone(ZoneNum).ExtWindowArea > 0.0): # we have a problem, the sun has no floor to go to
-		                    if (Zone(ZoneNum).FloorArea <= 0.0):
-		                        ShowSevereError("ComputeIntSolarAbsorpFactors: Solar distribution model is set to place solar gains on the zone floor,")
-		                        ShowContinueError("but Zone =\"" + Zone(ZoneNum).Name + "\" does not appear to have any floor surfaces.")
-		                        ShowContinueError("Solar gains will be spread evenly on all surfaces in the zone, and the simulation continues...")
-		                    else: # Floor Area > 0 but still can't absorb
-		                        ShowSevereError("ComputeIntSolarAbsorpFactors: Solar distribution model is set to place solar gains on the zone floor,")
-		                        ShowContinueError("but Zone =\"" + Zone(ZoneNum).Name + "\" floor cannot absorb any solar gains. ")
-		                        ShowContinueError("Check the solar absorptance of the inside layer of the floor surface construction/material.")
-		                        ShowContinueError("Solar gains will be spread evenly on all surfaces in the zone, and the simulation continues...")
-
-		                    # try again but use an even spread across all the surfaces in the zone, regardless of horizontal
-		                    #  so as to not lose solar energy
-		                    AreaSum = 0.0
-		                    for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
-		                        if (!Surface(SurfNum).HeatTransSurf) continue
-		                        AreaSum += Surface(SurfNum).Area
-
-		                    for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
-		                        if (!Surface(SurfNum).HeatTransSurf) continue
-		                        ConstrNum = Surface(SurfNum).Construction
-		                        if (Construct(ConstrNum).TransDiff <= 0.0): # Opaque surface
-		                            if (AreaSum > 0.0) ISABSF(SurfNum) = Surface(SurfNum).Area * Construct(ConstrNum).InsideAbsorpSolar / AreaSum
-		                        else: # Window (floor windows are assumed to have no shading device and no divider,
-		                            # and assumed to be non-switchable)
-		                            if (SurfaceWindow(SurfNum).StormWinFlag == 1):
-		                            	ConstrNum = Surface(SurfNum).StormWinConstruction
-		                            	AbsDiffTotWin = 0.0
-		                            if (!Construct(Surface(SurfNum).Construction).WindowTypeEQL):
-		                                for (Lay = 1 Lay <= Construct(ConstrNum).TotGlassLayers ++Lay):
-		                                    AbsDiffTotWin += Construct(ConstrNum).AbsDiffBack(Lay)
-		                            else:
-		                                for (Lay = 1 Lay <= CFS(Construct(ConstrNum).EQLConsPtr).NL ++Lay):
-		                                    AbsDiffTotWin += Construct(ConstrNum).AbsDiffBackEQL(Lay)
-
-		                            if (AreaSum > 0.0):
-		                            	ISABSF(SurfNum) = Surface(SurfNum).Area * AbsDiffTotWin / AreaSum
-
-		        # end of zone loop
-		    	return None
-
 		    def CLIP(NVT, &XVT, &YVT, &ZVT):
 	    		'''
 		        // SUBROUTINE INFORMATION:
@@ -2924,70 +2539,72 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int NABOVE(0)    # Number of vertices of shadow casting surface. above the plane of receiving surface
-		        int NEXT(0)      # First vertex above plane of receiving surface
-		        int NON(0)       # Number of vertices of shadow casting surface. on plane of receiving surface
-		        Real64 XIN(0.0)  # X of entry point of shadow casting surface. into plane of receiving surface
-		        Real64 XOUT(0.0) # X of exit point of shadow casting surface. from plane of receiving surface
-		        Real64 YIN(0.0)  # Y of entry point of shadow casting surface. into plane of receiving surface
-		        Real64 YOUT(0.0) # Y of exit point of shadow casting surface. from plane of receiving surface
+		        NABOVE = 0  # Number of vertices of shadow casting surface. above the plane of receiving surface
+		        NEXT = 0    # First vertex above plane of receiving surface
+		        NON = 0     # Number of vertices of shadow casting surface. on plane of receiving surface
+		        XIN = 0.0   # X of entry point of shadow casting surface. into plane of receiving surface
+		        XOUT = 0.0  # X of exit point of shadow casting surface. from plane of receiving surface
+		        YIN = 0.0   # Y of entry point of shadow casting surface. into plane of receiving surface
+		        YOUT = 0.0  # Y of exit point of shadow casting surface. from plane of receiving surface
 		        #  INTEGER NVS      ! Number of vertices of the shadow/clipped surface
 
-		        # Determine if the shadow casting surface. is above, below, or intersects with the plane of the receiving surface
-
+		        # Determine if the shadow casting surface is above, below, or intersects with the plane of the receiving surface
 		        NumVertInShadowOrClippedSurface = NVS
-		        for (int N = 1 N <= NVT ++N):
-		            Real64 const ZVT_N(ZVT(N))
-		            if (ZVT_N > 0.0):
-		                ++NABOVE
-		            elif (ZVT_N == 0.0):
-		                ++NON
+		        for N in range(1, NVT+1):
+		            ZVT_N = ZVT(N)
+		            if (ZVT_N > 0.0): NABOVE += 1
+		            if (ZVT_N == 0.0): NON += 1
 
-		        if (NABOVE + NON == NVT): # Rename the unclipped shadow casting surface.
+		        if (NABOVE + NON == NVT):
+		        	# Rename the unclipped shadow casting surface.
 		            NVS = NVT
 		            NumVertInShadowOrClippedSurface = NVT
-		            for (int N = 1 N <= NVT ++N):
+		            for N in range(1, NVT+1):
 		                XVC(N) = XVT(N)
 		                YVC(N) = YVT(N)
 		                ZVC(N) = ZVT(N)
-		        elif (NABOVE == 0): # Totally submerged shadow casting surface.
+		        elif (NABOVE == 0):
+		        	# Totally submerged shadow casting surface.
 		            NVS = 0
 		            NumVertInShadowOrClippedSurface = 0
-		        else: # Remove (clip) that portion of the shadow casting surface. which is below the receiving surface
+		        else:
+		        	# Remove (clip) that portion of the shadow casting surface which is below the receiving surface
 		            NVS = NABOVE + 2
 		            NumVertInShadowOrClippedSurface = NABOVE + 2
-		            Real64 ZVT_N, ZVT_P(ZVT(1))
+		            Real64 ZVT_N, ZVT_P(ZVT(1)) # ??????? ZVT_P é uma var de tipo ZVT_N ??????????
 		            XVT(NVT + 1) = XVT(1)
 		            YVT(NVT + 1) = YVT(1)
 		            ZVT(NVT + 1) = ZVT_P
-		            for (int N = 1, P = 2 N <= NVT ++N, ++P):
+		            # for (int N = 1, P = 2 N <= NVT ++N, ++P):
+		            for N, P in zip(range(1, NVT+1), range(2, NVT+1)):
 		                ZVT_N = ZVT_P
 		                ZVT_P = ZVT(P)
-		                if (ZVT_N >= 0.0 && ZVT_P < 0.0): # Line enters plane of receiving surface
-		                    Real64 const ZVT_fac(1.0 / (ZVT_P - ZVT_N))
+		                if (ZVT_N >= 0.0 && ZVT_P < 0.0):
+		                	# Line enters plane of receiving surface
+		                    ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
 		                    XIN = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
 		                    YIN = (ZVT_P * YVT(N) - ZVT_N * YVT(P)) * ZVT_fac
-		                elif (ZVT_N <= 0.0 && ZVT_P > 0.0): # Line exits plane of receiving surface
+		                if (ZVT_N <= 0.0 && ZVT_P > 0.0):
+		                	# Line exits plane of receiving surface
 		                    NEXT = N + 1
-		                    Real64 const ZVT_fac(1.0 / (ZVT_P - ZVT_N))
+		                    ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
 		                    XOUT = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
 		                    YOUT = (ZVT_P * YVT(N) - ZVT_N * YVT(P)) * ZVT_fac
 
-		            # Renumber the vertices of the clipped shadow casting surface. so they are still counter-clockwise sequential.
-
+		            # Renumber the vertices of the clipped shadow casting surface, so they are still counter-clockwise sequential.
 		            XVC(1) = XOUT # ? Verify that the IN and OUT values were ever set?
 		            YVC(1) = YOUT
 		            ZVC(1) = 0.0
 		            XVC(NVS) = XIN
 		            YVC(NVS) = YIN
 		            ZVC(NVS) = 0.0
-		            for (int N = 1 N <= NABOVE ++N):
+		            for N in range(1, NABOVE):
 		                if (NEXT > NVT):
 		                	NEXT = 1
 		                XVC(N + 1) = XVT(NEXT)
 		                YVC(N + 1) = YVT(NEXT)
 		                ZVC(N + 1) = ZVT(NEXT)
-		                ++NEXT
+		                NEXT += 1
 
 		    	return None
 
@@ -3053,7 +2670,7 @@ def EnergyPlus():
 		        NVT = surface.Sides
 
 		        # Perform transformation
-		        for (int N = 1 N <= NVT ++N):
+		        for N in range(1, NVT+1):
 		            auto const &vertex(surface.Vertex(N))
 
 		            Xdif = vertex.x - base_X0
@@ -3135,18 +2752,19 @@ def EnergyPlus():
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 
 		        if (NS > 2 * MaxHCS):
-		            ShowFatalError("Solar Shading: HTrans: Too many Figures (>" + TrimSigDigits(MaxHCS) + ')')
+		            raise RuntimeError("Solar Shading: HTrans: Too many Figures (> {})".format(TrimSigDigits(MaxHCS)))
 
 		        HCNV(NS) = NumVertices
 
 		        # Tuned Linear indexing
-
 		        assert(equal_dimensions(HCX, HCY))
 		        assert(equal_dimensions(HCX, HCA))
 		        assert(equal_dimensions(HCX, HCB))
 		        assert(equal_dimensions(HCX, HCC))
 		        auto const l1(HCX.index(NS, 1))
-		        if (I != 0): # Transform vertices of figure ns.
+		        
+		        # Transform vertices of figure ns.
+		        if (I != 0):
 
 		            # See comment at top of module regarding HCMULT
 		            auto l(l1)
@@ -3155,7 +2773,6 @@ def EnergyPlus():
 		                HCY[l] = nint64(YVS(N) * HCMULT)
 
 		        # Establish extra point for finding lines between points.
-
 		        auto l(HCX.index(NS, NumVertices + 1))
 		        Int64 HCX_m(HCX[l] = HCX[l1]) # [ l ] == ( NS, NumVertices + 1 ), [ l1 ] == ( NS, 1 )
 		        Int64 HCY_m(HCY[l] = HCY[l1]) # [ l ] == ( NS, NumVertices + 1 ), [ l1 ] == ( NS, 1 )
@@ -3163,10 +2780,14 @@ def EnergyPlus():
 		        # Determine lines between points.
 		        l = l1
 		        auto m(l1 + 1u)
-		        Int64 HCX_l
-		        Int64 HCY_l
-		        Real64 SUM(0.0)                                   # Sum variable
-		        for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
+		        HCX_l = 0
+		        HCY_l = 0
+		        SUM = 0.0 # Sum variable
+		        
+		        # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
+		        for N in range(1, NumVertices+1):
+		        	l += 1 # será q vai somar o par ordenado?
+		        	m += 1 # será q vai somar o par ordenado?
 		            HCX_l = HCX_m
 		            HCY_l = HCY_m
 		            HCX_m = HCX[m]
@@ -3196,12 +2817,11 @@ def EnergyPlus():
 		        # Locals
 
 		        if (NS > 2 * MaxHCS):
-		            ShowFatalError("Solar Shading: HTrans0: Too many Figures (>" + TrimSigDigits(MaxHCS) + ')')
+		            raise RuntimeError("Solar Shading: HTrans0: Too many Figures (>{})".format(TrimSigDigits(MaxHCS)))
 
 		        HCNV(NS) = NumVertices
 
 		        # Tuned Linear indexing
-
 		        assert(equal_dimensions(HCX, HCY))
 		        assert(equal_dimensions(HCX, HCA))
 		        assert(equal_dimensions(HCX, HCB))
@@ -3215,10 +2835,14 @@ def EnergyPlus():
 
 		        l = l1
 		        auto m(l1 + 1u)
-		        Int64 HCX_l
-		        Int64 HCY_l
-		        Real64 SUM(0.0)
-		        for (int N = 1 N <= NumVertices ++N, ++l, ++m): # [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
+		        HCX_l = 0
+		        HCY_l = 0
+		        SUM = 0.0
+
+		        # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
+		        for N in range(1, NumVertices+1):
+		        	l += 1 # será q vai somar o par ordenado?
+		        	m += 1 # será q vai somar o par ordenado?		        
 		            HCX_l = HCX_m
 		            HCY_l = HCY_m
 		            HCX_m = HCX[m]
@@ -3240,7 +2864,7 @@ def EnergyPlus():
 		        using General::TrimSigDigits
 
 		        if (NS > 2 * MaxHCS):
-		            ShowFatalError("Solar Shading: HTrans1: Too many Figures (>" + TrimSigDigits(MaxHCS) + ')')
+		            raise RuntimeError("Solar Shading: HTrans1: Too many Figures (>{})".format(TrimSigDigits(MaxHCS)))
 
 		        HCNV(NS) = NumVertices
 
@@ -3255,7 +2879,8 @@ def EnergyPlus():
 
 		        # only in HTRANS1
 		        auto l(l1)
-		        for (int N = 1 N <= NumVertices ++N, ++l): # [ l ] == ( NS, N )
+		        for N in range(1, NumVertices): # [ l ] == ( NS, N )
+		        	l += 1 # será q vai somar o par ordenado? Talvez precise de list comprehension: [a+1 for a in l]
 		            HCX[l] = nint64(XVS(N) * HCMULT)
 		            HCY[l] = nint64(YVS(N) * HCMULT)
 
@@ -3265,10 +2890,14 @@ def EnergyPlus():
 
 		        l = l1
 		        auto m(l1 + 1u)
-		        Int64 HCX_l
-		        Int64 HCY_l
-		        Real64 SUM(0.0)
-		        for (int N = 1 N <= NumVertices ++N, ++l, ++m): # [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
+		        HCX_l = 0
+		        HCY_l = 0
+		        SUM = 0.0
+
+		        # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
+		        for N in range(1, NumVertices+1):
+		        	l += 1 # será q vai somar o par ordenado?
+		        	m += 1 # será q vai somar o par ordenado?
 		            HCX_l = HCX_m
 		            HCY_l = HCY_m
 		            HCX_m = HCX[m]
@@ -3323,41 +2952,38 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int K              # Vertex number of the overlap
-		        int M              # Side number of figure N2
-		        int N              # Vertex number of figure N1
+		        K = 0              # Vertex number of the overlap
+		        M = 0              # Side number of figure N2
+		        N = 0              # Vertex number of figure N1
 		        bool CycleMainLoop # Sets when to cycle main loop
-		        Real64 HFunct
+		        HFunct = 0.0
 
 		        NIN = 0
 
-		        for (N = 1 N <= N1NumVert ++N):
+		        for N in range(1, N1NumVert+1):
 
 		            CycleMainLoop = False
 
 		            # Eliminate cases where vertex N is to the left of side M.
-
-		            for (M = 1 M <= N2NumVert ++M):
+		            for M in range(1, N2NumVert):
 		                HFunct = HCX(N1, N) * HCA(N2, M) + HCY(N1, N) * HCB(N2, M) + HCC(N2, M)
 		                if (HFunct > 0.0):
 		                    CycleMainLoop = True # Set to cycle to the next value of N
 		                    break                # M DO loop
 
-		            if (CycleMainLoop) continue
-		            ++NIN
+		            if (CycleMainLoop): continue
+		            NIN += 1
 
 		            # Check for duplication of previously determined points.
-
 		            if (NumVerticesOverlap != 0):
-		                for (K = 1 K <= NumVerticesOverlap ++K):
+		                for K in range(1, NumVerticesOverlap+1):
 		                    if ((XTEMP(K) == HCX(N1, N)) && (YTEMP(K) == HCY(N1, N))):
 		                        CycleMainLoop = True # Set to cycle to the next value of N
 		                        break                # K DO loop
-		                if (CycleMainLoop) continue
+		                if (CycleMainLoop): continue
 
 		            # Record enclosed vertices in temporary arrays.
-
-		            ++NumVerticesOverlap
+		            NumVerticesOverlap += 1
 		            XTEMP(NumVerticesOverlap) = HCX(N1, N)
 		            YTEMP(NumVerticesOverlap) = HCY(N1, N)
 		        
@@ -3407,40 +3033,38 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        Real64 W        # Normalization factor
-		        Real64 XUntrunc # Untruncated X coordinate
-		        Real64 YUntrunc # Untruncated Y coordinate
-		        Int64 I1        # Intermediate result for testing intersection
-		        Int64 I2        # Intermediate result for testing intersection
-		        int K
-		        int KK
-		        int M # Side number of figure NS2
-		        int N # Side number of figure NS1
+		        W = 0.0        # Normalization factor
+		        XUntrunc = 0.0 # Untruncated X coordinate
+		        YUntrunc = 0.0 # Untruncated Y coordinate
+		        I1 = 0        # Intermediate result for testing intersection
+		        I2 = 0        # Intermediate result for testing intersection
+		        K = 0
+		        KK = 0
+		        M = 0 # Side number of figure NS2
+		        N = 0 # Side number of figure NS1
 
-		        for (N = 1 N <= NV1 ++N):
-		            for (M = 1 M <= NV2 ++M):
-
+		        for N in range(1, NV1):
+		            for M in range(1, NV2):
+		                
 		                # Eliminate cases where sides N and M do not intersect.
-
 		                I1 = HCA(NS1, N) * HCX(NS2, M) + HCB(NS1, N) * HCY(NS2, M) + HCC(NS1, N)
 		                I2 = HCA(NS1, N) * HCX(NS2, M + 1) + HCB(NS1, N) * HCY(NS2, M + 1) + HCC(NS1, N)
-		                if (I1 >= 0 && I2 >= 0) continue
-		                if (I1 <= 0 && I2 <= 0) continue
+		                if (I1 >= 0 && I2 >= 0): continue
+		                if (I1 <= 0 && I2 <= 0): continue
 
 		                I1 = HCA(NS2, M) * HCX(NS1, N) + HCB(NS2, M) * HCY(NS1, N) + HCC(NS2, M)
 		                I2 = HCA(NS2, M) * HCX(NS1, N + 1) + HCB(NS2, M) * HCY(NS1, N + 1) + HCC(NS2, M)
-		                if (I1 >= 0 && I2 >= 0) continue
-		                if (I1 <= 0 && I2 <= 0) continue
+		                if (I1 >= 0 && I2 >= 0): continue
+		                if (I1 <= 0 && I2 <= 0): continue
 
 		                # Determine the point of intersection and record in the temporary array.
-
 		                KK = NV3
-		                ++NV3
+		                NV3 += 1
 		                W = HCB(NS2, M) * HCA(NS1, N) - HCA(NS2, M) * HCB(NS1, N)
 		                XUntrunc = (HCC(NS2, M) * HCB(NS1, N) - HCB(NS2, M) * HCC(NS1, N)) / W
 		                YUntrunc = (HCA(NS2, M) * HCC(NS1, N) - HCC(NS2, M) * HCA(NS1, N)) / W
 		                if (NV3 > isize(XTEMP)):
-		                    #        write(outputfiledebug,*) 'nv3=',nv3,' SIZE(xtemp)=',SIZE(xtemp)
+		                    # write(outputfiledebug,*) 'nv3=',nv3,' SIZE(xtemp)=',SIZE(xtemp)
 		                    XTEMP.redimension(isize(XTEMP) + 10, 0.0)
 		                    YTEMP.redimension(isize(YTEMP) + 10, 0.0)
 
@@ -3448,13 +3072,12 @@ def EnergyPlus():
 		                YTEMP(NV3) = nint64(YUntrunc)
 
 		                # Eliminate near-duplicate points.
-
 		                if (KK != 0):
 		                    auto const x(XTEMP(NV3))
 		                    auto const y(YTEMP(NV3))
-		                    for (K = 1 K <= KK ++K):
-		                        if (std::abs(x - XTEMP(K)) > 2.0) continue
-		                        if (std::abs(y - YTEMP(K)) > 2.0) continue
+		                    for K in range(1, KK):
+		                        if (std::abs(x - XTEMP(K)) > 2.0): continue
+		                        if (std::abs(y - YTEMP(K)) > 2.0): continue
 		                        NV3 = KK
 		                        break # K DO loop
 		        
@@ -3524,12 +3147,16 @@ def EnergyPlus():
 		        assert(equal_dimensions(HCX, HCC))
 
 		        # Populate the arrays with the original polygon
-		        for (size_type j = 0, l = HCX.index(NS1, 1), e = NV1 j < e ++j, ++l):
-		            XTEMP[j] = HCX[l] // [ l ] == ( NS1, j+1 )
+		        # for (size_type j = 0, l = HCX.index(NS1, 1), e = NV1 j < e ++j, ++l):
+		        l = HCX.index(NS1, 1)
+		        e = NV1
+		        for j in range(0, e):
+		            XTEMP[j] = HCX[l] # [ l ] == ( NS1, j+1 )
 		            YTEMP[j] = HCY[l]
 		            ATEMP[j] = HCA[l]
 		            BTEMP[j] = HCB[l]
 		            CTEMP[j] = HCC[l]
+		            l += 1			# Está no lugar certo? Ou deveria ser antes de qualquer operação?
 
 		        NVOUT = NV1 # First point-loop is the length of the subject polygon.
 		        INTFLAG = False
@@ -3537,8 +3164,10 @@ def EnergyPlus():
 		        KK = 0
 
 		        auto l(HCA.index(NS2, 1))
-		        for (int E = 1 E <= NV2 ++E, ++l): # Loop over edges of the clipping polygon
-		            for (int P = 1 P <= NVOUT ++P):
+		        # Loop over edges of the clipping polygon
+		        # for (int E = 1 E <= NV2 ++E, ++l):
+		        for E in range(1, NV2+1):
+		            for P in range(1, NVOUT+1):
 		                XTEMP1(P) = XTEMP(P)
 		                YTEMP1(P) = YTEMP(P)
 
@@ -3548,24 +3177,27 @@ def EnergyPlus():
 		            Real64 const HCC_E(HCC[l])
 		            Real64 XTEMP1_S(XTEMP1(S))
 		            Real64 YTEMP1_S(YTEMP1(S))
-		            for (int P = 1 P <= NVOUT ++P):
+		            for P in range(1, NVOUT+1):
 		                Real64 const XTEMP1_P(XTEMP1(P))
 		                Real64 const YTEMP1_P(YTEMP1(P))
 		                HFunct = XTEMP1_P * HCA_E + YTEMP1_P * HCB_E + HCC_E
 		                # S is constant within this block
+
 		                if (HFunct <= 0.0): # Vertex is not in the clipping plane
 		                    HFunct = XTEMP1_S * HCA_E + YTEMP1_S * HCB_E + HCC_E
+
 		                    if (HFunct > 0.0): # Test vertex is in the clipping plane
 
 		                        # Find/store the intersection of the clip edge and the line connecting S and P
 		                        KK = NVTEMP
-		                        ++NVTEMP
+		                        NVTEMP += 1
 		                        Real64 const ATEMP_S(ATEMP(S))
 		                        Real64 const BTEMP_S(BTEMP(S))
 		                        Real64 const CTEMP_S(CTEMP(S))
 		                        W = HCB_E * ATEMP_S - HCA_E * BTEMP_S
+		                        
 		                        if (W != 0.0):
-		                            Real64 const W_inv(1.0 / W)
+		                            W_inv = (1.0 / W)
 		                            XTEMP(NVTEMP) = nint64((HCC_E * BTEMP_S - HCB_E * CTEMP_S) * W_inv)
 		                            YTEMP(NVTEMP) = nint64((HCA_E * CTEMP_S - HCC_E * ATEMP_S) * W_inv)
 		                        else:
@@ -3578,16 +3210,15 @@ def EnergyPlus():
 		                            if (KK != 0):
 		                                auto const x(XTEMP(NVTEMP))
 		                                auto const y(YTEMP(NVTEMP))
-		                                for (int K = 1 K <= KK ++K):
-		                                    if (std::abs(x - XTEMP(K)) > 2.0):
-		                                    	continue
-		                                    if (std::abs(y - YTEMP(K)) > 2.0):
-		                                    	continue
+		                                for K in range(1, KK+1):
+		                                    if (std::abs(x - XTEMP(K)) > 2.0): continue
+		                                    if (std::abs(y - YTEMP(K)) > 2.0): continue
 		                                    NVTEMP = KK
 		                                    break # K loop
 
 		                    KK = NVTEMP
-		                    ++NVTEMP
+		                    NVTEMP += 1
+		                    
 		                    if (NVTEMP > MAXHCArrayBounds):
 		                        int const NewArrayBounds(MAXHCArrayBounds + MAXHCArrayIncrement)
 		                        XTEMP.redimension(NewArrayBounds, 0.0)
@@ -3606,26 +3237,28 @@ def EnergyPlus():
 		                        if (KK != 0):
 		                            auto const x(XTEMP(NVTEMP))
 		                            auto const y(YTEMP(NVTEMP))
-		                            for (int K = 1 K <= KK ++K):
-		                                if (std::abs(x - XTEMP(K)) > 2.0):
-	                                		continue
-		                                if (std::abs(y - YTEMP(K)) > 2.0):
-		                                	continue
+		                            for K in range(1, KK+1):
+		                                if (std::abs(x - XTEMP(K)) > 2.0): continue
+		                                if (std::abs(y - YTEMP(K)) > 2.0): continue
 		                                NVTEMP = KK
 		                                break # K loop
 
 		                else:
 		                    HFunct = XTEMP1_S * HCA_E + YTEMP1_S * HCB_E + HCC_E
-		                    if (HFunct <= 0.0)                                # Test vertex is not in the clipping plane
-		                        if (NVTEMP < 2 * (MaxVerticesPerSurface + 1)) # avoid assigning to element outside of XTEMP array size
+		                    if (HFunct <= 0.0):
+		                    	# Test vertex is not in the clipping plane
+
+		                        if (NVTEMP < 2 * (MaxVerticesPerSurface + 1)):
+		                        # avoid assigning to element outside of XTEMP array size
 		                            KK = NVTEMP
-		                            ++NVTEMP
+		                            NVTEMP += 1
 		                            Real64 const ATEMP_S(ATEMP(S))
 		                            Real64 const BTEMP_S(BTEMP(S))
 		                            Real64 const CTEMP_S(CTEMP(S))
 		                            W = HCB_E * ATEMP_S - HCA_E * BTEMP_S
+
 		                            if (W != 0.0):
-		                                Real64 const W_inv(1.0 / W)
+		                                W_inv = (1.0 / W)
 		                                XTEMP(NVTEMP) = nint64((HCC_E * BTEMP_S - HCB_E * CTEMP_S) * W_inv)
 		                                YTEMP(NVTEMP) = nint64((HCA_E * CTEMP_S - HCC_E * ATEMP_S) * W_inv)
 		                            else:
@@ -3638,22 +3271,21 @@ def EnergyPlus():
 		                                if (KK != 0):
 		                                    auto const x(XTEMP(NVTEMP))
 		                                    auto const y(YTEMP(NVTEMP))
-		                                    for (int K = 1 K <= KK ++K):
-		                                        if (std::abs(x - XTEMP(K)) > 2.0):
-		                                        	continue
-		                                        if (std::abs(y - YTEMP(K)) > 2.0):
-		                                        	continue
+		                                    for K in range(1, KK+1):
+		                                        if (std::abs(x - XTEMP(K)) > 2.0): continue
+		                                        if (std::abs(y - YTEMP(K)) > 2.0): continue
 		                                        NVTEMP = KK
 		                                        break # K loop
 
 		                S = P
 		                XTEMP1_S = XTEMP1_P
 		                YTEMP1_S = YTEMP1_P
+
+		            	l += 1			# Está no lugar certo? Ou deveria ser antes de qualquer operação?
 		            # end loop over points of subject polygon
 
 		            NVOUT = NVTEMP
-		            if (NVOUT == 0):
-		            	break # Added to avoid array bounds violation of XTEMP1 and YTEMP1 and wasted looping
+		            if (NVOUT == 0): break # Added to avoid array bounds violation of XTEMP1 and YTEMP1 and wasted looping
 		            NVTEMP = 0
 
 		            if (E != NV2):
@@ -3662,7 +3294,8 @@ def EnergyPlus():
 		                    Real64 const Y_1(YTEMP(1))
 		                    Real64 X_P(X_1), X_P1
 		                    Real64 Y_P(Y_1), Y_P1
-		                    for (int P = 1 P < NVOUT ++P):
+		                    
+		                    for P in range(1, NVOUT):
 		                        X_P1 = XTEMP(P + 1)
 		                        Y_P1 = YTEMP(P + 1)
 		                        ATEMP(P) = Y_P - Y_P1
@@ -3695,8 +3328,8 @@ def EnergyPlus():
 
 		        // PURPOSE OF THIS SUBROUTINE:
 		        // This subroutine determines the overlaps of figure 'NS2' with previous figures
-		        // 'LOC0+1' through 'LOC0+NRFIGS'.  For example, if NS2
-		        // is a shadow, overlap with previous shadows.
+		        // 'LOC0+1' through 'LOC0+NRFIGS'.  For example, if NS2 is a shadow,
+		        // overlap with previous shadows.
 		        - int const NNN,   # argument
                 - int const LOC0,  # Location in the homogeneous coordinate array
                 - int const NRFIGS # Number of figures overlapped
@@ -3725,27 +3358,23 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int I   # Loop Control
-		        int NS1 # Number of the figure being overlapped
-		        int NS2 # Number of the figure doing overlapping
-		        int NS3 # Location to place results of overlap
+		        I = 0   # Loop Control
+		        NS1 = 0 # Number of the figure being overlapped
+		        NS2 = 0 # Number of the figure doing overlapping
+		        NS3 = 0 # Location to place results of overlap
 
 		        maxNumberOfFigures = max(maxNumberOfFigures, NRFIGS)
 
 		        NS2 = NNN
-		        for (I = 1 I <= NRFIGS ++I):
+		        for I in range(1, NRFIGS+1):
 		            NS1 = LOC0 + I
 		            NS3 = LOCHCA + 1
 
 		            DeterminePolygonOverlap(NS1, NS2, NS3) # Find overlap of figure NS2 on figure NS1.
 
 		            # Process overlap cases:
-
-		            if (OverlapStatus == NoOverlap):
-		            	continue
-
-		            if ((OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)):
-		            	break
+		            if (OverlapStatus == NoOverlap): continue
+		            if ((OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)): break
 
 		            LOCHCA = NS3 # Increment h.c. arrays pointer.
 
@@ -3799,13 +3428,13 @@ def EnergyPlus():
 		        Real64 SAVEY                 # Temporary location for exchange of variables
 		        Real64 XMIN                  # X coordinate of left-most vertex
 		        Real64 YXMIN
-		        int I   # Sort index
-		        int IM1 # Sort control
-		        int J   # Sort index
-		        int M   # Number of slopes to be sorted
-		        int N   # Vertex number
-		        int P   # Location of first slope to be sorted
-		        static bool FirstTimeFlag(True)
+		        I = 0   # Sort index
+		        IM1 = 0 # Sort control
+		        J = 0   # Sort index
+		        M = 0   # Number of slopes to be sorted
+		        N = 0   # Vertex number
+		        P = 0   # Location of first slope to be sorted
+		        FirstTimeFlag = True
 
 		        if (FirstTimeFlag):
 		            SLOPE.allocate(max(10, MaxVerticesPerSurface + 1))
@@ -3814,22 +3443,21 @@ def EnergyPlus():
 		        # Determine left-most vertex.
 		        XMIN = XTEMP(1)
 		        YXMIN = YTEMP(1)
-		        for (N = 2 N <= NV3 ++N):
-		            if (XTEMP(N) >= XMIN):
-		            	continue
+		        for N in range(2, NV3+1):
+		            if (XTEMP(N) >= XMIN): continue # QUAL O SENTIDO DISSO?
 		            XMIN = XTEMP(N)
 		            YXMIN = YTEMP(N)
 
-		        # Determine slopes from left-most vertex to all others.  Identify
-		        # first and second or last points as they occur.
+		        # Determine slopes from left-most vertex to all others.
+		        # Identify first and second or last points as they occur.
 		        P = 1
 		        M = 0
-		        for (N = 1 N <= NV3 ++N):
+		        for N in range(1, NV3+1):
 		            DELTAX = XTEMP(N) - XMIN
 		            DELTAY = YTEMP(N) - YXMIN
 
 		            if (std::abs(DELTAX) > 0.5):
-		                ++M
+		                M += 1
 		                SLOPE(M) = DELTAY / DELTAX
 		                XTEMP(M) = XTEMP(N)
 		                YTEMP(M) = YTEMP(N)
@@ -3847,11 +3475,10 @@ def EnergyPlus():
 		        # Sequence the temporary arrays in order of decreasing slopes.(bubble sort)
 
 		        if (M != 1):
-		            for (I = 2 I <= M ++I):
+		            for I in range(2, M+1):
 		                IM1 = I - 1
-		                for (J = 1 J <= IM1 ++J):
-		                    if (SLOPE(I) <= SLOPE(J)):
-		                    	continue
+		                for J in range(1, IM1+1):
+		                    if (SLOPE(I) <= SLOPE(J)): continue # QUAL O SENTIDO DISSO?
 		                    SAVEX = XTEMP(I)
 		                    SAVEY = YTEMP(I)
 		                    SAVES = SLOPE(I)
@@ -3864,7 +3491,7 @@ def EnergyPlus():
 
 		        # Place sequenced points in the homogeneous coordinate arrays.
 
-		        for (N = 1 N <= M ++N):
+		        for N in range(1, M+1):
 		            HCX(NS3, N + P) = nint64(XTEMP(N))
 		            HCY(NS3, N + P) = nint64(YTEMP(N))
 		        
@@ -3925,14 +3552,14 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int N    # Loop index
-		        int NV1  # Number of vertices of figure NS1
-		        int NV2  # Number of vertices of figure NS2
-		        int NV3  # Number of vertices of figure NS3 (the overlap of NS1 and NS2)
-		        int NIN1 # Number of vertices of NS1 within NS2
-		        int NIN2 # Number of vertices of NS2 within NS1
-		        static bool TooManyFiguresMessage(False)
-		        static bool TooManyVerticesMessage(False)
+		        N = 0    # Loop index
+		        NV1 = 0  # Number of vertices of figure NS1
+		        NV2 = 0  # Number of vertices of figure NS2
+		        NV3 = 0  # Number of vertices of figure NS3 (the overlap of NS1 and NS2)
+		        NIN1 = 0 # Number of vertices of NS1 within NS2
+		        NIN2 = 0 # Number of vertices of NS2 within NS1
+		        TooManyFiguresMessage = False
+		        TooManyVerticesMessage = False
 
 		        # Check for exceeding array limits.
 				#ifdef EP_Count_Calls
@@ -3942,8 +3569,7 @@ def EnergyPlus():
 		        if (NS3 > MaxHCS):
 		            OverlapStatus = TooManyFigures
 		            if (!TooManyFiguresMessage && !DisplayExtraWarnings):
-		                ShowWarningError("DeterminePolygonOverlap: Too many figures [>" + RoundSigDigits(MaxHCS) +
-		                                 "]  detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.")
+		                raise RuntimeWarning("DeterminePolygonOverlap: Too many figures [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCS))) # round with how many decimals?
 		                TooManyFiguresMessage = True
 
 		            if (DisplayExtraWarnings):
@@ -3983,9 +3609,11 @@ def EnergyPlus():
 		            else:
 		                assert(equal_dimensions(HCX, HCY))
 		                auto l(HCX.index(NS3, 1))
-		                for (N = 1 N <= NV3 ++N, ++l):
+		                # for (N = 1 N <= NV3 ++N, ++l):
+		                for N in range(1, NV3+1):
 		                    HCX[l] = nint64(XTEMP(N)) # [ l ] == ( N, NS3 )
 		                    HCY[l] = nint64(YTEMP(N))
+		                    l += 1
 
 		            HTRANS0(NS3, NV3) # Determine h.c. values of sides.
 		            # Skip overlaps of negligible area.
@@ -4006,8 +3634,7 @@ def EnergyPlus():
 		            OverlapStatus = TooManyVertices
 
 		            if (!TooManyVerticesMessage && !DisplayExtraWarnings):
-		                ShowWarningError("DeterminePolygonOverlap: Too many vertices [>" + RoundSigDigits(MaxHCV) +
-		                                 "] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.")
+		            	raise RuntimeWarning("DeterminePolygonOverlap: Too many vertices [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCV)))
 		                TooManyVerticesMessage = True
 
 		            if (DisplayExtraWarnings):
@@ -4019,8 +3646,7 @@ def EnergyPlus():
 		            OverlapStatus = TooManyFigures
 
 		            if (!TooManyFiguresMessage && !DisplayExtraWarnings):
-		                ShowWarningError("DeterminePolygonOverlap: Too many figures [>" + RoundSigDigits(MaxHCS) +
-		                                 "]  detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.")
+		                raise RuntimeWarning("DeterminePolygonOverlap: Too many figures [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCS)))
 		                TooManyFiguresMessage = True
 
 		            if (DisplayExtraWarnings):
@@ -4039,7 +3665,7 @@ def EnergyPlus():
 		        //       RE-ENGINEERED  Lawrie, Oct 2000
 
 		        // PURPOSE OF THIS SUBROUTINE:
-		        // This subroutine manages computation of solar gain multipliers for beam radiation.  These
+		        // This subroutine manages computation of solar gain multipliers for beam radiation. These
 		        // are calculated for a period of days depending on the input "Shadowing Calculations".
 		        - Real64 const AvgEqOfTime,       # Average value of Equation of Time for period
 				- Real64 const AvgSinSolarDeclin, # Average value of Sine of Solar Declination for period
@@ -4076,15 +3702,15 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int iHour   # Hour index number
-		        int TS      # TimeStep Loop Counter
-		        int SurfNum # Do loop counter
+		        iHour = 0   # Hour index number
+		        TS = 0      # TimeStep Loop Counter
+		        SurfNum = 0 # Do loop counter
 		        static gio::Fmt fmtA("(A)")
 		        static gio::Fmt ShdFracFmtName("(A, A)")
 		        static gio::Fmt ShdFracFmt1("(I2.2,'/',I2.2,' ',I2.2, ':',I2.2, ',')")
 		        static gio::Fmt ShdFracFmt2("(f6.2,',')")
 		        static gio::Fmt fmtN("('\n')")
-		        static bool Once(True)
+		        Once = True
 
 		        if (Once):
 		        	InitComplexWindows()
@@ -4121,13 +3747,13 @@ def EnergyPlus():
 		            AOSurf({1, TotSurfaces}) = 0.0
 		            BackSurfaces(TimeStep, HourOfDay, {1, MaxBkSurf}, {1, TotSurfaces}) = 0
 		            OverlapAreas(TimeStep, HourOfDay, {1, MaxBkSurf}, {1, TotSurfaces}) = 0.0
-		            for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		            for SurfNum in range(1, TotSurfaces+1):
 		                SurfaceWindow(SurfNum).OutProjSLFracMult(HourOfDay) = 1.0
 		                SurfaceWindow(SurfNum).InOutProjSLFracMult(HourOfDay) = 1.0
 
 		        if (!DetailedSolarTimestepIntegration):
-		            for (iHour = 1 iHour <= 24 ++iHour): # Do for all hours
-		                for (TS = 1 TS <= NumOfTimeStepInHour ++TS):
+		            for iHour in range(1, 25): # Do for all hours
+		                for TS in range(1, NumOfTimeStepInHour+1):
 		                    FigureSunCosines(iHour, TS, AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
 		        else:
 		            FigureSunCosines(HourOfDay, TimeStep, AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
@@ -4135,8 +3761,8 @@ def EnergyPlus():
 		        # Initialize/update the Complex Fenestration geometry and optical properties
 		        UpdateComplexWindows()
 		        if (!DetailedSolarTimestepIntegration):
-		            for (iHour = 1 iHour <= 24 ++iHour): # Do for all hours.
-		                for (TS = 1 TS <= NumOfTimeStepInHour ++TS):
+		            for iHour in range(1, 25): # Do for all hours.
+		                for TS in range(1, NumOfTimeStepInHour+1):
 		                    FigureSolarBeamAtTimestep(iHour, TS)
 		                	# end of TimeStep Loop
 		            # end of Hour Loop
@@ -4145,13 +3771,13 @@ def EnergyPlus():
 		        
 		        if (ReportExtShadingSunlitFrac):
 		            if (KindOfSim == ksRunPeriodWeather):
-		                for (iHour = 1 iHour <= 24 ++iHour): # Do for all hours.
-		                    for (TS = 1 TS <= NumOfTimeStepInHour ++TS):
+		                for iHour in range(1, 25): # Do for all hours.
+		                    for TS in range(1, NumOfTimeStepInHour+1):
 		                            IOFlags flags
 		                            flags.ADVANCE("No")
 		                            gio::write(OutputFileShadingFrac, ShdFracFmt1, flags)
 		                                << Month << DayOfMonth << iHour - 1 << (60 / NumOfTimeStepInHour) * (TS - 1)
-		                        for (SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		                        for SurfNum in range(1, TotSurfaces+1):
 		                            {
 		                                IOFlags flags
 		                                flags.ADVANCE("No")
@@ -4206,7 +3832,7 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        Real64 CurrentTime # Current Time for passing to Solar Position Routine
+		        CurrentTime = 0.0 # Current Time for passing to Solar Position Routine
 
 		        if (NumOfTimeStepInHour != 1):
 		            CurrentTime = double(iHour - 1) + double(iTimeStep) * (TimeStepZone)
@@ -4217,7 +3843,8 @@ def EnergyPlus():
 
 		        # Save hourly values for use in DaylightingManager
 		        if (!DetailedSolarTimestepIntegration):
-		            if (iTimeStep == NumOfTimeStepInHour) SUNCOSHR(iHour, {1, 3}) = SUNCOS
+		            if (iTimeStep == NumOfTimeStepInHour): # poderia ser um 'AND'
+		            	SUNCOSHR(iHour, {1, 3}) = SUNCOS
 		        else:
 		            SUNCOSHR(iHour, {1, 3}) = SUNCOS
 		        
@@ -4265,37 +3892,38 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS
-		        Real64 SurfArea        # Surface area. For walls, includes all window frame areas.
-		        Real64 Fac1WoShdg      # Intermediate calculation factor, without shading
-		        Real64 Fac1WithShdg    # Intermediate calculation factor, with shading
-		        Real64 FracIlluminated # Fraction of surface area illuminated by a sky patch
+		        SurfArea = 0.0        # Surface area. For walls, includes all window frame areas.
+		        Fac1WoShdg = 0.0      # Intermediate calculation factor, without shading
+		        Fac1WithShdg = 0.0    # Intermediate calculation factor, with shading
+		        FracIlluminated = 0.0 # Fraction of surface area illuminated by a sky patch
 
 		        # Recover the sun direction from the array stored in previous loop
 		        SUNCOS = SUNCOSTS(iTimeStep, iHour, {1, 3})
 
 		        CTHETA = 0.0
 
-		        if (SUNCOS(3) < SunIsUpValue) return
+		        if (SUNCOS(3) < SunIsUpValue):
+		        	return None
 
-		        for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
-		            CTHETA(SurfNum) =
-		                SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
+		        for SurfNum in range(1, TotSurfaces+1):
+		            CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
 		            if (!DetailedSolarTimestepIntegration):
-		                if (iTimeStep == NumOfTimeStepInHour) CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
+		                if (iTimeStep == NumOfTimeStepInHour):
+		                	CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
 		            else:
 		                CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
 		            
 		            CosIncAng(iTimeStep, iHour, SurfNum) = CTHETA(SurfNum)
 
 		        if (UseScheduledSunlitFrac):
-		            for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		            for SurfNum in range(1, TotSurfaces+1):
 		                if (Surface(SurfNum).SchedExternalShadingFrac):
 		                    SunlitFrac(iTimeStep, iHour, SurfNum) = LookUpScheduleValue(Surface(SurfNum).ExternalShadingSchInd, iHour, iTimeStep)
 		                else:
 		                    SunlitFrac(iTimeStep, iHour, SurfNum) = 1.0
 		        else:
 		            SHADOW(iHour, iTimeStep) # Determine sunlit areas and solar multipliers for all surfaces.
-		            for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		            for SurfNum in range(1, TotSurfaces+1):
 		                if (Surface(SurfNum).Area >= 1.e-10):
 		                    SurfArea = Surface(SurfNum).NetAreaShadowCalc
 		                    if (!DetailedSolarTimestepIntegration):
@@ -4319,25 +3947,24 @@ def EnergyPlus():
 		            WithShdgHoriz = 0.
 		            WoShdgHoriz = 0.
 
-		            for (int IPhi = 0 IPhi < NPhi ++IPhi): # Loop over patch altitude values
+		            for IPhi in range(0, NPhi): # Loop over patch altitude values
 		                SUNCOS(3) = sin_Phi[IPhi]
 
-		                for (int ITheta = 0 ITheta < NTheta ++ITheta): # Loop over patch azimuth values
+		                for ITheta in range(0, NTheta): # Loop over patch azimuth values
 		                    SUNCOS(1) = cos_Phi[IPhi] * cos_Theta[ITheta]
 		                    SUNCOS(2) = cos_Phi[IPhi] * sin_Theta[ITheta]
 
-		                    for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
-		                        if (!Surface(SurfNum).ShadowingSurf && !Surface(SurfNum).HeatTransSurf):
-		                        	continue
+		                    for SurfNum in range(1, TotSurfaces+1):
+		                        if (!Surface(SurfNum).ShadowingSurf && !Surface(SurfNum).HeatTransSurf): continue
 		                        CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
 		                    
 		                    SHADOW(iHour, iTimeStep) # Determine sunlit areas and solar multipliers for all surfaces.
 
-		                    for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		                    for SurfNum in range(1, TotSurfaces+1):
 		                        if (!Surface(SurfNum).ShadowingSurf &&
-		                        	(!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-	                        		(Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
-		                        		continue
+	                        		(!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+                        			(Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+	                        			continue
 
 		                        if (CTHETA(SurfNum) < 0.0):
 		                        	continue
@@ -4362,7 +3989,7 @@ def EnergyPlus():
 		                # End of Theta loop
 		            # End of Phi loop
 
-		            for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		            for SurfNum in range(1, TotSurfaces+1):
 
 		                if (!Surface(SurfNum).ShadowingSurf &&
 		                	(!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
@@ -4392,16 +4019,16 @@ def EnergyPlus():
 		            #    Surface(SurfNum)%ViewFactorGroundIR = 1.0 - Surface(SurfNum)%ViewFactorSkyIR
 		            #  END DO
 
-		        # test for shading surfaces
-		        for (int SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		        # test for shading surfaces (DO NOT NEEDED)
+		        # for SurfNum in range(1, TotSurfaces+1):
 		            # For exterior windows with frame/divider that are partially or fully sunlit,
 		            # correct SunlitFrac due to shadowing of frame and divider projections onto window glass.
 		            # Note: if SunlitFrac = 0.0 the window is either completely shaded or the sun is in back
 		            # of the window in either case, frame/divider shadowing doesn't have to be done.
 
-		            if (Surface(SurfNum).Class == SurfaceClass_Window && Surface(SurfNum).ExtBoundCond == ExternalEnvironment &&
-		            	SunlitFrac(iTimeStep, iHour, SurfNum) > 0.0 && Surface(SurfNum).FrameDivider > 0):
-		                	CalcFrameDividerShadow(SurfNum, Surface(SurfNum).FrameDivider, iHour)
+		            # if (Surface(SurfNum).Class == SurfaceClass_Window && Surface(SurfNum).ExtBoundCond == ExternalEnvironment &&
+		            # 	SunlitFrac(iTimeStep, iHour, SurfNum) > 0.0 && Surface(SurfNum).FrameDivider > 0):
+		            #     	CalcFrameDividerShadow(SurfNum, Surface(SurfNum).FrameDivider, iHour)
 		        
 		    	return None
 
@@ -4451,24 +4078,24 @@ def EnergyPlus():
 		        Array1D_int GSS             # List of shadowing surfaces numbers for a receiving surface
 		        Array1D_int BKS             # List of back surface numbers for a receiving surface
 		        Array1D_int SBS             # List of subsurfaces for a receiving surface
-		        static int MaxGSS(50)       # Current Max for GSS array
-		        static int MaxBKS(50)       # Current Max for BKS array
-		        static int MaxSBS(50)       # Current Max for SBS array
+		        MaxGSS = 50       # Current Max for GSS array
+		        MaxBKS = 50       # Current Max for BKS array
+		        MaxSBS = 50       # Current Max for SBS array
 		        bool CannotShade            # True if subsurface cannot shade receiving surface
 		        bool HasWindow              # True if a window is present on receiving surface
-		        Real64 ZMIN                 # Lowest point on the receiving surface
-		        int BackSurfaceNumber       # Back surface number
-		        int HTS                     # Heat transfer surface number for a receiving surface
-		        int GRSNR                   # Receiving surface number
-		        int GSSNR                   # Shadowing surface number
-		        int SBSNR                   # Subsurface number
-		        int NBKS                    # Number of back surfaces for a receiving surface
-		        int NGSS                    # Number of shadowing surfaces for a receiving surface
-		        int NSBS                    # Number of subsurfaces for a receiving surface
+		        ZMIN = 0.0                 # Lowest point on the receiving surface
+		        BackSurfaceNumber = 0       # Back surface number
+		        HTS = 0                     # Heat transfer surface number for a receiving surface
+		        GRSNR = 0                   # Receiving surface number
+		        GSSNR = 0                   # Shadowing surface number
+		        SBSNR = 0                   # Subsurface number
+		        NBKS = 0                    # Number of back surfaces for a receiving surface
+		        NGSS = 0                    # Number of shadowing surfaces for a receiving surface
+		        NSBS = 0                    # Number of subsurfaces for a receiving surface
 		        bool ShadowingSurf          # True if a receiving surface is a shadowing surface
 		        Array1D_bool CastingSurface # tracking during setup of ShadowComb
 
-		        static int MaxDim(0)
+		        MaxDim = 0
 
 				#ifdef EP_Count_Calls
 		        ++NumDetShadowCombs_Calls
@@ -4497,9 +4124,8 @@ def EnergyPlus():
 		        # Check every surface as a possible shadow receiving surface ("RS" = receiving surface).
 		        if (IgnoreSolarRadiation):
 		            return None
-		        }
 
-		        for (GRSNR = 1 GRSNR <= TotSurfaces ++GRSNR): # Loop through all surfaces (looking for potential receiving surfaces)...
+		        for GRSNR in range(1, TotSurfaces+1): # Loop through all surfaces (looking for potential receiving surfaces)...
 
 		            ShadowingSurf = Surface(GRSNR).ShadowingSurf
 		            NGSS = 0
@@ -4523,7 +4149,7 @@ def EnergyPlus():
 		            # Check every surface as a possible shadow casting surface ("SS" = shadow sending)
 		            NGSS = 0
 		            if (SolarDistribution != MinimalShadowing): # Except when doing simplified exterior shadowing.
-		                for (GSSNR = 1 GSSNR <= TotSurfaces ++GSSNR): # Loop through all surfaces, looking for ones that could shade GRSNR
+		                for GSSNR in range(1, TotSurfaces+1): # Loop through all surfaces, looking for ones that could shade GRSNR
 		                    
 		                    if (GSSNR == GRSNR):
 		                    	continue # Receiving surface cannot shade itself
@@ -4541,11 +4167,12 @@ def EnergyPlus():
 
 		                    if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
 
-		                        ++NGSS
+		                        NGSS += 1
 		                        if (NGSS > MaxGSS):
 		                            GSS.redimension(MaxGSS *= 2, 0)
 		                        
 		                        GSS(NGSS) = GSSNR
+
 		                    elif ((Surface(GSSNR).BaseSurf == 0) || ((Surface(GSSNR).BaseSurf == GSSNR) &&
 		                    		 ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) ||
 		                    		 Surface(GSSNR).ExtBoundCond == OtherSideCondModeledExt))): # Detached shadowing surface or | any other base surface
@@ -4553,7 +4180,7 @@ def EnergyPlus():
 
 		                        CHKGSS(GRSNR, GSSNR, ZMIN, CannotShade) # Check to see if this can shade the receiving surface
 		                        if (!CannotShade):                       # Update the shadowing surface data if shading is possible
-		                            ++NGSS
+		                            NGSS += 1
 		                            if (NGSS > MaxGSS):
 		                                GSS.redimension(MaxGSS *= 2, 0)
 		                            
@@ -4561,14 +4188,14 @@ def EnergyPlus():
 
 		                # ...end of surfaces DO loop (GSSNR)
 		            else: # Simplified Distribution -- still check for Shading Subsurfaces
-		                for (GSSNR = 1 GSSNR <= TotSurfaces ++GSSNR): # Loop through all surfaces (looking for surfaces which could shade GRSNR) ...
+		                for GSSNR in range(1, TotSurfaces+1): # Loop through all surfaces (looking for surfaces which could shade GRSNR) ...
 
 		                    if (GSSNR == GRSNR):
 		                    	continue # Receiving surface cannot shade itself
 		                    if ((Surface(GSSNR).HeatTransSurf) && (Surface(GSSNR).BaseSurf == GRSNR)):
 		                        continue                           # Skip heat transfer subsurfaces of receiving surface
 		                    if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
-		                        ++NGSS
+		                        NGSS += 1
 		                        if (NGSS > MaxGSS):
 		                            GSS.redimension(MaxGSS *= 2, 0)
 		                        
@@ -4580,7 +4207,7 @@ def EnergyPlus():
 		            NSBS = 0
 		            HasWindow = False
 		            # legacy: IF (OSENV(HTS) > 10) WINDOW=.True. -->Note: WINDOW was set True for roof ponds, solar walls, or other zones
-		            for (SBSNR = 1 SBSNR <= TotSurfaces ++SBSNR): # Loop through the surfaces yet again (looking for subsurfaces of GRSNR)...
+		            for SBSNR in range(1, TotSurfaces+1): # Loop through the surfaces yet again (looking for subsurfaces of GRSNR)...
 
 		                if (!Surface(SBSNR).HeatTransSurf):
 		                	continue    # Skip non heat transfer subsurfaces
@@ -4594,7 +4221,7 @@ def EnergyPlus():
 
 		                CHKSBS(HTS, GRSNR, SBSNR) # Check that the receiving surface completely encloses the subsurface
 		                # severe error if not
-		                ++NSBS
+		                NSBS += 1
 		                if (NSBS > MaxSBS):
 		                    SBS.redimension(MaxSBS *= 2, 0)
 		                
@@ -4607,7 +4234,8 @@ def EnergyPlus():
 		            #                                        Except for simplified
 		            #                                        interior solar distribution,
 		            if ((SolarDistribution == FullInteriorExterior) && (HasWindow)): # For full interior solar distribution | and a window present on base surface (GRSNR)
-		                for (BackSurfaceNumber = 1 BackSurfaceNumber <= TotSurfaces ++BackSurfaceNumber): # Loop through surfaces yet again, looking for back surfaces to GRSNR
+		                for BackSurfaceNumber in range(1, TotSurfaces+1):
+		                	# Loop through surfaces yet again, looking for back surfaces to GRSNR
 
 		                    if (!Surface(BackSurfaceNumber).HeatTransSurf):
 		                    	continue							# Skip non-heat transfer surfaces
@@ -4617,7 +4245,6 @@ def EnergyPlus():
 		                    	continue                           # A back surface cannot be GRSNR itself
 		                    if (Surface(BackSurfaceNumber).Zone != Surface(GRSNR).Zone):
 		                    	continue							# Skip if back surface not in zone
-
 		                    if (Surface(BackSurfaceNumber).Class == SurfaceClass_IntMass):
 	                    		continue
 
@@ -4626,7 +4253,7 @@ def EnergyPlus():
 		                    # IF (Surface(BackSurfaceNumber)%BaseSurf /= BackSurfaceNumber) CYCLE ! Not for subsurfaces of Back Surface
 
 		                    CHKBKS(BackSurfaceNumber, GRSNR) # CHECK FOR CONVEX ZONE severe error if not
-		                    ++NBKS
+		                    NBKS += 1
 		                    if (NBKS > MaxBKS):
 		                        BKS.redimension(MaxBKS *= 2, 0)
 		                    
@@ -4676,12 +4303,12 @@ def EnergyPlus():
 		            else:
 		                shd_stream << "..Solar Distribution=FullInteriorAndExterior\n"
 		        else:
-		        	# do nothing???
+		        	# do nothing??? Vai dar erro de sintaxe!
 
 		        shd_stream << "..In the following, only the first 10 reference surfaces will be shown.\n"
 		        shd_stream << "..But all surfaces are used in the calculations.\n"
 
-		        for (HTS = 1 HTS <= TotSurfaces ++HTS):
+		        for HTS in range(1, TotSurfaces+1):
 		            shd_stream << "==================================\n"
 		            if (ShadowComb(HTS).UseThisSurf):
 		                if (Surface(HTS).IsConvex):
@@ -4690,50 +4317,48 @@ def EnergyPlus():
 		                    shd_stream << "Surface=" << Surface(HTS).Name << " is used as Receiving Surface in calculations and is non-convex.\n"
 		                    if (ShadowComb(HTS).NumGenSurf > 0):
 		                        if (DisplayExtraWarnings):
-		                            ShowWarningError("DetermineShadowingCombinations: Surface=\"" + Surface(HTS).Name + "\" is a receiving surface and is non-convex.")
-		                            ShowContinueError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
+		                            raise RuntimeWarning("DetermineShadowingCombinations: Surface=\"{}\" is a receiving surface and is non-convex.".format(Surface(HTS).Name))
+		                            raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
 		                        else:
-		                            ++TotalReceivingNonConvexSurfaces
+		                            TotalReceivingNonConvexSurfaces += 1
 		            else:
 		                shd_stream << "Surface=" << Surface(HTS).Name << " is not used as Receiving Surface in calculations.\n"
 		            
 		            shd_stream << "Number of general casting surfaces=" << ShadowComb(HTS).NumGenSurf << '\n'
-		            for (NGSS = 1 NGSS <= ShadowComb(HTS).NumGenSurf ++NGSS):
+		            for NGSS in range(1, ShadowComb(HTS).NumGenSurf+1):
 		                if (NGSS <= 10):
 		                	shd_stream << "..Surface=" << Surface(ShadowComb(HTS).GenSurf(NGSS)).Name << '\n'
 
 		                CastingSurface(ShadowComb(HTS).GenSurf(NGSS)) = True
 
 		            shd_stream << "Number of back surfaces=" << ShadowComb(HTS).NumBackSurf << '\n'
-		            for (NGSS = 1 NGSS <= min(10, ShadowComb(HTS).NumBackSurf) ++NGSS):
+		            for NGSS in range(1, min(10, ShadowComb(HTS).NumBackSurf)+1):
 		                shd_stream << "...Surface=" << Surface(ShadowComb(HTS).BackSurf(NGSS)).Name << '\n'
 		            
 		            shd_stream << "Number of receiving sub surfaces=" << ShadowComb(HTS).NumSubSurf << '\n'
-		            for (NGSS = 1 NGSS <= min(10, ShadowComb(HTS).NumSubSurf) ++NGSS):
+		            for NGSS in range(1, min(10, ShadowComb(HTS).NumSubSurf)+1):
 		                shd_stream << "....Surface=" << Surface(ShadowComb(HTS).SubSurf(NGSS)).Name << '\n'
 
-		        for (HTS = 1 HTS <= TotSurfaces ++HTS):
+		        for HTS in range(1, TotSurfaces+1):
 		            if (CastingSurface(HTS) && !Surface(HTS).IsConvex):
 		                if (DisplayExtraWarnings):
-		                    ShowSevereError("DetermineShadowingCombinations: Surface=\"" + Surface(HTS).Name + "\" is a casting surface and is non-convex.")
-		                    ShowContinueError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
+		                    ShowSevereError("DetermineShadowingCombinations: Surface=\"{}\" is a casting surface and is non-convex.".format(Surface(HTS).Name))
+		                    raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
 		                else:
 		                    ++TotalCastingNonConvexSurfaces
 
 		        CastingSurface.deallocate()
 
 		        if (TotalReceivingNonConvexSurfaces > 0):
-		            ShowWarningMessage("DetermineShadowingCombinations: There are " + TrimSigDigits(TotalReceivingNonConvexSurfaces) +
-		                               " surfaces which are receiving surfaces and are non-convex.")
-		            ShowContinueError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
-		            ShowContinueError("...Add Output:Diagnostics,DisplayExtraWarnings to see individual warnings for each surface.")
+		            raise RuntimeWarning("DetermineShadowingCombinations: There are {} surfaces which are receiving surfaces and are non-convex.".format(TrimSigDigits(TotalReceivingNonConvexSurfaces)))
+		            raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
+		            raise RuntimeError("...Add Output:Diagnostics,DisplayExtraWarnings to see individual warnings for each surface.")
 		            TotalWarningErrors += TotalReceivingNonConvexSurfaces
 
 		        if (TotalCastingNonConvexSurfaces > 0):
-		            ShowSevereMessage("DetermineShadowingCombinations: There are " + TrimSigDigits(TotalCastingNonConvexSurfaces) +
-		                              " surfaces which are casting surfaces and are non-convex.")
-		            ShowContinueError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
-		            ShowContinueError("...Add Output:Diagnostics,DisplayExtraWarnings to see individual severes for each surface.")
+		            ShowSevereMessage("DetermineShadowingCombinations: There are {} surfaces which are casting surfaces and are non-convex.".format(TrimSigDigits(TotalCastingNonConvexSurfaces)))
+		            raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
+		            raise RuntimeError("...Add Output:Diagnostics,DisplayExtraWarnings to see individual severes for each surface.")
 		            TotalSevereErrors += TotalCastingNonConvexSurfaces
 
 		    	return None
@@ -4778,20 +4403,20 @@ def EnergyPlus():
 		        Real64 XS # Intermediate result
 		        Real64 YS # Intermediate result
 		        Real64 ZS # Intermediate result
-		        int N     # Vertex number
-		        int NGRS  # Coordinate transformation index
-		        int NZ    # Zone Number of surface
-		        int NVT
+		        N = 0     # Vertex number
+		        NGRS = 0  # Coordinate transformation index
+		        NZ = 0    # Zone Number of surface
+		        NVT = 0
 		        static Array1D<Real64> XVT # X Vertices of Shadows
 		        static Array1D<Real64> YVT # Y vertices of Shadows
 		        static Array1D<Real64> ZVT # Z vertices of Shadows
-		        static bool OneTimeFlag(True)
-		        int HTS         # Heat transfer surface number of the general receiving surface
-		        int GRSNR       # Surface number of general receiving surface
-		        int NBKS        # Number of back surfaces
-		        int NGSS        # Number of general shadowing surfaces
-		        int NSBS        # Number of subsurfaces (windows and doors)
-		        Real64 SurfArea # Surface area. For walls, includes all window frame areas.
+		        OneTimeFlag = True
+		        HTS = 0         # Heat transfer surface number of the general receiving surface
+		        GRSNR = 0       # Surface number of general receiving surface
+		        NBKS = 0        # Number of back surfaces
+		        NGSS = 0        # Number of general shadowing surfaces
+		        NSBS = 0        # Number of subsurfaces (windows and doors)
+		        SurfArea = 0.0  # Surface area. For walls, includes all window frame areas.
 		        # For windows, includes divider area
 
 		        if (OneTimeFlag):
@@ -4805,17 +4430,16 @@ def EnergyPlus():
 
 				#ifdef EP_Count_Calls
 		        if (iHour == 0):
-		            ++NumShadow_Calls
+		            NumShadow_Calls += 1
 		        else:
-		            ++NumShadowAtTS_Calls
+		            NumShadowAtTS_Calls += 1
 				#endif
 
 		        SAREA = 0.0
 
-		        for (GRSNR = 1 GRSNR <= TotSurfaces ++GRSNR):
+		        for GRSNR in range(1, TotSurfaces+1):
 
-		            if (!ShadowComb(GRSNR).UseThisSurf):
-		            	continue
+		            if (!ShadowComb(GRSNR).UseThisSurf): continue
 
 		            SAREA(GRSNR) = 0.0
 
@@ -4840,7 +4464,8 @@ def EnergyPlus():
 		            else:
 		            	# Surface in sun and either shading surfaces or subsurfaces present (or both)
 		                NGRS = Surface(GRSNR).BaseSurf
-		                if (Surface(GRSNR).ShadowingSurf) NGRS = GRSNR
+		                if (Surface(GRSNR).ShadowingSurf):
+		                	NGRS = GRSNR
 
 		                # Compute the X and Y displacements of a shadow.
 		                XS = Surface(NGRS).lcsx.x * SUNCOS(1) + Surface(NGRS).lcsx.y * SUNCOS(2) + Surface(NGRS).lcsx.z * SUNCOS(3)
@@ -4850,8 +4475,8 @@ def EnergyPlus():
 		                if (std::abs(ZS) > 1.e-4):
 		                    XShadowProjection = XS / ZS
 		                    YShadowProjection = YS / ZS
-		                    if (std::abs(XShadowProjection) < 1.e-8) XShadowProjection = 0.0
-		                    if (std::abs(YShadowProjection) < 1.e-8) YShadowProjection = 0.0
+		                    if (std::abs(XShadowProjection) < 1.e-8): XShadowProjection = 0.0
+		                    if (std::abs(YShadowProjection) < 1.e-8): YShadowProjection = 0.0
 		                else:
 		                    XShadowProjection = 0.0
 		                    YShadowProjection = 0.0
@@ -4859,7 +4484,7 @@ def EnergyPlus():
 		                CTRANS(GRSNR, NGRS, NVT, XVT, YVT, ZVT) # Transform coordinates of the receiving surface to 2-D form
 
 		                # Re-order its vertices to clockwise sequential.
-		                for (N = 1 N <= NVT ++N):
+		                for N in range(1, NVT+1):
 		                    XVS(N) = XVT(NVT + 1 - N)
 		                    YVS(N) = YVT(NVT + 1 - N)
 
@@ -4886,144 +4511,6 @@ def EnergyPlus():
 		            # There used to be a call to legacy subroutine SHDCVR here when the
 		            # zone type was not a standard zone.
 
-		    	return None
-
-		    def SHDBKS(NGRS, CurSurf, NBKS, HTS):
-		    	'''
-		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Legacy Code
-		        //       DATE WRITTEN
-		        //       MODIFIED       na
-		        //       RE-ENGINEERED  Lawrie, Oct 2000
-
-		        // PURPOSE OF THIS SUBROUTINE:
-		        // This is the driving subroutine for computing
-		        // the sunlit areas for back surfaces.
-		        - int const NGRS, # Number of the general receiving surface
-                - int const CurSurf,
-                - int const NBKS, # Number of back surfaces
-                - int const HTS   # Heat transfer surface number of the general receiving surf
-
-		        // METHODOLOGY EMPLOYED:
-		        # na
-
-		        // REFERENCES:
-		        // BLAST/IBLAST code, original author George Walton
-		        '''
-
-		        # USE STATEMENTS:
-		        # na
-
-		        # Locals
-		        # SUBROUTINE ARGUMENT DEFINITIONS:
-
-		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        # na
-
-		        # INTERFACE BLOCK SPECIFICATIONS
-		        # na
-
-		        # DERIVED TYPE DEFINITIONS
-		        # na
-
-		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        typedef Array2D<Int64>::size_type size_type
-		        int I
-		        int M
-		        int N
-		        int NVR
-		        int NVT                    # Number of vertices of back surface
-		        static Array1D<Real64> XVT # X,Y,Z coordinates of vertices of
-		        static Array1D<Real64> YVT # back surfaces projected into system
-		        static Array1D<Real64> ZVT # relative to receiving surface
-		        static bool OneTimeFlag(True)
-		        int BackSurfaceNumber
-		        int NS1 # Number of the figure being overlapped
-		        int NS2 # Number of the figure doing overlapping
-		        int NS3 # Location to place results of overlap
-
-		        # Tuned Linear indexing
-
-		        assert(equal_dimensions(HCX, HCY))
-		        assert(equal_dimensions(HCX, HCA))
-
-		        if (OneTimeFlag):
-		            XVT.allocate(MaxVerticesPerSurface + 1)
-		            YVT.allocate(MaxVerticesPerSurface + 1)
-		            ZVT.allocate(MaxVerticesPerSurface + 1)
-		            XVT = 0.0
-		            YVT = 0.0
-		            ZVT = 0.0
-		            OneTimeFlag = False
-
-		        if ((NBKS <= 0) || (SAREA(HTS) <= 0.0) || (OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)):
-		        	return None
-
-		        FBKSHC = LOCHCA + 1
-
-		        # Loop through all back surfaces associated with the receiving surface
-		        for (I = 1 I <= NBKS ++I):
-
-		            BackSurfaceNumber = ShadowComb(CurSurf).BackSurf(I)
-
-		            if (CTHETA(BackSurfaceNumber) > -SunIsUpValue):
-						#-0.001) CYCLE ! go to next back surface since inside of this surface
-		            	continue
-		            
-		            # cannot be in sun if the outside can be
-
-		            # Transform coordinates of back surface from general system to the
-		            # plane of the receiving surface
-
-		            CTRANS(BackSurfaceNumber, NGRS, NVT, XVT, YVT, ZVT)
-
-		            # Project "shadow" from back surface along sun's rays to receiving surface.  Back surface vertices
-		            # become clockwise sequential.
-
-		            for (N = 1 N <= NVT ++N):
-		                XVS(N) = XVT(N) - XShadowProjection * ZVT(N)
-		                YVS(N) = YVT(N) - YShadowProjection * ZVT(N)
-
-		            # Transform to the homogeneous coordinate system.
-		            NS3 = LOCHCA + 1
-		            HCT(NS3) = 0.0
-		            HTRANS1(NS3, NVT)
-
-		            # Adjust near-duplicate points.
-		            NVR = HCNV(1)
-		            auto l3(HCX.index(NS3, 1))
-		            for (N = 1 N <= NVT ++N, ++l3):
-		                auto const x3(HCX[l3]) # [ l3 ] == ( NS3, N )
-		                auto const y3(HCY[l3])
-		                size_type l1(0)
-		                for (M = 1 M <= NVR ++M, ++l1):
-		                    if (std::abs(HCX[l1] - x3) > 6):
-		                    	continue # [ l1 ] == ( 1, M )
-		                    if (std::abs(HCY[l1] - y3) > 6):
-	                    		continue
-		                    HCX[l3] = HCX[l1]
-		                    HCY[l3] = HCY[l1]
-		                    break
-
-		            HTRANS0(NS3, NVT)
-
-		            # Determine area of overlap of projected back surface and receiving surface.
-		            NS1 = 1
-		            NS2 = NS3
-		            HCT(NS3) = 1.0
-		            DeterminePolygonOverlap(NS1, NS2, NS3)
-
-		            if (OverlapStatus == NoOverlap):
-		            	continue                                           # to next back surface
-		            if ((OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)):
-		            	break # back surfaces DO loop
-
-		            # Increment back surface count.
-		            LOCHCA = NS3
-		            HCNS(LOCHCA) = BackSurfaceNumber
-		            HCAREA(LOCHCA) = -HCAREA(LOCHCA)
-		            NBKSHC = LOCHCA - FBKSHC + 1
-		        
 		    	return None
 
 		    def SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS):
@@ -5071,17 +4558,17 @@ def EnergyPlus():
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 		        typedef Array2D<Int64>::size_type size_type
-		        int GSSNR             # General shadowing surface number
-		        int MainOverlapStatus # Overlap status of the main overlap calculation not the check for
+		        GSSNR = 0             # General shadowing surface number
+		        MainOverlapStatus = 0 # Overlap status of the main overlap calculation not the check for
 		        # multiple overlaps (unless there was an error)
 		        static Array1D<Real64> XVT
 		        static Array1D<Real64> YVT
 		        static Array1D<Real64> ZVT
-		        static bool OneTimeFlag(True)
-		        int NS1         # Number of the figure being overlapped
-		        int NS2         # Number of the figure doing overlapping
-		        int NS3         # Location to place results of overlap
-		        Real64 SchValue # Value for Schedule of shading transmittence
+		        OneTimeFlag = True
+		        NS1 = 0         # Number of the figure being overlapped
+		        NS2 = 0         # Number of the figure doing overlapping
+		        NS3 = 0         # Location to place results of overlap
+		        SchValue = 0.0 # Value for Schedule of shading transmittence
 
 		        if (OneTimeFlag):
 		            XVT.dimension(MaxVerticesPerSurface + 1, 0.0)
@@ -5096,12 +4583,12 @@ def EnergyPlus():
 		        if (NGSS <= 0): # IF NO S.S., receiving surface FULLY SUNLIT.
 		            SAREA(HTS) = HCAREA(1) # Surface fully sunlit
 		        else:
-		            int ExitLoopStatus(-1)
+		            ExitLoopStatus = -1
 		            auto const &GenSurf(ShadowComb(CurSurf).GenSurf)
 		            auto const sunIsUp(SunIsUpValue)
 		            
 		            # Loop through all shadowing surfaces...
-		            for (int I = 1 I <= NGSS ++I):
+		            for I in range(1, NGSS+1):
 		                GSSNR = GenSurf(I)
 
 		                if (CTHETA(GSSNR) > sunIsUp): #.001) CYCLE ! NO SHADOW IF GSS IN SUNLIGHT.
@@ -5134,8 +4621,9 @@ def EnergyPlus():
 		                        continue # Disable all shadowing surfaces in all zones. Attached shading surfaces are not part of a zone, zone value is 0.
 		                elif (DisableGroupSelfShading):
 		                    std::vector<int> DisabledZones = Surface(CurSurf).DisabledShadowingZoneList
-		                    bool isDisabledShadowSurf = False
-		                    for (int i : DisabledZones):
+		                    isDisabledShadowSurf = False
+		                    # for (int i : DisabledZones):
+		                    for i in range(DisabledZones): # isso?
 		                        if (surface.Zone == i):
 		                            isDisabledShadowSurf = True
 		                            break
@@ -5155,7 +4643,7 @@ def EnergyPlus():
 		                    auto const &XV(ShadeV(GSSNR).XV)
 		                    auto const &YV(ShadeV(GSSNR).YV)
 		                    auto const &ZV(ShadeV(GSSNR).ZV)
-		                    for (int N = 1 N <= NVS ++N):
+		                    for N in range(1, NVS+1):
 		                        XVS(N) = XV(N) - XShadowProjection * ZV(N)
 		                        YVS(N) = YV(N) - YShadowProjection * ZV(N)
 		                else:
@@ -5170,7 +4658,7 @@ def EnergyPlus():
 		                    # Project shadow from shadow casting surface along sun's rays to receiving surface Shadow vertices
 		                    # become clockwise sequential
 
-		                    for (int N = 1 N <= NumVertInShadowOrClippedSurface ++N):
+		                    for N in range(1, NumVertInShadowOrClippedSurface+1):
 		                        XVS(N) = XVC(N) - XShadowProjection * ZVC(N)
 		                        YVS(N) = YVC(N) - YShadowProjection * ZVC(N)
 
@@ -5183,10 +4671,12 @@ def EnergyPlus():
 		                assert(HCX.index(1, 1) == 0u)
 		                size_type j(HCX.index(NS3, 1))
 		                size_type NVR(HCNV(1))
-		                for (int N = 1 N <= NumVertInShadowOrClippedSurface ++N, ++j): # Tuned Logic change: break after 1st "close" point found
+		                for N in range(1, NumVertInShadowOrClippedSurface+1): # Tuned Logic change: break after 1st "close" point found
 		                    auto const HCX_N(HCX[j])                                    # [ j ] == ( NS3, N )
 		                    auto const HCY_N(HCY[j])
-		                    for (size_type l = 0 l < NVR ++l): # [ l ] == ( 1, l+1 )
+		                    j += 1 # será que é aqui ou depois do próximo loop?!
+		                    # for (size_type l = 0 l < NVR ++l): # [ l ] == ( 1, l+1 )
+		                    for l in range(l, NVR):
 		                        auto const delX(std::abs(HCX[l] - HCX_N))
 		                        if (delX > 6):
 	                        		continue
@@ -5218,12 +4708,14 @@ def EnergyPlus():
 		                DeterminePolygonOverlap(NS1, NS2, NS3)
 
 		                # Next statement is special to deal with transmitting shading devices
-		                if (OverlapStatus == FirstSurfWithinSecond && SchValue > 0.0) OverlapStatus = PartialOverlap
+		                if (OverlapStatus == FirstSurfWithinSecond && SchValue > 0.0):
+		                	OverlapStatus = PartialOverlap
+
 		                MainOverlapStatus = OverlapStatus
 		                ExitLoopStatus = MainOverlapStatus
 
 		                if (MainOverlapStatus == NoOverlap): # No overlap of general surface shadow and receiving surface
-		                                                     # Continue
+		                	continue
 		                elif ((MainOverlapStatus == FirstSurfWithinSecond) || (MainOverlapStatus == TooManyVertices) ||
 		                      (MainOverlapStatus == TooManyFigures)):
 		                    #----------------------goto ShadowingSurfaces_exit
@@ -5254,7 +4746,9 @@ def EnergyPlus():
 		                    SAREA(HTS) = HCAREA(1) # Surface fully sunlit
 		                else:
 		                    Real64 A(HCAREA(1)) # Area
-		                    for (int i = FGSSHC, e = FGSSHC + NGSSHC - 1 i <= e ++i):
+		                    # for (int i = FGSSHC, e = FGSSHC + NGSSHC - 1 i <= e ++i):
+		                    e = FGSSHC + NGSSHC - 1
+		                    for i in range(FGSSHC, e+1):
 		                        A += HCAREA(i) * (1.0 - HCT(i))
 
 		                    SAREA(HTS) = A
@@ -5264,167 +4758,6 @@ def EnergyPlus():
 
 		        NGSSHC = LOCHCA - FGSSHC + 1
 		        
-		    	return None
-
-	    	# MAYBE needed to get the nearby build shading
-		    def CalcInteriorSolarOverlaps(iHour, NBKS, HTSS, GRSNR, TS):
-		    	'''
-		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Fred Winkelmann
-		        //       DATE WRITTEN   January 1999
-		        //       MODIFIED       Nov 2001, FW: include beam radiation overlaps with
-		        //                       back windows and doors previously these subsurfaces ignored.
-		        //                      May 2002, FW: fix problem where reveal was not being considered
-		        //                       in calculating overlap areas if window is shaded only by reveal.
-		        //                      June 2002, FW: fix problem that gave incorrect calculation when
-		        //                       window is not shaded only by reveal
-		        //                      June 2002, FW: remove incorrect multiplication of overlap areas
-		        //                       by sunlit fraction when window is shaded only by reveal
-		        //       RE-ENGINEERED  na
-
-		        // PURPOSE OF THIS SUBROUTINE:
-		        // For an exterior window with surface number HTSS, determines (1) the surface numbers of back
-		        // surfaces receiving beam radiation from the window and (2) for each such back surface, the area
-		        // of the portion of the window sending beam radiation to the back surface this is called the
-		        // "overlap area."
-		        - int const iHour, # Hour Index
-				- int const NBKS,  # Number of back surfaces associated with this GRSNR (in general, only
-				- int const HTSS,  # Surface number of the subsurface (exterior window)
-				- int const GRSNR, # General receiving surface number (base surface of the exterior window)
-				- int const TS     # Time step Index
-
-		        // METHODOLOGY EMPLOYED:
-		        # na
-
-		        // REFERENCES:
-		        // BLAST/IBLAST code, original author George Walton
-		        '''
-
-		        # USE STATEMENTS:
-		        # na
-
-		        # Locals
-		        # SUBROUTINE ARGUMENT DEFINITIONS:
-		        #  some of these will receive beam radiation from HTSS this hour)
-
-		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        int const WindowShadedOnlyByReveal(2) # for use with RevealStatus
-
-		        # INTERFACE BLOCK SPECIFICATIONS
-		        # na
-
-		        # DERIVED TYPE DEFINITIONS
-		        # na
-
-		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        typedef Array2D<Int64>::size_type size_type
-		        int JBKS           # Counter of back surfaces with non-zero overlap with HTSS
-		        int JBKSbase       # Back base surface counter
-		        int BackSurfNum    # Back surface number
-		        Real64 OverlapArea # Overlap area (m2)
-
-		        bool UseSimpleDistribution # True means simple interior solar distribution
-		        # (all incoming beam assumed to strike floor),
-		        # False means exact interior solar distribution
-		        # (track which back surfaces beam illuminates)
-
-		        # Tuned Linear indexing
-
-		        assert(equal_dimensions(HCX, HCY))
-		        assert(equal_dimensions(HCX, HCA))
-		        assert(equal_dimensions(HCX, HCB))
-		        assert(equal_dimensions(HCX, HCC))
-
-		        if (SAREA(HTSS) > 0.0):
-
-		            UseSimpleDistribution = False
-
-		            if ((NBKS <= 0) || (Surface(GRSNR).ExtBoundCond > 0)):
-
-		                UseSimpleDistribution = True
-
-		            else:
-		                # Using 'exact' distribution, replace subsurface HC entries with reveal HC entries
-		                # so that the reveal HC is used in calculating interior solar overlap areas
-
-		                # Adding the following line fixes a problem where, if the window was shaded only
-		                # by reveal, then the reveal was not considered in calculating interior solar
-		                # overlap areas (FCW 5/3/02).
-		                # IF(Surface(HTSS)%Reveal > 0.0) NRVLHC = 1
-		                # Changing the line to the following avoids incorrect calculation when window is not shaded
-		                # only by reveal (FCW 6/28/02).
-		                if (WindowRevealStatus(TS, iHour, HTSS) == WindowShadedOnlyByReveal):
-		                	NRVLHC = 1
-		                
-		                if (NRVLHC > 0):
-		                    for (int I = 1 I <= NRVLHC ++I):
-		                        int const iS(FSBSHC - 1 + I)
-		                        int const iR(FRVLHC - 1 + I)
-		                        HCT(iS) = HCT(iR)
-		                        HCNV(iS) = HCNV(iR)
-		                        HCAREA(iS) = HCAREA(iR)
-		                        size_type lS(HCX.index(iS, 1))
-		                        size_type lR(HCX.index(iR, 1))
-		                        for (int J = 1 J <= MaxHCV ++J, ++lS, ++lR): # [ lS ] == ( iS, J ), [ lR ] == ( iR, J )
-		                            HCX[lS] = HCX[lR]
-		                            HCY[lS] = HCY[lR]
-		                            HCA[lS] = HCA[lR]
-		                            HCB[lS] = HCB[lR]
-		                            HCC[lS] = HCC[lR]
-		                    
-		                    NSBSHC = NRVLHC
-
-		            # Check for array space.
-		            if (FSBSHC + NBKSHC > MaxHCS):
-		            	UseSimpleDistribution = True
-
-		            if (!UseSimpleDistribution): # Compute overlaps
-		                FINSHC = FSBSHC + NSBSHC
-
-		                JBKS = 0
-		                JBKSbase = 0
-
-		                for (int IBKS = 1 IBKS <= NBKSHC ++IBKS): # Loop over back surfaces to GRSNR this hour. NBKSHC is the number of
-		                    # back surfaces that would receive beam radiation from the base surface, GRSNR,
-		                    # if the base surface was transparent. In general, some (at least one) or all of these
-		                    # will receive beam radiation from the exterior window subsurface, HTSS, of GRSNR,
-		                    # depending on the size of HTSS and its location on GRSNR
-		                    BackSurfNum = HCNS(FBKSHC - 1 + IBKS)
-
-		                    # Determine if this back surface number can receive beam radiation from the
-		                    # exterior window, HTSS, this hour, i.e., overlap area is positive
-		                    LOCHCA = FINSHC - 1
-
-		                    MULTOL(FBKSHC - 1 + IBKS, FSBSHC - 1, NSBSHC)
-
-		                    # Compute overlap area for this back surface
-		                    NINSHC = LOCHCA - FINSHC + 1
-		                    if (NINSHC <= 0):
-		                    	continue
-		                    OverlapArea = HCAREA(FINSHC)
-		                    for (int J = 2 J <= NINSHC ++J):
-		                        OverlapArea += HCAREA(FINSHC - 1 + J) * (1.0 - HCT(FINSHC - 1 + J))
-
-		                    if (OverlapArea > 0.001):
-		                        ++JBKS
-		                        if (Surface(BackSurfNum).BaseSurf == BackSurfNum):
-		                        	JBKSbase = JBKS
-		                        if (JBKS <= MaxBkSurf):
-		                            BackSurfaces(TS, iHour, JBKS, HTSS) = BackSurfNum
-		                            # Remove following IF check: multiplying by sunlit fraction in the following is incorrect
-		                            # (FCW, 6/28/02)
-		                            # IF (WindowRevealStatus(HTSS,IHOUR,TS) == WindowShadedOnlyByReveal) THEN
-		                            #  OverlapArea = OverlapArea*(SAREA(HTSS)/Surface(HTSS)%Area)
-		                            # ENDIF
-		                            OverlapAreas(TS, iHour, JBKS, HTSS) = OverlapArea * SurfaceWindow(HTSS).GlazedFrac
-		                            # If this is a subsurface, subtract its overlap area from the base surface
-		                            if (Surface(BackSurfNum).BaseSurf != BackSurfNum && JBKSbase != 0):
-		                                OverlapAreas(TS, iHour, JBKSbase, HTSS) = max(0.0, OverlapAreas(TS, iHour, JBKSbase, HTSS) - OverlapAreas(TS, iHour, JBKS, HTSS))
-
-		                # end of loop over back surfaces
-		            # end of Compute overlaps
-		        # end of check that sunlit area > 0.
-		    	
 		    	return None
 
 	    	def SurfaceScheduledSolarInc(SurfNum, ConstNum):
@@ -5469,7 +4802,7 @@ def EnergyPlus():
 
 		        SurfaceScheduledSolarInc = 0
 
-		        for (int i = 1 i <= TotSurfIncSolSSG ++i):
+		        for i in range(1, TotSurfIncSolSSG+1):
 		            if ((SurfIncSolSSG(i).SurfPtr == SurfNum) && (SurfIncSolSSG(i).ConstrPtr == ConstNum)):
 		                SurfaceScheduledSolarInc = i
 		                return SurfaceScheduledSolarInc
@@ -5523,15 +4856,15 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        Real64 SumDec
-		        Real64 SumET
-		        Real64 AvgEqOfTime
-		        Real64 AvgSinSolarDeclin
-		        Real64 AvgCosSolarDeclin
-		        int PerDayOfYear
-		        int Count
-		        Real64 SinDec
-		        Real64 EqTime
+		        SumDec = 0.0
+		        SumET = 0.0
+		        AvgEqOfTime = 0.0
+		        AvgSinSolarDeclin = 0.0
+		        AvgCosSolarDeclin = 0.0
+		        PerDayOfYear = 0
+		        Count = 0
+		        SinDec = 0.0
+		        EqTime = 0.0
 		        # not used INTEGER SurfNum
 
 		        # Calculate sky diffuse shading
@@ -5553,25 +4886,26 @@ def EnergyPlus():
 		                #  Calculate average Equation of Time, Declination Angle for this period
 		                if (!WarmupFlag):
 		                    if (KindOfSim == ksRunPeriodWeather):
-		                        DisplayString("Updating Shadowing Calculations, Start Date=" + CurMnDyYr)
+		                        print("Updating Shadowing Calculations, Start Date = {}".format(CurMnDyYr))
 		                    else:
-		                        DisplayString("Updating Shadowing Calculations, Start Date=" + CurMnDy)
+		                        print("Updating Shadowing Calculations, Start Date = {}".format(CurMnDy))
 		                    
 		                    DisplayPerfSimulationFlag = True
 
 		                PerDayOfYear = DayOfYear
 		                SumDec = 0.0
 		                SumET = 0.0
-		                for (Count = 1 Count <= ShadowingDaysLeft ++Count):
+		                for Count in range(1, ShadowingDaysLeft+1):
 		                    SUN3(PerDayOfYear, SinDec, EqTime)
 		                    SumDec += SinDec
 		                    SumET += EqTime
-		                    ++PerDayOfYear
+		                    PerDayOfYear += 1
 
 		                #  Compute Period Values
 		                AvgSinSolarDeclin = SumDec / double(ShadowingDaysLeft)
 		                AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
 		                AvgEqOfTime = SumET / double(ShadowingDaysLeft)
+		            
 		            else:
 		                SUN3(DayOfYear, AvgSinSolarDeclin, AvgEqOfTime)
 		                AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
@@ -5660,9 +4994,9 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        Real64 X     # Day of Year in Radians (Computed from Input JulianDayOfYear)
-		        Real64 CosX  # COS(X)
-		        Real64 SineX # SIN(X)
+		        X = 0.0     # Day of Year in Radians (Computed from Input JulianDayOfYear)
+		        CosX = 0.0  # COS(X)
+		        SineX = 0.0 # SIN(X)
 
 		        X = 0.017167 * JulianDayOfYear # Convert julian date to angle X
 
@@ -5694,7 +5028,7 @@ def EnergyPlus():
 		        //       RE-ENGINEERED  Lawrie, Oct 2000
 
 		        // PURPOSE OF THIS SUBROUTINE:
-		        // This subroutine computes solar direction cosines for a given hour.  These
+		        // This subroutine computes solar direction cosines for a given hour. These
 		        // cosines are used in the shadowing calculations.
 		        - Real64 const CurrentTime,    # Time to use in shadowing calculations
 				- Real64 const EqOfTime,       # Equation of time for current day
@@ -5724,8 +5058,8 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        Real64 H       # Hour angle (before noon = +) (in radians)
-		        Real64 HrAngle # Basic hour angle
+		        H = 0.0       # Hour angle (before noon = +) (in radians)
+		        HrAngle = 0.0 # Basic hour angle
 
 		        # Compute the hour angle
 		        HrAngle = (15.0 * (12.0 - (CurrentTime + EqOfTime)) + (TimeZoneMeridian - Longitude))
@@ -5746,6 +5080,515 @@ def EnergyPlus():
 		    	return None
 
 	    	# MAYBE needed to get the nearby build shading
+		    def SkyDifSolarShading():
+		    	'''
+		        // SUBROUTINE INFORMATION:
+		        //       AUTHOR         Fred Winkelmann
+		        //       DATE WRITTEN   May 1999
+		        //       MODIFIED       Sep 2000, FCW: add IR view factor calc
+		        //                      Sep 2002, FCW: correct error in expression for ground IR view factor.
+		        //                         Affects only non-vertical surfaces that are shadowed. For these surfaces
+		        //                         error caused underestimate of IR from ground and shadowing surfaces.
+		        //                      Dec 2002 LKL: Sky Radiance Distribution now only anisotropic
+		        //                      Nov 2003: FCW: modify to do sky solar shading of shadowing surfaces
+		        //       RE-ENGINEERED  na
+
+		        // PURPOSE OF THIS SUBROUTINE:
+		        // Calculates factors that account for shading of sky diffuse solar
+		        // radiation by shadowing surfaces such as overhangs and detached shades.
+		        // Called by PerformSolarCalculations
+		        // For each exterior heat transfer surface calculates the following
+		        // ratio (called DifShdgRatioIsoSky in this subroutine):
+		        //  R1 = (Diffuse solar from sky dome on surface, with shading)/
+		        //       (Diffuse solar from sky dome on surface, without shading)
+		        // To calculate the incident diffuse radiation on a surface the sky
+		        // hemisphere is divided into source elements ("patches"). Each patch
+		        // is assumed to have the same radiance, i.e. the sky radiance is isotropic.
+		        // The irradiance from each patch on a surface is calculated. Then these
+		        // irradiances are summed to get the net irradiance on a surface, which
+		        // the denominator of R1.
+		        // To get the numerator of R1 the same summation is done, but for each surface
+		        // and each patch the Shadow subroutine is called to determine how much
+		        // radiation from a patch is blocked by shading surfaces.
+		        // Also calculated is the following ratio (called DifShdgRatioHoriz in this routine):
+		        //  R2 = (Diffuse solar from sky horizon band on surface, with shading)/
+		        //       (Diffuse solar from sky horizon band on surface, without shading)
+		        // For this ratio only a band of sky just above the horizon is considered.
+		        // R1 and R2 are used in SUBROUTINE AnisoSkyViewFactors, which determines the
+		        // sky diffuse solar irradiance on each exterior heat transfer surface each
+		        // time step. In that routine the sky radiance distribution is a superposition
+		        // of an isotropic distribution,
+		        // a horizon brightening distribution and a circumsolar brightening distribution,
+		        // where the proportion of each distribution depends
+		        // on cloud cover, sun position and other factors. R1 multiplies the irradiance
+		        // due to the isotropic component and R2 multiplies the irradiance due to the
+		        // horizon brightening component.
+		        // Calculates sky and ground IR view factors assuming sky IR is isotropic and
+		        // shadowing surfaces are opaque to IR.
+		        // REFERENCES:
+		        # na
+		        '''
+
+		        # Using/Aliasing
+		        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
+
+		        # Locals
+		        # SUBROUTINE PARAMETER DEFINITIONS:
+
+		        # INTERFACE BLOCK SPECIFICATIONS
+		        # na
+
+		        # DERIVED TYPE DEFINITIONS
+		        # na
+
+		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+
+		        SrdSurfsNum = 0       # Srd surface counter
+		        Fac1WoShdg = 0.0      # Intermediate calculation factor, without shading
+		        FracIlluminated = 0.0 # Fraction of surface area illuminated by a sky patch
+		        Fac1WithShdg = 0.0    # Intermediate calculation factor, with shading
+		        SurfArea = 0.0        # Surface area (m2)
+		        ShadowingSurf = 0     # True if surface is a shadowing surface
+		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WithShdgIsoSky     ! Diffuse solar irradiance from isotropic
+		        #                                                          ! sky on surface, with shading
+		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WoShdgIsoSky       ! Diffuse solar from isotropic
+		        #                                                           ! sky on surface, without shading
+		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WithShdgHoriz      ! Diffuse solar irradiance from horizon portion of
+		        #                                                           ! sky on surface, with shading
+		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WoShdgHoriz        ! Diffuse solar irradiance from horizon portion of
+		        #                                                           ! sky on surface, without shading
+		        # INTEGER iHour,iTS
+
+		        # FLOW:
+
+		        # Initialize Surfaces Arrays
+		        SAREA = 0.0
+		        WithShdgIsoSky.dimension(TotSurfaces, 0.0)
+		        WoShdgIsoSky.dimension(TotSurfaces, 0.0)
+		        WithShdgHoriz.dimension(TotSurfaces, 0.0)
+		        WoShdgHoriz.dimension(TotSurfaces, 0.0)
+		        DifShdgRatioIsoSky.allocate(TotSurfaces)
+		        DifShdgRatioHoriz.allocate(TotSurfaces)
+		        # initialized as no shading
+		        DifShdgRatioIsoSky = 1.0
+		        DifShdgRatioHoriz = 1.0
+		        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+		            curDifShdgRatioIsoSky.dimension(TotSurfaces, 1.0)
+		        
+		        # only for detailed.
+		        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+		            DifShdgRatioIsoSkyHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
+		            DifShdgRatioIsoSkyHRTS = 1.0
+		            DifShdgRatioHorizHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
+		            DifShdgRatioHorizHRTS = 1.0
+		        
+		        for SurfNum in range(1, TotSurfaces+1): # SurfNum <= TotSurfaces == SurfNum = TotSurfaces
+		            if (!Surface(SurfNum).ExtSolar):
+		            	continue
+
+		            # CurrentModuleObject='Surfaces'
+		            if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+		                SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
+		                                    OutputProcessor::Unit::None,
+		                                    curDifShdgRatioIsoSky(SurfNum),
+		                                    "Zone",
+		                                    "Average",
+		                                    Surface(SurfNum).Name)
+		            else:
+		                SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
+		                                    OutputProcessor::Unit::None,
+		                                    DifShdgRatioIsoSky(SurfNum),
+		                                    "Zone",
+		                                    "Average",
+		                                    Surface(SurfNum).Name)
+		            
+		            SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioHoriz",
+		                                OutputProcessor::Unit::None,
+		                                DifShdgRatioHoriz(SurfNum),
+		                                "Zone",
+		                                "Average",
+		                                Surface(SurfNum).Name)
+		            SetupOutputVariable("Debug Surface Solar Shading Model WithShdgIsoSky",
+		                                OutputProcessor::Unit::None,
+		                                WithShdgIsoSky(SurfNum),
+		                                "Zone",
+		                                "Average",
+		                                Surface(SurfNum).Name)
+		            SetupOutputVariable("Debug Surface Solar Shading Model WoShdgIsoSky",
+		                                OutputProcessor::Unit::None,
+		                                WoShdgIsoSky(SurfNum),
+		                                "Zone",
+		                                "Average",
+		                                Surface(SurfNum).Name)
+		        
+		        for IPhi in range(0, NPhi): # Loop over patch altitude values
+		            SUNCOS(3) = sin_Phi[IPhi]
+
+		            for ITheta in range(0, NTheta): # Loop over patch azimuth values
+		                SUNCOS(1) = cos_Phi[IPhi] * cos_Theta[ITheta]
+		                SUNCOS(2) = cos_Phi[IPhi] * sin_Theta[ITheta]
+
+		                for SurfNum in range(1, TotSurfaces+1): # Cosine of angle of incidence on surface of solar
+		                    # radiation from patch
+		                    ShadowingSurf = Surface(SurfNum).ShadowingSurf
+
+		                    if (!ShadowingSurf && !Surface(SurfNum).HeatTransSurf):
+		                    	continue
+
+		                    CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) +
+		                                      SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
+
+		                SHADOW(0, 0)
+
+		                for SurfNum in range(1, TotSurfaces+1):
+		                    ShadowingSurf = Surface(SurfNum).ShadowingSurf
+
+		                    if (!ShadowingSurf &&
+		                        (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+		                         (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+		                        continue
+
+		                    if (CTHETA(SurfNum) < 0.0): continue
+
+		                    Fac1WoShdg = cos_Phi[IPhi] * DThetaDPhi * CTHETA(SurfNum)
+		                    SurfArea = Surface(SurfNum).NetAreaShadowCalc
+		                    if (SurfArea > Eps):
+		                        FracIlluminated = SAREA(SurfNum) / SurfArea
+		                    else:
+		                        FracIlluminated = SAREA(SurfNum) / (SurfArea + Eps)
+		                    
+		                    Fac1WithShdg = Fac1WoShdg * FracIlluminated
+		                    WithShdgIsoSky(SurfNum) += Fac1WithShdg
+		                    WoShdgIsoSky(SurfNum) += Fac1WoShdg
+
+		                    # Horizon region
+		                    if (IPhi == 0):
+		                        WithShdgHoriz(SurfNum) += Fac1WithShdg
+		                        WoShdgHoriz(SurfNum) += Fac1WoShdg
+		                    
+		                # end of surface loop
+		            # end of Theta loop
+		        # end of Phi loop
+
+		        for SurfNum in range(1, TotSurfaces+1):
+		            ShadowingSurf = Surface(SurfNum).ShadowingSurf
+
+		            if (!ShadowingSurf &&
+		                (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+		                 (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+		                continue
+
+		            if (std::abs(WoShdgIsoSky(SurfNum)) > Eps):
+		                DifShdgRatioIsoSky(SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum))
+		            else:
+		                DifShdgRatioIsoSky(SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum) + Eps)
+		            
+		            if (std::abs(WoShdgHoriz(SurfNum)) > Eps):
+		                DifShdgRatioHoriz(SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum))
+		            else:
+		                DifShdgRatioHoriz(SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum) + Eps)
+
+		        # Get IR view factors. An exterior surface can receive IR radiation from
+		        # sky, ground or shadowing surfaces. Assume shadowing surfaces have same
+		        # temperature as outside air (and therefore same temperature as ground),
+		        # so that the view factor to these shadowing surfaces can be included in
+		        # the ground view factor. Sky IR is assumed to be isotropic and shadowing
+		        # surfaces are assumed to be opaque to IR so they totally "shade" IR from
+		        # sky or ground.
+
+		        for SurfNum in range(1, TotSurfaces+1):
+		            if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
+		                Surface(SurfNum).ViewFactorSkyIR *= DifShdgRatioIsoSky(SurfNum)
+		            else:
+		                Surface(SurfNum).ViewFactorSkyIR *= DifShdgRatioIsoSkyHRTS(1, 1, SurfNum)
+		            
+		            Surface(SurfNum).ViewFactorGroundIR = 1.0 - Surface(SurfNum).ViewFactorSkyIR
+
+		            if (Surface(SurfNum).HasSurroundingSurfProperties):
+		                SrdSurfsNum = Surface(SurfNum).SurroundingSurfacesNum
+		                if (SurroundingSurfsProperty(SrdSurfsNum).SkyViewFactor != -1):
+		                    Surface(SurfNum).ViewFactorSkyIR *= SurroundingSurfsProperty(SrdSurfsNum).SkyViewFactor
+		                
+		                if (SurroundingSurfsProperty(SrdSurfsNum).GroundViewFactor != -1):
+		                    Surface(SurfNum).ViewFactorGroundIR *= SurroundingSurfsProperty(SrdSurfsNum).GroundViewFactor
+
+		        #  DEALLOCATE(WithShdgIsoSky)
+		        #  DEALLOCATE(WoShdgIsoSky)
+		        #  DEALLOCATE(WithShdgHoriz)
+		        #  DEALLOCATE(WoShdgHoriz)
+
+		        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+		            for SurfNum in range(1, TotSurfaces+1):
+		                DifShdgRatioIsoSkyHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioIsoSky(SurfNum)
+		                DifShdgRatioHorizHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioHoriz(SurfNum)
+
+		    	return None
+
+	    	def ReportSurfaceShading():
+		    	'''
+		        // SUBROUTINE INFORMATION:
+		        //       AUTHOR         Linda Lawrie
+		        //       DATE WRITTEN   April 2000
+		        //       MODIFIED       na
+		        //       RE-ENGINEERED  na
+
+		        // PURPOSE OF THIS SUBROUTINE:
+		        // This subroutine uses the internal variables used in the Shading
+		        // calculations and prepares them for reporting (at timestep level).
+
+		        // METHODOLOGY EMPLOYED:
+		        // Because all of the calculations are done on a "daily" basis in this
+		        // module, it is difficult to formulate the values that might be useful
+		        // for reporting.  SunlitFrac was the first of these two arrays to be
+		        // made into "two dimensions".  It is not clear that both have to be
+		        // two dimensions.
+
+		        // REFERENCES:
+		        # na
+		        '''
+
+		        # Using/Aliasing
+		        using namespace OutputReportPredefined
+
+		        # Locals
+		        # SUBROUTINE ARGUMENT DEFINITIONS:
+		        # na
+
+		        # SUBROUTINE PARAMETER DEFINITIONS:
+		        # na
+
+		        # INTERFACE BLOCK SPECIFICATIONS
+		        # na
+
+		        # DERIVED TYPE DEFINITIONS
+		        # na
+
+		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		        SurfNum = 0 # Loop Counter
+		        RepCol = 0  # the column of the predefined report
+
+		        for SurfNum in range(1, TotSurfaces+1):
+		            SurfSunlitFrac(SurfNum) = SunlitFrac(TimeStep, HourOfDay, SurfNum)
+		            SurfSunlitArea(SurfNum) = SunlitFrac(TimeStep, HourOfDay, SurfNum) * Surface(SurfNum).Area
+		        
+		        # added for predefined reporting
+		        RepCol = 0
+		        if (Month == 3 && DayOfMonth == 21):
+		            if ((HourOfDay == 9) && (TimeStep == 4)):
+		                RepCol = pdchSlfMar21_9
+		            elif ((HourOfDay == 12) && (TimeStep == 4)):
+		                RepCol = pdchSlfMar21_12
+		            elif ((HourOfDay == 15) && (TimeStep == 4)):
+		                RepCol = pdchSlfMar21_15
+		        elif (Month == 6 && DayOfMonth == 21):
+		            if ((HourOfDay == 9) && (TimeStep == 4)):
+		                RepCol = pdchSlfJun21_9
+		            elif ((HourOfDay == 12) && (TimeStep == 4)):
+		                RepCol = pdchSlfJun21_12
+		            elif ((HourOfDay == 15) && (TimeStep == 4)):
+		                RepCol = pdchSlfJun21_15
+		        elif (Month == 12 && DayOfMonth == 21):
+		            if ((HourOfDay == 9) && (TimeStep == 4)):
+		                RepCol = pdchSlfDec21_9
+		            elif ((HourOfDay == 12) && (TimeStep == 4)):
+		                RepCol = pdchSlfDec21_12
+		            elif ((HourOfDay == 15) && (TimeStep == 4)):
+		                RepCol = pdchSlfDec21_15
+		        
+		        if (RepCol != 0):
+		            for SurfNum in range(1, TotSurfaces+1):
+		                if (Surface(SurfNum).Class == SurfaceClass_Window):
+		                    PreDefTableEntry(RepCol, Surface(SurfNum).Name, SurfSunlitFrac(SurfNum))
+                
+		    	return None
+
+		    def ReportSurfaceErrors():
+		    	'''
+		        // SUBROUTINE INFORMATION:
+		        //       AUTHOR         Linda Lawrie
+		        //       DATE WRITTEN   November 2004
+		        //       MODIFIED       na
+		        //       RE-ENGINEERED  na
+
+		        // PURPOSE OF THIS SUBROUTINE:
+		        // This subroutine reports some recurring type errors that can get mixed up with more important
+		        // errors in the error file.
+
+		        // METHODOLOGY EMPLOYED:
+		        # na
+
+		        // REFERENCES:
+		        # na
+		        '''
+
+		        # Using/Aliasing
+		        using namespace DataErrorTracking # for error tracking
+		        using General::RoundSigDigits
+
+		        # Locals
+		        # SUBROUTINE ARGUMENT DEFINITIONS:
+		        # na
+
+		        # SUBROUTINE PARAMETER DEFINITIONS:
+		        static Array1D_string const MSG(4, {"misses", "", "within", "overlaps"})
+
+		        # INTERFACE BLOCK SPECIFICATIONS
+		        # na
+
+		        # DERIVED TYPE DEFINITIONS
+		        # na
+
+		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		        Loop1 = 0
+		        Loop2 = 0
+		        Count = 0
+		        TotCount = 0
+		        std::string CountOut
+		        Array1D_bool SurfErrorReported
+		        Array1D_bool SurfErrorReported2
+
+		        if (NumTooManyFigures + NumTooManyVertices + NumBaseSubSurround > 0):
+		            print("\n===== Recurring Surface Error Summary =====")
+		            print("The following surface error messages occurred.\n")
+
+		            if (NumBaseSubSurround > 0):
+		                print("Base Surface does not surround subsurface errors occuring...")
+		                print("Check that the GlobalGeometryRules object is expressing the proper starting corner and direction [CounterClockwise/Clockwise]\n")
+
+		            SurfErrorReported.dimension(TotSurfaces, False)
+		            TotCount = 0
+		            for Loop1 in range(1, NumBaseSubSurround+1):
+		                Count = 0
+		                if (SurfErrorReported(TrackBaseSubSurround(Loop1).SurfIndex1)): continue
+		                
+		                for Loop2 in range(1, NumBaseSubSurround+1):
+		                    if (TrackBaseSubSurround(Loop1).SurfIndex1 == TrackBaseSubSurround(Loop2).SurfIndex1 &&
+		                        TrackBaseSubSurround(Loop1).MiscIndex == TrackBaseSubSurround(Loop2).MiscIndex):
+		                        Count += 1
+
+		                gio::write(CountOut, fmtLD) << Count
+		                TotCount += Count
+		                TotalWarningErrors += Count - 1
+		                raise RunTimeWarning("Base surface does not surround subsurface (CHKSBS), Overlap Status=" +
+		                                 cOverLapStatus(TrackBaseSubSurround(Loop1).MiscIndex))
+		                ShowContinueError("  The base surround errors occurred " + stripped(CountOut) + " times.")
+		                
+		                for (Loop2 = 1 Loop2 <= NumBaseSubSurround ++Loop2):
+		                    if (TrackBaseSubSurround(Loop1).SurfIndex1 == TrackBaseSubSurround(Loop2).SurfIndex1 &&
+		                        TrackBaseSubSurround(Loop1).MiscIndex == TrackBaseSubSurround(Loop2).MiscIndex):
+		                        ShowContinueError("Surface \"" + Surface(TrackBaseSubSurround(Loop1).SurfIndex1).Name + "\" " +
+		                                          MSG(TrackBaseSubSurround(Loop1).MiscIndex) + " SubSurface \"" +
+		                                          Surface(TrackBaseSubSurround(Loop2).SurfIndex2).Name + "\"")
+	                    
+		                SurfErrorReported(TrackBaseSubSurround(Loop1).SurfIndex1) = True
+		            
+		            if (TotCount > 0):
+		                print("")
+		                gio::write(CountOut, fmtLD) << TotCount
+		                ShowContinueError("  The base surround errors occurred " + stripped(CountOut) + " times (total).")
+		                print("")
+
+		            SurfErrorReported2.allocate(TotSurfaces)
+		            SurfErrorReported = False
+		            TotCount = 0
+		            if (NumTooManyVertices > 0):
+		                print("Too many vertices [>=" + RoundSigDigits(MaxHCV) + "] in shadow overlap errors occurring...")
+		                print("These occur throughout the year and may occur several times for the same surfaces. You may be able to reduce them by "
+		                            "adding Output:Diagnostics,DoNotMirrorDetachedShading")
+
+		            for (Loop1 = 1 Loop1 <= NumTooManyVertices ++Loop1):
+		                Count = 0
+		                SurfErrorReported2 = False
+		                if (SurfErrorReported(TrackTooManyVertices(Loop1).SurfIndex1)): continue
+		                
+		                for (Loop2 = 1 Loop2 <= NumTooManyVertices ++Loop2):
+		                    if (TrackTooManyVertices(Loop1).SurfIndex1 == TrackTooManyVertices(Loop2).SurfIndex1):
+		                        ++Count
+	                    
+		                gio::write(CountOut, fmtLD) << Count
+		                TotCount += Count
+		                TotalWarningErrors += Count - 1
+		                print("")
+		                raise RunTimeWarning("Too many vertices [>=" + RoundSigDigits(MaxHCV) + "] in a shadow overlap")
+		                ShowContinueError("Overlapping figure=" + Surface(TrackTooManyVertices(Loop1).SurfIndex1).Name + ", Surface Class=[" +
+		                                  cSurfaceClass(Surface(TrackTooManyVertices(Loop1).SurfIndex1).Class) + ']')
+		                ShowContinueError("  This error occurred " + stripped(CountOut) + " times.")
+		                
+		                for (Loop2 = 1 Loop2 <= NumTooManyVertices ++Loop2):
+		                    if (TrackTooManyVertices(Loop1).SurfIndex1 == TrackTooManyVertices(Loop2).SurfIndex1):
+		                        if (SurfErrorReported2(TrackTooManyVertices(Loop2).SurfIndex2)): continue
+		                        
+		                        ShowContinueError("Figure being Overlapped=" + Surface(TrackTooManyVertices(Loop2).SurfIndex2).Name + ", Surface Class=[" +
+		                                          cSurfaceClass(Surface(TrackTooManyVertices(Loop2).SurfIndex2).Class) + ']')
+		                        SurfErrorReported2(TrackTooManyVertices(Loop2).SurfIndex2) = True
+	                    
+		                SurfErrorReported(TrackTooManyVertices(Loop1).SurfIndex1) = True
+		            
+		            if (TotCount > 0):
+		                print("")
+		                gio::write(CountOut, fmtLD) << TotCount
+		                ShowContinueError("  The too many vertices errors occurred " + stripped(CountOut) + " times (total).")
+		                print("")
+
+		            SurfErrorReported = False
+		            TotCount = 0
+		            if (NumTooManyFigures > 0):
+		                print("Too many figures [>=" + RoundSigDigits(MaxHCS) + "] in shadow overlap errors occurring...")
+		                print("These occur throughout the year and may occur several times for the same surfaces. You may be able to reduce them by "
+		                            "adding OutputDiagnostics,DoNotMirrorDetachedShading")
+		            
+		            for (Loop1 = 1 Loop1 <= NumTooManyFigures ++Loop1):
+		                Count = 0
+		                SurfErrorReported2 = False
+		                if (SurfErrorReported(TrackTooManyFigures(Loop1).SurfIndex1)): continue
+		                
+		                for (Loop2 = 1 Loop2 <= NumTooManyFigures ++Loop2):
+		                    if (TrackTooManyFigures(Loop1).SurfIndex1 == TrackTooManyFigures(Loop2).SurfIndex1):
+		                        ++Count
+	                    
+		                gio::write(CountOut, fmtLD) << Count
+		                TotCount += Count
+		                TotalWarningErrors += Count - 1
+		                print("")
+		                raise RunTimeWarning("Too many figures [>={}] in a shadow overlap".format(RoundSigDigits(MaxHCS)))
+		                ShowContinueError("Overlapping figure={}, Surface Class=[{}]".format(Surface(TrackTooManyFigures(Loop1).SurfIndex1).Name, cSurfaceClass(Surface(TrackTooManyFigures(Loop1).SurfIndex1).Class)))
+		                ShowContinueError("\tThis error occurred {} times.".format(stripped(CountOut)))
+		                
+		                for Loop2 in range(1, NumTooManyFigures+1):
+		                    if (TrackTooManyFigures(Loop1).SurfIndex1 == TrackTooManyFigures(Loop2).SurfIndex1):
+		                        if (SurfErrorReported2(TrackTooManyFigures(Loop2).SurfIndex2)): continue
+
+		                        ShowContinueError("Figure being Overlapped=" + Surface(TrackTooManyFigures(Loop2).SurfIndex2).Name + ", Surface Class=[" +
+		                                          cSurfaceClass(Surface(TrackTooManyFigures(Loop2).SurfIndex2).Class) + ']')
+		                        SurfErrorReported2(TrackTooManyFigures(Loop2).SurfIndex2) = True
+	                    
+		                SurfErrorReported(TrackTooManyFigures(Loop1).SurfIndex1) = True
+		            
+		            if (TotCount > 0):
+		                print("")
+		                gio::write(CountOut, fmtLD) << TotCount
+		                ShowContinueError("\tThe too many figures errors occurred {} times (total).".format(stripped(CountOut)))
+		                print("")
+		            
+		            SurfErrorReported.deallocate()
+		            SurfErrorReported2.deallocate()
+		        
+		    	return None
+
+    	# end of SolarCalculations
+    # end of SolarShading
+
+    def SolarShaming():
+    	'''
+		A function with nothing, that returns nothing, but prints a fun fact!
+		Its to just save the functions from the original file that we don't
+		need to. Some of them have already been updated to Python, but they
+		must be double checked in case of future use.
+
+		>>> ATTENTION TO INDENTATION! <<< The original structure was kept,
+										  but the order of the functions no.
+    	'''
+    		# MAYBE needed to get the nearby build shading
 		    def WindowShadingManager():
 		    	'''
 		        // SUBROUTINE INFORMATION:
@@ -6222,284 +6065,495 @@ def EnergyPlus():
 
 		    	return None
 
-	    	# MAYBE needed to get the nearby build shading
-		    def SkyDifSolarShading():
+    		def CalcInteriorSolarOverlaps(iHour, NBKS, HTSS, GRSNR, TS):
 		    	'''
 		        // SUBROUTINE INFORMATION:
 		        //       AUTHOR         Fred Winkelmann
-		        //       DATE WRITTEN   May 1999
-		        //       MODIFIED       Sep 2000, FCW: add IR view factor calc
-		        //                      Sep 2002, FCW: correct error in expression for ground IR view factor.
-		        //                         Affects only non-vertical surfaces that are shadowed. For these surfaces
-		        //                         error caused underestimate of IR from ground and shadowing surfaces.
-		        //                      Dec 2002 LKL: Sky Radiance Distribution now only anisotropic
-		        //                      Nov 2003: FCW: modify to do sky solar shading of shadowing surfaces
+		        //       DATE WRITTEN   January 1999
+		        //       MODIFIED       Nov 2001, FW: include beam radiation overlaps with
+		        //                       back windows and doors previously these subsurfaces ignored.
+		        //                      May 2002, FW: fix problem where reveal was not being considered
+		        //                       in calculating overlap areas if window is shaded only by reveal.
+		        //                      June 2002, FW: fix problem that gave incorrect calculation when
+		        //                       window is not shaded only by reveal
+		        //                      June 2002, FW: remove incorrect multiplication of overlap areas
+		        //                       by sunlit fraction when window is shaded only by reveal
 		        //       RE-ENGINEERED  na
 
 		        // PURPOSE OF THIS SUBROUTINE:
-		        // Calculates factors that account for shading of sky diffuse
-		        // solar radiation by shadowing surfaces such as overhangs and detached
-		        // shades.
-		        // Called by PerformSolarCalculations
-		        // For each exterior heat transfer surface calculates the following
-		        // ratio (called DifShdgRatioIsoSky in this subroutine):
-		        //  R1 = (Diffuse solar from sky dome on surface, with shading)/
-		        //       (Diffuse solar from sky dome on surface, without shading)
-		        // To calculate the incident diffuse radiation on a surface the sky
-		        // hemisphere is divided into source elements ("patches"). Each patch
-		        // is assumed to have the same radiance, i.e. the sky radiance is isotropic.
-		        // The irradiance from each patch on a surface is calculated. Then these
-		        // irradiances are summed to get the net irradiance on a surface, which
-		        // the denominator of R1.
-		        // To get the numerator of R1 the same summation is done, but for each surface
-		        // and each patch the Shadow subroutine is called to determine how much
-		        // radiation from a patch is blocked by shading surfaces.
-		        // Also calculated is the following ratio (called DifShdgRatioHoriz in this routine):
-		        //  R2 = (Diffuse solar from sky horizon band on surface, with shading)/
-		        //       (Diffuse solar from sky horizon band on surface, without shading)
-		        // For this ratio only a band of sky just above the horizon is considered.
-		        // R1 and R2 are used in SUBROUTINE AnisoSkyViewFactors, which determines the
-		        // sky diffuse solar irradiance on each exterior heat transfer surface each
-		        // time step. In that routine the sky radiance distribution is a superposition
-		        // of an isotropic distribution,
-		        // a horizon brightening distribution and a circumsolar brightening distribution,
-		        // where the proportion of each distribution depends
-		        // on cloud cover, sun position and other factors. R1 multiplies the irradiance
-		        // due to the isotropic component and R2 multiplies the irradiance due to the
-		        // horizon brightening component.
-		        // Calculates sky and ground IR view factors assuming sky IR is isotropic and
-		        // shadowing surfaces are opaque to IR.
-		        // REFERENCES:
+		        // For an exterior window with surface number HTSS, determines (1) the surface numbers of back
+		        // surfaces receiving beam radiation from the window and (2) for each such back surface, the area
+		        // of the portion of the window sending beam radiation to the back surface this is called the
+		        // "overlap area."
+		        - int const iHour, # Hour Index
+				- int const NBKS,  # Number of back surfaces associated with this GRSNR (in general, only
+				- int const HTSS,  # Surface number of the subsurface (exterior window)
+				- int const GRSNR, # General receiving surface number (base surface of the exterior window)
+				- int const TS     # Time step Index
+
+		        // METHODOLOGY EMPLOYED:
 		        # na
+
+		        // REFERENCES:
+		        // BLAST/IBLAST code, original author George Walton
+		        '''
+
+		        # USE STATEMENTS:
+		        # na
+
+		        # Locals
+		        # SUBROUTINE ARGUMENT DEFINITIONS:
+		        #  some of these will receive beam radiation from HTSS this hour)
+
+		        # SUBROUTINE PARAMETER DEFINITIONS:
+		        int const WindowShadedOnlyByReveal(2) # for use with RevealStatus
+
+		        # INTERFACE BLOCK SPECIFICATIONS
+		        # na
+
+		        # DERIVED TYPE DEFINITIONS
+		        # na
+
+		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		        typedef Array2D<Int64>::size_type size_type
+		        int JBKS           # Counter of back surfaces with non-zero overlap with HTSS
+		        int JBKSbase       # Back base surface counter
+		        int BackSurfNum    # Back surface number
+		        Real64 OverlapArea # Overlap area (m2)
+
+		        bool UseSimpleDistribution # True means simple interior solar distribution
+		        # (all incoming beam assumed to strike floor),
+		        # False means exact interior solar distribution
+		        # (track which back surfaces beam illuminates)
+
+		        # Tuned Linear indexing
+
+		        assert(equal_dimensions(HCX, HCY))
+		        assert(equal_dimensions(HCX, HCA))
+		        assert(equal_dimensions(HCX, HCB))
+		        assert(equal_dimensions(HCX, HCC))
+
+		        if (SAREA(HTSS) > 0.0):
+
+		            UseSimpleDistribution = False
+
+		            if ((NBKS <= 0) || (Surface(GRSNR).ExtBoundCond > 0)):
+
+		                UseSimpleDistribution = True
+
+		            else:
+		                # Using 'exact' distribution, replace subsurface HC entries with reveal HC entries
+		                # so that the reveal HC is used in calculating interior solar overlap areas
+
+		                # Adding the following line fixes a problem where, if the window was shaded only
+		                # by reveal, then the reveal was not considered in calculating interior solar
+		                # overlap areas (FCW 5/3/02).
+		                # IF(Surface(HTSS)%Reveal > 0.0) NRVLHC = 1
+		                # Changing the line to the following avoids incorrect calculation when window is not shaded
+		                # only by reveal (FCW 6/28/02).
+		                if (WindowRevealStatus(TS, iHour, HTSS) == WindowShadedOnlyByReveal):
+		                	NRVLHC = 1
+		                
+		                if (NRVLHC > 0):
+		                    for (int I = 1 I <= NRVLHC ++I):
+		                        int const iS(FSBSHC - 1 + I)
+		                        int const iR(FRVLHC - 1 + I)
+		                        HCT(iS) = HCT(iR)
+		                        HCNV(iS) = HCNV(iR)
+		                        HCAREA(iS) = HCAREA(iR)
+		                        size_type lS(HCX.index(iS, 1))
+		                        size_type lR(HCX.index(iR, 1))
+		                        for (int J = 1 J <= MaxHCV ++J, ++lS, ++lR): # [ lS ] == ( iS, J ), [ lR ] == ( iR, J )
+		                            HCX[lS] = HCX[lR]
+		                            HCY[lS] = HCY[lR]
+		                            HCA[lS] = HCA[lR]
+		                            HCB[lS] = HCB[lR]
+		                            HCC[lS] = HCC[lR]
+		                    
+		                    NSBSHC = NRVLHC
+
+		            # Check for array space.
+		            if (FSBSHC + NBKSHC > MaxHCS):
+		            	UseSimpleDistribution = True
+
+		            if (!UseSimpleDistribution): # Compute overlaps
+		                FINSHC = FSBSHC + NSBSHC
+
+		                JBKS = 0
+		                JBKSbase = 0
+
+		                for (int IBKS = 1 IBKS <= NBKSHC ++IBKS): # Loop over back surfaces to GRSNR this hour. NBKSHC is the number of
+		                    # back surfaces that would receive beam radiation from the base surface, GRSNR,
+		                    # if the base surface was transparent. In general, some (at least one) or all of these
+		                    # will receive beam radiation from the exterior window subsurface, HTSS, of GRSNR,
+		                    # depending on the size of HTSS and its location on GRSNR
+		                    BackSurfNum = HCNS(FBKSHC - 1 + IBKS)
+
+		                    # Determine if this back surface number can receive beam radiation from the
+		                    # exterior window, HTSS, this hour, i.e., overlap area is positive
+		                    LOCHCA = FINSHC - 1
+
+		                    MULTOL(FBKSHC - 1 + IBKS, FSBSHC - 1, NSBSHC)
+
+		                    # Compute overlap area for this back surface
+		                    NINSHC = LOCHCA - FINSHC + 1
+		                    if (NINSHC <= 0):
+		                    	continue
+		                    OverlapArea = HCAREA(FINSHC)
+		                    for (int J = 2 J <= NINSHC ++J):
+		                        OverlapArea += HCAREA(FINSHC - 1 + J) * (1.0 - HCT(FINSHC - 1 + J))
+
+		                    if (OverlapArea > 0.001):
+		                        ++JBKS
+		                        if (Surface(BackSurfNum).BaseSurf == BackSurfNum):
+		                        	JBKSbase = JBKS
+		                        if (JBKS <= MaxBkSurf):
+		                            BackSurfaces(TS, iHour, JBKS, HTSS) = BackSurfNum
+		                            # Remove following IF check: multiplying by sunlit fraction in the following is incorrect
+		                            # (FCW, 6/28/02)
+		                            # IF (WindowRevealStatus(HTSS,IHOUR,TS) == WindowShadedOnlyByReveal) THEN
+		                            #  OverlapArea = OverlapArea*(SAREA(HTSS)/Surface(HTSS)%Area)
+		                            # ENDIF
+		                            OverlapAreas(TS, iHour, JBKS, HTSS) = OverlapArea * SurfaceWindow(HTSS).GlazedFrac
+		                            # If this is a subsurface, subtract its overlap area from the base surface
+		                            if (Surface(BackSurfNum).BaseSurf != BackSurfNum && JBKSbase != 0):
+		                                OverlapAreas(TS, iHour, JBKSbase, HTSS) = max(0.0, OverlapAreas(TS, iHour, JBKSbase, HTSS) - OverlapAreas(TS, iHour, JBKS, HTSS))
+
+		                # end of loop over back surfaces
+		            # end of Compute overlaps
+		        # end of check that sunlit area > 0.
+		    	
+		    	return None
+
+    		def SHDBKS(NGRS, CurSurf, NBKS, HTS):
+		    	'''
+		        // SUBROUTINE INFORMATION:
+		        //       AUTHOR         Legacy Code
+		        //       DATE WRITTEN
+		        //       MODIFIED       na
+		        //       RE-ENGINEERED  Lawrie, Oct 2000
+
+		        // PURPOSE OF THIS SUBROUTINE:
+		        // This is the driving subroutine for computing
+		        // the sunlit areas for back surfaces.
+		        - int const NGRS, # Number of the general receiving surface
+                - int const CurSurf,
+                - int const NBKS, # Number of back surfaces
+                - int const HTS   # Heat transfer surface number of the general receiving surf
+
+		        // METHODOLOGY EMPLOYED:
+		        # na
+
+		        // REFERENCES:
+		        // BLAST/IBLAST code, original author George Walton
+		        '''
+
+		        # USE STATEMENTS:
+		        # na
+
+		        # Locals
+		        # SUBROUTINE ARGUMENT DEFINITIONS:
+
+		        # SUBROUTINE PARAMETER DEFINITIONS:
+		        # na
+
+		        # INTERFACE BLOCK SPECIFICATIONS
+		        # na
+
+		        # DERIVED TYPE DEFINITIONS
+		        # na
+
+		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		        typedef Array2D<Int64>::size_type size_type
+		        int I
+		        int M
+		        int N
+		        int NVR
+		        int NVT                    # Number of vertices of back surface
+		        static Array1D<Real64> XVT # X,Y,Z coordinates of vertices of
+		        static Array1D<Real64> YVT # back surfaces projected into system
+		        static Array1D<Real64> ZVT # relative to receiving surface
+		        static bool OneTimeFlag(True)
+		        int BackSurfaceNumber
+		        int NS1 # Number of the figure being overlapped
+		        int NS2 # Number of the figure doing overlapping
+		        int NS3 # Location to place results of overlap
+
+		        # Tuned Linear indexing
+
+		        assert(equal_dimensions(HCX, HCY))
+		        assert(equal_dimensions(HCX, HCA))
+
+		        if (OneTimeFlag):
+		            XVT.allocate(MaxVerticesPerSurface + 1)
+		            YVT.allocate(MaxVerticesPerSurface + 1)
+		            ZVT.allocate(MaxVerticesPerSurface + 1)
+		            XVT = 0.0
+		            YVT = 0.0
+		            ZVT = 0.0
+		            OneTimeFlag = False
+
+		        if ((NBKS <= 0) || (SAREA(HTS) <= 0.0) || (OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)):
+		        	return None
+
+		        FBKSHC = LOCHCA + 1
+
+		        # Loop through all back surfaces associated with the receiving surface
+		        for (I = 1 I <= NBKS ++I):
+
+		            BackSurfaceNumber = ShadowComb(CurSurf).BackSurf(I)
+
+		            if (CTHETA(BackSurfaceNumber) > -SunIsUpValue):
+						#-0.001) CYCLE ! go to next back surface since inside of this surface
+		            	continue
+		            
+		            # cannot be in sun if the outside can be
+
+		            # Transform coordinates of back surface from general system to the
+		            # plane of the receiving surface
+
+		            CTRANS(BackSurfaceNumber, NGRS, NVT, XVT, YVT, ZVT)
+
+		            # Project "shadow" from back surface along sun's rays to receiving surface.  Back surface vertices
+		            # become clockwise sequential.
+
+		            for (N = 1 N <= NVT ++N):
+		                XVS(N) = XVT(N) - XShadowProjection * ZVT(N)
+		                YVS(N) = YVT(N) - YShadowProjection * ZVT(N)
+
+		            # Transform to the homogeneous coordinate system.
+		            NS3 = LOCHCA + 1
+		            HCT(NS3) = 0.0
+		            HTRANS1(NS3, NVT)
+
+		            # Adjust near-duplicate points.
+		            NVR = HCNV(1)
+		            auto l3(HCX.index(NS3, 1))
+		            for (N = 1 N <= NVT ++N, ++l3):
+		                auto const x3(HCX[l3]) # [ l3 ] == ( NS3, N )
+		                auto const y3(HCY[l3])
+		                size_type l1(0)
+		                for (M = 1 M <= NVR ++M, ++l1):
+		                    if (std::abs(HCX[l1] - x3) > 6):
+		                    	continue # [ l1 ] == ( 1, M )
+		                    if (std::abs(HCY[l1] - y3) > 6):
+	                    		continue
+		                    HCX[l3] = HCX[l1]
+		                    HCY[l3] = HCY[l1]
+		                    break
+
+		            HTRANS0(NS3, NVT)
+
+		            # Determine area of overlap of projected back surface and receiving surface.
+		            NS1 = 1
+		            NS2 = NS3
+		            HCT(NS3) = 1.0
+		            DeterminePolygonOverlap(NS1, NS2, NS3)
+
+		            if (OverlapStatus == NoOverlap):
+		            	continue                                           # to next back surface
+		            if ((OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)):
+		            	break # back surfaces DO loop
+
+		            # Increment back surface count.
+		            LOCHCA = NS3
+		            HCNS(LOCHCA) = BackSurfaceNumber
+		            HCAREA(LOCHCA) = -HCAREA(LOCHCA)
+		            NBKSHC = LOCHCA - FBKSHC + 1
+		        
+		    	return None
+
+    		def AnisoSkyViewFactors():
+		    	'''
+		        // SUBROUTINE INFORMATION:
+		        //       AUTHOR         Fred Winkelmann
+		        //       DATE WRITTEN   April 1999
+		        //       MODIFIED       LKL Dec 2002 -- Anisotropic is only sky radiance option
+		        //       RE-ENGINEERED  na
+
+		        // PURPOSE OF THIS SUBROUTINE:
+		        // Calculates view factor multiplier, AnisoSkyMult, for diffuse
+		        // sky irradiance on exterior surfaces taking into account
+		        // anisotropic radiance of the sky. Called by InitSurfaceHeatBalance
+		        // In this case the diffuse sky irradiance on a surface is given by
+		        //  AnisoSkyMult(SurfNum) * DifSolarRad
+		        // AnisoSkyMult accounts not only for the sky radiance distribution but
+		        // also for the effects of shading of sky diffuse radiation by
+		        // shadowing surfaces such as overhangs. It does not account for reflection
+		        // of sky diffuse radiation from shadowing surfaces.
+		        // Based on an empirical model described in
+		        // R. Perez, P. Ineichen, R. Seals, J. Michalsky and R. Stewart,
+		        // "Modeling Daylight Availability and Irradiance Components from Direct
+		        // and Global Irradiance," Solar Energy 44, 271-289, 1990.
+		        // In this model the radiance of the sky consists of three distributions
+		        // that are superimposed:
+
+		        // (1) An isotropic distribution that covers the entire sky dome
+		        // (2) A circumsolar brightening centered around the position of the sun
+		        // (3) A horizon brightening
+		        // The circumsolar brightening is assumed to be concentrated at a point
+		        // source at the center of the sun although this region actually begins at the
+		        // periphery of the solar disk and falls off in intensity with increasing
+		        // angular distance from the periphery.
+		        // The horizon brightening is assumed to be concentrated at the horizon and
+		        // to be independent of azimuth. In actuality, for clear skies, the horizon
+		        // brightening is highest at the horizon and decreases in intensity away from
+		        // the horizon. For overcast skies the horizon brightening has a negative value
+		        // since for such skies the sky radiance increases rather than decreases away
+		        // from the horizon.
+		        // The F11R, F12R, etc. values were provided by R. Perez, private communication,
+		        // 5/21/99. These values have higher precision than those listed in the above
+		        // paper.
 		        '''
 
 		        # Using/Aliasing
 		        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
+		        using General::TrimSigDigits
 
 		        # Locals
 		        # SUBROUTINE PARAMETER DEFINITIONS:
-
-		        # INTERFACE BLOCK SPECIFICATIONS
-		        # na
-
-		        # DERIVED TYPE DEFINITIONS
-		        # na
+		        static Array1D<Real64> const EpsilonLimit(
+		            7, {1.065, 1.23, 1.5, 1.95, 2.8, 4.5, 6.2}) # Upper limit of bins of the sky clearness parameter, Epsilon
+		        # Circumsolar brightening coefficients index corresponds to range of Epsilon, the sky clearness parameter
+		        static Array1D<Real64> const F11R(8, {-0.0083117, 0.1299457, 0.3296958, 0.5682053, 0.8730280, 1.1326077, 1.0601591, 0.6777470})
+		        static Array1D<Real64> const F12R(8, {0.5877285, 0.6825954, 0.4868735, 0.1874525, -0.3920403, -1.2367284, -1.5999137, -0.3272588})
+		        static Array1D<Real64> const F13R(8, {-0.0620636, -0.1513752, -0.2210958, -0.2951290, -0.3616149, -0.4118494, -0.3589221, -0.2504286})
+		        # Horizon/zenith brightening coefficient array index corresponds to range of Epsilon, the sky clearness parameter
+		        static Array1D<Real64> const F21R(8, {-0.0596012, -0.0189325, 0.0554140, 0.1088631, 0.2255647, 0.2877813, 0.2642124, 0.1561313})
+		        static Array1D<Real64> const F22R(8, {0.0721249, 0.0659650, -0.0639588, -0.1519229, -0.4620442, -0.8230357, -1.1272340, -1.3765031})
+		        static Array1D<Real64> const F23R(8, {-0.0220216, -0.0288748, -0.0260542, -0.0139754, 0.0012448, 0.0558651, 0.1310694, 0.2506212})
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 
-		        int SrdSurfsNum        # Srd surface counter
-		        Real64 Fac1WoShdg      # Intermediate calculation factor, without shading
-		        Real64 FracIlluminated # Fraction of surface area illuminated by a sky patch
-		        Real64 Fac1WithShdg    # Intermediate calculation factor, with shading
-		        Real64 SurfArea        # Surface area (m2)
-		        bool ShadowingSurf     # True if surface is a shadowing surface
-		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WithShdgIsoSky     ! Diffuse solar irradiance from isotropic
-		        #                                                          ! sky on surface, with shading
-		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WoShdgIsoSky       ! Diffuse solar from isotropic
-		        #                                                           ! sky on surface, without shading
-		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WithShdgHoriz      ! Diffuse solar irradiance from horizon portion of
-		        #                                                           ! sky on surface, with shading
-		        # REAL(r64), ALLOCATABLE, DIMENSION(:) :: WoShdgHoriz        ! Diffuse solar irradiance from horizon portion of
-		        #                                                           ! sky on surface, without shading
-		        # INTEGER iHour,iTS
+		        Real64 CosZenithAng           # Cosine of solar zenith angle
+		        Real64 ZenithAng              # Solar zenith angle (radians)
+		        Real64 ZenithAngDeg           # Solar zenith angle (degrees)
+		        Real64 F1                     # Circumsolar brightening coefficient
+		        Real64 F2                     # Horizon/zenith brightening coefficient
+		        Real64 Epsilon                # Sky clearness parameter
+		        Real64 Delta                  # Sky brightness parameter
+		        Real64 CosIncAngBeamOnSurface # Cosine of incidence angle of beam solar on surface
+		        Real64 IncAng                 # Incidence angle of beam solar on surface (radians)
+		        int SurfNum                   # Surface number
+		        int EpsilonBin                # Sky clearness (Epsilon) bin index
+		        Real64 AirMass                # Relative air mass
+		        Real64 AirMassH               # Intermediate variable for relative air mass calculation
+		        Real64 CircumSolarFac         # Ratio of cosine of incidence angle to cosine of zenith angle
+		        Real64 KappaZ3                # Intermediate variable
+		        Real64 ViewFactorSkyGeom      # Geometrical sky view factor
+		        Real64 const cosine_tolerance(0.0001)
 
 		        # FLOW:
+				#ifdef EP_Count_Calls
+		        ++NumAnisoSky_Calls
+				#endif
 
-		        # Initialize Surfaces Arrays
-		        SAREA = 0.0
-		        WithShdgIsoSky.dimension(TotSurfaces, 0.0)
-		        WoShdgIsoSky.dimension(TotSurfaces, 0.0)
-		        WithShdgHoriz.dimension(TotSurfaces, 0.0)
-		        WoShdgHoriz.dimension(TotSurfaces, 0.0)
-		        DifShdgRatioIsoSky.allocate(TotSurfaces)
-		        DifShdgRatioHoriz.allocate(TotSurfaces)
-		        # initialized as no shading
-		        DifShdgRatioIsoSky = 1.0
-		        DifShdgRatioHoriz = 1.0
-		        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
-		            curDifShdgRatioIsoSky.dimension(TotSurfaces, 1.0)
-		        
-		        # only for detailed.
-		        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
-		            DifShdgRatioIsoSkyHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
-		            DifShdgRatioIsoSkyHRTS = 1.0
-		            DifShdgRatioHorizHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
-		            DifShdgRatioHorizHRTS = 1.0
-		        
-		        for SurfNum in range(1, TotSurfaces+1): # SurfNum <= TotSurfaces == SurfNum = TotSurfaces
-		            if (!Surface(SurfNum).ExtSolar):
-		            	continue
+		        CosZenithAng = SOLCOS(3)
+		        ZenithAng = std::acos(CosZenithAng)
+		        ZenithAngDeg = ZenithAng / DegToRadians
 
-		            # CurrentModuleObject='Surfaces'
-		            if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
-		                SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
-		                                    OutputProcessor::Unit::None,
-		                                    curDifShdgRatioIsoSky(SurfNum),
-		                                    "Zone",
-		                                    "Average",
-		                                    Surface(SurfNum).Name)
-		            else:
-		                SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
-		                                    OutputProcessor::Unit::None,
-		                                    DifShdgRatioIsoSky(SurfNum),
-		                                    "Zone",
-		                                    "Average",
-		                                    Surface(SurfNum).Name)
-		            
-		            SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioHoriz",
-		                                OutputProcessor::Unit::None,
-		                                DifShdgRatioHoriz(SurfNum),
-		                                "Zone",
-		                                "Average",
-		                                Surface(SurfNum).Name)
-		            SetupOutputVariable("Debug Surface Solar Shading Model WithShdgIsoSky",
-		                                OutputProcessor::Unit::None,
-		                                WithShdgIsoSky(SurfNum),
-		                                "Zone",
-		                                "Average",
-		                                Surface(SurfNum).Name)
-		            SetupOutputVariable("Debug Surface Solar Shading Model WoShdgIsoSky",
-		                                OutputProcessor::Unit::None,
-		                                WoShdgIsoSky(SurfNum),
-		                                "Zone",
-		                                "Average",
-		                                Surface(SurfNum).Name)
-		        
-		        for IPhi in range(0, NPhi): # Loop over patch altitude values
-		            SUNCOS(3) = sin_Phi[IPhi]
+		        AnisoSkyMult = 0.0
 
-		            for ITheta in range(0, NTheta): # Loop over patch azimuth values
-		                SUNCOS(1) = cos_Phi[IPhi] * cos_Theta[ITheta]
-		                SUNCOS(2) = cos_Phi[IPhi] * sin_Theta[ITheta]
+		        # Relative air mass
+		        AirMassH = (1.0 - 0.1 * Elevation / 1000.0)
+		        if (ZenithAngDeg <= 75.0):
+		            AirMass = AirMassH / CosZenithAng
+		        else:
+		            AirMass = AirMassH / (CosZenithAng + 0.15 * std::pow(93.9 - ZenithAngDeg, -1.253))
 
-		                for SurfNum in range(1, TotSurfaces+1): # Cosine of angle of incidence on surface of solar
-		                    # radiation from patch
-		                    ShadowingSurf = Surface(SurfNum).ShadowingSurf
+		        KappaZ3 = 1.041 * pow_3(ZenithAng)
+		        Epsilon = ((BeamSolarRad + DifSolarRad) / DifSolarRad + KappaZ3) / (1.0 + KappaZ3)
+		        Delta = DifSolarRad * AirMass / 1353.0 # 1353 is average extraterrestrial irradiance (W/m2)
+		        # Circumsolar (F1) and horizon/zenith (F2) brightening coefficients
+		        for (EpsilonBin = 1 EpsilonBin <= 8 ++EpsilonBin):
+		            if (EpsilonBin == 8) break
+		            if (Epsilon < EpsilonLimit(EpsilonBin)) break
 
-		                    if (!ShadowingSurf && !Surface(SurfNum).HeatTransSurf):
-		                    	continue
+		        F1 = max(0.0, F11R(EpsilonBin) + F12R(EpsilonBin) * Delta + F13R(EpsilonBin) * ZenithAng)
+		        F2 = F21R(EpsilonBin) + F22R(EpsilonBin) * Delta + F23R(EpsilonBin) * ZenithAng
 
-		                    CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) +
-		                                      SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
+		        for (SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
+		            if (!Surface(SurfNum).ExtSolar) continue
 
-		                SHADOW(0, 0)
+		            CosIncAngBeamOnSurface = SOLCOS(1) * Surface(SurfNum).OutNormVec(1) + SOLCOS(2) * Surface(SurfNum).OutNormVec(2) + SOLCOS(3) * Surface(SurfNum).OutNormVec(3)
 
-		                for SurfNum in range(1, TotSurfaces+1):
-		                    ShadowingSurf = Surface(SurfNum).ShadowingSurf
+		            # So I believe this should only be a diagnostic error...the calcs should always be within -1,+1 it's just round-off that we need to trap
+		            # for
+		            if (CosIncAngBeamOnSurface > 1.0):
+		                if (CosIncAngBeamOnSurface > (1.0 + cosine_tolerance)):
+		                    ShowSevereError("Cosine of incident angle of beam solar on surface out of range...too high")
+		                    ShowContinueError("This is a diagnostic error that should not be encountered under normal circumstances")
+		                    ShowContinueError("Occurs on surface: " + Surface(SurfNum).Name)
+		                    ShowContinueError("Current value = " + TrimSigDigits(CosIncAngBeamOnSurface) + " ... should be within [-1, +1]")
+		                    ShowFatalError("Anisotropic solar calculation causes fatal error")
+		                CosIncAngBeamOnSurface = 1.0
+		            elif (CosIncAngBeamOnSurface < -1.0):
+		                if (CosIncAngBeamOnSurface < (-1.0 - cosine_tolerance)):
+		                    ShowSevereError("Cosine of incident angle of beam solar on surface out of range...too low")
+		                    ShowContinueError("This is a diagnostic error that should not be encountered under normal circumstances")
+		                    ShowContinueError("Occurs on surface: " + Surface(SurfNum).Name)
+		                    ShowContinueError("Current value = " + TrimSigDigits(CosIncAngBeamOnSurface) + " ... should be within [-1, +1]")
+		                    ShowFatalError("Anisotropic solar calculation causes fatal error")
+		                CosIncAngBeamOnSurface = -1.0
 
-		                    if (!ShadowingSurf &&
-		                        (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-		                         (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
-		                        continue
+		            IncAng = std::acos(CosIncAngBeamOnSurface)
 
-		                    if (CTHETA(SurfNum) < 0.0): continue
+		            ViewFactorSkyGeom = Surface(SurfNum).ViewFactorSky
+		            MultIsoSky(SurfNum) = ViewFactorSkyGeom * (1.0 - F1)
+		            #           0.0871557 below corresponds to a zenith angle of 85 deg
+		            CircumSolarFac = max(0.0, CosIncAngBeamOnSurface) / max(0.0871557, CosZenithAng)
+		            #           For near-horizontal roofs, model has an inconsistency that gives sky diffuse
+		            #           irradiance significantly different from DifSolarRad when zenith angle is
+		            #           above 85 deg. The following forces irradiance to be very close to DifSolarRad
+		            #           in this case.
+		            if (CircumSolarFac > 0.0 && CosZenithAng < 0.0871557 && Surface(SurfNum).Tilt < 2.0) CircumSolarFac = 1.0
+		            MultCircumSolar(SurfNum) = F1 * CircumSolarFac
+		            MultHorizonZenith(SurfNum) = F2 * Surface(SurfNum).SinTilt
 
-		                    Fac1WoShdg = cos_Phi[IPhi] * DThetaDPhi * CTHETA(SurfNum)
-		                    SurfArea = Surface(SurfNum).NetAreaShadowCalc
-		                    if (SurfArea > Eps):
-		                        FracIlluminated = SAREA(SurfNum) / SurfArea
-		                    else:
-		                        FracIlluminated = SAREA(SurfNum) / (SurfArea + Eps)
-		                    
-		                    Fac1WithShdg = Fac1WoShdg * FracIlluminated
-		                    WithShdgIsoSky(SurfNum) += Fac1WithShdg
-		                    WoShdgIsoSky(SurfNum) += Fac1WoShdg
-
-		                    # Horizon region
-		                    if (IPhi == 0):
-		                        WithShdgHoriz(SurfNum) += Fac1WithShdg
-		                        WoShdgHoriz(SurfNum) += Fac1WoShdg
-		                    
-		                # end of surface loop
-		            # end of Theta loop
-		        # end of Phi loop
-
-		        for SurfNum in range(1, TotSurfaces+1):
-		            ShadowingSurf = Surface(SurfNum).ShadowingSurf
-
-		            if (!ShadowingSurf &&
-		                (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-		                 (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
-		                continue
-
-		            if (std::abs(WoShdgIsoSky(SurfNum)) > Eps):
-		                DifShdgRatioIsoSky(SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum))
-		            else:
-		                DifShdgRatioIsoSky(SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum) + Eps)
-		            
-		            if (std::abs(WoShdgHoriz(SurfNum)) > Eps):
-		                DifShdgRatioHoriz(SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum))
-		            else:
-		                DifShdgRatioHoriz(SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum) + Eps)
-
-		        # Get IR view factors. An exterior surface can receive IR radiation from
-		        # sky, ground or shadowing surfaces. Assume shadowing surfaces have same
-		        # temperature as outside air (and therefore same temperature as ground),
-		        # so that the view factor to these shadowing surfaces can be included in
-		        # the ground view factor. Sky IR is assumed to be isotropic and shadowing
-		        # surfaces are assumed to be opaque to IR so they totally "shade" IR from
-		        # sky or ground.
-
-		        for SurfNum in range(1, TotSurfaces+1):
 		            if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
-		                Surface(SurfNum).ViewFactorSkyIR *= DifShdgRatioIsoSky(SurfNum)
+		                AnisoSkyMult(SurfNum) = MultIsoSky(SurfNum) * DifShdgRatioIsoSky(SurfNum) +
+		                                        MultCircumSolar(SurfNum) * SunlitFrac(TimeStep, HourOfDay, SurfNum) +
+		                                        MultHorizonZenith(SurfNum) * DifShdgRatioHoriz(SurfNum)
 		            else:
-		                Surface(SurfNum).ViewFactorSkyIR *= DifShdgRatioIsoSkyHRTS(1, 1, SurfNum)
-		            
-		            Surface(SurfNum).ViewFactorGroundIR = 1.0 - Surface(SurfNum).ViewFactorSkyIR
-
-		            if (Surface(SurfNum).HasSurroundingSurfProperties):
-		                SrdSurfsNum = Surface(SurfNum).SurroundingSurfacesNum
-		                if (SurroundingSurfsProperty(SrdSurfsNum).SkyViewFactor != -1):
-		                    Surface(SurfNum).ViewFactorSkyIR *= SurroundingSurfsProperty(SrdSurfsNum).SkyViewFactor
-		                
-		                if (SurroundingSurfsProperty(SrdSurfsNum).GroundViewFactor != -1):
-		                    Surface(SurfNum).ViewFactorGroundIR *= SurroundingSurfsProperty(SrdSurfsNum).GroundViewFactor
-
-		        #  DEALLOCATE(WithShdgIsoSky)
-		        #  DEALLOCATE(WoShdgIsoSky)
-		        #  DEALLOCATE(WithShdgHoriz)
-		        #  DEALLOCATE(WoShdgHoriz)
-
-		        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
-		            for SurfNum in range(1, TotSurfaces+1):
-		                DifShdgRatioIsoSkyHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioIsoSky(SurfNum)
-		                DifShdgRatioHorizHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioHoriz(SurfNum)
+		                AnisoSkyMult(SurfNum) = MultIsoSky(SurfNum) * DifShdgRatioIsoSkyHRTS(TimeStep, HourOfDay, SurfNum) +
+		                                        MultCircumSolar(SurfNum) * SunlitFrac(TimeStep, HourOfDay, SurfNum) +
+		                                        MultHorizonZenith(SurfNum) * DifShdgRatioHorizHRTS(TimeStep, HourOfDay, SurfNum)
+		                curDifShdgRatioIsoSky(SurfNum) = DifShdgRatioIsoSkyHRTS(TimeStep, HourOfDay, SurfNum)
+		            AnisoSkyMult(SurfNum) = max(0.0, AnisoSkyMult(SurfNum)) // make sure not negative.
 
 		    	return None
 
-	    	def ReportSurfaceShading():
+		    def CHKBKS(NBS, NRS):
 		    	'''
 		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Linda Lawrie
-		        //       DATE WRITTEN   April 2000
-		        //       MODIFIED       na
-		        //       RE-ENGINEERED  na
+		        //       AUTHOR         Legacy Code
+		        //       DATE WRITTEN
+		        //       MODIFIED       Nov 2001, FW: Reverse subroutine arguments NRS and NBS to
+		        //                                    correspond to how CHKBKS is called
+		        //                      Jan 2002, FW: change error message
+		        //       RE-ENGINEERED  Lawrie, Oct 2000
 
 		        // PURPOSE OF THIS SUBROUTINE:
-		        // This subroutine uses the internal variables used in the Shading
-		        // calculations and prepares them for reporting (at timestep level).
+		        // Determines whether a any vertices of the back surface are in front of the receiving surface
+		        // if so, gives severe error.  Only base heat transfer surfaces are checked.
+		        - int const NBS, # Surface Number of the potential back surface
+		        - int const NRS  # Surface Number of the potential shadow receiving surface
 
 		        // METHODOLOGY EMPLOYED:
-		        // Because all of the calculations are done on a "daily" basis in this
-		        // module, it is difficult to formulate the values that might be useful
-		        // for reporting.  SunlitFrac was the first of these two arrays to be
-		        // made into "two dimensions".  It is not clear that both have to be
-		        // two dimensions.
+		        # na
 
 		        // REFERENCES:
-		        # na
+		        // BLAST/IBLAST code, original author George Walton
 		        '''
 
 		        # Using/Aliasing
-		        using namespace OutputReportPredefined
+		        using namespace Vectors
 
 		        # Locals
 		        # SUBROUTINE ARGUMENT DEFINITIONS:
-		        # na
 
 		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        # na
+		        static gio::Fmt ValFmt("(F20.4)")
 
 		        # INTERFACE BLOCK SPECIFICATIONS
 		        # na
@@ -6508,234 +6562,45 @@ def EnergyPlus():
 		        # na
 
 		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int SurfNum # Loop Counter
-		        int RepCol  # the column of the predefined report
+		        int N                # Loop Control (vertex counter)
+		        int NVRS             # Number of vertices of the receiving surface
+		        int NVBS             # Number of vertices of the back surface
+		        Real64 DOTP          # Dot product of C and D
+		        std::string CharDotP # for error messages
+		        std::string VTString
 
-		        for (SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum) {
-		            SurfSunlitFrac(SurfNum) = SunlitFrac(TimeStep, HourOfDay, SurfNum)
-		            SurfSunlitArea(SurfNum) = SunlitFrac(TimeStep, HourOfDay, SurfNum) * Surface(SurfNum).Area
-		        }
-		        # added for predefined reporting
-		        RepCol = 0
-		        if (Month == 3 && DayOfMonth == 21):
-		            if ((HourOfDay == 9) && (TimeStep == 4)):
-		                RepCol = pdchSlfMar21_9
-		            elif ((HourOfDay == 12) && (TimeStep == 4)):
-		                RepCol = pdchSlfMar21_12
-		            elif ((HourOfDay == 15) && (TimeStep == 4)):
-		                RepCol = pdchSlfMar21_15
-		        elif (Month == 6 && DayOfMonth == 21):
-		            if ((HourOfDay == 9) && (TimeStep == 4)):
-		                RepCol = pdchSlfJun21_9
-		            elif ((HourOfDay == 12) && (TimeStep == 4)):
-		                RepCol = pdchSlfJun21_12
-		            elif ((HourOfDay == 15) && (TimeStep == 4)):
-		                RepCol = pdchSlfJun21_15
-		        elif (Month == 12 && DayOfMonth == 21):
-		            if ((HourOfDay == 9) && (TimeStep == 4)):
-		                RepCol = pdchSlfDec21_9
-		            elif ((HourOfDay == 12) && (TimeStep == 4)):
-		                RepCol = pdchSlfDec21_12
-		            elif ((HourOfDay == 15) && (TimeStep == 4)):
-		                RepCol = pdchSlfDec21_15
-		        
-		        if (RepCol != 0):
-		            for (SurfNum = 1 SurfNum <= TotSurfaces ++SurfNum):
-		                if (Surface(SurfNum).Class == SurfaceClass_Window):
-		                    PreDefTableEntry(RepCol, Surface(SurfNum).Name, SurfSunlitFrac(SurfNum))
-                
+		        # Object Data
+		        Vector AVec # Vector from vertex 2 to vertex 1, both same surface
+		        Vector BVec # Vector from vertex 2 to vertex 3, both same surface
+		        Vector CVec # Vector perpendicular to surface at vertex 2
+		        Vector DVec # Vector from vertex 2 of first surface to vertex 'n' of second surface
+
+		        NVRS = Surface(NRS).Sides
+		        NVBS = Surface(NBS).Sides
+
+		        # SEE IF ANY VERTICES OF THE back surface ARE IN FRONT OF THE receiving surface
+
+		        AVec = Surface(NRS).Vertex(1) - Surface(NRS).Vertex(2)
+		        BVec = Surface(NRS).Vertex(3) - Surface(NRS).Vertex(2)
+
+		        CVec = cross(BVec, AVec)
+
+		        for (N = 1 N <= NVBS ++N):
+		            DVec = Surface(NBS).Vertex(N) - Surface(NRS).Vertex(2)
+		            DOTP = dot(CVec, DVec)
+		            if (DOTP > 0.0009):
+		                ShowSevereError("Problem in interior solar distribution calculation (CHKBKS)")
+		                ShowContinueError("   Solar Distribution = FullInteriorExterior will not work in Zone=" + Surface(NRS).ZoneName)
+		                gio::write(VTString, "(I4)") << N
+		                strip(VTString)
+		                ShowContinueError("   because vertex " + VTString + " of back surface=" + Surface(NBS).Name +
+		                                  " is in front of receiving surface=" + Surface(NRS).Name)
+		                gio::write(CharDotP, ValFmt) << DOTP
+		                strip(CharDotP)
+		                ShowContinueError("   (Dot Product indicator=" + CharDotP + ')')
+		                ShowContinueError("   Check surface geometry if OK, use Solar Distribution = FullExterior instead.")
+
 		    	return None
-
-		    def ReportSurfaceErrors():
-		    	'''
-		        // SUBROUTINE INFORMATION:
-		        //       AUTHOR         Linda Lawrie
-		        //       DATE WRITTEN   November 2004
-		        //       MODIFIED       na
-		        //       RE-ENGINEERED  na
-
-		        // PURPOSE OF THIS SUBROUTINE:
-		        // This subroutine reports some recurring type errors that can get mixed up with more important
-		        // errors in the error file.
-
-		        // METHODOLOGY EMPLOYED:
-		        # na
-
-		        // REFERENCES:
-		        # na
-		        '''
-
-		        # Using/Aliasing
-		        using namespace DataErrorTracking # for error tracking
-		        using General::RoundSigDigits
-
-		        # Locals
-		        # SUBROUTINE ARGUMENT DEFINITIONS:
-		        # na
-
-		        # SUBROUTINE PARAMETER DEFINITIONS:
-		        static Array1D_string const MSG(4, {"misses", "", "within", "overlaps"})
-
-		        # INTERFACE BLOCK SPECIFICATIONS
-		        # na
-
-		        # DERIVED TYPE DEFINITIONS
-		        # na
-
-		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-		        int Loop1
-		        int Loop2
-		        int Count
-		        int TotCount
-		        std::string CountOut
-		        Array1D_bool SurfErrorReported
-		        Array1D_bool SurfErrorReported2
-
-		        if (NumTooManyFigures + NumTooManyVertices + NumBaseSubSurround > 0):
-		            ShowMessage("")
-		            ShowMessage("===== Recurring Surface Error Summary =====")
-		            ShowMessage("The following surface error messages occurred.")
-		            ShowMessage("")
-
-		            if (NumBaseSubSurround > 0):
-		                ShowMessage("Base Surface does not surround subsurface errors occuring...")
-		                ShowMessage(
-		                    "Check that the GlobalGeometryRules object is expressing the proper starting corner and direction [CounterClockwise/Clockwise]")
-		                ShowMessage("")
-
-		            SurfErrorReported.dimension(TotSurfaces, False)
-		            TotCount = 0
-		            for (Loop1 = 1 Loop1 <= NumBaseSubSurround ++Loop1):
-		                Count = 0
-		                if (SurfErrorReported(TrackBaseSubSurround(Loop1).SurfIndex1)): continue
-		                
-		                for (Loop2 = 1 Loop2 <= NumBaseSubSurround ++Loop2):
-		                    if (TrackBaseSubSurround(Loop1).SurfIndex1 == TrackBaseSubSurround(Loop2).SurfIndex1 &&
-		                        TrackBaseSubSurround(Loop1).MiscIndex == TrackBaseSubSurround(Loop2).MiscIndex):
-		                        ++Count
-
-		                gio::write(CountOut, fmtLD) << Count
-		                TotCount += Count
-		                TotalWarningErrors += Count - 1
-		                ShowWarningError("Base surface does not surround subsurface (CHKSBS), Overlap Status=" +
-		                                 cOverLapStatus(TrackBaseSubSurround(Loop1).MiscIndex))
-		                ShowContinueError("  The base surround errors occurred " + stripped(CountOut) + " times.")
-		                
-		                for (Loop2 = 1 Loop2 <= NumBaseSubSurround ++Loop2):
-		                    if (TrackBaseSubSurround(Loop1).SurfIndex1 == TrackBaseSubSurround(Loop2).SurfIndex1 &&
-		                        TrackBaseSubSurround(Loop1).MiscIndex == TrackBaseSubSurround(Loop2).MiscIndex):
-		                        ShowContinueError("Surface \"" + Surface(TrackBaseSubSurround(Loop1).SurfIndex1).Name + "\" " +
-		                                          MSG(TrackBaseSubSurround(Loop1).MiscIndex) + " SubSurface \"" +
-		                                          Surface(TrackBaseSubSurround(Loop2).SurfIndex2).Name + "\"")
-	                    
-		                SurfErrorReported(TrackBaseSubSurround(Loop1).SurfIndex1) = True
-		            
-		            if (TotCount > 0):
-		                ShowMessage("")
-		                gio::write(CountOut, fmtLD) << TotCount
-		                ShowContinueError("  The base surround errors occurred " + stripped(CountOut) + " times (total).")
-		                ShowMessage("")
-
-		            SurfErrorReported2.allocate(TotSurfaces)
-		            SurfErrorReported = False
-		            TotCount = 0
-		            if (NumTooManyVertices > 0):
-		                ShowMessage("Too many vertices [>=" + RoundSigDigits(MaxHCV) + "] in shadow overlap errors occurring...")
-		                ShowMessage("These occur throughout the year and may occur several times for the same surfaces. You may be able to reduce them by "
-		                            "adding Output:Diagnostics,DoNotMirrorDetachedShading")
-
-		            for (Loop1 = 1 Loop1 <= NumTooManyVertices ++Loop1):
-		                Count = 0
-		                SurfErrorReported2 = False
-		                if (SurfErrorReported(TrackTooManyVertices(Loop1).SurfIndex1)): continue
-		                
-		                for (Loop2 = 1 Loop2 <= NumTooManyVertices ++Loop2):
-		                    if (TrackTooManyVertices(Loop1).SurfIndex1 == TrackTooManyVertices(Loop2).SurfIndex1):
-		                        ++Count
-	                    
-		                gio::write(CountOut, fmtLD) << Count
-		                TotCount += Count
-		                TotalWarningErrors += Count - 1
-		                ShowMessage("")
-		                ShowWarningError("Too many vertices [>=" + RoundSigDigits(MaxHCV) + "] in a shadow overlap")
-		                ShowContinueError("Overlapping figure=" + Surface(TrackTooManyVertices(Loop1).SurfIndex1).Name + ", Surface Class=[" +
-		                                  cSurfaceClass(Surface(TrackTooManyVertices(Loop1).SurfIndex1).Class) + ']')
-		                ShowContinueError("  This error occurred " + stripped(CountOut) + " times.")
-		                
-		                for (Loop2 = 1 Loop2 <= NumTooManyVertices ++Loop2):
-		                    if (TrackTooManyVertices(Loop1).SurfIndex1 == TrackTooManyVertices(Loop2).SurfIndex1):
-		                        if (SurfErrorReported2(TrackTooManyVertices(Loop2).SurfIndex2)): continue
-		                        
-		                        ShowContinueError("Figure being Overlapped=" + Surface(TrackTooManyVertices(Loop2).SurfIndex2).Name + ", Surface Class=[" +
-		                                          cSurfaceClass(Surface(TrackTooManyVertices(Loop2).SurfIndex2).Class) + ']')
-		                        SurfErrorReported2(TrackTooManyVertices(Loop2).SurfIndex2) = True
-	                    
-		                SurfErrorReported(TrackTooManyVertices(Loop1).SurfIndex1) = True
-		            
-		            if (TotCount > 0):
-		                ShowMessage("")
-		                gio::write(CountOut, fmtLD) << TotCount
-		                ShowContinueError("  The too many vertices errors occurred " + stripped(CountOut) + " times (total).")
-		                ShowMessage("")
-
-		            SurfErrorReported = False
-		            TotCount = 0
-		            if (NumTooManyFigures > 0):
-		                ShowMessage("Too many figures [>=" + RoundSigDigits(MaxHCS) + "] in shadow overlap errors occurring...")
-		                ShowMessage("These occur throughout the year and may occur several times for the same surfaces. You may be able to reduce them by "
-		                            "adding OutputDiagnostics,DoNotMirrorDetachedShading")
-		            
-		            for (Loop1 = 1 Loop1 <= NumTooManyFigures ++Loop1):
-		                Count = 0
-		                SurfErrorReported2 = False
-		                if (SurfErrorReported(TrackTooManyFigures(Loop1).SurfIndex1)): continue
-		                
-		                for (Loop2 = 1 Loop2 <= NumTooManyFigures ++Loop2):
-		                    if (TrackTooManyFigures(Loop1).SurfIndex1 == TrackTooManyFigures(Loop2).SurfIndex1):
-		                        ++Count
-	                    
-		                gio::write(CountOut, fmtLD) << Count
-		                TotCount += Count
-		                TotalWarningErrors += Count - 1
-		                ShowMessage("")
-		                ShowWarningError("Too many figures [>=" + RoundSigDigits(MaxHCS) + "] in a shadow overlap")
-		                ShowContinueError("Overlapping figure=" + Surface(TrackTooManyFigures(Loop1).SurfIndex1).Name + ", Surface Class=[" +
-		                                  cSurfaceClass(Surface(TrackTooManyFigures(Loop1).SurfIndex1).Class) + ']')
-		                ShowContinueError("  This error occurred " + stripped(CountOut) + " times.")
-		                
-		                for (Loop2 = 1 Loop2 <= NumTooManyFigures ++Loop2):
-		                    if (TrackTooManyFigures(Loop1).SurfIndex1 == TrackTooManyFigures(Loop2).SurfIndex1):
-		                        if (SurfErrorReported2(TrackTooManyFigures(Loop2).SurfIndex2)): continue
-
-		                        ShowContinueError("Figure being Overlapped=" + Surface(TrackTooManyFigures(Loop2).SurfIndex2).Name + ", Surface Class=[" +
-		                                          cSurfaceClass(Surface(TrackTooManyFigures(Loop2).SurfIndex2).Class) + ']')
-		                        SurfErrorReported2(TrackTooManyFigures(Loop2).SurfIndex2) = True
-	                    
-		                SurfErrorReported(TrackTooManyFigures(Loop1).SurfIndex1) = True
-		            
-		            if (TotCount > 0):
-		                ShowMessage("")
-		                gio::write(CountOut, fmtLD) << TotCount
-		                ShowContinueError("  The too many figures errors occurred " + stripped(CountOut) + " times (total).")
-		                ShowMessage("")
-		            
-		            SurfErrorReported.deallocate()
-		            SurfErrorReported2.deallocate()
-		        
-		    	return None
-
-    	# end of SolarCalculations
-    # end of SolarShading
-
-    def SolarShaming():
-    	'''
-		A function with nothing, that returns nothing, but prints a fun fact!
-		Its to just save the functions from the original file that we don't
-		need to. Some of them have already been updated to Python, but they
-		must be double checked in case of future use.
-
-		>>> ATTENTION TO INDENTATION! <<< The original structure was kept. )
-    	'''
 
 		    def CHKSBS(HTS, GRSNR, SBSNR):
 		    	'''
@@ -7003,6 +6868,163 @@ def EnergyPlus():
 		                
 		                shd_stream << "================================\n"
 
+		    	return None
+
+		    def ComputeIntSolarAbsorpFactors():
+		    	'''
+		        // SUBROUTINE INFORMATION:
+		        //       AUTHOR         Legacy Code
+		        //       DATE WRITTEN
+		        //       MODIFIED       B. Griffith, Oct 2010, deal with no floor case
+		        //                      L. Lawrie, Mar 2012, relax >154 tilt even further (>120 considered non-wall by ASHRAE)
+		        //       RE-ENGINEERED  Lawrie, Oct 2000
+
+		        // PURPOSE OF THIS SUBROUTINE:
+		        // This routine computes the fractions of diffusely transmitted
+		        // solar energy absorbed by each zone surface.
+
+		        // METHODOLOGY EMPLOYED:
+		        // It is assumed that all transmitted solar energy is incident
+		        // on the floors of the zone.  The fraction directly absorbed in
+		        // the floor is given by 'ISABSF'.  It is proportional to the
+		        // area * solar absorptance.  The remaining solar energy is then
+		        // distributed uniformly around the room according to
+		        // area*absorptance product
+
+		        // REFERENCES:
+		        // BLAST/IBLAST code, original author George Walton
+		        '''
+
+		        # Using/Aliasing
+		        using General::RoundSigDigits
+		        using namespace DataWindowEquivalentLayer
+
+		        # Locals
+		        # SUBROUTINE ARGUMENT DEFINITIONS:
+		        # na
+
+		        # SUBROUTINE PARAMETER DEFINITIONS:
+		        # na
+
+		        # INTERFACE BLOCK SPECIFICATIONS
+		        # na
+
+		        # DERIVED TYPE DEFINITIONS
+		        # na
+
+		        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+		        int ConstrNum        # Index for constructions
+		        int FirstZoneSurf    # Index of first surface in current zone
+		        int LastZoneSurf     # Index of last surface in current zone
+		        Real64 AreaSum       # Intermediate calculation value
+		        int SurfNum          # DO loop counter for zone surfaces
+		        int ZoneNum          # Loop Counter for Zones
+		        int Lay              # Window glass layer number
+		        Real64 AbsDiffTotWin # Sum of a window's glass layer solar absorptances
+		        Real64 TestFractSum
+		        Real64 HorizAreaSum
+
+		        # FLOW:
+
+		        if (!allocated(ISABSF)):
+		            ISABSF.allocate(TotSurfaces)
+
+		        ISABSF = 0.0
+
+		        for (ZoneNum = 1 ZoneNum <= NumOfZones ++ZoneNum):
+		            FirstZoneSurf = Zone(ZoneNum).SurfaceFirst
+		            LastZoneSurf = Zone(ZoneNum).SurfaceLast
+		            AreaSum = 0.0
+
+		            for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
+		                if (!Surface(SurfNum).HeatTransSurf) continue
+		                # CR 8229, relaxed from -0.99 to -0.5  (Tilt > 154)
+		                # CR8769   !use ASHRAE std of >120, -0.9 to -0.5  (Tilt > 120)
+		                #      IF (Surface(SurfNum)%Class == SurfaceClass_Floor) THEN
+		                #        write(outputfiledebug,*) 'surf=',TRIM(surface(SurfNum)%name),Surface(SurfNum)%CosTilt
+		                #      endif
+		                if (Zone(ZoneNum).OfType == StandardZone && Surface(SurfNum).CosTilt < -0.5) AreaSum += Surface(SurfNum).Area
+		                #  Next is not implemented but would be:
+		                # IF ((Zone(ZoneNum)%OfType .eq. SolarWallZone .or Zone(ZoneNum)%OfType .eq. RoofPondZone) .and.     &
+		                #      Surface(SurfNum)%ExtBoundCond > 0)    AreaSum = AreaSum + Surface(SurfNum)%Area
+
+		            HorizAreaSum = AreaSum
+
+		            if ((!Zone(ZoneNum).HasFloor) && (HorizAreaSum > 0.0)):
+		                # fill floor area even though surfs not called "Floor", they are roughly horizontal and face upwards.
+		                Zone(ZoneNum).FloorArea = HorizAreaSum
+		                ShowWarningError("ComputeIntSolarAbsorpFactors: Solar distribution model is set to place solar gains on the zone floor,")
+		                ShowContinueError("...Zone=\"" + Zone(ZoneNum).Name + "\" has no floor, but has approximate horizontal surfaces.")
+		                ShowContinueError("...these Tilt > 120 degrees, (area=[" + RoundSigDigits(HorizAreaSum, 2) + "] m2) will be used.")
+
+		            # Compute ISABSF
+		            for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
+		                if (!Surface(SurfNum).HeatTransSurf) continue
+
+		                # only horizontal surfaces. !      !CR 8229, relaxed from -0.99 to -0.5  (Tilt > 154)
+		                # only horizontal surfaces. !      !CR8769 use ASHRAE std of >120, -0.9 to -0.5  (Tilt > 120)
+		                if ((Zone(ZoneNum).OfType != StandardZone || Surface(SurfNum).CosTilt < -0.5) && (Zone(ZoneNum).OfType == StandardZone || Surface(SurfNum).ExtBoundCond > 0)):
+		                    ConstrNum = Surface(SurfNum).Construction
+		                    # last minute V3.1
+		                    if (Construct(ConstrNum).TransDiff <= 0.0) { # Opaque surface
+		                        if (AreaSum > 0.0) ISABSF(SurfNum) = Surface(SurfNum).Area * Construct(ConstrNum).InsideAbsorpSolar / AreaSum
+		                    else: # Window (floor windows are assumed to have no shading device and no divider,
+		                        # and assumed to be non-switchable)
+		                        if (SurfaceWindow(SurfNum).StormWinFlag == 1):
+		                        	ConstrNum = Surface(SurfNum).StormWinConstruction
+		                        	AbsDiffTotWin = 0.0
+		                        if (!Construct(Surface(SurfNum).Construction).WindowTypeEQL):
+		                            for (Lay = 1 Lay <= Construct(ConstrNum).TotGlassLayers ++Lay):
+		                                AbsDiffTotWin += Construct(ConstrNum).AbsDiffBack(Lay)
+		                        else:
+		                            for (Lay = 1 Lay <= CFS(Construct(ConstrNum).EQLConsPtr).NL ++Lay):
+		                                AbsDiffTotWin += Construct(ConstrNum).AbsDiffBackEQL(Lay)
+		                        if (AreaSum > 0.0):
+		                        	ISABSF(SurfNum) = Surface(SurfNum).Area * AbsDiffTotWin / AreaSum
+
+		            # CR 8229  test ISABSF for problems
+		            TestFractSum = sum(ISABSF({FirstZoneSurf, LastZoneSurf}))
+
+		            if (TestFractSum <= 0.0):
+		                if (Zone(ZoneNum).ExtWindowArea > 0.0): # we have a problem, the sun has no floor to go to
+		                    if (Zone(ZoneNum).FloorArea <= 0.0):
+		                        ShowSevereError("ComputeIntSolarAbsorpFactors: Solar distribution model is set to place solar gains on the zone floor,")
+		                        ShowContinueError("but Zone =\"" + Zone(ZoneNum).Name + "\" does not appear to have any floor surfaces.")
+		                        ShowContinueError("Solar gains will be spread evenly on all surfaces in the zone, and the simulation continues...")
+		                    else: # Floor Area > 0 but still can't absorb
+		                        ShowSevereError("ComputeIntSolarAbsorpFactors: Solar distribution model is set to place solar gains on the zone floor,")
+		                        ShowContinueError("but Zone =\"" + Zone(ZoneNum).Name + "\" floor cannot absorb any solar gains. ")
+		                        ShowContinueError("Check the solar absorptance of the inside layer of the floor surface construction/material.")
+		                        ShowContinueError("Solar gains will be spread evenly on all surfaces in the zone, and the simulation continues...")
+
+		                    # try again but use an even spread across all the surfaces in the zone, regardless of horizontal
+		                    #  so as to not lose solar energy
+		                    AreaSum = 0.0
+		                    for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
+		                        if (!Surface(SurfNum).HeatTransSurf) continue
+		                        AreaSum += Surface(SurfNum).Area
+
+		                    for (SurfNum = FirstZoneSurf SurfNum <= LastZoneSurf ++SurfNum):
+		                        if (!Surface(SurfNum).HeatTransSurf) continue
+		                        ConstrNum = Surface(SurfNum).Construction
+		                        if (Construct(ConstrNum).TransDiff <= 0.0): # Opaque surface
+		                            if (AreaSum > 0.0) ISABSF(SurfNum) = Surface(SurfNum).Area * Construct(ConstrNum).InsideAbsorpSolar / AreaSum
+		                        else: # Window (floor windows are assumed to have no shading device and no divider,
+		                            # and assumed to be non-switchable)
+		                            if (SurfaceWindow(SurfNum).StormWinFlag == 1):
+		                            	ConstrNum = Surface(SurfNum).StormWinConstruction
+		                            	AbsDiffTotWin = 0.0
+		                            if (!Construct(Surface(SurfNum).Construction).WindowTypeEQL):
+		                                for (Lay = 1 Lay <= Construct(ConstrNum).TotGlassLayers ++Lay):
+		                                    AbsDiffTotWin += Construct(ConstrNum).AbsDiffBack(Lay)
+		                            else:
+		                                for (Lay = 1 Lay <= CFS(Construct(ConstrNum).EQLConsPtr).NL ++Lay):
+		                                    AbsDiffTotWin += Construct(ConstrNum).AbsDiffBackEQL(Lay)
+
+		                            if (AreaSum > 0.0):
+		                            	ISABSF(SurfNum) = Surface(SurfNum).Area * AbsDiffTotWin / AreaSum
+
+		        # end of zone loop
 		    	return None
 
 		    def CalcInteriorSolarDistribution():
@@ -11605,7 +11627,7 @@ def EnergyPlus():
 		            # ZoneDifSolarDistAbsorbedTotl
 		            # ZoneDifSolarDistReflectedTotl
 		            # ZoneDifSolarDistTransmittedTotl
-		            #    CALL DisplayString('Diffuse Solar Distribution Zone Totals')
+		            #    CALL print('Diffuse Solar Distribution Zone Totals')
 
 		        } // ZoneNum = 1, NumOfZones
 		    	return None
