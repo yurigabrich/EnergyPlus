@@ -51,7 +51,7 @@
 // C++ Headers
 #include <fstream>
 
-// ObjexxFCL Headers
+// ObjexxFCL Headers --> FORTRAN library
 #include <ObjexxFCL/Array1A.hh>
 #include <ObjexxFCL/Array2D.hh>
 #include <ObjexxFCL/Array3D.hh>

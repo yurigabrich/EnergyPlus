@@ -761,17 +761,21 @@ class SolarCalculations(SolarShading):
                 # Read all shading groups
                 NumOfShadingGroups = NumAlphas - 7
                 DisableSelfShadingGroups.append(NumOfShadingGroups)
-                for (int i = 1 i <= NumOfShadingGroups i++):
-                    Found = UtilityRoutines::FindItemInList(cAlphaArgs(i + 7), ZoneList, NumOfZoneLists)
+                for i in range(1, NumOfShadingGroups+1):
+                    Found = UtilityRoutines::FindItemInList(cAlphaArgs(i + 7), ZoneList, NumOfZoneLists) # essas variáveis saíram de onde?
                     if (Found != 0) DisableSelfShadingGroups(i) = Found
 
-                for (int SurfNum = 1 SurfNum <= TotSurfaces SurfNum++):
+                for SurfNum in range(1, TotSurfaces+1):
                     if (Surface(SurfNum).ExtBoundCond == 0) { # Loop through all exterior surfaces
                         SurfZoneGroup = 0
+                        
                         # Check the shading zone group of each exterior surface
-                        for (int ZoneGroupLoop = 1 ZoneGroupLoop <= NumOfShadingGroups ZoneGroupLoop++): # Loop through all defined shading groups
+                        for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
+                        	# Loop through all defined shading groups
                             CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
-                            for (int ZoneNum = 1 ZoneNum <= ZoneList(CurZoneGroup).NumOfZones ZoneNum++) { # Loop through all zones in the zone list
+
+                            for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
+                            	# Loop through all zones in the zone list
                                 if (Surface(SurfNum).Zone == ZoneList(CurZoneGroup).Zone(ZoneNum)):
                                     SurfZoneGroup = CurZoneGroup
                                     break
@@ -780,18 +784,21 @@ class SolarCalculations(SolarShading):
                         if (SurfZoneGroup != 0):
                             # if DisableSelfShadingWithinGroup, add all zones in the same zone group to the surface's disabled zone list
                             # if DisableSelfShadingBetweenGroups, add all zones in all other zone groups to the surface's disabled zone list
-                            for (int ZoneGroupLoop = 1 ZoneGroupLoop <= NumOfShadingGroups ZoneGroupLoop++): # Loop through all defined shading groups
+                            for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
+                            	# Loop through all defined shading groups
                                 CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
                                 if (SurfZoneGroup == CurZoneGroup && DisableSelfShadingWithinGroup):
-                                    for (int ZoneNum = 1 ZoneNum <= ZoneList(CurZoneGroup).NumOfZones ZoneNum++): # Loop through all zones in the zone list
+                                    for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
+                                    	# Loop through all zones in the zone list
                                         Surface(SurfNum).DisabledShadowingZoneList.append(ZoneList(CurZoneGroup).Zone(ZoneNum))
+                                
                                 elif (SurfZoneGroup != CurZoneGroup && DisableSelfShadingBetweenGroup):
-                                    for (int ZoneNum = 1 ZoneNum <= ZoneList(CurZoneGroup).NumOfZones ZoneNum++):
+                                    for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
                                         Surface(SurfNum).DisabledShadowingZoneList.append(ZoneList(CurZoneGroup).Zone(ZoneNum))
             else:
                 ShowFatalError("No Shading groups are defined when disabling grouped self shading.")
 
-        if (!DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+        if (!DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing): # 'ShadingTransmittanceVaries' e 'SolarDistribution' e 'MinimalShadowing' não foram definidos
             ShowWarningError("GetShadowingInput: The shading transmittance for shading devices changes throughout the year. Choose "
                              "DetailedSkyDiffuseModeling in the " + cCurrentModuleObject + " object to remove this warning.")
             ShowContinueError("Simulation has been reset to use DetailedSkyDiffuseModeling. Simulation continues.")
@@ -841,21 +848,11 @@ class SolarCalculations(SolarShading):
         ## Using/Aliasing
         using General::RoundSigDigits
 
-        # Locals
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
-
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int SurfLoop
-        int ZoneLoop
-        int I
-        int NumOfLayers
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS: variáveis de loop!
+        # int SurfLoop
+        # int ZoneLoop
+        # int I
+        # int NumOfLayers
 
         # FLOW: --> pode virar um df!!
         CTHETA.dimension(TotSurfaces, 0.0)
@@ -991,7 +988,8 @@ class SolarCalculations(SolarShading):
         IntBmIncInsSurfAmountRepEnergy.dimension(TotSurfaces, 0.0)
         QRadSWwinAbsTotEnergy.dimension(TotSurfaces, 0.0)
         WinShadingAbsorbedSolarEnergy.dimension(TotSurfaces, 0.0)
-        for (auto &e : SurfaceWindow):
+        # for (auto &e : SurfaceWindow):
+    	for e in SurfaceWindow:
             e.BmSolAbsdOutsReveal = 0.0
             e.BmSolRefldOutsRevealReport = 0.0
             e.BmSolAbsdInsReveal = 0.0
@@ -1004,130 +1002,13 @@ class SolarCalculations(SolarShading):
             e.InsRevealDiffOntoFrame = 0.0
 
         # Added report variables for inside reveal to debug CR 7596. TH 5/26/2009
-        for (auto &e : SurfaceWindow):
+        # for (auto &e : SurfaceWindow):
+        for e in SurfaceWindow:
             e.InsRevealDiffOntoGlazingReport = 0.0
             e.InsRevealDiffIntoZoneReport = 0.0
             e.InsRevealDiffOntoFrameReport = 0.0
             e.BmSolAbsdInsRevealReport = 0.0
 
-        # FOR 'SUSURFACES' ONLY
-        # print("Initializing Zone Report Variables")
-        # # CurrentModuleObject='Zone'
-        # for ZoneLoop in range(1, NumOfZones+1):
-        #     SetupOutputVariable("Zone Windows Total Transmitted Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         ZoneTransSolar(ZoneLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Exterior Windows Total Transmitted Beam Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         ZoneBmSolFrExtWinsRep(ZoneLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Interior Windows Total Transmitted Beam Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         ZoneBmSolFrIntWinsRep(ZoneLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Exterior Windows Total Transmitted Diffuse Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         ZoneDifSolFrExtWinsRep(ZoneLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Interior Windows Total Transmitted Diffuse Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         ZoneDifSolFrIntWinsRep(ZoneLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Windows Total Heat Gain Rate",
-        #     					OutputProcessor::Unit::W,
-        #     					ZoneWinHeatGainRep(ZoneLoop),
-        #     					"Zone",
-        #     					"Average",
-        #     					Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Windows Total Heat Loss Rate",
-        #     					OutputProcessor::Unit::W,
-        #     					ZoneWinHeatLossRep(ZoneLoop),
-        #     					"Zone",
-        #     					"Average",
-        #     					Zone(ZoneLoop).Name)
-            
-        #     # Energy variables
-        #     SetupOutputVariable("Zone Windows Total Transmitted Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneTransSolarEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Exterior Windows Total Transmitted Beam Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneBmSolFrExtWinsRepEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Interior Windows Total Transmitted Beam Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneBmSolFrIntWinsRepEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Exterior Windows Total Transmitted Diffuse Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneDifSolFrExtWinsRepEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Interior Windows Total Transmitted Diffuse Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneDifSolFrIntWinsRepEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Windows Total Heat Gain Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneWinHeatGainRepEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-        #     SetupOutputVariable("Zone Windows Total Heat Loss Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         ZoneWinHeatLossRepEnergy(ZoneLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Zone(ZoneLoop).Name)
-
-        #     if (DisplayAdvancedReportVariables):
-        #         # CurrentModuleObject='Zone(Advanced)'
-        #         SetupOutputVariable("Zone Opaque Surface Inside Faces Total Conduction Heat Gain Rate",
-        #                             OutputProcessor::Unit::W,
-        #                             ZoneOpaqSurfInsFaceCondGainRep(ZoneLoop),
-        #                             "Zone",
-        #                             "Average",
-        #                             Zone(ZoneLoop).Name)
-        #         SetupOutputVariable("Zone Opaque Surface Inside Faces Total Conduction Heat Loss Rate",
-        #                             OutputProcessor::Unit::W,
-        #                             ZoneOpaqSurfInsFaceCondLossRep(ZoneLoop),
-        #                             "Zone",
-        #                             "Average",
-        #                             Zone(ZoneLoop).Name)
-        #         # Energy variables
-        #         SetupOutputVariable("Zone Opaque Surface Inside Faces Total Conduction Heat Gain Energy",
-        #                             OutputProcessor::Unit::J,
-        #                             ZnOpqSurfInsFaceCondGnRepEnrg(ZoneLoop),
-        #                             "Zone",
-        #                             "Sum",
-        #                             Zone(ZoneLoop).Name)
-        #         SetupOutputVariable("Zone Opaque Surface Inside Faces Total Conduction Heat Loss Energy",
-        #                             OutputProcessor::Unit::J,
-        #                             ZnOpqSurfInsFaceCondLsRepEnrg(ZoneLoop),
-        #                             "Zone",
-        #                             "Sum",
-        #                             Zone(ZoneLoop).Name)
 
         print("Initializing Surface (Shading) Report Variables")
         # entender por aqui:	https://bigladdersoftware.com/epx/docs/8-9/module-developer/how-do-i-output-my-variables.html
@@ -1139,6 +1020,7 @@ class SolarCalculations(SolarShading):
                                 "Zone",
                                 "Average",
                                 Surface(SurfLoop).Name)
+            
             if (Surface(SurfLoop).ExtSolar):
                 SetupOutputVariable("Surface Outside Face Sunlit Area",
                 					OutputProcessor::Unit::m2,
@@ -1239,1030 +1121,6 @@ class SolarCalculations(SolarShading):
 
             if (!Surface(SurfLoop).HeatTransSurf): continue # probably will not be used
 
-            # if (Surface(SurfLoop).Class == SurfaceClass_Window):
-            #     # CurrentModuleObject='Windows/GlassDoors'
-            #     if (Surface(SurfLoop).ExtSolar):
-            #         SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             QRadSWwinAbsTot(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Shortwave Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             SWwinAbsTotalReport(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-
-            #         if (Construct(Surface(SurfLoop).Construction).WindowTypeBSDF):
-            #             NumOfLayers = Construct(Surface(SurfLoop).Construction).TotSolidLayers
-            #         else:
-            #             NumOfLayers = Construct(Surface(SurfLoop).Construction).TotLayers
-                    
-            #         for I in range(1, NumOfLayers+1):
-            #             SetupOutputVariable("Surface Window Total Absorbed Shortwave Radiation Rate Layer " + RoundSigDigits(I) + "",
-            #                                 OutputProcessor::Unit::W,
-            #                                 QRadSWwinAbsLayer(I, SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Front Face Temperature Layer " + RoundSigDigits(I) + "",
-            #                                 OutputProcessor::Unit::C,
-            #                                 FenLaySurfTempFront(I, SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Back Face Temperature Layer " + RoundSigDigits(I) + "",
-            #                                 OutputProcessor::Unit::C,
-            #                                 FenLaySurfTempBack(I, SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #         SetupOutputVariable("Surface Window Transmitted Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinTransSolar(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Transmitted Beam Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinBmSolar(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-
-            #         # added TH 12/9/2009
-            #         SetupOutputVariable("Surface Window Transmitted Beam To Beam Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinBmBmSolar(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Transmitted Beam To Diffuse Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinBmDifSolar(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-
-            #         SetupOutputVariable("Surface Window Transmitted Diffuse Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinDifSolar(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Heat Gain Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinHeatGainRep(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Heat Loss Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinHeatLossRep(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Gap Convective Heat Transfer Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinGapConvHtFlowRep(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Shading Device Absorbed Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinShadingAbsorbedSolar(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Net Heat Transfer Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             WinHeatTransfer(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-
-            #         if (DisplayAdvancedReportVariables):
-            #             # CurrentModuleObject='Windows/GlassDoors(Advanced)'
-            #             SetupOutputVariable("Surface Window Inside Face Glazing Zone Convection Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGainConvGlazToZoneRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Glazing Net Infrared Heat Transfer Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGainIRGlazToZoneRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Shortwave from Zone Back Out Window Heat Transfer Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinLossSWZoneToOutWinRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Frame and Divider Zone Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGainFrameDividerToZoneRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Gap between Shade and Glazing Zone Convection Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGainConvGlazShadGapToZoneRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Shade Zone Convection Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGainConvShadeToZoneRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Shade Net Infrared Heat Transfer Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGainIRShadeToZoneRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             if (Construct(Surface(SurfLoop).Construction).WindowTypeEQL):
-            #                 SetupOutputVariable("Surface Window Inside Face Other Convection Heat Gain Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     OtherConvGainInsideFaceToZoneRep(SurfLoop),
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-
-            #         # Added TH 12/23/2008 for thermochromic windows
-            #         # CurrentModuleObject='Thermochromic Windows'
-            #         if (Construct(Surface(SurfLoop).Construction).TCFlag == 1):
-            #             SetupOutputVariable("Surface Window Thermochromic Layer Temperature",
-            #                                 OutputProcessor::Unit::C,
-            #                                 SurfaceWindow(SurfLoop).TCLayerTemp,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Thermochromic Layer Property Specification Temperature",
-            #                                 OutputProcessor::Unit::C,
-            #                                 SurfaceWindow(SurfLoop).SpecTemp,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #         # Added TH 5/26/2009 for switchable windows to report switching factor (tinted level)
-            #         # CurrentModuleObject='Switchable Windows'
-            #         if (Surface(SurfLoop).HasShadeControl):
-            #             if (WindowShadingControl(Surface(SurfLoop).WindowShadingControlPtr).ShadingType == WSC_ST_SwitchableGlazing):
-            #                 # IF (SurfaceWindow(SurfLoop)%ShadingFlag == SwitchableGlazing) THEN  !ShadingFlag is not set to SwitchableGlazing yet!
-            #                 SetupOutputVariable("Surface Window Switchable Glazing Switching Factor",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).SwitchingFactor,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Switchable Glazing Visible Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).VisTransSelected,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-
-            #         if (SurfaceWindow(SurfLoop).FrameArea > 0.0):
-            #             # CurrentModuleObject='Window Frames'
-            #             SetupOutputVariable("Surface Window Frame Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).FrameHeatGain,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Frame Heat Loss Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).FrameHeatLoss,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Frame Inside Temperature",
-            #                                 OutputProcessor::Unit::C,
-            #                                 SurfaceWindow(SurfLoop).FrameTempSurfIn,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Frame Outside Temperature",
-            #                                 OutputProcessor::Unit::C,
-            #                                 SurfaceWindow(SurfLoop).FrameTempSurfOut,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #         if (SurfaceWindow(SurfLoop).DividerArea > 0.0):
-            #             # CurrentModuleObject='Window Dividers'
-            #             SetupOutputVariable("Surface Window Divider Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).DividerHeatGain,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Divider Heat Loss Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).DividerHeatLoss,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Divider Inside Temperature",
-            #                                 OutputProcessor::Unit::C,
-            #                                 SurfaceWindow(SurfLoop).DividerTempSurfIn,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Divider Outside Temperature",
-            #                                 OutputProcessor::Unit::C,
-            #                                 SurfaceWindow(SurfLoop).DividerTempSurfOut,
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #         # CurrentModuleObject='Windows'
-            #         # Energy
-            #         SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             QRadSWwinAbsTotEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Transmitted Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinTransSolarEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Transmitted Beam Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinBmSolarEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-
-            #         # added TH 12/9/2009
-            #         SetupOutputVariable("Surface Window Transmitted Beam To Beam Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinBmBmSolarEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Transmitted Beam To Diffuse Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinBmDifSolarEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-
-            #         SetupOutputVariable("Surface Window Transmitted Diffuse Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinDifSolarEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Heat Gain Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinHeatGainRepEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Heat Loss Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinHeatLossRepEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Gap Convective Heat Transfer Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinGapConvHtFlowRepEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Shading Device Absorbed Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinShadingAbsorbedSolarEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Net Heat Transfer Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             WinHeatTransferRepEnergy(SurfLoop),
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-
-            #         SetupOutputVariable("Surface Window System Solar Transmittance",
-            #                             OutputProcessor::Unit::None,
-            #                             WinSysSolTransmittance(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window System Solar Reflectance",
-            #                             OutputProcessor::Unit::None,
-            #                             WinSysSolReflectance(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window System Solar Absorptance",
-            #                             OutputProcessor::Unit::None,
-            #                             WinSysSolAbsorptance(SurfLoop),
-            #                             "Zone",
-            #                             "Average",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Inside Face Glazing Condensation Status",
-            #                             OutputProcessor::Unit::None,
-            #                             InsideGlassCondensationFlag(SurfLoop),
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Inside Face Frame Condensation Status",
-            #                             OutputProcessor::Unit::None,
-            #                             InsideFrameCondensationFlag(SurfLoop),
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Inside Face Divider Condensation Status",
-            #                             OutputProcessor::Unit::None,
-            #                             InsideDividerCondensationFlag(SurfLoop),
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-
-            #         # Outside reveal report variables
-            #         # IF (Surface(SurfLoop)%Reveal > 0.0) THEN
-            #         SetupOutputVariable("Surface Window Outside Reveal Reflected Beam Solar Radiation Rate",
-            #                             OutputProcessor::Unit::W,
-            #                             SurfaceWindow(SurfLoop).BmSolRefldOutsRevealReport,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         # Energy
-            #         SetupOutputVariable("Surface Window Outside Reveal Reflected Beam Solar Radiation Energy",
-            #                             OutputProcessor::Unit::J,
-            #                             SurfaceWindow(SurfLoop).BmSolRefldOutsRevealRepEnergy,
-            #                             "Zone",
-            #                             "Sum",
-            #                             Surface(SurfLoop).Name)
-            #         # ENDIF
-
-            #         # Inside reveal report variables
-            #         if (SurfaceWindow(SurfLoop).InsideReveal > 0.0 || SurfaceWindow(SurfLoop).InsideSillDepth > 0.0):
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Beam Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).BmSolRefldInsRevealReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             # Energy
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Beam Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 SurfaceWindow(SurfLoop).BmSolRefldInsRevealRepEnergy,
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-
-            #             # Added report variables for inside reveal to debug CR 7596. TH 5/26/2009
-            #             # All reflected solar by the inside reveal is turned into diffuse
-            #             SetupOutputVariable("Surface Window Inside Reveal Absorbed Beam Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).BmSolAbsdInsRevealReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Diffuse Zone Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).InsRevealDiffIntoZoneReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Diffuse Frame Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).InsRevealDiffOntoFrameReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Diffuse Glazing Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).InsRevealDiffOntoGlazingReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-
-            #         # Output blind report variables only when blinds are used
-            #         if (SurfaceWindow(SurfLoop).BlindNumber > 0):
-            #             # CurrentModuleObject='Window Blinds'
-            #             SetupOutputVariable("Surface Window Blind Beam to Beam Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).BlTsolBmBm,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Blind Beam to Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).BlTsolBmDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Blind Diffuse to Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).BlTsolDifDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Blind and Glazing System Beam Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).BlGlSysTsolBmBm,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Blind and Glazing System Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).BlGlSysTsolDifDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-
-            #         # Output screen report variables only when screens are used
-            #         if (SurfaceWindow(SurfLoop).ScreenNumber > 0):
-            #             # CurrentModuleObject='Window Screens'
-            #             SetupOutputVariable("Surface Window Screen Beam to Beam Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).ScTsolBmBm,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Screen Beam to Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).ScTsolBmDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Screen Diffuse to Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).ScTsolDifDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Screen and Glazing System Beam Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).ScGlSysTsolBmBm,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Screen and Glazing System Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).ScGlSysTsolDifDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-
-            #         # CurrentModuleObject='Windows'
-            #         SetupOutputVariable("Surface Window Solar Horizontal Profile Angle",
-            #                             OutputProcessor::Unit::deg,
-            #                             SurfaceWindow(SurfLoop).ProfileAngHor,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Solar Vertical Profile Angle",
-            #                             OutputProcessor::Unit::deg,
-            #                             SurfaceWindow(SurfLoop).ProfileAngVert,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Glazing Beam to Beam Solar Transmittance",
-            #                             OutputProcessor::Unit::None,
-            #                             SurfaceWindow(SurfLoop).GlTsolBmBm,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Glazing Beam to Diffuse Solar Transmittance",
-            #                             OutputProcessor::Unit::None,
-            #                             SurfaceWindow(SurfLoop).GlTsolBmDif,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Glazing Diffuse to Diffuse Solar Transmittance",
-            #                             OutputProcessor::Unit::None,
-            #                             SurfaceWindow(SurfLoop).GlTsolDifDif,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-            #         SetupOutputVariable("Surface Window Model Solver Iteration Count",
-            #                             OutputProcessor::Unit::None,
-            #                             SurfaceWindow(SurfLoop).WindowCalcIterationsRep,
-            #                             "Zone",
-            #                             "State",
-            #                             Surface(SurfLoop).Name)
-
-            #     elif (!Surface(SurfLoop).ExtSolar): # Not ExtSolar
-            #         if (DisplayAdvancedReportVariables):
-            #             # CurrentModuleObject='InteriorWindows(Advanced)'
-            #             if (SurfaceWindow(SurfLoop).OriginalClass != SurfaceClass_TDD_Diffuser):
-            #                 SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     QRadSWwinAbsTot(SurfLoop),
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Shortwave Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SWwinAbsTotalReport(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #             if (SurfaceWindow(SurfLoop).OriginalClass != SurfaceClass_TDD_Diffuser):
-            #                 SetupOutputVariable("Surface Window Transmitted Solar Radiation Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     WinTransSolar(SurfLoop),
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Transmitted Beam Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinBmSolar(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #             # added TH 12/9/2009
-            #             SetupOutputVariable("Surface Window Transmitted Beam To Beam Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinBmBmSolar(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Transmitted Beam To Diffuse Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinBmDifSolar(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window Transmitted Diffuse Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinDifSolar(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Heat Gain Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinHeatGainRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Heat Loss Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinHeatLossRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Gap Convective Heat Transfer Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinGapConvHtFlowRep(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Shading Device Absorbed Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 WinShadingAbsorbedSolar(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-
-            #             if (SurfaceWindow(SurfLoop).FrameArea > 0.0):
-            #                 SetupOutputVariable("Surface Window Frame Heat Gain Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     SurfaceWindow(SurfLoop).FrameHeatGain,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Frame Heat Loss Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     SurfaceWindow(SurfLoop).FrameHeatLoss,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Frame Inside Temperature",
-            #                                     OutputProcessor::Unit::C,
-            #                                     SurfaceWindow(SurfLoop).FrameTempSurfIn,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Frame Outside Temperature",
-            #                                     OutputProcessor::Unit::C,
-            #                                     SurfaceWindow(SurfLoop).FrameTempSurfOut,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-
-            #             if (SurfaceWindow(SurfLoop).DividerArea > 0.0):
-            #                 SetupOutputVariable("Surface Window Divider Heat Gain Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     SurfaceWindow(SurfLoop).DividerHeatGain,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Divider Heat Loss Rate",
-            #                                     OutputProcessor::Unit::W,
-            #                                     SurfaceWindow(SurfLoop).DividerHeatLoss,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Divider Inside Temperature",
-            #                                     OutputProcessor::Unit::C,
-            #                                     SurfaceWindow(SurfLoop).DividerTempSurfIn,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Divider Outside Temperature",
-            #                                     OutputProcessor::Unit::C,
-            #                                     SurfaceWindow(SurfLoop).DividerTempSurfOut,
-            #                                     "Zone",
-            #                                     "Average",
-            #                                     Surface(SurfLoop).Name)
-
-            #             # Energy
-            #             if (SurfaceWindow(SurfLoop).OriginalClass != SurfaceClass_TDD_Diffuser):
-            #                 SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Energy",
-            #                                     OutputProcessor::Unit::J,
-            #                                     QRadSWwinAbsTotEnergy(SurfLoop),
-            #                                     "Zone",
-            #                                     "Sum",
-            #                                     Surface(SurfLoop).Name)
-
-            #             if (SurfaceWindow(SurfLoop).OriginalClass != SurfaceClass_TDD_Diffuser):
-            #                 SetupOutputVariable("Surface Window Transmitted Solar Radiation Energy",
-            #                                     OutputProcessor::Unit::J,
-            #                                     WinTransSolarEnergy(SurfLoop),
-            #                                     "Zone",
-            #                                     "Sum",
-            #                                     Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window Transmitted Beam Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinBmSolarEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window Transmitted Beam To Beam Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinBmBmSolarEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Transmitted Beam To Diffuse Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinBmDifSolarEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window Transmitted Diffuse Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinDifSolarEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Heat Gain Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinHeatGainRepEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Heat Loss Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinHeatLossRepEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Gap Convective Heat Transfer Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinGapConvHtFlowRepEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Shading Device Absorbed Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 WinShadingAbsorbedSolarEnergy(SurfLoop),
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window System Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 WinSysSolTransmittance(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window System Solar Reflectance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 WinSysSolReflectance(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window System Solar Absorptance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 WinSysSolAbsorptance(SurfLoop),
-            #                                 "Zone",
-            #                                 "Average",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Glazing Condensation Status",
-            #                                 OutputProcessor::Unit::None,
-            #                                 InsideGlassCondensationFlag(SurfLoop),
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Frame Condensation Status",
-            #                                 OutputProcessor::Unit::None,
-            #                                 InsideFrameCondensationFlag(SurfLoop),
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Face Divider Condensation Status",
-            #                                 OutputProcessor::Unit::None,
-            #                                 InsideDividerCondensationFlag(SurfLoop),
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Outside Reveal Reflected Beam Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).BmSolRefldOutsRevealReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Beam Solar Radiation Rate",
-            #                                 OutputProcessor::Unit::W,
-            #                                 SurfaceWindow(SurfLoop).BmSolRefldInsRevealReport,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             # Energy
-            #             SetupOutputVariable("Surface Window Outside Reveal Reflected Beam Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 SurfaceWindow(SurfLoop).BmSolRefldOutsRevealRepEnergy,
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Inside Reveal Reflected Beam Solar Radiation Energy",
-            #                                 OutputProcessor::Unit::J,
-            #                                 SurfaceWindow(SurfLoop).BmSolRefldInsRevealRepEnergy,
-            #                                 "Zone",
-            #                                 "Sum",
-            #                                 Surface(SurfLoop).Name)
-
-            #             # Output blind report variables only when blinds are used
-            #             if (SurfaceWindow(SurfLoop).BlindNumber > 0):
-            #                 SetupOutputVariable("Surface Window Blind Beam to Beam Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).BlTsolBmBm,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Blind Beam to Diffuse Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).BlTsolBmDif,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Blind Diffuse to Diffuse Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).BlTsolDifDif,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Blind and Glazing System Beam Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).BlGlSysTsolBmBm,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Blind and Glazing System Diffuse Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).BlGlSysTsolDifDif,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-
-            #             # Output screen report variables only when screens are used
-            #             if (SurfaceWindow(SurfLoop).ScreenNumber > 0):
-            #                 SetupOutputVariable("Surface Window Screen Beam to Beam Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).ScTsolBmBm,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Screen Beam to Diffuse Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).ScTsolBmDif,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Screen Diffuse to Diffuse Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).ScTsolDifDif,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Screen and Glazing System Beam Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).ScGlSysTsolBmBm,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-            #                 SetupOutputVariable("Surface Window Screen and Glazing System Diffuse Solar Transmittance",
-            #                                     OutputProcessor::Unit::None,
-            #                                     SurfaceWindow(SurfLoop).ScGlSysTsolDifDif,
-            #                                     "Zone",
-            #                                     "State",
-            #                                     Surface(SurfLoop).Name)
-
-            #             SetupOutputVariable("Surface Window Solar Horizontal Profile Angle",
-            #                                 OutputProcessor::Unit::deg,
-            #                                 SurfaceWindow(SurfLoop).ProfileAngHor,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Solar Vertical Profile Angle",
-            #                                 OutputProcessor::Unit::deg,
-            #                                 SurfaceWindow(SurfLoop).ProfileAngVert,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Glazing Beam to Beam Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).GlTsolBmBm,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Glazing Beam to Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).GlTsolBmDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Glazing Diffuse to Diffuse Solar Transmittance",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).GlTsolDifDif,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-            #             SetupOutputVariable("Surface Window Model Solver Iteration Count",
-            #                                 OutputProcessor::Unit::None,
-            #                                 SurfaceWindow(SurfLoop).WindowCalcIterationsRep,
-            #                                 "Zone",
-            #                                 "State",
-            #                                 Surface(SurfLoop).Name)
-
-            #     # end non extsolar reporting as advanced variables
-
-            # Window Reporting
-            # if (Surface(SurfLoop).Class == SurfaceClass_Window && Surface(SurfLoop).ExtBoundCond > 0 &&
-            #     Surface(SurfLoop).ExtBoundCond != SurfLoop):
-            # 	# Interzone window
-            #     # CurrentModuleObject='InterzoneWindows'
-            #     SetupOutputVariable("Surface Window Transmitted Beam Solar Radiation Rate",
-            #                         OutputProcessor::Unit::W,
-            #                         SurfaceWindow(SurfLoop).BmSolTransThruIntWinRep,
-            #                         "Zone",
-            #                         "State",
-            #                         Surface(SurfLoop).Name)
-            #     # energy
-            #     SetupOutputVariable("Surface Window Transmitted Beam Solar Radiation Energy",
-            #                         OutputProcessor::Unit::J,
-            #                         SurfaceWindow(SurfLoop).BmSolTransThruIntWinRepEnergy,
-            #                         "Zone",
-            #                         "Sum",
-            #                         Surface(SurfLoop).Name)
-
-            # if (Surface(SurfLoop).Class == SurfaceClass_TDD_Dome && Surface(SurfLoop).ExtSolar):
-            #     # CurrentModuleObject='TDD Domes'
-            #     SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Rate",
-            #                         OutputProcessor::Unit::W,
-            #                         QRadSWwinAbsTot(SurfLoop),
-            #                         "Zone",
-            #                         "Average",
-            #                         Surface(SurfLoop).Name)
-            #     SetupOutputVariable("Surface Window Transmitted Solar Radiation Rate",
-            #                         OutputProcessor::Unit::W,
-            #                         WinTransSolar(SurfLoop),
-            #                         "Zone",
-            #                         "Average",
-            #                         Surface(SurfLoop).Name)
-            #     # energy
-            #     SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Energy",
-            #                         OutputProcessor::Unit::J,
-            #                         QRadSWwinAbsTotEnergy(SurfLoop),
-            #                         "Zone",
-            #                         "Sum",
-            #                         Surface(SurfLoop).Name)
-            #     SetupOutputVariable("Surface Window Transmitted Solar Radiation Energy",
-            #                         OutputProcessor::Unit::J,
-            #                         WinTransSolarEnergy(SurfLoop),
-            #                         "Zone",
-            #                         "Sum",
-            #                         Surface(SurfLoop).Name)
-            
-            # if (SurfaceWindow(SurfLoop).OriginalClass == SurfaceClass_TDD_Diffuser):
-            #     # CurrentModuleObject='TDD Diffusers'
-            #     SetupOutputVariable("Surface Outside Face Incident Solar Radiation Rate per Area",
-            #                         OutputProcessor::Unit::W_m2,
-            #                         QRadSWOutIncident(SurfLoop),
-            #                         "Zone",
-            #                         "Average",
-            #                         Surface(SurfLoop).Name)
-            #     SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Rate",
-            #                         OutputProcessor::Unit::W,
-            #                         QRadSWwinAbsTot(SurfLoop),
-            #                         "Zone",
-            #                         "Average",
-            #                         Surface(SurfLoop).Name)
-            #     SetupOutputVariable("Surface Window Transmitted Solar Radiation Rate",
-            #                         OutputProcessor::Unit::W,
-            #                         WinTransSolar(SurfLoop),
-            #                         "Zone",
-            #                         "Average",
-            #                         Surface(SurfLoop).Name)
-            #     # energy
-            #     SetupOutputVariable("Surface Window Total Glazing Layers Absorbed Solar Radiation Energy",
-            #                         OutputProcessor::Unit::J,
-            #                         QRadSWwinAbsTotEnergy(SurfLoop),
-            #                         "Zone",
-            #                         "Sum",
-            #                         Surface(SurfLoop).Name)
-            #     SetupOutputVariable("Surface Window Transmitted Solar Radiation Energy",
-            #                         OutputProcessor::Unit::J,
-            #                         WinTransSolarEnergy(SurfLoop),
-            #                         "Zone",
-            #                         "Sum",
-            #                         Surface(SurfLoop).Name)
-
-        # for SurfLoop in range(1, TotSurfaces+1):
-        #     if (!Surface(SurfLoop).HeatTransSurf): continue
-        #     # CurrentModuleObject='Surfaces'
-        #     SetupOutputVariable("Surface Inside Face Exterior Windows Incident Beam Solar Radiation Rate per Area",
-        #                         OutputProcessor::Unit::W_m2,
-        #                         BmIncInsSurfIntensRep(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Exterior Windows Incident Beam Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         BmIncInsSurfAmountRep(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Interior Windows Incident Beam Solar Radiation Rate per Area",
-        #                         OutputProcessor::Unit::W_m2,
-        #                         IntBmIncInsSurfIntensRep(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Interior Windows Incident Beam Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         IntBmIncInsSurfAmountRep(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Initial Transmitted Diffuse Absorbed Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         InitialDifSolInAbsReport(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Initial Transmitted Diffuse Transmitted Out Window Solar Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         InitialDifSolInTransReport(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Absorbed Shortwave Radiation Rate",
-        #                         OutputProcessor::Unit::W,
-        #                         SWInAbsTotalReport(SurfLoop),
-        #                         "Zone",
-        #                         "Average",
-        #                         Surface(SurfLoop).Name)
-        #     # energy
-        #     SetupOutputVariable("Surface Inside Face Exterior Windows Incident Beam Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         BmIncInsSurfAmountRepEnergy(SurfLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Surface(SurfLoop).Name)
-        #     SetupOutputVariable("Surface Inside Face Interior Windows Incident Beam Solar Radiation Energy",
-        #                         OutputProcessor::Unit::J,
-        #                         IntBmIncInsSurfAmountRepEnergy(SurfLoop),
-        #                         "Zone",
-        #                         "Sum",
-        #                         Surface(SurfLoop).Name)
-
     	return None
 
     # MAYBE needed to get the nearby build shading
@@ -2308,15 +1166,15 @@ class SolarCalculations(SolarShading):
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Array1D_int GSS             # List of shadowing surfaces numbers for a receiving surface
-        Array1D_int BKS             # List of back surface numbers for a receiving surface
-        Array1D_int SBS             # List of subsurfaces for a receiving surface
-        MaxGSS = 50       # Current Max for GSS array
-        MaxBKS = 50       # Current Max for BKS array
-        MaxSBS = 50       # Current Max for SBS array
+        GSS = []             		# List of shadowing surfaces numbers for a receiving surface
+        BKS = []             		# List of back surface numbers for a receiving surface
+        SBS = []             		# List of subsurfaces for a receiving surface
+        MaxGSS = 50       			# Current Max for GSS array
+        MaxBKS = 50       			# Current Max for BKS array
+        MaxSBS = 50       			# Current Max for SBS array
         bool CannotShade            # True if subsurface cannot shade receiving surface
         bool HasWindow              # True if a window is present on receiving surface
-        ZMIN = 0.0                 # Lowest point on the receiving surface
+        ZMIN = 0.0                  # Lowest point on the receiving surface
         BackSurfaceNumber = 0       # Back surface number
         HTS = 0                     # Heat transfer surface number for a receiving surface
         GRSNR = 0                   # Receiving surface number
@@ -2326,7 +1184,7 @@ class SolarCalculations(SolarShading):
         NGSS = 0                    # Number of shadowing surfaces for a receiving surface
         NSBS = 0                    # Number of subsurfaces for a receiving surface
         bool ShadowingSurf          # True if a receiving surface is a shadowing surface
-        Array1D_bool CastingSurface # tracking during setup of ShadowComb
+        CastingSurface = []			# [type:bool] tracking during setup of ShadowComb
 
         MaxDim = 0
 
@@ -2404,7 +1262,7 @@ class SolarCalculations(SolarShading):
                         if (NGSS > MaxGSS):
                             GSS.redimension(MaxGSS *= 2, 0)
                         
-                        GSS(NGSS) = GSSNR
+                        GSS(NGSS) = GSSNR # substitui o valor de GSS no index NGSS com GSSNR?
 
                     elif ((Surface(GSSNR).BaseSurf == 0) || ((Surface(GSSNR).BaseSurf == GSSNR) &&
                     		 ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) ||
@@ -2412,7 +1270,9 @@ class SolarCalculations(SolarShading):
                                                                                         # exposed to outside environment
 
                         CHKGSS(GRSNR, GSSNR, ZMIN, CannotShade) # Check to see if this can shade the receiving surface
-                        if (!CannotShade):                       # Update the shadowing surface data if shading is possible
+                        
+						# Update the shadowing surface data if shading is possible
+                        if (!CannotShade):
                             NGSS += 1
                             if (NGSS > MaxGSS):
                                 GSS.redimension(MaxGSS *= 2, 0)
@@ -2420,6 +1280,7 @@ class SolarCalculations(SolarShading):
                             GSS(NGSS) = GSSNR
 
                 # ...end of surfaces DO loop (GSSNR)
+
             else: # Simplified Distribution -- still check for Shading Subsurfaces
                 for GSSNR in range(1, TotSurfaces+1): # Loop through all surfaces (looking for surfaces which could shade GRSNR) ...
 
@@ -2696,7 +1557,7 @@ class SolarCalculations(SolarShading):
 
     	return None
 
-    def polygon_contains_point(nsides, polygon_3d, &point_3d, ignorex, ignorey, ignorez):
+    def polygon_contains_point(nsides, polygon_3d, &point_3d, ignorex, ignorey, ignorez): # geopandas tem uma função pronta para isso!
     	'''
         Function information:
               Author         Linda Lawrie
@@ -2731,17 +1592,6 @@ class SolarCalculations(SolarShading):
 
         # Argument array dimensioning
         polygon_3d.dim(nsides)
-
-        # Locals
-        # Function argument definitions:
-
-        # Function parameter definitions:
-
-        # INTERFACE BLOCK SPECIFICATIONS:
-        # na
-
-        # DERIVED TYPE DEFINITIONS:
-        # na
 
         # Function local variable declarations:
         int i
@@ -2813,23 +1663,6 @@ class SolarCalculations(SolarShading):
         REFERENCES:
         BLAST/IBLAST code, original author George Walton
         '''
-
-        # USE STATEMENTS:
-        # na
-
-        # Argument array dimensioning
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         NABOVE = 0  # Number of vertices of shadow casting surface. above the plane of receiving surface
@@ -2912,7 +1745,7 @@ class SolarCalculations(SolarShading):
         PURPOSE OF THIS SUBROUTINE:
         Transforms the general coordinates of the vertices
         of surface NS to coordinates in the plane of the receiving surface NGRS.
-        See subroutine 'CalcCoordinateTransformation' SurfaceGeometry Module.
+        See subroutine 'CalcCoordinateTransformation' SurfaceGeometry Module.					--> outro arquivo
         - int const NS,        # Surface number whose vertex coordinates are being transformed
         - int const NGRS,      # Base surface number for surface NS
         - int &NVT,            # Number of vertices for surface NS
@@ -2927,23 +1760,6 @@ class SolarCalculations(SolarShading):
         BLAST/IBLAST code, original author George Walton
         NECAP subroutine 'SHADOW'
         '''
-
-        # USE STATEMENTS:
-        # na
-
-        # Argument array dimensioning
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         Real64 Xdif # Intermediate Result
@@ -4027,7 +2843,8 @@ class SolarCalculations(SolarShading):
             AOSurf = 0.0
             BackSurfaces = 0
             OverlapAreas = 0.0
-            for (auto &e : SurfaceWindow):
+            # for (auto &e : SurfaceWindow):
+        	for e in SurfaceWindow:
                 e.OutProjSLFracMult = 1.0
                 e.InOutProjSLFracMult = 1.0
         else:
@@ -4347,21 +3164,6 @@ class SolarCalculations(SolarShading):
         REFERENCES:
         BLAST/IBLAST code, original author George Walton
         '''
-
-        # USE STATEMENTS:
-        # na
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS:
-        # na
-
-        # DERIVED TYPE DEFINITIONS:
-        # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         Real64 XS # Intermediate result

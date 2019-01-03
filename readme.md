@@ -7,6 +7,82 @@ For more informations [check here](https://github.com/NREL/EnergyPlus#license--c
 
 ## Dependecy Tree
 
+File `Shadows.py` (functions and variables dependencies):
+
+`[class] SolarCalculations`
+	`[class] SolarShading`
+		`__init__`
+		`clear_state`
+	
+	`__init__`
+		`GetShadowingInput`
+			? ZoneList
+			? NumOfZoneLists
+			? ShadingTransmittanceVaries
+			? SolarDistribution
+			? MinimalShadowing
+			? Surface()
+
+		`AllocateModuleArrays`
+			? TotSurfaces
+			? NumOfTimeStepInHour
+			MaxBkSurf --> using DataBSDFWindow::MaxBkSurf
+			? NumOfZones
+			? MaxSolidWinLayers
+			? MaxVerticesPerSurface
+			? SurfaceWindow
+			? Surface()
+
+		`DetermineShadowingCombinations`
+			? IgnoreSolarRadiation
+			? ExternalEnvironment
+			? OtherSideCondModeledExt
+			CHKGSS()
+
+	`SHDGSS`
+		CLIP()
+		CTRANS()
+		HTRANS0()
+		HTRANS1()
+		MULTOL()
+			**DeterminePolygonOverlap()
+		**DeterminePolygonOverlap()
+
+	`PerformSolarCalculations`
+		CalcPerSolarBeam()
+			FigureSunCosines()
+				SUN4()
+			FigureSolarBeamAtTimestep()
+				*SHADOW()
+		SkyDifSolarShading()
+			*SHADOW()
+
+	*`SHADOW`
+		CTRANS()
+		HTRANS1()
+		SHDGSS()
+
+	**`DeterminePolygonOverlap`
+		HTRANS0()
+		INCLOS()
+		INTCPT()
+		CLIPPOLY()
+		ORDER()
+
+	SEM NENHUM VÍNCULO:
+		`polygon_contains_point`
+		`HTRANS`
+		`SurfaceScheduledSolarInc`
+		`PerformSolarCalculations`
+			SUN3()
+		`ReportSurfaceShading`
+		`ReportSurfaceErrors`
+
+
+
+
+---
+
 `EnergyPlus()`
 
 	 `SolarShading()`
