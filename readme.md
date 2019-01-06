@@ -12,17 +12,16 @@ File `Shadows.py` (functions and variables dependencies):
 `[class] SolarCalculations`
 	`[class] SolarShading`
 		`__init__` --> comparar com 'EnergyPlus Headers'
-		    ~~DataPrecisionGlobals.cc~~ (ver as casas decimais usadas na precisão para definir o msm em Python)  
+		    ~~DataPrecisionGlobals.cc~~ (ver as casas decimais usadas na precisão para definir o msm em Python)
 		    --> DataGlobals.cc
 		    --> DataEnvironment.cc
 	        --> DataHeatBalance.cc
-	        --> DataSurfaces.cc		
+	        --> DataSurfaces.cc
 	        ~~DataShadowingCombinations.cc~~
 	        ~~DaylightingManager.cc~~
 	        ~~SolarReflectionManager.cc~~
 	        ~~DataReportingFlags.cc~~
-	        ~~DataBSDFWindow.cc~~
-		
+	        --> DataBSDFWindow.cc
     	    --> DataVectorTypes.hh (Definição dos vetores. Procurar o equivalente em Python)
     	    ~~DataTimings.cc~~
     	    ~~WindowManager.cc~~
@@ -33,10 +32,20 @@ File `Shadows.py` (functions and variables dependencies):
 	`__init__`
 		`GetShadowingInput`
 		        --> DataIPShortCuts.cc
-		        --> DataSystemVariables.cc
-		        --> ScheduleManager.cc
-			ZoneList --> UtilityRoutines.cc
-			NumOfZoneLists --> UtilityRoutines.cc
+		        --> UtilityRoutines::SameString() --> como funciona isso?
+		        --> UtilityRoutines::FindItemInList() --> como funciona isso?
+		    getNumObjectsFound() --> ?
+		    getObjectItem() --> ?
+		    lNumericFieldBlanks --> ?
+            lAlphaFieldBlanks --> ?
+            cAlphaFieldNames --> ?
+            cNumericFieldNames --> ?
+            .SchedExternalShadingFrac --> ?
+            .ExternalShadingSchInd --> ?
+            DisableGroupSelfShading --> DataSystemVariables.cc --> definido nas duas funções...
+			ScheduleFileShadingProcessed --> ScheduleManager.cc
+			ZoneList --> ?
+			NumOfZoneLists --> ?
 			ShadingTransmittanceVaries --> DataSurfaces.cc
 			SolarDistribution --> DataHeatBalance.cc
 			MinimalShadowing --> DataHeatBalance.cc
