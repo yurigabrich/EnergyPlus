@@ -147,20 +147,30 @@ class SolarShading:
 		'''
 	    # Using/Aliasing
 	    using namespace DataPrecisionGlobals
-	    using namespace DataGlobals
-	    using namespace DataEnvironment
-	    using namespace DataHeatBalance
-	    using namespace DataSurfaces
-	    using namespace DataShadowingCombinations
-	    using DaylightingManager::ProfileAngle
-	    using namespace SolarReflectionManager
-	    using namespace DataReportingFlags
-	    using DataBSDFWindow::ComplexWind
-	    using DataBSDFWindow::MaxBkSurf
-	    using DataBSDFWindow::SUNCOSTS
+	   # using namespace DataGlobals
+	    NumOfTimeStepInHour = 0                 # Number of time steps in each hour of the simulation
+        NumOfZones = 0                          # Total number of Zones for simulation
+	   # using namespace DataEnvironment
+	    IgnoreSolarRadiation = False            # TRUE if all solar radiation is to be ignored
+	   # using namespace DataHeatBalance
+	    SolarDistribution = 0                   # Solar Distribution Algorithm
+	    MinimalShadowing = -1                   # all incoming solar hits floor, no exterior shadowing except reveals
+	    MaxSolidWinLayers = 0                   # Maximum number of solid layers in a window construction
+	                                            # ** has to be big enough to hold no matter what window model
+	                                            #    each window model should validate layers individually
+	   # using namespace DataSurfaces
+	    ShadingTransmittanceVaries = False      # overall, shading transmittance varies for the building
+	    TotSurfaces = 0                         # Total number of surfaces (walls, floors, roofs, windows,
+	                                            # shading surfaces, etc.--everything)
+	    MaxVerticesPerSurface = 4               # Maximum number of vertices allowed for a single surface
+	                                            # (default -- can go higher)
+	    ExternalEnvironment = 0                 # Parameters to indicate exterior boundary conditions for use with
+	    OtherSideCondModeledExt = -4            # the Surface derived type.
+	                                            # Note:  Positive values correspond to an interzone adjacent surface
+	   # using DataBSDFWindow::MaxBkSurf
+	    MaxBkSurf = 20                          # was 20    Maximum number of back surfaces in solar overlap &
+	                                            # interior solar distribution
 	    using namespace DataVectorTypes
-	    using namespace DataTimings
-	    using namespace WindowManager
 	    using namespace FenestrationCommon
 	    using namespace SingleLayerOptics
 
@@ -546,6 +556,55 @@ class SolarCalculations(SolarShading):
 	    
 	    return None
 
+    # using ScheduleManager::GetScheduleIndex
+    def GetScheduleIndex():
+        int GetScheduleIndex(std::string const &ScheduleName)
+        {
+    
+            // FUNCTION INFORMATION:
+            //       AUTHOR         Linda K. Lawrie
+            //       DATE WRITTEN   September 1997
+            //       MODIFIED       na
+            //       RE-ENGINEERED  na
+    
+            // PURPOSE OF THIS FUNCTION:
+            // This function returns the internal pointer to Schedule "ScheduleName".
+    
+            // Return value
+            int GetScheduleIndex;
+    
+            // FUNCTION LOCAL VARIABLE DECLARATIONS:
+            int DayCtr;
+            int WeekCtr;
+    
+            if (!ScheduleInputProcessed) {
+                ProcessScheduleInput();
+                ScheduleInputProcessed = true;
+            }
+    
+            if (NumSchedules > 0) {
+                GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}));
+                if (GetScheduleIndex > 0) {
+                    if (!Schedule(GetScheduleIndex).Used) {
+                        Schedule(GetScheduleIndex).Used = true;
+                        for (WeekCtr = 1; WeekCtr <= 366; ++WeekCtr) {
+                            if (Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr) > 0) {
+                                WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).Used = true;
+                                for (DayCtr = 1; DayCtr <= MaxDayTypes; ++DayCtr) {
+                                    DaySchedule(WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).DaySchedulePointer(DayCtr)).Used =
+                                        true;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                GetScheduleIndex = 0;
+            }
+    
+            return GetScheduleIndex;
+        }
+    
     def GetShadowingInput():
 		'''
         SUBROUTINE INFORMATION:
@@ -568,7 +627,8 @@ class SolarCalculations(SolarShading):
         using DataSystemVariables::SutherlandHodgman
         using DataSystemVariables::UseImportedSunlitFrac
         using DataSystemVariables::UseScheduledSunlitFrac
-        using ScheduleManager::ScheduleFileShadingProcessed
+        # using ScheduleManager::ScheduleFileShadingProcessed
+        ScheduleFileShadingProcessed = False
 
         # SUBROUTINE PARAMETER DEFINITIONS:
         static gio::Fmt fmtA("(A)")
@@ -714,7 +774,8 @@ class SolarCalculations(SolarShading):
 
         ExtShadingSchedNum = 0
         if (UseImportedSunlitFrac):
-            for (auto surf : Surface): # ???????
+            # for (auto surf : Surface): # ???????
+            for surf in Surface:
                 ExtShadingSchedNum = ScheduleManager::GetScheduleIndex(surf.Name + "_shading")
                 if (ExtShadingSchedNum):
                     surf.SchedExternalShadingFrac = True
@@ -762,11 +823,11 @@ class SolarCalculations(SolarShading):
                 NumOfShadingGroups = NumAlphas - 7
                 DisableSelfShadingGroups.append(NumOfShadingGroups)
                 for i in range(1, NumOfShadingGroups+1):
-                    Found = UtilityRoutines::FindItemInList(cAlphaArgs(i + 7), ZoneList, NumOfZoneLists) # essas variáveis saíram de onde?
+                    Found = UtilityRoutines::FindItemInList(cAlphaArgs(i + 7), ZoneList, NumOfZoneLists)
                     if (Found != 0) DisableSelfShadingGroups(i) = Found
 
                 for SurfNum in range(1, TotSurfaces+1):
-                    if (Surface(SurfNum).ExtBoundCond == 0) { # Loop through all exterior surfaces
+                    if (Surface(SurfNum).ExtBoundCond == 0): # Loop through all exterior surfaces
                         SurfZoneGroup = 0
                         
                         # Check the shading zone group of each exterior surface
@@ -1515,7 +1576,7 @@ class SolarCalculations(SolarShading):
         	return None
 
         auto const &vertex_C(surface_C.Vertex)
-        Real64 ZMAX(vertex_C(1).z)
+        ZMAX = vertex_C(1).z
         # for (int i = 2, e = surface_C.Sides i <= e ++i):
         e = surface_C.Sides
         for i in range(2, e+1):
@@ -1527,7 +1588,7 @@ class SolarCalculations(SolarShading):
         # SEE IF ANY VERTICES OF THE Shadow Casting Surface ARE ABOVE THE PLANE OF THE receiving surface
         auto const &surface_R(Surface(NRS))
         auto const &vertex_R(surface_R.Vertex)
-        auto const vertex_R_2(vertex_R(2))
+        vertex_R_2 = vertex_R(2)
         Vector const AVec(vertex_R(1) - vertex_R_2) # Vector from vertex 2 to vertex 1 of receiving surface
         Vector const BVec(vertex_R(3) - vertex_R_2) # Vector from vertex 2 to vertex 3 of receiving surface
 
@@ -1542,7 +1603,7 @@ class SolarCalculations(SolarShading):
 
         # SEE IF ANY VERTICES OF THE receiving surface ARE ABOVE THE PLANE OF THE S.S.
         if (DOTP > TolValue):
-            auto const vertex_C_2(vertex_C(2))
+            vertex_C_2 = vertex_C(2)
             Vector const AVec(vertex_C(1) - vertex_C_2)
             Vector const BVec(vertex_C(3) - vertex_C_2)
 
@@ -1951,7 +2012,7 @@ class SolarCalculations(SolarShading):
         # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
         for N in range(1, NumVertices+1):
         	l += 1 # será q vai somar o par ordenado?
-        	m += 1 # será q vai somar o par ordenado?		        
+        	m += 1 # será q vai somar o par ordenado?
             HCX_l = HCX_m
             HCY_l = HCY_m
             HCX_m = HCX[m]
@@ -3303,8 +3364,12 @@ class SolarCalculations(SolarShading):
         BLAST/IBLAST code, original author George Walton
 		'''
         # Using/Aliasing
-        using DataSystemVariables::DisableAllSelfShading
-        using DataSystemVariables::DisableGroupSelfShading
+        # using DataSystemVariables::DisableAllSelfShading
+        DisableAllSelfShading = False                       # when true, all external shadowing surfaces is ignored
+                                                            # when calculating sunlit fraction
+        # using DataSystemVariables::DisableGroupSelfShading
+        DisableGroupSelfShading = False                     # when true, defined shadowing surfaces group is ignored
+                                                            # when calculating sunlit fraction
         using ScheduleManager::GetCurrentScheduleValue
         using ScheduleManager::GetScheduleMinValue
         using ScheduleManager::GetScheduleName
