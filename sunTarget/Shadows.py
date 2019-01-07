@@ -75,13 +75,13 @@ include <ObjexxFCL/string.functions.hh>
 
 # EnergyPlus Headers
 include <DataDaylighting.hh>
-include <DataEnvironment.hh>
+# include <DataEnvironment.hh>
 include <DataErrorTracking.hh>
-include <DataGlobals.hh>
+# include <DataGlobals.hh>
 include <DataHeatBalFanSys.hh>
 include <DataHeatBalance.hh>
 include <DataIPShortCuts.hh>
-include <DataPrecisionGlobals.hh>
+# include <DataPrecisionGlobals.hh>
 include <DataReportingFlags.hh>
 include <DataShadowingCombinations.hh>
 include <DataStringGlobals.hh>
@@ -90,20 +90,440 @@ include <DataSystemVariables.hh>
 include <DataTimings.hh>
 include <DataWindowEquivalentLayer.hh>
 include <DaylightingManager.hh>
-include <General.hh>
+# include <General.hh>
 include <InputProcessing/InputProcessor.hh> # REVIEW with CAUTION!
 include <OutputProcessor.hh>
 include <OutputReportPredefined.hh>
 include <ScheduleManager.hh>
 include <SolarReflectionManager.hh>
-include <SolarShading.hh>					# WHY THE HEADER OF THE CURRENT FILE MUST BE ADDED?
-include <UtilityRoutines.hh>
+# include <SolarShading.hh>					# WHY THE HEADER OF THE CURRENT FILE MUST BE ADDED?
+# include <UtilityRoutines.hh>
 include <Vectors.hh>
 include <WindowComplexManager.hh>
 include <WindowEquivalentLayer.hh>
 include <WindowManager.hh>
 
-class SolarShading:
+class ExternalFunctions:
+	'''
+	Definition of a variety of additional functions from another packages.
+	Only those useful for the following computations was copied to here.
+	'''
+
+	# DataHeatBalance.cc
+	Array1D<ZoneListData> ZoneList;
+
+	# DataSurfaces.cc
+	Array1D<SurfaceData> Surface;
+	Array1D<SurfaceWindowCalc> SurfaceWindow;
+	NumOfZoneLists = 0
+
+	# DataSurfaces.hh
+	SchedExternalShadingFrac = False  # True if the external shading is scheduled or calculated externally to be imported
+    ExternalShadingSchInd = 0         # Schedule for a the external shading
+
+    # DataSystemVariables.cc
+    DisableGroupSelfShading = False   # when True, defined shadowing surfaces group is ignored when calculating sunlit fraction
+
+	# DataI
+	Array1D_string cAlphaFieldNames;
+    Array1D_string cNumericFieldNames;
+    Array1D_bool lNumericFieldBlanks;
+    Array1D_bool lAlphaFieldBlanks;
+
+	# using ScheduleManager::GetScheduleIndex
+    def GetScheduleIndex():
+        int GetScheduleIndex(std::string const &ScheduleName)
+        {
+    
+            // FUNCTION INFORMATION:
+            //       AUTHOR         Linda K. Lawrie
+            //       DATE WRITTEN   September 1997
+            //       MODIFIED       na
+            //       RE-ENGINEERED  na
+    
+            // PURPOSE OF THIS FUNCTION:
+            // This function returns the internal pointer to Schedule "ScheduleName".
+    
+            // Return value
+            int GetScheduleIndex;
+    
+            // FUNCTION LOCAL VARIABLE DECLARATIONS:
+            int DayCtr;
+            int WeekCtr;
+    
+            if (!ScheduleInputProcessed) {
+                ProcessScheduleInput();
+                ScheduleInputProcessed = true;
+            }
+    
+            if (NumSchedules > 0) {
+                GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}));
+                if (GetScheduleIndex > 0) {
+                    if (!Schedule(GetScheduleIndex).Used) {
+                        Schedule(GetScheduleIndex).Used = true;
+                        for (WeekCtr = 1; WeekCtr <= 366; ++WeekCtr) {
+                            if (Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr) > 0) {
+                                WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).Used = true;
+                                for (DayCtr = 1; DayCtr <= MaxDayTypes; ++DayCtr) {
+                                    DaySchedule(WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).DaySchedulePointer(DayCtr)).Used =
+                                        true;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                GetScheduleIndex = 0;
+            }
+    
+            return GetScheduleIndex;
+        }
+
+    def getNumObjectsFound():
+	    int InputProcessor::getNumObjectsFound(std::string const &ObjectWord)
+		{
+
+		    // FUNCTION INFORMATION:
+		    //       AUTHOR         Linda K. Lawrie
+		    //       DATE WRITTEN   September 1997
+		    //       MODIFIED       Mark Adams
+		    //       RE-ENGINEERED  na
+
+		    // PURPOSE OF THIS SUBROUTINE:
+		    // This function returns the number of objects (in input data file)
+		    // found in the current run.  If it can't find the object in list
+		    // of objects, a 0 will be returned.
+
+		    // METHODOLOGY EMPLOYED:
+		    // Look up object in list of objects.  If there, return the
+		    // number of objects found in the current input.  If not, return 0.
+
+		    auto const &find_obj = epJSON.find(ObjectWord);
+
+		    if (find_obj == epJSON.end()) {
+		        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+		        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()) {
+		            return 0;
+		        }
+		        return static_cast<int>(epJSON[tmp_umit->second].size());
+		    } else {
+		        return static_cast<int>(find_obj.value().size());
+		    }
+
+		    if (schema["properties"].find(ObjectWord) == schema["properties"].end()) {
+		        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+		        if (tmp_umit == caseInsensitiveObjectMap.end()) {
+		            ShowWarningError("Requested Object not found in Definitions: " + ObjectWord);
+		        }
+		    }
+		    return 0;
+		}
+
+	def getObjectItem():
+		void InputProcessor::getObjectItem(std::string const &Object,
+                                   int const Number,
+                                   Array1S_string Alphas,
+                                   int &NumAlphas,
+                                   Array1S<Real64> Numbers,
+                                   int &NumNumbers,
+                                   int &Status,
+                                   Optional<Array1D_bool> NumBlank,
+                                   Optional<Array1D_bool> AlphaBlank,
+                                   Optional<Array1D_string> AlphaFieldNames,
+                                   Optional<Array1D_string> NumericFieldNames)
+		{
+		    // SUBROUTINE INFORMATION:
+		    //       AUTHOR         Linda K. Lawrie
+		    //       DATE WRITTEN   September 1997
+		    //       MODIFIED       na
+		    //       RE-ENGINEERED  na
+
+		    // PURPOSE OF THIS SUBROUTINE:
+		    // This subroutine gets the 'number' 'object' from the IDFRecord data structure.
+
+		    int adjustedNumber = getJSONObjNum(Object, Number); // if incoming input is idf, then use idf object order
+
+		    auto objectInfo = ObjectInfo();
+		    objectInfo.objectType = Object;
+		    // auto sorted_iterators = find_iterators;
+
+		    auto find_iterators = objectCacheMap.find(Object);
+		    if (find_iterators == objectCacheMap.end()) {
+		        auto const tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object));
+		        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()) {
+		            return;
+		        }
+		        objectInfo.objectType = tmp_umit->second;
+		        find_iterators = objectCacheMap.find(objectInfo.objectType);
+		    }
+
+		    NumAlphas = 0;
+		    NumNumbers = 0;
+		    Status = -1;
+		    auto const &is_AlphaBlank = present(AlphaBlank);
+		    auto const &is_AlphaFieldNames = present(AlphaFieldNames);
+		    auto const &is_NumBlank = present(NumBlank);
+		    auto const &is_NumericFieldNames = present(NumericFieldNames);
+
+		    auto const &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1);
+		    auto const &epJSON_schema_it = find_iterators->second.schemaIterator;
+		    auto const &epJSON_schema_it_val = epJSON_schema_it.value();
+
+		    // Locations in JSON schema relating to normal fields
+		    auto const &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"];
+
+		    // Locations in JSON schema storing the positional aspects from the IDD format, legacy prefixed
+		    auto const &legacy_idd = epJSON_schema_it_val["legacy_idd"];
+		    auto const &legacy_idd_field_info = legacy_idd["field_info"];
+		    auto const &legacy_idd_fields = legacy_idd["fields"];
+		    auto const &schema_name_field = epJSON_schema_it_val.find("name");
+
+		    auto key = legacy_idd.find("extension");
+		    std::string extension_key;
+		    if (key != legacy_idd.end()) {
+		        extension_key = key.value();
+		    }
+
+		    Alphas = "";
+		    Numbers = 0;
+		    if (is_NumBlank) {
+		        NumBlank() = true;
+		    }
+		    if (is_AlphaBlank) {
+		        AlphaBlank() = true;
+		    }
+		    if (is_AlphaFieldNames) {
+		        AlphaFieldNames() = "";
+		    }
+		    if (is_NumericFieldNames) {
+		        NumericFieldNames() = "";
+		    }
+
+		    auto const &obj = epJSON_it;
+		    auto const &obj_val = obj.value();
+
+		    objectInfo.objectName = obj.key();
+
+		    auto const find_unused = unusedInputs.find(objectInfo);
+		    if (find_unused != unusedInputs.end()) {
+		        unusedInputs.erase(find_unused);
+		    }
+
+		    size_t idf_max_fields = 0;
+		    auto found_idf_max_fields = obj_val.find("idf_max_fields");
+		    if (found_idf_max_fields != obj_val.end()) {
+		        idf_max_fields = *found_idf_max_fields;
+		    }
+
+		    size_t idf_max_extensible_fields = 0;
+		    auto found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
+		    if (found_idf_max_extensible_fields != obj_val.end()) {
+		        idf_max_extensible_fields = *found_idf_max_extensible_fields;
+		    }
+
+		    int alpha_index = 1;
+		    int numeric_index = 1;
+
+		    for (size_t i = 0; i < legacy_idd_fields.size(); ++i) {
+		        std::string const &field = legacy_idd_fields[i];
+		        auto const &field_info = legacy_idd_field_info.find(field);
+		        if (field_info == legacy_idd_field_info.end()) {
+		            ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
+		        }
+		        auto const &field_type = field_info.value().at("field_type").get<std::string>();
+		        bool within_idf_fields = (i < idf_max_fields);
+		        if (field == "name" && schema_name_field != epJSON_schema_it_val.end()) {
+		            auto const &name_iter = schema_name_field.value();
+		            if (name_iter.find("retaincase") != name_iter.end()) {
+		                Alphas(alpha_index) = objectInfo.objectName;
+		            } else {
+		                Alphas(alpha_index) = UtilityRoutines::MakeUPPERCase(objectInfo.objectName);
+		            }
+		            if (is_AlphaBlank) AlphaBlank()(alpha_index) = objectInfo.objectName.empty();
+		            if (is_AlphaFieldNames) {
+		                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+		            }
+		            NumAlphas++;
+		            alpha_index++;
+		            continue;
+		        }
+
+		        auto const &schema_field_obj = schema_obj_props[field];
+		        auto it = obj_val.find(field);
+		        if (it != obj_val.end()) {
+		            auto const &field_value = it.value();
+		            if (field_type == "a") {
+		                // process alpha value
+		                if (field_value.is_string()) {
+		                    auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
+
+		                    Alphas(alpha_index) = value.first;
+		                    if (is_AlphaBlank) AlphaBlank()(alpha_index) = value.second;
+
+		                } else {
+		                    if (field_value.is_number_integer()) {
+		                        i64toa(field_value.get<std::int64_t>(), s);
+		                    } else {
+		                        dtoa(field_value.get<double>(), s);
+		                    }
+		                    Alphas(alpha_index) = s;
+		                    if (is_AlphaBlank) AlphaBlank()(alpha_index) = false;
+		                }
+		            } else if (field_type == "n") {
+		                // process numeric value
+		                if (field_value.is_number()) {
+		                    if (field_value.is_number_integer()) {
+		                        Numbers(numeric_index) = field_value.get<std::int64_t>();
+		                    } else {
+		                        Numbers(numeric_index) = field_value.get<double>();
+		                    }
+		                    if (is_NumBlank) NumBlank()(numeric_index) = false;
+		                } else {
+		                    bool is_empty = field_value.get<std::string>().empty();
+		                    if (is_empty) {
+		                        findDefault(Numbers(numeric_index), schema_field_obj);
+		                    } else {
+		                        Numbers(numeric_index) = -99999; // autosize and autocalculate
+		                    }
+		                    if (is_NumBlank) NumBlank()(numeric_index) = is_empty;
+		                }
+		            }
+		        } else {
+		            if (field_type == "a") {
+		                if (!(within_idf_fields && findDefault(Alphas(alpha_index), schema_field_obj))) {
+		                    Alphas(alpha_index) = "";
+		                }
+		                if (is_AlphaBlank) AlphaBlank()(alpha_index) = true;
+		            } else if (field_type == "n") {
+		                if (within_idf_fields) {
+		                    findDefault(Numbers(numeric_index), schema_field_obj);
+		                } else {
+		                    Numbers(numeric_index) = 0;
+		                }
+		                if (is_NumBlank) NumBlank()(numeric_index) = true;
+		            }
+		        }
+		        if (field_type == "a") {
+		            if (within_idf_fields) NumAlphas++;
+		            if (is_AlphaFieldNames) {
+		                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+		            }
+		            alpha_index++;
+		        } else if (field_type == "n") {
+		            if (within_idf_fields) NumNumbers++;
+		            if (is_NumericFieldNames) {
+		                NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+		            }
+		            numeric_index++;
+		        }
+		    }
+
+		    size_t extensible_count = 0;
+		    auto const &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
+		    if (legacy_idd_extensibles_iter != legacy_idd.end()) {
+		        auto const epJSON_extensions_array_itr = obj.value().find(extension_key);
+		        if (epJSON_extensions_array_itr != obj.value().end()) {
+		            auto const &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
+		            auto const &epJSON_extensions_array = epJSON_extensions_array_itr.value();
+		            auto const &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
+
+		            for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) {
+		                auto const &epJSON_extension_obj = it.value();
+
+		                for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) {
+		                    std::string const &field_name = legacy_idd_extensibles[i];
+		                    auto const &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
+		                    auto const &schema_field = schema_extension_fields[field_name];
+
+		                    auto const &field_info = legacy_idd_field_info.find(field_name);
+		                    if (field_info == legacy_idd_field_info.end()) {
+		                        ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
+		                    }
+		                    auto const &field_type = field_info.value().at("field_type").get<std::string>();
+		                    bool within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields);
+
+		                    if (epJSON_obj_field_iter != epJSON_extension_obj.end()) {
+		                        auto const &field_value = epJSON_obj_field_iter.value();
+
+		                        if (field_type == "a") {
+		                            if (field_value.is_string()) {
+		                                auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field);
+
+		                                Alphas(alpha_index) = value.first;
+		                                if (is_AlphaBlank) AlphaBlank()(alpha_index) = value.second;
+		                            } else {
+		                                if (field_value.is_number_integer()) {
+		                                    i64toa(field_value.get<std::int64_t>(), s);
+		                                } else {
+		                                    dtoa(field_value.get<double>(), s);
+		                                }
+		                                Alphas(alpha_index) = s;
+		                                if (is_AlphaBlank) AlphaBlank()(alpha_index) = false;
+		                            }
+		                        } else if (field_type == "n") {
+		                            if (field_value.is_number()) {
+		                                if (field_value.is_number_integer()) {
+		                                    Numbers(numeric_index) = field_value.get<std::int64_t>();
+		                                } else {
+		                                    Numbers(numeric_index) = field_value.get<double>();
+		                                }
+		                                if (is_NumBlank) NumBlank()(numeric_index) = false;
+		                            } else {
+		                                bool is_empty = field_value.get<std::string>().empty();
+		                                if (is_empty) {
+		                                    findDefault(Numbers(numeric_index), schema_field);
+		                                } else {
+		                                    Numbers(numeric_index) = -99999; // autosize and autocalculate
+		                                }
+		                                if (is_NumBlank) NumBlank()(numeric_index) = is_empty;
+		                            }
+		                        }
+		                    } else {
+
+		                        if (field_type == "a") {
+		                            if (!(within_idf_extensible_fields && findDefault(Alphas(alpha_index), schema_field))) {
+		                                Alphas(alpha_index) = "";
+		                            }
+		                            if (is_AlphaBlank) AlphaBlank()(alpha_index) = true;
+		                        } else if (field_type == "n") {
+		                            if (within_idf_extensible_fields) {
+		                                findDefault(Numbers(numeric_index), schema_field);
+		                            } else {
+		                                Numbers(numeric_index) = 0;
+		                            }
+		                            if (is_NumBlank) NumBlank()(numeric_index) = true;
+		                        }
+		                    }
+
+		                    if (field_type == "a") {
+		                        if (within_idf_extensible_fields) NumAlphas++;
+		                        if (is_AlphaFieldNames) {
+		                            AlphaFieldNames()(alpha_index) =
+		                                (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+		                        }
+		                        alpha_index++;
+		                    } else if (field_type == "n") {
+		                        if (within_idf_extensible_fields) NumNumbers++;
+		                        if (is_NumericFieldNames) {
+		                            NumericFieldNames()(numeric_index) =
+		                                (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+		                        }
+		                        numeric_index++;
+		                    }
+		                }
+		            }
+		        }
+		    }
+
+		    Status = 1;
+		}
+
+	
+
+
+	return None
+
+class SolarShading(ExternalFunctions):
 	'''
     // MODULE INFORMATION:
     //       AUTHOR         Rick Strand
@@ -556,54 +976,6 @@ class SolarCalculations(SolarShading):
 	    
 	    return None
 
-    # using ScheduleManager::GetScheduleIndex
-    def GetScheduleIndex():
-        int GetScheduleIndex(std::string const &ScheduleName)
-        {
-    
-            // FUNCTION INFORMATION:
-            //       AUTHOR         Linda K. Lawrie
-            //       DATE WRITTEN   September 1997
-            //       MODIFIED       na
-            //       RE-ENGINEERED  na
-    
-            // PURPOSE OF THIS FUNCTION:
-            // This function returns the internal pointer to Schedule "ScheduleName".
-    
-            // Return value
-            int GetScheduleIndex;
-    
-            // FUNCTION LOCAL VARIABLE DECLARATIONS:
-            int DayCtr;
-            int WeekCtr;
-    
-            if (!ScheduleInputProcessed) {
-                ProcessScheduleInput();
-                ScheduleInputProcessed = true;
-            }
-    
-            if (NumSchedules > 0) {
-                GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}));
-                if (GetScheduleIndex > 0) {
-                    if (!Schedule(GetScheduleIndex).Used) {
-                        Schedule(GetScheduleIndex).Used = true;
-                        for (WeekCtr = 1; WeekCtr <= 366; ++WeekCtr) {
-                            if (Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr) > 0) {
-                                WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).Used = true;
-                                for (DayCtr = 1; DayCtr <= MaxDayTypes; ++DayCtr) {
-                                    DaySchedule(WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).DaySchedulePointer(DayCtr)).Used =
-                                        true;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                GetScheduleIndex = 0;
-            }
-    
-            return GetScheduleIndex;
-        }
     
     def GetShadowingInput():
 		'''

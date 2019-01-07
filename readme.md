@@ -11,62 +11,57 @@ File `Shadows.py` (functions and variables dependencies):
 
 `[class] SolarCalculations`
 	`[class] SolarShading`
-		`__init__` --> comparar com 'EnergyPlus Headers'
+		`__init__`
 		    ~~DataPrecisionGlobals.cc~~ (ver as casas decimais usadas na precisão para definir o msm em Python)
 		    --> DataGlobals.cc
 		    --> DataEnvironment.cc
 	        --> DataHeatBalance.cc
 	        --> DataSurfaces.cc
-	        ~~DataShadowingCombinations.cc~~
-	        ~~DaylightingManager.cc~~
-	        ~~SolarReflectionManager.cc~~
-	        ~~DataReportingFlags.cc~~
 	        --> DataBSDFWindow.cc
     	    --> DataVectorTypes.hh (Definição dos vetores. Procurar o equivalente em Python)
-    	    ~~DataTimings.cc~~
-    	    ~~WindowManager.cc~~
     	    --> ? FenestrationCommon
     	    --> ? SingleLayerOptics
+    	    ? EP_Count_Calls
 		`clear_state`
 	
 	`__init__`
 		`GetShadowingInput`
-		        --> DataIPShortCuts.cc
 		        --> UtilityRoutines::SameString() --> como funciona isso?
 		        --> UtilityRoutines::FindItemInList() --> como funciona isso?
-		    getNumObjectsFound() --> ?
-		    getObjectItem() --> ?
-		    lNumericFieldBlanks --> ?
-            lAlphaFieldBlanks --> ?
-            cAlphaFieldNames --> ?
-            cNumericFieldNames --> ?
-            .SchedExternalShadingFrac --> ?
-            .ExternalShadingSchInd --> ?
-            DisableGroupSelfShading --> DataSystemVariables.cc --> definido nas duas funções...
+		    getNumObjectsFound() --> InputProcessor.cc
+		    getObjectItem() --> InputProcessor.cc
+		    lNumericFieldBlanks --> DataIPShortCuts.cc
+            lAlphaFieldBlanks --> DataIPShortCuts.cc
+            cAlphaFieldNames --> DataIPShortCuts.cc
+            cNumericFieldNames --> DataIPShortCuts.cc
+            .SchedExternalShadingFrac --> .? DataSurfaces.hh (bool)
+            .ExternalShadingSchInd --> .? DataSurfaces.hh (bool)
+            DisableGroupSelfShading --> DataSystemVariables.cc
 			ScheduleFileShadingProcessed --> ScheduleManager.cc
-			ZoneList --> ?
-			NumOfZoneLists --> ?
+			ZoneList --> DataHeatBalance.cc
+			NumOfZoneLists --> DataHeatBalance.cc
 			ShadingTransmittanceVaries --> DataSurfaces.cc
 			SolarDistribution --> DataHeatBalance.cc
 			MinimalShadowing --> DataHeatBalance.cc
-			? Surface()
+			Surface() --> DataSurfaces.cc
 
 		`AllocateModuleArrays`
 			TotSurfaces --> DataSurfaces.cc
 			NumOfTimeStepInHour --> DataGlobals.cc
-			MaxBkSurf --> using DataBSDFWindow::MaxBkSurf --> DataBSDFWindow.cc
+			MaxBkSurf --> DataBSDFWindow.cc
 			NumOfZones --> DataGlobals.cc
 			MaxSolidWinLayers --> DataHeatBalance.cc
 			MaxVerticesPerSurface --> DataSurfaces.cc
-			? SurfaceWindow()
-			? Surface()
+			SurfaceWindow() --> DataSurfaces.cc
+			Surface() --> DataSurfaces.cc
 
 		`DetermineShadowingCombinations`
 			IgnoreSolarRadiation --> DataEnvironment.cc
 			ExternalEnvironment --> DataSurfaces.cc
 			OtherSideCondModeledExt --> DataSurfaces.cc
+			? EP_Count_Calls
 			CHKGSS()
-			    ? Surface()
+			    Surface() --> DataSurfaces.cc
 	
 	`SHDGSS`
 		CLIP()
@@ -79,6 +74,7 @@ File `Shadows.py` (functions and variables dependencies):
 
 	`PerformSolarCalculations`
 		CalcPerSolarBeam()
+			? EP_Count_Calls
 			FigureSunCosines()
 				SUN4()
 			FigureSolarBeamAtTimestep()
@@ -90,13 +86,16 @@ File `Shadows.py` (functions and variables dependencies):
 		CTRANS()
 		HTRANS1()
 		SHDGSS()
+		? EP_Count_Calls
 
 	**`DeterminePolygonOverlap`
 		HTRANS0()
 		INCLOS()
 		INTCPT()
 		CLIPPOLY()
+			? EP_Count_Calls
 		ORDER()
+		? EP_Count_Calls
 
 	SEM NENHUM VÍNCULO:
 		`polygon_contains_point`
