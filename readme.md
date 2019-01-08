@@ -21,7 +21,7 @@ File `Shadows.py` (functions and variables dependencies):
     	    --> DataVectorTypes.hh (Definição dos vetores. Procurar o equivalente em Python)
     	    --> ? FenestrationCommon
     	    --> ? SingleLayerOptics
-    	    ? EP_Count_Calls
+    	    EP_Count_Calls --> DataTimings.cc
 		`clear_state`
 	
 	`__init__`
@@ -54,12 +54,13 @@ File `Shadows.py` (functions and variables dependencies):
 			MaxVerticesPerSurface --> DataSurfaces.cc
 			SurfaceWindow() --> DataSurfaces.cc
 			Surface() --> DataSurfaces.cc
+			OutputProcessor::Unit --> OutputProcessor.cc
 
 		`DetermineShadowingCombinations`
 			IgnoreSolarRadiation --> DataEnvironment.cc
 			ExternalEnvironment --> DataSurfaces.cc
 			OtherSideCondModeledExt --> DataSurfaces.cc
-			? EP_Count_Calls
+			EP_Count_Calls --> DataTimings.cc
 			CHKGSS()
 			    Surface() --> DataSurfaces.cc
 	
@@ -74,28 +75,34 @@ File `Shadows.py` (functions and variables dependencies):
 
 	`PerformSolarCalculations`
 		CalcPerSolarBeam()
-			? EP_Count_Calls
+			EP_Count_Calls --> DataTimings.cc
 			FigureSunCosines()
 				SUN4()
 			FigureSolarBeamAtTimestep()
 				*SHADOW()
+			InitComplexWindows() --> WindowComplexManager.cc
+			UpdateComplexWindows() --> WindowComplexManager.cc
 		SkyDifSolarShading()
 			*SHADOW()
+			OutputProcessor::Unit --> OutputProcessor.cc
+		DetailedSolarTimestepIntegration --> DataSystemVariables.cc
+		CalcDayltgCoefficients() --> DaylightingManager.cc
+		TotWindowsWithDayl() --> DaylightingManager.cc
 
 	*`SHADOW`
 		CTRANS()
 		HTRANS1()
 		SHDGSS()
-		? EP_Count_Calls
+		EP_Count_Calls --> DataTimings.cc
 
 	**`DeterminePolygonOverlap`
 		HTRANS0()
 		INCLOS()
 		INTCPT()
 		CLIPPOLY()
-			? EP_Count_Calls
+			EP_Count_Calls --> DataTimings.cc
 		ORDER()
-		? EP_Count_Calls
+		EP_Count_Calls --> DataTimings.cc
 
 	SEM NENHUM VÍNCULO:
 		`polygon_contains_point`
@@ -104,6 +111,8 @@ File `Shadows.py` (functions and variables dependencies):
 		`PerformSolarCalculations`
 			SUN3()
 		`ReportSurfaceShading`
+			PreDefTableEntry --> OutputReportPredefined.cc
+			Surface() --> DataSurfaces.cc
 		`ReportSurfaceErrors`
 
 

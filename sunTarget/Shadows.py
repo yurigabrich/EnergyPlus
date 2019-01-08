@@ -66,7 +66,7 @@ file, described below.
 # include <memory>		# defines general utilities to manage dynamic memory
 
 # ObjexxFCL Headers
-include <ObjexxFCL/Array.functions.hh>
+include <ObjexxFCL/Array.functions.hh>	# CHANGE to Python dataseries?
 include <ObjexxFCL/Fmath.hh>
 include <ObjexxFCL/Vector3.hh>
 include <ObjexxFCL/gio.hh>
@@ -74,40 +74,46 @@ include <ObjexxFCL/member.functions.hh>
 include <ObjexxFCL/string.functions.hh>
 
 # EnergyPlus Headers
-include <DataDaylighting.hh>
+# include <DataDaylighting.hh> --> only for windows
 # include <DataEnvironment.hh>
-include <DataErrorTracking.hh>
+# include <DataErrorTracking.hh> --> we don't need to track errors now
 # include <DataGlobals.hh>
-include <DataHeatBalFanSys.hh>
-include <DataHeatBalance.hh>
-include <DataIPShortCuts.hh>
+# include <DataHeatBalFanSys.hh> --> only for windows
+# include <DataHeatBalance.hh> --> included at 'ExternalFunctions'
+# include <DataIPShortCuts.hh> --> included at 'ExternalFunctions'
 # include <DataPrecisionGlobals.hh>
-include <DataReportingFlags.hh>
-include <DataShadowingCombinations.hh>
-include <DataStringGlobals.hh>
-include <DataSurfaces.hh>
-include <DataSystemVariables.hh>
-include <DataTimings.hh>
-include <DataWindowEquivalentLayer.hh>
-include <DaylightingManager.hh>
+# include <DataReportingFlags.hh> --> not used
+# include <DataShadowingCombinations.hh> --> included at 'ExternalFunctions'
+# include <DataStringGlobals.hh> --> included at 'ExternalFunctions'
+# include <DataSurfaces.hh> --> included at 'ExternalFunctions'
+# include <DataSystemVariables.hh> --> included at 'ExternalFunctions'
+# include <DataTimings.hh> --> included at 'ExternalFunctions'
+# include <DataWindowEquivalentLayer.hh> --> only for windows
+# include <DaylightingManager.hh> --> included at 'ExternalFunctions'
 # include <General.hh>
-include <InputProcessing/InputProcessor.hh> # REVIEW with CAUTION!
-include <OutputProcessor.hh>
-include <OutputReportPredefined.hh>
-include <ScheduleManager.hh>
-include <SolarReflectionManager.hh>
+# include <InputProcessing/InputProcessor.hh> --> included at 'ExternalFunctions'
+# include <OutputProcessor.hh> --> included at 'ExternalFunctions'
+# include <OutputReportPredefined.hh> --> included at 'ExternalFunctions'
+# include <ScheduleManager.hh> --> included at 'ExternalFunctions'
+# include <SolarReflectionManager.hh> --> dependency not find
 # include <SolarShading.hh>					# WHY THE HEADER OF THE CURRENT FILE MUST BE ADDED?
 # include <UtilityRoutines.hh>
-include <Vectors.hh>
-include <WindowComplexManager.hh>
-include <WindowEquivalentLayer.hh>
-include <WindowManager.hh>
+include <Vectors.hh>						# CHANGE to Python dataframes package
+# include <WindowComplexManager.hh> --> included at 'ExternalFunctions'
+# include <WindowEquivalentLayer.hh> --> only for windows and heat balance
+# include <WindowManager.hh> --> dependency not find
 
 class ExternalFunctions:
 	'''
 	Definition of a variety of additional functions from another packages.
 	Only those useful for the following computations was copied to here.
 	'''
+
+	# DataStringGlobals::outputShdFileName
+	outputShdFileName = 'eplusout.shd'
+
+	# DataShadowingCombinations.cc
+	Array1D<ShadowingCombinations> ShadowComb;
 
 	# DataHeatBalance.cc
 	Array1D<ZoneListData> ZoneList;
@@ -124,11 +130,460 @@ class ExternalFunctions:
     # DataSystemVariables.cc
     DisableGroupSelfShading = False   # when True, defined shadowing surfaces group is ignored when calculating sunlit fraction
 
-	# DataI
+	# DataSystemVariables::DetailedSolarTimestepIntegration
+    DetailedSolarTimestepIntegration = False # when true, use detailed timestep integration for all solar,shading, etc.
+
+    # OutputProcessor::Unit
+    UnitsVar(OutputProcessor::Unit::None);   # Units enumeration --> UnitsVar ?
+    MeterUnits(OutputProcessor::Unit::None); # Units enumeration --> MeterUnits ?
+
+	# DataIPShortCuts
 	Array1D_string cAlphaFieldNames;
     Array1D_string cNumericFieldNames;
     Array1D_bool lNumericFieldBlanks;
     Array1D_bool lAlphaFieldBlanks;
+
+    # DaylightingManager::TotWindowsWithDayl
+    TotWindowsWithDayl = 0         # Total number of exterior windows in all daylit zones
+
+    # DaylightingManager::CalcDayltgCoefficients
+    def CalcDayltgCoefficients():
+	    void CalcDayltgCoefficients()
+	    {
+
+	        // SUBROUTINE INFORMATION:
+	        //       AUTHOR         Fred Winkelmann
+	        //       DATE WRITTEN   July 1997
+	        //       MODIFIED       FW, Jan 2002: add variable slat angle blinds
+	        //                      FW, Mar 2002: add triangular windows
+	        //                      FW, Oct 2002: remove warning on window discretization relative to
+	        //                                    reference point distance to window plane
+	        //                      FW, Jan 2003: add between-glass shades and blinds
+	        //                      FW, Apr 2003: initialize shading type to 'NOSHADE' in window loop
+	        //                      PE, May 2003: add light pipes (tubular daylighting devices)
+	        //                      FW, Jul 2003: account for possible non-zero transmittance of
+	        //                                    shading surfaces (previously all shading surfaces were
+	        //                                    assumed to be opaque)
+	        //                      PE, Aug 2003: add daylighting shelves
+	        //                      FW, Sep 2003: write the bare-window overcast sky daylight factors to the eio file
+	        //                      FW, Nov 2003: add exterior beam and sky solar diffuse reflection from obstructions;
+	        //                                    add beam solar and sky solar reflection from ground with obstructions.
+	        //                      FW, Nov 2003: change expression for NDIVX, NDIVY (no. of window elements in X,Y) to
+	        //                                    round up to nearest integer rather than down
+	        //                      FW, Nov 2003: add specular reflection of beam solar from obstructions
+	        //                      RJH, Jan 2004: add alternative daylighting analysis using DElight
+	        //                                     All modifications demarked with RJH (Rob Hitchcock)
+	        //                      FW, Feb 2004: add daylighting through interior windows
+	        //                      FW, Apr 2004: add light well efficiency that multiplies glazing transmittance
+	        //                      FW, Apr 2004: add diffusing glazing
+	        //                      RJH, Jul 2004: add error handling for warnings/errors returned from DElight
+	        //                      LKL, Oct 2004: Separate "map" and "ref" point calculations -- move some input routines to
+	        //                                     separate routines.
+	        //       RE-ENGINEERED  na
+
+	        // PURPOSE OF THIS SUBROUTINE:
+	        // Calculates daylighting factors for later use in the time-step loop.
+
+	        // METHODOLOGY EMPLOYED:
+
+	        // For each combination of exterior window and reference point in a zone,
+	        // calculates daylighting factors (interior illuminance / exterior illuminance)
+	        // and glare factors for clear and overcast skies and for windows with and
+	        // without shading devices. These factors are calculated for each hourly
+	        // sun position for design days and for selected days throughout the year.
+
+	        // If a target zone has one or more interior windows, also calculates daylighting
+	        // factors for the target zone that are associated with exterior windows in adjacent
+	        // zones that share interior windows with the target zone.
+
+	        // The daylight illuminance at a reference point from a window is determined
+	        // by dividing the window into rectangular elements and calculating the illuminance
+	        // reaching the reference point directly from each element. The illumination
+	        // from an element can come from the sky or ground if the window is unshaded, or from
+	        // a shading device illuminated by solar radiation. Also considered are the
+	        // illuminance contribution from interreflection among the zone's interior surfaces
+	        // and sunlight striking the reference point.
+
+	        // In calculating sky-related interior illuminance and luminance quantities,
+	        // the sky luminance for the different sky types are determined from distributions
+	        // in which the zenith luminance is normalized to 1.0 cd/m2. Similarly, sun-related
+	        // illuminance and luminance quantities are based on beam normal solar illuminance
+	        // normalized to 1.0 lux.
+	        // The daylight and glare factors calculated in this subroutine are used in DayltgInteriorIllum
+	        // to get the daylight illuminance and glare at each time step.
+	        // Based on this information and user-input lighting setpoint and type of lighting
+	        // control system, DayltgElecLightingControl then determines how much the overhead electric lighting
+	        // can be reduced.
+
+	        // REFERENCES:
+	        // Based on DOE-2.1E subroutine DCOF.
+
+	        // Using/Aliasing
+	        using DataSystemVariables::DetailedSolarTimestepIntegration;
+	        using DaylightingDevices::FindTDDPipe;
+	        using DaylightingDevices::TransTDD;
+	        using General::BlindBeamBeamTrans;
+	        using General::RoundSigDigits;
+
+	        // Locals
+	        // SUBROUTINE ARGUMENT DEFINITIONS:
+	        // na
+
+	        // SUBROUTINE PARAMETER DEFINITIONS:
+	        static gio::Fmt fmtA("(A)");
+
+	        // INTERFACE BLOCK SPECIFICATIONS
+	        // na
+
+	        // DERIVED TYPE DEFINITIONS
+	        // na
+
+	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+	        int ZoneNum; // Zone number
+	        int IHR;     // Hour of day counter
+	        int IWin;    // Window counter
+	        int loop;    // DO loop indices
+	        Real64 DaylFac1; // sky daylight factor at ref pt 1
+	        Real64 DaylFac2; // sky daylight factor at ref pt 2
+
+	        // added for output all daylight factors
+	        int write_stat;
+	        Real64 DFClrSky1;
+	        Real64 DFClrTbSky1;
+	        Real64 DFIntSky1;
+	        Real64 DFOcSky1;
+	        Real64 DFClrSky2;
+	        Real64 DFClrTbSky2;
+	        Real64 DFIntSky2;
+	        Real64 DFOcSky2;
+	        Real64 SlatAngle;
+	        int ISA;
+	        int ISlatAngle;
+
+	        static bool CreateDFSReportFile(true);
+	        static bool doSkyReporting(true);
+
+	        // Formats
+	        static gio::Fmt Format_700(
+	            "('! <Sky Daylight Factors>, MonthAndDay, Zone Name, Window Name, Daylight Fac: Ref Pt #1, Daylight Fac: Ref Pt #2')");
+
+	        // FLOW:
+	        if (CalcDayltghCoefficients_firstTime) {
+	            GetDaylightingParametersInput();
+	            CheckTDDsAndLightShelvesInDaylitZones();
+	            AssociateWindowShadingControlWithDaylighting();
+	            CalcDayltghCoefficients_firstTime = false;
+	            if (allocated(CheckTDDZone)) CheckTDDZone.deallocate();
+	        } // End of check if firstTime
+
+	        // Find the total number of exterior windows associated with all Daylighting:Detailed zones.
+	        // An exterior window is associated with such a zone if (1) it is an exterior window in the zone, or
+	        // (2) it is an exterior window in an adjacent zone that shares an interior window with the zone.
+	        // Note that exterior windows in category (2) may be counted more than once if an adjacent zone
+	        // is adjacent to more than one daylit zone with which the adjacent zone shares interior windows.
+	        // If there are no interior windows in a building, than TotWindowsWithDayl is just the total number of
+	        // exterior windows in Daylighting:Detailed zones. Note that it is possible for a
+	        // Daylighting:Detailed zone to have zero exterior windows of its own, but it may have an interior
+	        // through which daylight passes from adjacent zones with exterior windows.
+	        if (BeginSimFlag) {
+	            TotWindowsWithDayl = 0;
+	            for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+	                TotWindowsWithDayl += ZoneDaylight(ZoneNum).NumOfDayltgExtWins;
+	            }
+	        }
+
+	        if (TotWindowsWithDayl == 0) return;
+
+	        //-----------------------------------------!
+	        // Detailed daylighting factor calculation !
+	        //-----------------------------------------!
+	        if (!DetailedSolarTimestepIntegration && !KickOffSizing && !KickOffSimulation) {
+	            if (WarmupFlag) {
+	                DisplayString("Calculating Detailed Daylighting Factors, Start Date=" + CurMnDy);
+	            } else {
+	                DisplayString("Updating Detailed Daylighting Factors, Start Date=" + CurMnDy);
+	            }
+	        }
+
+	        if (BeginSimFlag) {
+
+	            // Find minimum solid angle subtended by an interior window in Daylighting:Detailed zones.
+	            // Used in calculating daylighting through interior windows.
+	            CalcMinIntWinSolidAngs();
+
+	            TDDTransVisBeam.allocate(24, NumOfTDDPipes);
+	            TDDFluxInc.allocate(24, 4, NumOfTDDPipes);
+	            TDDFluxTrans.allocate(24, 4, NumOfTDDPipes);
+
+	            // Warning if detailed daylighting has been requested for a zone with no associated exterior windows.
+	            for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+	                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0) {
+	                    ShowWarningError("Detailed daylighting will not be done for zone=" + Zone(ZoneNum).Name);
+	                    ShowContinueError("because it has no associated exterior windows.");
+	                }
+	            }
+
+	            // Find area and reflectance quantities used in calculating inter-reflected illuminance.
+	            for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+	                // TH 9/10/2009. Need to calculate for zones without daylighting controls (TotalDaylRefPoints = 0)
+	                // but with adjacent zones having daylighting controls.
+	                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) ||
+	                    ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl) {
+	                    DayltgAveInteriorReflectance(ZoneNum);
+	                }
+	            }
+	        }
+
+	        // Zero daylighting factor arrays
+	        if (!DetailedSolarTimestepIntegration) {
+	            TDDTransVisBeam = 0.0;
+	            TDDFluxInc = 0.0;
+	            TDDFluxTrans = 0.0;
+	        } else {
+	            TDDTransVisBeam(HourOfDay, {1, NumOfTDDPipes}) = 0.0;
+	            TDDFluxInc(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0;
+	            TDDFluxTrans(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0;
+	        }
+
+	        if (!DetailedSolarTimestepIntegration) {
+	            if (BeginDayFlag) {
+	                // Calculate hourly sun angles, clear sky zenith luminance, and exterior horizontal illuminance
+	                PHSUN = 0.0;
+	                SPHSUN = 0.0;
+	                CPHSUN = 0.0;
+	                THSUN = 0.0;
+
+	                PHSUNHR = 0.0;
+	                SPHSUNHR = 0.0;
+	                CPHSUNHR = 0.0;
+	                THSUNHR = 0.0;
+	                GILSK = 0.0;
+	                GILSU = 0.0;
+	                for (IHR = 1; IHR <= 24; ++IHR) {
+	                    if (SUNCOSHR(IHR, 3) < SunIsUpValue) continue; // Skip if sun is below horizon //Autodesk SUNCOSHR was uninitialized here
+	                    PHSUN = PiOvr2 - std::acos(SUNCOSHR(IHR, 3));
+	                    PHSUNHR(IHR) = PHSUN;
+	                    SPHSUNHR(IHR) = std::sin(PHSUN);
+	                    CPHSUNHR(IHR) = std::cos(PHSUN);
+	                    THSUNHR(IHR) = std::atan2(SUNCOSHR(IHR, 2), SUNCOSHR(IHR, 1));
+	                    // Get exterior horizontal illuminance from sky and sun
+	                    THSUN = THSUNHR(IHR);
+	                    SPHSUN = SPHSUNHR(IHR);
+	                    CPHSUN = CPHSUNHR(IHR);
+	                    DayltgExtHorizIllum(GILSK(IHR, 1), GILSU(IHR));
+	                }
+	            }
+	        } else { // timestep integrated calculations
+	            PHSUN = 0.0;
+	            SPHSUN = 0.0;
+	            CPHSUN = 0.0;
+	            THSUN = 0.0;
+
+	            PHSUNHR(HourOfDay) = 0.0;
+	            SPHSUNHR(HourOfDay) = 0.0;
+	            CPHSUNHR(HourOfDay) = 0.0;
+	            THSUNHR(HourOfDay) = 0.0;
+	            GILSK(HourOfDay, {1, 4}) = 0.0;
+	            GILSU(HourOfDay) = 0.0;
+	            if (!(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)) { // Skip if sun is below horizon
+	                PHSUN = PiOvr2 - std::acos(SUNCOSHR(HourOfDay, 3));
+	                PHSUNHR(HourOfDay) = PHSUN;
+	                SPHSUNHR(HourOfDay) = std::sin(PHSUN);
+	                CPHSUNHR(HourOfDay) = std::cos(PHSUN);
+	                THSUNHR(HourOfDay) = std::atan2(SUNCOSHR(HourOfDay, 2), SUNCOSHR(HourOfDay, 1));
+	                // Get exterior horizontal illuminance from sky and sun
+	                THSUN = THSUNHR(HourOfDay);
+	                SPHSUN = SPHSUNHR(HourOfDay);
+	                CPHSUN = CPHSUNHR(HourOfDay);
+	                DayltgExtHorizIllum(GILSK(HourOfDay, 1), GILSU(HourOfDay));
+	            }
+	        }
+
+	        //           -----------
+	        // ---------- ZONE LOOP ----------
+	        //           -----------
+
+	        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+	            // Skip zones that are not Daylighting:Detailed zones.
+	            // TotalDaylRefPoints = 0 means zone has (1) no daylighting or
+	            // (3) Daylighting:DElight
+	            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting) continue;
+
+	            // Skip zones with no exterior windows in the zone or in adjacent zone with which an interior window is shared
+	            if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0) continue;
+
+	            CalcDayltgCoeffsRefMapPoints(ZoneNum);
+
+	        } // End of zone loop, ZoneNum
+
+	        if (doSkyReporting) {
+	            if (!KickOffSizing && !KickOffSimulation) {
+	                if (FirstTimeDaylFacCalc && TotWindowsWithDayl > 0) {
+	                    // Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
+	                    // for first time that daylight factors are calculated and so is insensitive to possible variation
+	                    // due to change in ground reflectance from month to month, or change in storm window status.
+	                    gio::write(OutputFileInits, Format_700);
+	                    for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+	                        if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting) continue;
+	                        for (loop = 1; loop <= ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
+	                            IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+	                            // For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
+	                            // component will not be calculated for these windows until the time-step loop.
+	                            if (Surface(IWin).Zone == ZoneNum) {
+	                                // clear sky
+	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 1, loop);
+	                                DaylFac2 = 0.0;
+	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop);
+	                                gio::write(OutputFileInits, fmtA) << " Clear Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
+	                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+	                                                                         RoundSigDigits(DaylFac2, 4);
+
+	                                // clear Turbid sky
+	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 1, loop);
+	                                DaylFac2 = 0.0;
+	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop);
+	                                gio::write(OutputFileInits, fmtA) << " Clear Turbid Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
+	                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+	                                                                         RoundSigDigits(DaylFac2, 4);
+
+	                                // Intermediate sky
+	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 1, loop);
+	                                DaylFac2 = 0.0;
+	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop);
+	                                gio::write(OutputFileInits, fmtA) << " Intermediate Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
+	                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+	                                                                         RoundSigDigits(DaylFac2, 4);
+
+	                                // Overcast sky
+	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 1, loop);
+	                                DaylFac2 = 0.0;
+	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop);
+	                                gio::write(OutputFileInits, fmtA) << " Overcast Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
+	                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+	                                                                         RoundSigDigits(DaylFac2, 4);
+	                            }
+	                        }
+	                    }
+	                    FirstTimeDaylFacCalc = false;
+	                    doSkyReporting = false;
+	                }
+	            }
+	        }
+
+	        // TH 7/2010 report all daylight factors for the two reference points of daylight zones ...
+
+	        // Skip if no daylight windows
+	        if (TotWindowsWithDayl == 0) return;
+
+	        // Skip if no request of reporting
+	        if ((!DFSReportSizingDays) && (!DFSReportAllShadowCalculationDays)) return;
+
+	        // Skip duplicate calls
+	        if (KickOffSizing) return;
+	        if (DoingSizing) return;
+	        if (KickOffSimulation) return;
+
+	        if (DFSReportSizingDays) {
+	            if (DoWeathSim && DoDesDaySim) {
+	                if (KindOfSim == ksRunPeriodWeather) return;
+	            }
+	        }
+
+	        if (DFSReportAllShadowCalculationDays) {
+	            if (KindOfSim != ksRunPeriodWeather) return;
+	        }
+
+	        // open a new file eplusout.dfs for saving the daylight factors
+	        if (CreateDFSReportFile) {
+	            OutputFileDFS = GetNewUnitNumber();
+	            {
+	                IOFlags flags;
+	                flags.ACTION("write");
+	                gio::open(OutputFileDFS, DataStringGlobals::outputDfsFileName, flags);
+	                write_stat = flags.ios();
+	            }
+	            if (write_stat != 0) {
+	                ShowFatalError("CalcDayltgCoefficients: Could not open file " + DataStringGlobals::outputDfsFileName + " for output (write).");
+	            } else {
+	                gio::write(OutputFileDFS, fmtA) << "This file contains daylight factors for all exterior windows of daylight zones.";
+	                gio::write(OutputFileDFS, fmtA) << "If only one reference point the last 4 columns in the data will be zero.";
+	                gio::write(OutputFileDFS, fmtA) << "MonthAndDay,Zone Name,Window Name,Window State";
+	                gio::write(OutputFileDFS, fmtA) << "Hour,Daylight Factor for Clear Sky at Reference point 1,Daylight Factor for Clear Turbid Sky at "
+	                                                   "Reference point 1,Daylight Factor for Intermediate Sky at Reference point 1,Daylight Factor for "
+	                                                   "Overcast Sky at Reference point 1,Daylight Factor for Clear Sky at Reference point 2,Daylight "
+	                                                   "Factor for Clear Turbid Sky at Reference point 2,Daylight Factor for Intermediate Sky at "
+	                                                   "Reference point 2,Daylight Factor for Overcast Sky at Reference point 2";
+	            }
+	            CreateDFSReportFile = false;
+	        }
+
+	        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+	            if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0) continue;
+
+	            for (loop = 1; loop <= ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
+	                IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+
+	                // For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
+	                // component will not be calculated for these windows until the time-step loop.
+	                if (Surface(IWin).Zone == ZoneNum) {
+
+	                    if (SurfaceWindow(IWin).MovableSlats) {
+	                        // variable slat angle - MaxSlatangle sets
+	                        ISA = MaxSlatAngs + 1;
+	                    } else if (Surface(IWin).HasShadeControl) {
+	                        // window shade or blind with fixed slat angle
+	                        ISA = 2;
+	                    } else {
+	                        // base window
+	                        ISA = 1;
+	                    }
+
+	                    // loop over each slat angle
+	                    for (ISlatAngle = 1; ISlatAngle <= ISA; ++ISlatAngle) {
+	                        if (ISlatAngle == 1) {
+	                            // base window without shades, screens, or blinds
+	                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ",Base Window";
+	                        } else if (ISlatAngle == 2 && ISA == 2) {
+	                            // window shade or blind with fixed slat angle
+	                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ", ";
+	                        } else {
+	                            // blind with variable slat angle
+	                            SlatAngle = 180.0 / double(MaxSlatAngs - 1) * double(ISlatAngle - 2);
+	                            gio::write(OutputFileDFS, fmtA)
+	                                << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ',' + RoundSigDigits(SlatAngle, 1);
+	                        }
+
+	                        for (IHR = 1; IHR <= 24; ++IHR) {
+	                            // daylight reference point 1
+	                            DFClrSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 1, 1, loop);   // clear sky
+	                            DFClrTbSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 2, 1, loop); // clear Turbid sky
+	                            DFIntSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 3, 1, loop);   // Intermediate sky
+	                            DFOcSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 4, 1, loop);    // Overcast sky
+
+	                            // daylight reference point 2
+	                            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) {
+	                                DFClrSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 1, 2, loop);
+	                                DFClrTbSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 2, 2, loop);
+	                                DFIntSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 3, 2, loop);
+	                                DFOcSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 4, 2, loop);
+	                            } else {
+	                                DFClrSky2 = 0.0;
+	                                DFClrTbSky2 = 0.0;
+	                                DFIntSky2 = 0.0;
+	                                DFOcSky2 = 0.0;
+	                            }
+
+	                            // write daylight factors - 4 sky types for each daylight ref point
+	                            gio::write(OutputFileDFS, fmtA)
+	                                << RoundSigDigits(IHR) + ',' + RoundSigDigits(DFClrSky1, 5) + ',' + RoundSigDigits(DFClrTbSky1, 5) + ',' +
+	                                       RoundSigDigits(DFIntSky1, 5) + ',' + RoundSigDigits(DFOcSky1, 5) + ',' + RoundSigDigits(DFClrSky2, 5) + ',' +
+	                                       RoundSigDigits(DFClrTbSky2, 5) + ',' + RoundSigDigits(DFIntSky2, 5) + ',' + RoundSigDigits(DFOcSky2, 5);
+	                        } // hour loop
+	                    }
+	                }
+	            } // exterior windows in zone loop
+	        }     // zone loop
+	    }
 
 	# using ScheduleManager::GetScheduleIndex
     def GetScheduleIndex():
@@ -179,6 +634,7 @@ class ExternalFunctions:
             return GetScheduleIndex;
         }
 
+    # using ScheduleManager::getNumObjectsFound
     def getNumObjectsFound():
 	    int InputProcessor::getNumObjectsFound(std::string const &ObjectWord)
 		{
@@ -219,6 +675,7 @@ class ExternalFunctions:
 		    return 0;
 		}
 
+	# using ScheduleManager::getObjectItem
 	def getObjectItem():
 		void InputProcessor::getObjectItem(std::string const &Object,
                                    int const Number,
@@ -518,8 +975,186 @@ class ExternalFunctions:
 		    Status = 1;
 		}
 
-	
+	# DataTimings::EP_Count_Calls
+	ifdef EP_Count_Calls
+	    int NumShadow_Calls(0);
+	    int NumShadowAtTS_Calls(0);
+	    int NumClipPoly_Calls(0);
+	    int NumInitSolar_Calls(0);
+	    int NumAnisoSky_Calls(0);
+	    int NumDetPolyOverlap_Calls(0);
+	    int NumCalcPerSolBeam_Calls(0);
+	    int NumDetShadowCombs_Calls(0);
+	    int NumIntSolarDist_Calls(0);
+	    int NumIntRadExchange_Calls(0);
+	    int NumIntRadExchangeZ_Calls(0);
+	    int NumIntRadExchangeMain_Calls(0);
+	    int NumIntRadExchangeOSurf_Calls(0);
+	    int NumIntRadExchangeISurf_Calls(0);
+	    int NumMaxInsideSurfIterations(0);
+	    int NumCalcScriptF_Calls(0);
+	endif
 
+	# OutputReportPredefined::PreDefTableEntry
+	def PreDefTableEntry():
+		void PreDefTableEntry(int const columnIndex, std::string const &objName, int const tableEntryInt)
+	    {
+	        // SUBROUTINE INFORMATION:
+	        //       AUTHOR         Jason Glazer
+	        //       DATE WRITTEN   August 2006
+	        //       MODIFIED
+	        //       RE-ENGINEERED  na
+
+	        // PURPOSE OF THIS SUBROUTINE:
+	        //   Creates an entry for predefined tables when the entry
+	        //   is a integer variable
+
+	        // METHODOLOGY EMPLOYED:
+	        //   Simple assignments to public variables.
+
+	        // REFERENCES:
+	        // na
+
+	        // USE STATEMENTS:
+
+	        // Locals
+	        // SUBROUTINE ARGUMENT DEFINITIONS:
+
+	        // SUBROUTINE PARAMETER DEFINITIONS:
+	        static gio::Fmt fmtLD("*");
+
+	        // INTERFACE BLOCK SPECIFICATIONS:
+	        // na
+
+	        // DERIVED TYPE DEFINITIONS:
+	        // na
+
+	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+	        std::string stringEntry;
+
+	        incrementTableEntry();
+	        // convert the integer to a string
+	        gio::write(stringEntry, fmtLD) << tableEntryInt;
+	        tableEntry(numTableEntry).charEntry = stringEntry;
+	        tableEntry(numTableEntry).objectName = objName;
+	        tableEntry(numTableEntry).indexColumn = columnIndex;
+	    }
+
+    # WindowComplexManager::InitComplexWindows
+    def InitComplexWindows():
+    	void InitComplexWindows()
+	    {
+
+	        // SUBROUTINE INFORMATION:
+	        //       AUTHOR         Linda Lawrie
+	        //       DATE WRITTEN   November 2012
+	        //       MODIFIED       na
+	        //       RE-ENGINEERED  na
+
+	        // PURPOSE OF THIS SUBROUTINE:
+	        // Extract simple init for Complex Windows
+
+	        // METHODOLOGY EMPLOYED:
+	        // na
+
+	        // REFERENCES:
+	        // na
+
+	        // USE STATEMENTS:
+	        // na
+
+	        // Locals
+	        // SUBROUTINE ARGUMENT DEFINITIONS:
+	        // na
+
+	        // SUBROUTINE PARAMETER DEFINITIONS:
+	        // na
+
+	        // INTERFACE BLOCK SPECIFICATIONS:
+	        // na
+
+	        // DERIVED TYPE DEFINITIONS:
+	        // na
+
+	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+	        static bool Once(true); // Flag for insuring things happen once
+
+	        // One-time initialization
+	        if (Once) {
+	            Once = false;
+	            InitBSDFWindows();
+	            CalcStaticProperties();
+	        }
+	    }
+
+    # WindowComplexManager::UpdateComplexWindows
+    def UpdateComplexWindows():
+    	void UpdateComplexWindows()
+	    {
+
+	        // SUBROUTINE INFORMATION:
+	        //       AUTHOR         Joe Klems
+	        //       DATE WRITTEN   August 2011
+	        //       MODIFIED       B. Griffith, Nov. 2012 revised for detailed timestep integration mode
+	        //       RE-ENGINEERED  na
+
+	        // PURPOSE OF THIS SUBROUTINE:
+	        // Performs the shading-dependent initialization of the Complex Fenestration data;
+	        // On first call, calls the one-time initializition
+
+	        // METHODOLOGY EMPLOYED:
+	        // <description>
+
+	        // REFERENCES:
+	        // na
+
+	        // Using/Aliasing
+	        using DataGlobals::KickOffSimulation;
+	        using DataGlobals::KickOffSizing;
+
+	        // Locals
+	        // SUBROUTINE ARGUMENT DEFINITIONS:
+	        // na
+
+	        // SUBROUTINE PARAMETER DEFINITIONS:
+	        // na
+
+	        // INTERFACE BLOCK SPECIFICATIONS:
+	        // na
+
+	        // DERIVED TYPE DEFINITIONS:
+	        // na
+
+	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+	        // LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
+	        int NumStates; // Number of states for a given complex fen
+	        int ISurf;     // Index for sorting thru Surface array
+	        int IState;    // Index identifying the window state for a particular window
+	        int IWind;     // Index identifying a window in the WindowList
+
+	        // !One-time initialization
+	        //  IF (Once) THEN
+	        //    ONCE = .FALSE.
+	        //    CALL InitBSDFWindows
+	        //    CALL CalcStaticProperties
+	        //  ENDIF
+
+	        if (NumComplexWind == 0) return;
+
+	        if (KickOffSizing || KickOffSimulation) return;
+
+	        // Shading-dependent initialization; performed once for each shading period
+
+	        // Initialize the geometric quantities
+
+	        for (IWind = 1; IWind <= NumComplexWind; ++IWind) {
+	            ISurf = WindowList(IWind).SurfNo;
+	            NumStates = ComplexWind(ISurf).NumStates;
+	            for (IState = 1; IState <= NumStates; ++IState) {
+	                CFSShadeAndBeamInitialization(ISurf, IState);
+	            } // State loop
+	        }     // window loop
+	    }
 
 	return None
 
