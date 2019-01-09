@@ -74,34 +74,7 @@ include <ObjexxFCL/member.functions.hh>
 include <ObjexxFCL/string.functions.hh>
 
 # EnergyPlus Headers
-# include <DataDaylighting.hh> --> only for windows
-# include <DataEnvironment.hh>
-# include <DataErrorTracking.hh> --> we don't need to track errors now
-# include <DataGlobals.hh>
-# include <DataHeatBalFanSys.hh> --> only for windows
-# include <DataHeatBalance.hh> --> included at 'ExternalFunctions'
-# include <DataIPShortCuts.hh> --> included at 'ExternalFunctions'
-# include <DataPrecisionGlobals.hh>
-# include <DataReportingFlags.hh> --> not used
-# include <DataShadowingCombinations.hh> --> included at 'ExternalFunctions'
-# include <DataStringGlobals.hh> --> included at 'ExternalFunctions'
-# include <DataSurfaces.hh> --> included at 'ExternalFunctions'
-# include <DataSystemVariables.hh> --> included at 'ExternalFunctions'
-# include <DataTimings.hh> --> included at 'ExternalFunctions'
-# include <DataWindowEquivalentLayer.hh> --> only for windows
-# include <DaylightingManager.hh> --> included at 'ExternalFunctions'
-# include <General.hh>
-# include <InputProcessing/InputProcessor.hh> --> included at 'ExternalFunctions'
-# include <OutputProcessor.hh> --> included at 'ExternalFunctions'
-# include <OutputReportPredefined.hh> --> included at 'ExternalFunctions'
-# include <ScheduleManager.hh> --> included at 'ExternalFunctions'
-# include <SolarReflectionManager.hh> --> dependency not find
-# include <SolarShading.hh>					# WHY THE HEADER OF THE CURRENT FILE MUST BE ADDED?
-# include <UtilityRoutines.hh>
 include <Vectors.hh>						# CHANGE to Python dataframes package
-# include <WindowComplexManager.hh> --> included at 'ExternalFunctions'
-# include <WindowEquivalentLayer.hh> --> only for windows and heat balance
-# include <WindowManager.hh> --> dependency not find
 
 class ExternalFunctions:
 	'''
@@ -148,832 +121,794 @@ class ExternalFunctions:
 
     # DaylightingManager::CalcDayltgCoefficients
     def CalcDayltgCoefficients():
-	    void CalcDayltgCoefficients()
-	    {
+    	'''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Fred Winkelmann
+              DATE WRITTEN   July 1997
+              MODIFIED       FW, Jan 2002: add variable slat angle blinds
+                             FW, Mar 2002: add triangular windows
+                             FW, Oct 2002: remove warning on window discretization relative to
+                                           reference point distance to window plane
+                             FW, Jan 2003: add between-glass shades and blinds
+                             FW, Apr 2003: initialize shading type to 'NOSHADE' in window loop
+                             PE, May 2003: add light pipes (tubular daylighting devices)
+                             FW, Jul 2003: account for possible non-zero transmittance of
+                                           shading surfaces (previously all shading surfaces were
+                                           assumed to be opaque)
+                             PE, Aug 2003: add daylighting shelves
+                             FW, Sep 2003: write the bare-window overcast sky daylight factors to the eio file
+                             FW, Nov 2003: add exterior beam and sky solar diffuse reflection from obstructions;
+                                           add beam solar and sky solar reflection from ground with obstructions.
+                             FW, Nov 2003: change expression for NDIVX, NDIVY (no. of window elements in X,Y) to
+                                           round up to nearest integer rather than down
+                             FW, Nov 2003: add specular reflection of beam solar from obstructions
+                             RJH, Jan 2004: add alternative daylighting analysis using DElight
+                                            All modifications demarked with RJH (Rob Hitchcock)
+                             FW, Feb 2004: add daylighting through interior windows
+                             FW, Apr 2004: add light well efficiency that multiplies glazing transmittance
+                             FW, Apr 2004: add diffusing glazing
+                             RJH, Jul 2004: add error handling for warnings/errors returned from DElight
+                             LKL, Oct 2004: Separate "map" and "ref" point calculations -- move some input routines to
+                                            separate routines.
+              RE-ENGINEERED  na
 
-	        // SUBROUTINE INFORMATION:
-	        //       AUTHOR         Fred Winkelmann
-	        //       DATE WRITTEN   July 1997
-	        //       MODIFIED       FW, Jan 2002: add variable slat angle blinds
-	        //                      FW, Mar 2002: add triangular windows
-	        //                      FW, Oct 2002: remove warning on window discretization relative to
-	        //                                    reference point distance to window plane
-	        //                      FW, Jan 2003: add between-glass shades and blinds
-	        //                      FW, Apr 2003: initialize shading type to 'NOSHADE' in window loop
-	        //                      PE, May 2003: add light pipes (tubular daylighting devices)
-	        //                      FW, Jul 2003: account for possible non-zero transmittance of
-	        //                                    shading surfaces (previously all shading surfaces were
-	        //                                    assumed to be opaque)
-	        //                      PE, Aug 2003: add daylighting shelves
-	        //                      FW, Sep 2003: write the bare-window overcast sky daylight factors to the eio file
-	        //                      FW, Nov 2003: add exterior beam and sky solar diffuse reflection from obstructions;
-	        //                                    add beam solar and sky solar reflection from ground with obstructions.
-	        //                      FW, Nov 2003: change expression for NDIVX, NDIVY (no. of window elements in X,Y) to
-	        //                                    round up to nearest integer rather than down
-	        //                      FW, Nov 2003: add specular reflection of beam solar from obstructions
-	        //                      RJH, Jan 2004: add alternative daylighting analysis using DElight
-	        //                                     All modifications demarked with RJH (Rob Hitchcock)
-	        //                      FW, Feb 2004: add daylighting through interior windows
-	        //                      FW, Apr 2004: add light well efficiency that multiplies glazing transmittance
-	        //                      FW, Apr 2004: add diffusing glazing
-	        //                      RJH, Jul 2004: add error handling for warnings/errors returned from DElight
-	        //                      LKL, Oct 2004: Separate "map" and "ref" point calculations -- move some input routines to
-	        //                                     separate routines.
-	        //       RE-ENGINEERED  na
+        PURPOSE OF THIS SUBROUTINE:
+        Calculates daylighting factors for later use in the time-step loop.
 
-	        // PURPOSE OF THIS SUBROUTINE:
-	        // Calculates daylighting factors for later use in the time-step loop.
+        METHODOLOGY EMPLOYED:
 
-	        // METHODOLOGY EMPLOYED:
+        For each combination of exterior window and reference point in a zone,
+        calculates daylighting factors (interior illuminance / exterior illuminance)
+        and glare factors for clear and overcast skies and for windows with and
+        without shading devices. These factors are calculated for each hourly
+        sun position for design days and for selected days throughout the year.
 
-	        // For each combination of exterior window and reference point in a zone,
-	        // calculates daylighting factors (interior illuminance / exterior illuminance)
-	        // and glare factors for clear and overcast skies and for windows with and
-	        // without shading devices. These factors are calculated for each hourly
-	        // sun position for design days and for selected days throughout the year.
+        If a target zone has one or more interior windows, also calculates daylighting
+        factors for the target zone that are associated with exterior windows in adjacent
+        zones that share interior windows with the target zone.
 
-	        // If a target zone has one or more interior windows, also calculates daylighting
-	        // factors for the target zone that are associated with exterior windows in adjacent
-	        // zones that share interior windows with the target zone.
+        The daylight illuminance at a reference point from a window is determined
+        by dividing the window into rectangular elements and calculating the illuminance
+        reaching the reference point directly from each element. The illumination
+        from an element can come from the sky or ground if the window is unshaded, or from
+        a shading device illuminated by solar radiation. Also considered are the
+        illuminance contribution from interreflection among the zone's interior surfaces
+        and sunlight striking the reference point.
 
-	        // The daylight illuminance at a reference point from a window is determined
-	        // by dividing the window into rectangular elements and calculating the illuminance
-	        // reaching the reference point directly from each element. The illumination
-	        // from an element can come from the sky or ground if the window is unshaded, or from
-	        // a shading device illuminated by solar radiation. Also considered are the
-	        // illuminance contribution from interreflection among the zone's interior surfaces
-	        // and sunlight striking the reference point.
+        In calculating sky-related interior illuminance and luminance quantities,
+        the sky luminance for the different sky types are determined from distributions
+        in which the zenith luminance is normalized to 1.0 cd/m2. Similarly, sun-related
+        illuminance and luminance quantities are based on beam normal solar illuminance
+        normalized to 1.0 lux.
+        The daylight and glare factors calculated in this subroutine are used in DayltgInteriorIllum
+        to get the daylight illuminance and glare at each time step.
+        Based on this information and user-input lighting setpoint and type of lighting
+        control system, DayltgElecLightingControl then determines how much the overhead electric lighting
+        can be reduced.
 
-	        // In calculating sky-related interior illuminance and luminance quantities,
-	        // the sky luminance for the different sky types are determined from distributions
-	        // in which the zenith luminance is normalized to 1.0 cd/m2. Similarly, sun-related
-	        // illuminance and luminance quantities are based on beam normal solar illuminance
-	        // normalized to 1.0 lux.
-	        // The daylight and glare factors calculated in this subroutine are used in DayltgInteriorIllum
-	        // to get the daylight illuminance and glare at each time step.
-	        // Based on this information and user-input lighting setpoint and type of lighting
-	        // control system, DayltgElecLightingControl then determines how much the overhead electric lighting
-	        // can be reduced.
+        REFERENCES:
+        Based on DOE-2.1E subroutine DCOF.
+        '''
 
-	        // REFERENCES:
-	        // Based on DOE-2.1E subroutine DCOF.
+        # using DataSystemVariables::DetailedSolarTimestepIntegration;
+        using DaylightingDevices::FindTDDPipe;
+        using DaylightingDevices::TransTDD;
+        using General::BlindBeamBeamTrans;
+        using General::RoundSigDigits;
 
-	        // Using/Aliasing
-	        using DataSystemVariables::DetailedSolarTimestepIntegration;
-	        using DaylightingDevices::FindTDDPipe;
-	        using DaylightingDevices::TransTDD;
-	        using General::BlindBeamBeamTrans;
-	        using General::RoundSigDigits;
+        # SUBROUTINE PARAMETER DEFINITIONS:
+        static gio::Fmt fmtA("(A)");
 
-	        // Locals
-	        // SUBROUTINE ARGUMENT DEFINITIONS:
-	        // na
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        ZoneNum = 0 # Zone number
+        IHR = 0     # Hour of day counter
+        IWin = 0    # Window counter
+        loop = 0    # DO loop indices
+        DaylFac1 = 0.0 # sky daylight factor at ref pt 1
+        DaylFac2 = 0.0 # sky daylight factor at ref pt 2
 
-	        // SUBROUTINE PARAMETER DEFINITIONS:
-	        static gio::Fmt fmtA("(A)");
+        # added for output all daylight factors
+        write_stat = 0
+        DFClrSky1 = 0.0
+        DFClrTbSky1 = 0.0
+        DFIntSky1 = 0.0
+        DFOcSky1 = 0.0
+        DFClrSky2 = 0.0
+        DFClrTbSky2 = 0.0
+        DFIntSky2 = 0.0
+        DFOcSky2 = 0.0
+        SlatAngle = 0.0
+        ISA = 0
+        ISlatAngle = 0
 
-	        // INTERFACE BLOCK SPECIFICATIONS
-	        // na
+        CreateDFSReportFile = True
+        doSkyReporting = True
 
-	        // DERIVED TYPE DEFINITIONS
-	        // na
+        # Formats
+        static gio::Fmt Format_700(
+            "('! <Sky Daylight Factors>, MonthAndDay, Zone Name, Window Name, Daylight Fac: Ref Pt #1, Daylight Fac: Ref Pt #2')");
 
-	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-	        int ZoneNum; // Zone number
-	        int IHR;     // Hour of day counter
-	        int IWin;    // Window counter
-	        int loop;    // DO loop indices
-	        Real64 DaylFac1; // sky daylight factor at ref pt 1
-	        Real64 DaylFac2; // sky daylight factor at ref pt 2
+        # FLOW:
+        if (CalcDayltghCoefficients_firstTime):
+            GetDaylightingParametersInput()
+            CheckTDDsAndLightShelvesInDaylitZones()
+            AssociateWindowShadingControlWithDaylighting()
+            CalcDayltghCoefficients_firstTime = False
+            
+            if (allocated(CheckTDDZone)):
+            	CheckTDDZone.deallocate()
+        # End of check if firstTime
 
-	        // added for output all daylight factors
-	        int write_stat;
-	        Real64 DFClrSky1;
-	        Real64 DFClrTbSky1;
-	        Real64 DFIntSky1;
-	        Real64 DFOcSky1;
-	        Real64 DFClrSky2;
-	        Real64 DFClrTbSky2;
-	        Real64 DFIntSky2;
-	        Real64 DFOcSky2;
-	        Real64 SlatAngle;
-	        int ISA;
-	        int ISlatAngle;
+        # Find the total number of exterior windows associated with all Daylighting:Detailed zones.
+        # An exterior window is associated with such a zone if (1) it is an exterior window in the zone, or
+        # (2) it is an exterior window in an adjacent zone that shares an interior window with the zone.
+        # Note that exterior windows in category (2) may be counted more than once if an adjacent zone
+        # is adjacent to more than one daylit zone with which the adjacent zone shares interior windows.
+        # If there are no interior windows in a building, than TotWindowsWithDayl is just the total number of
+        # exterior windows in Daylighting:Detailed zones. Note that it is possible for a
+        # Daylighting:Detailed zone to have zero exterior windows of its own, but it may have an interior
+        # through which daylight passes from adjacent zones with exterior windows.
+        if (BeginSimFlag):
+            TotWindowsWithDayl = 0
+            for ZoneNum in range(1, NumOfZones+1):
+                TotWindowsWithDayl += ZoneDaylight(ZoneNum).NumOfDayltgExtWins
 
-	        static bool CreateDFSReportFile(true);
-	        static bool doSkyReporting(true);
+        if (TotWindowsWithDayl == 0):
+        	return None
 
-	        // Formats
-	        static gio::Fmt Format_700(
-	            "('! <Sky Daylight Factors>, MonthAndDay, Zone Name, Window Name, Daylight Fac: Ref Pt #1, Daylight Fac: Ref Pt #2')");
+        #-----------------------------------------!
+        # Detailed daylighting factor calculation !
+        #-----------------------------------------!
+        if (!DetailedSolarTimestepIntegration && !KickOffSizing && !KickOffSimulation):
+            if (WarmupFlag):
+                DisplayString("Calculating Detailed Daylighting Factors, Start Date=" + CurMnDy)
+            else:
+                DisplayString("Updating Detailed Daylighting Factors, Start Date=" + CurMnDy)
 
-	        // FLOW:
-	        if (CalcDayltghCoefficients_firstTime) {
-	            GetDaylightingParametersInput();
-	            CheckTDDsAndLightShelvesInDaylitZones();
-	            AssociateWindowShadingControlWithDaylighting();
-	            CalcDayltghCoefficients_firstTime = false;
-	            if (allocated(CheckTDDZone)) CheckTDDZone.deallocate();
-	        } // End of check if firstTime
+        if (BeginSimFlag):
 
-	        // Find the total number of exterior windows associated with all Daylighting:Detailed zones.
-	        // An exterior window is associated with such a zone if (1) it is an exterior window in the zone, or
-	        // (2) it is an exterior window in an adjacent zone that shares an interior window with the zone.
-	        // Note that exterior windows in category (2) may be counted more than once if an adjacent zone
-	        // is adjacent to more than one daylit zone with which the adjacent zone shares interior windows.
-	        // If there are no interior windows in a building, than TotWindowsWithDayl is just the total number of
-	        // exterior windows in Daylighting:Detailed zones. Note that it is possible for a
-	        // Daylighting:Detailed zone to have zero exterior windows of its own, but it may have an interior
-	        // through which daylight passes from adjacent zones with exterior windows.
-	        if (BeginSimFlag) {
-	            TotWindowsWithDayl = 0;
-	            for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
-	                TotWindowsWithDayl += ZoneDaylight(ZoneNum).NumOfDayltgExtWins;
-	            }
-	        }
+            # Find minimum solid angle subtended by an interior window in Daylighting:Detailed zones.
+            # Used in calculating daylighting through interior windows.
+            CalcMinIntWinSolidAngs()
 
-	        if (TotWindowsWithDayl == 0) return;
+            TDDTransVisBeam.allocate(24, NumOfTDDPipes)
+            TDDFluxInc.allocate(24, 4, NumOfTDDPipes)
+            TDDFluxTrans.allocate(24, 4, NumOfTDDPipes)
 
-	        //-----------------------------------------!
-	        // Detailed daylighting factor calculation !
-	        //-----------------------------------------!
-	        if (!DetailedSolarTimestepIntegration && !KickOffSizing && !KickOffSimulation) {
-	            if (WarmupFlag) {
-	                DisplayString("Calculating Detailed Daylighting Factors, Start Date=" + CurMnDy);
-	            } else {
-	                DisplayString("Updating Detailed Daylighting Factors, Start Date=" + CurMnDy);
-	            }
-	        }
+            # Warning if detailed daylighting has been requested for a zone with no associated exterior windows.
+            for ZoneNum in range(1, NumOfZones+1):
+                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
+                    ShowWarningError("Detailed daylighting will not be done for zone=" + Zone(ZoneNum).Name)
+                    ShowContinueError("because it has no associated exterior windows.")
 
-	        if (BeginSimFlag) {
+            # Find area and reflectance quantities used in calculating inter-reflected illuminance.
+            for ZoneNum in range(1, NumOfZones+1):
+                # TH 9/10/2009. Need to calculate for zones without daylighting controls (TotalDaylRefPoints = 0)
+                # but with adjacent zones having daylighting controls.
+                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) || ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl):
+                    DayltgAveInteriorReflectance(ZoneNum)
 
-	            // Find minimum solid angle subtended by an interior window in Daylighting:Detailed zones.
-	            // Used in calculating daylighting through interior windows.
-	            CalcMinIntWinSolidAngs();
+        # Zero daylighting factor arrays
+        if (!DetailedSolarTimestepIntegration):
+            TDDTransVisBeam = 0.0
+            TDDFluxInc = 0.0
+            TDDFluxTrans = 0.0
+        else:
+            TDDTransVisBeam(HourOfDay, {1, NumOfTDDPipes}) = 0.0
+            TDDFluxInc(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0
+            TDDFluxTrans(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0
 
-	            TDDTransVisBeam.allocate(24, NumOfTDDPipes);
-	            TDDFluxInc.allocate(24, 4, NumOfTDDPipes);
-	            TDDFluxTrans.allocate(24, 4, NumOfTDDPipes);
+        if (!DetailedSolarTimestepIntegration):
+            if (BeginDayFlag):
+                # Calculate hourly sun angles, clear sky zenith luminance, and exterior horizontal illuminance
+                PHSUN = 0.0
+                SPHSUN = 0.0
+                CPHSUN = 0.0
+                THSUN = 0.0
 
-	            // Warning if detailed daylighting has been requested for a zone with no associated exterior windows.
-	            for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
-	                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0) {
-	                    ShowWarningError("Detailed daylighting will not be done for zone=" + Zone(ZoneNum).Name);
-	                    ShowContinueError("because it has no associated exterior windows.");
-	                }
-	            }
+                PHSUNHR = 0.0
+                SPHSUNHR = 0.0
+                CPHSUNHR = 0.0
+                THSUNHR = 0.0
+                GILSK = 0.0
+                GILSU = 0.0
 
-	            // Find area and reflectance quantities used in calculating inter-reflected illuminance.
-	            for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
-	                // TH 9/10/2009. Need to calculate for zones without daylighting controls (TotalDaylRefPoints = 0)
-	                // but with adjacent zones having daylighting controls.
-	                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) ||
-	                    ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl) {
-	                    DayltgAveInteriorReflectance(ZoneNum);
-	                }
-	            }
-	        }
+                for IHR in range(1, 25):
+                    if (SUNCOSHR(IHR, 3) < SunIsUpValue):
+                		# Skip if sun is below horizon #Autodesk SUNCOSHR was uninitialized here
+                    	continue
+                    
+                    PHSUN = PiOvr2 - std::acos(SUNCOSHR(IHR, 3))
+                    PHSUNHR(IHR) = PHSUN
+                    SPHSUNHR(IHR) = std::sin(PHSUN)
+                    CPHSUNHR(IHR) = std::cos(PHSUN)
+                    THSUNHR(IHR) = std::atan2(SUNCOSHR(IHR, 2), SUNCOSHR(IHR, 1))
+                    
+                    # Get exterior horizontal illuminance from sky and sun
+                    THSUN = THSUNHR(IHR)
+                    SPHSUN = SPHSUNHR(IHR)
+                    CPHSUN = CPHSUNHR(IHR)
+                    DayltgExtHorizIllum(GILSK(IHR, 1), GILSU(IHR))
+        else:
+        	# timestep integrated calculations
+            PHSUN = 0.0
+            SPHSUN = 0.0
+            CPHSUN = 0.0
+            THSUN = 0.0
 
-	        // Zero daylighting factor arrays
-	        if (!DetailedSolarTimestepIntegration) {
-	            TDDTransVisBeam = 0.0;
-	            TDDFluxInc = 0.0;
-	            TDDFluxTrans = 0.0;
-	        } else {
-	            TDDTransVisBeam(HourOfDay, {1, NumOfTDDPipes}) = 0.0;
-	            TDDFluxInc(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0;
-	            TDDFluxTrans(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0;
-	        }
+            PHSUNHR(HourOfDay) = 0.0
+            SPHSUNHR(HourOfDay) = 0.0
+            CPHSUNHR(HourOfDay) = 0.0
+            THSUNHR(HourOfDay) = 0.0
+            GILSK(HourOfDay, {1, 4}) = 0.0
+            GILSU(HourOfDay) = 0.0
+            
+            if (!(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)):
+            	# Skip if sun is below horizon
+                PHSUN = PiOvr2 - std::acos(SUNCOSHR(HourOfDay, 3))
+                PHSUNHR(HourOfDay) = PHSUN
+                SPHSUNHR(HourOfDay) = std::sin(PHSUN)
+                CPHSUNHR(HourOfDay) = std::cos(PHSUN)
+                THSUNHR(HourOfDay) = std::atan2(SUNCOSHR(HourOfDay, 2), SUNCOSHR(HourOfDay, 1))
+                
+                # Get exterior horizontal illuminance from sky and sun
+                THSUN = THSUNHR(HourOfDay)
+                SPHSUN = SPHSUNHR(HourOfDay)
+                CPHSUN = CPHSUNHR(HourOfDay)
+                DayltgExtHorizIllum(GILSK(HourOfDay, 1), GILSU(HourOfDay))
 
-	        if (!DetailedSolarTimestepIntegration) {
-	            if (BeginDayFlag) {
-	                // Calculate hourly sun angles, clear sky zenith luminance, and exterior horizontal illuminance
-	                PHSUN = 0.0;
-	                SPHSUN = 0.0;
-	                CPHSUN = 0.0;
-	                THSUN = 0.0;
+        #           -----------
+        # ---------- ZONE LOOP ----------
+        #           -----------
+        for ZoneNum in range(1, NumOfZones+1):
+            # Skip zones that are not Daylighting:Detailed zones.
+            # TotalDaylRefPoints = 0 means zone has (1) no daylighting or (3) Daylighting:DElight
+            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
+            	continue
 
-	                PHSUNHR = 0.0;
-	                SPHSUNHR = 0.0;
-	                CPHSUNHR = 0.0;
-	                THSUNHR = 0.0;
-	                GILSK = 0.0;
-	                GILSU = 0.0;
-	                for (IHR = 1; IHR <= 24; ++IHR) {
-	                    if (SUNCOSHR(IHR, 3) < SunIsUpValue) continue; // Skip if sun is below horizon //Autodesk SUNCOSHR was uninitialized here
-	                    PHSUN = PiOvr2 - std::acos(SUNCOSHR(IHR, 3));
-	                    PHSUNHR(IHR) = PHSUN;
-	                    SPHSUNHR(IHR) = std::sin(PHSUN);
-	                    CPHSUNHR(IHR) = std::cos(PHSUN);
-	                    THSUNHR(IHR) = std::atan2(SUNCOSHR(IHR, 2), SUNCOSHR(IHR, 1));
-	                    // Get exterior horizontal illuminance from sky and sun
-	                    THSUN = THSUNHR(IHR);
-	                    SPHSUN = SPHSUNHR(IHR);
-	                    CPHSUN = CPHSUNHR(IHR);
-	                    DayltgExtHorizIllum(GILSK(IHR, 1), GILSU(IHR));
-	                }
-	            }
-	        } else { // timestep integrated calculations
-	            PHSUN = 0.0;
-	            SPHSUN = 0.0;
-	            CPHSUN = 0.0;
-	            THSUN = 0.0;
+            # Skip zones with no exterior windows in the zone or in adjacent zone with which an interior window is shared
+            if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
+        		continue
 
-	            PHSUNHR(HourOfDay) = 0.0;
-	            SPHSUNHR(HourOfDay) = 0.0;
-	            CPHSUNHR(HourOfDay) = 0.0;
-	            THSUNHR(HourOfDay) = 0.0;
-	            GILSK(HourOfDay, {1, 4}) = 0.0;
-	            GILSU(HourOfDay) = 0.0;
-	            if (!(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)) { // Skip if sun is below horizon
-	                PHSUN = PiOvr2 - std::acos(SUNCOSHR(HourOfDay, 3));
-	                PHSUNHR(HourOfDay) = PHSUN;
-	                SPHSUNHR(HourOfDay) = std::sin(PHSUN);
-	                CPHSUNHR(HourOfDay) = std::cos(PHSUN);
-	                THSUNHR(HourOfDay) = std::atan2(SUNCOSHR(HourOfDay, 2), SUNCOSHR(HourOfDay, 1));
-	                // Get exterior horizontal illuminance from sky and sun
-	                THSUN = THSUNHR(HourOfDay);
-	                SPHSUN = SPHSUNHR(HourOfDay);
-	                CPHSUN = CPHSUNHR(HourOfDay);
-	                DayltgExtHorizIllum(GILSK(HourOfDay, 1), GILSU(HourOfDay));
-	            }
-	        }
+            CalcDayltgCoeffsRefMapPoints(ZoneNum)
 
-	        //           -----------
-	        // ---------- ZONE LOOP ----------
-	        //           -----------
+        # End of zone loop, ZoneNum
 
-	        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
-	            // Skip zones that are not Daylighting:Detailed zones.
-	            // TotalDaylRefPoints = 0 means zone has (1) no daylighting or
-	            // (3) Daylighting:DElight
-	            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting) continue;
+        if (doSkyReporting):
+            if (!KickOffSizing && !KickOffSimulation):
+                if (FirstTimeDaylFacCalc && TotWindowsWithDayl > 0):
+                    # Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
+                    # for first time that daylight factors are calculated and so is insensitive to possible variation
+                    # due to change in ground reflectance from month to month, or change in storm window status.
+                    gio::write(OutputFileInits, Format_700);
 
-	            // Skip zones with no exterior windows in the zone or in adjacent zone with which an interior window is shared
-	            if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0) continue;
+                    for ZoneNum in range(1, NumOfZones+1):
+                        if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
+                    		continue
+                        for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
+                            IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
+                            # For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
+                            # component will not be calculated for these windows until the time-step loop.
+                            if (Surface(IWin).Zone == ZoneNum):
+                                # clear sky
+                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 1, loop)
+                                DaylFac2 = 0.0
+                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop)
 
-	            CalcDayltgCoeffsRefMapPoints(ZoneNum);
+                                gio::write(OutputFileInits, fmtA) << " Clear Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
+                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                                                                         RoundSigDigits(DaylFac2, 4);
 
-	        } // End of zone loop, ZoneNum
+                                # clear Turbid sky
+                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 1, loop)
+                                DaylFac2 = 0.0
+                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop)
 
-	        if (doSkyReporting) {
-	            if (!KickOffSizing && !KickOffSimulation) {
-	                if (FirstTimeDaylFacCalc && TotWindowsWithDayl > 0) {
-	                    // Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
-	                    // for first time that daylight factors are calculated and so is insensitive to possible variation
-	                    // due to change in ground reflectance from month to month, or change in storm window status.
-	                    gio::write(OutputFileInits, Format_700);
-	                    for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
-	                        if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting) continue;
-	                        for (loop = 1; loop <= ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-	                            IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
-	                            // For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
-	                            // component will not be calculated for these windows until the time-step loop.
-	                            if (Surface(IWin).Zone == ZoneNum) {
-	                                // clear sky
-	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 1, loop);
-	                                DaylFac2 = 0.0;
-	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop);
-	                                gio::write(OutputFileInits, fmtA) << " Clear Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
-	                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-	                                                                         RoundSigDigits(DaylFac2, 4);
+                                gio::write(OutputFileInits, fmtA) << " Clear Turbid Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
+                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                                                                         RoundSigDigits(DaylFac2, 4);
 
-	                                // clear Turbid sky
-	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 1, loop);
-	                                DaylFac2 = 0.0;
-	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop);
-	                                gio::write(OutputFileInits, fmtA) << " Clear Turbid Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
-	                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-	                                                                         RoundSigDigits(DaylFac2, 4);
+                                # Intermediate sky
+                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 1, loop)
+                                DaylFac2 = 0.0
+                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop)
+                                
+                                gio::write(OutputFileInits, fmtA) << " Intermediate Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
+                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                                                                         RoundSigDigits(DaylFac2, 4);
 
-	                                // Intermediate sky
-	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 1, loop);
-	                                DaylFac2 = 0.0;
-	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop);
-	                                gio::write(OutputFileInits, fmtA) << " Intermediate Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
-	                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-	                                                                         RoundSigDigits(DaylFac2, 4);
+                                # Overcast sky
+                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 1, loop)
+                                DaylFac2 = 0.0
+                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop)
 
-	                                // Overcast sky
-	                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 1, loop);
-	                                DaylFac2 = 0.0;
-	                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop);
-	                                gio::write(OutputFileInits, fmtA) << " Overcast Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
-	                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-	                                                                         RoundSigDigits(DaylFac2, 4);
-	                            }
-	                        }
-	                    }
-	                    FirstTimeDaylFacCalc = false;
-	                    doSkyReporting = false;
-	                }
-	            }
-	        }
+                                gio::write(OutputFileInits, fmtA) << " Overcast Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
+                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                                                                         RoundSigDigits(DaylFac2, 4);
+                    FirstTimeDaylFacCalc = False
+                    doSkyReporting = False
 
-	        // TH 7/2010 report all daylight factors for the two reference points of daylight zones ...
+        # TH 7/2010 report all daylight factors for the two reference points of daylight zones ...
 
-	        // Skip if no daylight windows
-	        if (TotWindowsWithDayl == 0) return;
+        # Skip if no daylight windows
+        if (TotWindowsWithDayl == 0): return None
 
-	        // Skip if no request of reporting
-	        if ((!DFSReportSizingDays) && (!DFSReportAllShadowCalculationDays)) return;
+        # Skip if no request of reporting
+        if ((!DFSReportSizingDays) && (!DFSReportAllShadowCalculationDays)): return None
 
-	        // Skip duplicate calls
-	        if (KickOffSizing) return;
-	        if (DoingSizing) return;
-	        if (KickOffSimulation) return;
+        # Skip duplicate calls
+        if (KickOffSizing): return None
+        if (DoingSizing): return None
+        if (KickOffSimulation): return None
 
-	        if (DFSReportSizingDays) {
-	            if (DoWeathSim && DoDesDaySim) {
-	                if (KindOfSim == ksRunPeriodWeather) return;
-	            }
-	        }
+        if (DFSReportSizingDays):
+            if (DoWeathSim && DoDesDaySim):
+                if (KindOfSim == ksRunPeriodWeather): return None
 
-	        if (DFSReportAllShadowCalculationDays) {
-	            if (KindOfSim != ksRunPeriodWeather) return;
-	        }
+        if (DFSReportAllShadowCalculationDays):
+            if (KindOfSim != ksRunPeriodWeather): return None
 
-	        // open a new file eplusout.dfs for saving the daylight factors
-	        if (CreateDFSReportFile) {
-	            OutputFileDFS = GetNewUnitNumber();
-	            {
-	                IOFlags flags;
-	                flags.ACTION("write");
-	                gio::open(OutputFileDFS, DataStringGlobals::outputDfsFileName, flags);
-	                write_stat = flags.ios();
-	            }
-	            if (write_stat != 0) {
-	                ShowFatalError("CalcDayltgCoefficients: Could not open file " + DataStringGlobals::outputDfsFileName + " for output (write).");
-	            } else {
-	                gio::write(OutputFileDFS, fmtA) << "This file contains daylight factors for all exterior windows of daylight zones.";
-	                gio::write(OutputFileDFS, fmtA) << "If only one reference point the last 4 columns in the data will be zero.";
-	                gio::write(OutputFileDFS, fmtA) << "MonthAndDay,Zone Name,Window Name,Window State";
-	                gio::write(OutputFileDFS, fmtA) << "Hour,Daylight Factor for Clear Sky at Reference point 1,Daylight Factor for Clear Turbid Sky at "
-	                                                   "Reference point 1,Daylight Factor for Intermediate Sky at Reference point 1,Daylight Factor for "
-	                                                   "Overcast Sky at Reference point 1,Daylight Factor for Clear Sky at Reference point 2,Daylight "
-	                                                   "Factor for Clear Turbid Sky at Reference point 2,Daylight Factor for Intermediate Sky at "
-	                                                   "Reference point 2,Daylight Factor for Overcast Sky at Reference point 2";
-	            }
-	            CreateDFSReportFile = false;
-	        }
+        # open a new file eplusout.dfs for saving the daylight factors
+        if (CreateDFSReportFile):
+            OutputFileDFS = GetNewUnitNumber()
+            {
+                IOFlags flags;
+                flags.ACTION("write");
+                gio::open(OutputFileDFS, DataStringGlobals::outputDfsFileName, flags);
+                write_stat = flags.ios();
+            }
+            if (write_stat != 0):
+                ShowFatalError("CalcDayltgCoefficients: Could not open file {} for output (write).".format(DataStringGlobals::outputDfsFileName));
+            else:
+                gio::write(OutputFileDFS, fmtA) << "This file contains daylight factors for all exterior windows of daylight zones.";
+                gio::write(OutputFileDFS, fmtA) << "If only one reference point the last 4 columns in the data will be zero.";
+                gio::write(OutputFileDFS, fmtA) << "MonthAndDay,Zone Name,Window Name,Window State";
+                gio::write(OutputFileDFS, fmtA) << "Hour,Daylight Factor for Clear Sky at Reference point 1,Daylight Factor for Clear Turbid Sky at "
+                                                   "Reference point 1,Daylight Factor for Intermediate Sky at Reference point 1,Daylight Factor for "
+                                                   "Overcast Sky at Reference point 1,Daylight Factor for Clear Sky at Reference point 2,Daylight "
+                                                   "Factor for Clear Turbid Sky at Reference point 2,Daylight Factor for Intermediate Sky at "
+                                                   "Reference point 2,Daylight Factor for Overcast Sky at Reference point 2";
+            CreateDFSReportFile = False
 
-	        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
-	            if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0) continue;
+        for ZoneNum in range(1, NumOfZones+1):
+            if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
+            	continue
 
-	            for (loop = 1; loop <= ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-	                IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+            for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
+                IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
 
-	                // For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
-	                // component will not be calculated for these windows until the time-step loop.
-	                if (Surface(IWin).Zone == ZoneNum) {
+                # For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
+                # component will not be calculated for these windows until the time-step loop.
+                if (Surface(IWin).Zone == ZoneNum):
 
-	                    if (SurfaceWindow(IWin).MovableSlats) {
-	                        // variable slat angle - MaxSlatangle sets
-	                        ISA = MaxSlatAngs + 1;
-	                    } else if (Surface(IWin).HasShadeControl) {
-	                        // window shade or blind with fixed slat angle
-	                        ISA = 2;
-	                    } else {
-	                        // base window
-	                        ISA = 1;
-	                    }
+                    if (SurfaceWindow(IWin).MovableSlats):
+                        # variable slat angle - MaxSlatangle sets
+                        ISA = MaxSlatAngs + 1
+                    elif (Surface(IWin).HasShadeControl):
+                        # window shade or blind with fixed slat angle
+                        ISA = 2
+                    else:
+                        # base window
+                        ISA = 1
 
-	                    // loop over each slat angle
-	                    for (ISlatAngle = 1; ISlatAngle <= ISA; ++ISlatAngle) {
-	                        if (ISlatAngle == 1) {
-	                            // base window without shades, screens, or blinds
-	                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ",Base Window";
-	                        } else if (ISlatAngle == 2 && ISA == 2) {
-	                            // window shade or blind with fixed slat angle
-	                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ", ";
-	                        } else {
-	                            // blind with variable slat angle
-	                            SlatAngle = 180.0 / double(MaxSlatAngs - 1) * double(ISlatAngle - 2);
-	                            gio::write(OutputFileDFS, fmtA)
-	                                << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ',' + RoundSigDigits(SlatAngle, 1);
-	                        }
+                    # loop over each slat angle
+                    for ISlatAngle in range(1, ISA+1):
+                        if (ISlatAngle == 1):
+                            # base window without shades, screens, or blinds
+                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ",Base Window";
+                        elif (ISlatAngle == 2 && ISA == 2):
+                            # window shade or blind with fixed slat angle
+                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ", ";
+                        else:
+                            # blind with variable slat angle
+                            SlatAngle = 180.0 / double(MaxSlatAngs - 1) * double(ISlatAngle - 2)
+                            gio::write(OutputFileDFS, fmtA)
+                                << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ',' + RoundSigDigits(SlatAngle, 1);
 
-	                        for (IHR = 1; IHR <= 24; ++IHR) {
-	                            // daylight reference point 1
-	                            DFClrSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 1, 1, loop);   // clear sky
-	                            DFClrTbSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 2, 1, loop); // clear Turbid sky
-	                            DFIntSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 3, 1, loop);   // Intermediate sky
-	                            DFOcSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 4, 1, loop);    // Overcast sky
+                        for IHR in range(1, 25):
+                            # daylight reference point 1
+                            DFClrSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 1, 1, loop)   # clear sky
+                            DFClrTbSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 2, 1, loop) # clear Turbid sky
+                            DFIntSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 3, 1, loop)   # Intermediate sky
+                            DFOcSky1 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 4, 1, loop)    # Overcast sky
 
-	                            // daylight reference point 2
-	                            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1) {
-	                                DFClrSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 1, 2, loop);
-	                                DFClrTbSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 2, 2, loop);
-	                                DFIntSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 3, 2, loop);
-	                                DFOcSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 4, 2, loop);
-	                            } else {
-	                                DFClrSky2 = 0.0;
-	                                DFClrTbSky2 = 0.0;
-	                                DFIntSky2 = 0.0;
-	                                DFOcSky2 = 0.0;
-	                            }
+                            # daylight reference point 2
+                            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                                DFClrSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 1, 2, loop)
+                                DFClrTbSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 2, 2, loop)
+                                DFIntSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 3, 2, loop)
+                                DFOcSky2 = ZoneDaylight(ZoneNum).DaylIllFacSky(IHR, ISlatAngle, 4, 2, loop)
+                            else:
+                                DFClrSky2 = 0.0
+                                DFClrTbSky2 = 0.0
+                                DFIntSky2 = 0.0
+                                DFOcSky2 = 0.0
 
-	                            // write daylight factors - 4 sky types for each daylight ref point
-	                            gio::write(OutputFileDFS, fmtA)
-	                                << RoundSigDigits(IHR) + ',' + RoundSigDigits(DFClrSky1, 5) + ',' + RoundSigDigits(DFClrTbSky1, 5) + ',' +
-	                                       RoundSigDigits(DFIntSky1, 5) + ',' + RoundSigDigits(DFOcSky1, 5) + ',' + RoundSigDigits(DFClrSky2, 5) + ',' +
-	                                       RoundSigDigits(DFClrTbSky2, 5) + ',' + RoundSigDigits(DFIntSky2, 5) + ',' + RoundSigDigits(DFOcSky2, 5);
-	                        } // hour loop
-	                    }
-	                }
-	            } // exterior windows in zone loop
-	        }     // zone loop
-	    }
+                            # write daylight factors - 4 sky types for each daylight ref point
+                            gio::write(OutputFileDFS, fmtA)
+                                << RoundSigDigits(IHR) + ',' + RoundSigDigits(DFClrSky1, 5) + ',' + RoundSigDigits(DFClrTbSky1, 5) + ',' +
+                                       RoundSigDigits(DFIntSky1, 5) + ',' + RoundSigDigits(DFOcSky1, 5) + ',' + RoundSigDigits(DFClrSky2, 5) + ',' +
+                                       RoundSigDigits(DFClrTbSky2, 5) + ',' + RoundSigDigits(DFIntSky2, 5) + ',' + RoundSigDigits(DFOcSky2, 5);
+                        # end hour loop
+            # end exterior windows in zone loop
+        # end zone loop
+	    return None
 
 	# using ScheduleManager::GetScheduleIndex
-    def GetScheduleIndex():
-        int GetScheduleIndex(std::string const &ScheduleName)
-        {
-    
-            // FUNCTION INFORMATION:
-            //       AUTHOR         Linda K. Lawrie
-            //       DATE WRITTEN   September 1997
-            //       MODIFIED       na
-            //       RE-ENGINEERED  na
-    
-            // PURPOSE OF THIS FUNCTION:
-            // This function returns the internal pointer to Schedule "ScheduleName".
-    
-            // Return value
-            int GetScheduleIndex;
-    
-            // FUNCTION LOCAL VARIABLE DECLARATIONS:
-            int DayCtr;
-            int WeekCtr;
-    
-            if (!ScheduleInputProcessed) {
-                ProcessScheduleInput();
-                ScheduleInputProcessed = true;
-            }
-    
-            if (NumSchedules > 0) {
-                GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}));
-                if (GetScheduleIndex > 0) {
-                    if (!Schedule(GetScheduleIndex).Used) {
-                        Schedule(GetScheduleIndex).Used = true;
-                        for (WeekCtr = 1; WeekCtr <= 366; ++WeekCtr) {
-                            if (Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr) > 0) {
-                                WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).Used = true;
-                                for (DayCtr = 1; DayCtr <= MaxDayTypes; ++DayCtr) {
-                                    DaySchedule(WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).DaySchedulePointer(DayCtr)).Used =
-                                        true;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                GetScheduleIndex = 0;
-            }
-    
-            return GetScheduleIndex;
-        }
+    def GetScheduleIndex(std::string const &ScheduleName):
+    	'''
+        FUNCTION INFORMATION:
+              AUTHOR         Linda K. Lawrie
+              DATE WRITTEN   September 1997
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS FUNCTION:
+        This function returns the internal pointer to Schedule "ScheduleName".
+		'''
+
+        # Return value
+        GetScheduleIndex = 0
+
+        # FUNCTION LOCAL VARIABLE DECLARATIONS:
+        DayCtr = 0
+        WeekCtr = 0
+
+        if (!ScheduleInputProcessed):
+            ProcessScheduleInput()
+            ScheduleInputProcessed = True
+
+        if (NumSchedules > 0):
+            GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}))
+            if (GetScheduleIndex > 0):
+                if (!Schedule(GetScheduleIndex).Used):
+                    Schedule(GetScheduleIndex).Used = True
+                    
+                    for WeekCtr in range(1, 367):
+                        if (Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr) > 0):
+                            WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).Used = True
+                            
+                            for DayCtr in range(1, MaxDayTypes+1):
+                                DaySchedule(WeekSchedule(Schedule(GetScheduleIndex).WeekSchedulePointer(WeekCtr)).DaySchedulePointer(DayCtr)).Used = True
+        else:
+            GetScheduleIndex = 0
+
+        return GetScheduleIndex
 
     # using ScheduleManager::getNumObjectsFound
-    def getNumObjectsFound():
-	    int InputProcessor::getNumObjectsFound(std::string const &ObjectWord)
-		{
+    def getNumObjectsFound(std::string const &ObjectWord):
+		'''
+	    FUNCTION INFORMATION:
+	          AUTHOR         Linda K. Lawrie
+	          DATE WRITTEN   September 1997
+	          MODIFIED       Mark Adams
+	          RE-ENGINEERED  na
 
-		    // FUNCTION INFORMATION:
-		    //       AUTHOR         Linda K. Lawrie
-		    //       DATE WRITTEN   September 1997
-		    //       MODIFIED       Mark Adams
-		    //       RE-ENGINEERED  na
+	    PURPOSE OF THIS SUBROUTINE:
+	    This function returns the number of objects (in input data file)
+	    found in the current run.  If it can't find the object in list
+	    of objects, a 0 will be returned.
 
-		    // PURPOSE OF THIS SUBROUTINE:
-		    // This function returns the number of objects (in input data file)
-		    // found in the current run.  If it can't find the object in list
-		    // of objects, a 0 will be returned.
+	    METHODOLOGY EMPLOYED:
+	    Look up object in list of objects.  If there, return the
+	    number of objects found in the current input.  If not, return 0.
+	    '''
+	    auto const &find_obj = epJSON.find(ObjectWord);
 
-		    // METHODOLOGY EMPLOYED:
-		    // Look up object in list of objects.  If there, return the
-		    // number of objects found in the current input.  If not, return 0.
+	    if (find_obj == epJSON.end()):
+	        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+	        
+	        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
+	            return 0
+	        
+	        return static_cast<int>(epJSON[tmp_umit->second].size());
+	    else:
+	        return static_cast<int>(find_obj.value().size());
 
-		    auto const &find_obj = epJSON.find(ObjectWord);
+	    if (schema["properties"].find(ObjectWord) == schema["properties"].end()):
+	        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+	        if (tmp_umit == caseInsensitiveObjectMap.end()):
+	            ShowWarningError("Requested Object not found in Definitions: {}.".format(ObjectWord))
 
-		    if (find_obj == epJSON.end()) {
-		        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
-		        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()) {
-		            return 0;
-		        }
-		        return static_cast<int>(epJSON[tmp_umit->second].size());
-		    } else {
-		        return static_cast<int>(find_obj.value().size());
-		    }
-
-		    if (schema["properties"].find(ObjectWord) == schema["properties"].end()) {
-		        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
-		        if (tmp_umit == caseInsensitiveObjectMap.end()) {
-		            ShowWarningError("Requested Object not found in Definitions: " + ObjectWord);
-		        }
-		    }
-		    return 0;
-		}
+	    return 0
 
 	# using ScheduleManager::getObjectItem
-	def getObjectItem():
-		void InputProcessor::getObjectItem(std::string const &Object,
-                                   int const Number,
-                                   Array1S_string Alphas,
-                                   int &NumAlphas,
-                                   Array1S<Real64> Numbers,
-                                   int &NumNumbers,
-                                   int &Status,
-                                   Optional<Array1D_bool> NumBlank,
-                                   Optional<Array1D_bool> AlphaBlank,
-                                   Optional<Array1D_string> AlphaFieldNames,
-                                   Optional<Array1D_string> NumericFieldNames)
-		{
-		    // SUBROUTINE INFORMATION:
-		    //       AUTHOR         Linda K. Lawrie
-		    //       DATE WRITTEN   September 1997
-		    //       MODIFIED       na
-		    //       RE-ENGINEERED  na
+	def getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, *args):
+		# void InputProcessor::getObjectItem(std::string const &Object,
+  		#                            int const Number,
+		#                            Array1S_string Alphas,
+		#                            int &NumAlphas,
+		#                            Array1S<Real64> Numbers,
+		#                            int &NumNumbers,
+		#                            int &Status,
+		#                            Optional<Array1D_bool> NumBlank,
+		#                            Optional<Array1D_bool> AlphaBlank,
+		#                            Optional<Array1D_string> AlphaFieldNames,
+		#                            Optional<Array1D_string> NumericFieldNames)
+		#							 *args = (NumBlank, AlphaBlank, AlphaFieldNames, NumericFieldNames)
+		'''
+	    SUBROUTINE INFORMATION:
+	          AUTHOR         Linda K. Lawrie
+	          DATE WRITTEN   September 1997
+	          MODIFIED       na
+	          RE-ENGINEERED  na
 
-		    // PURPOSE OF THIS SUBROUTINE:
-		    // This subroutine gets the 'number' 'object' from the IDFRecord data structure.
+	    PURPOSE OF THIS SUBROUTINE:
+	    This subroutine gets the 'number' 'object' from the IDFRecord data structure.
+	    '''
 
-		    int adjustedNumber = getJSONObjNum(Object, Number); // if incoming input is idf, then use idf object order
+	    int adjustedNumber = getJSONObjNum(Object, Number) # if incoming input is idf, then use idf object order
 
-		    auto objectInfo = ObjectInfo();
-		    objectInfo.objectType = Object;
-		    // auto sorted_iterators = find_iterators;
+	    auto objectInfo = ObjectInfo()
+	    objectInfo.objectType = Object
+	    # auto sorted_iterators = find_iterators
 
-		    auto find_iterators = objectCacheMap.find(Object);
-		    if (find_iterators == objectCacheMap.end()) {
-		        auto const tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object));
-		        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()) {
-		            return;
-		        }
-		        objectInfo.objectType = tmp_umit->second;
-		        find_iterators = objectCacheMap.find(objectInfo.objectType);
-		    }
+	    auto find_iterators = objectCacheMap.find(Object)
+	    if (find_iterators == objectCacheMap.end()):
+	        auto const tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object))
+	        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
+	            return None
 
-		    NumAlphas = 0;
-		    NumNumbers = 0;
-		    Status = -1;
-		    auto const &is_AlphaBlank = present(AlphaBlank);
-		    auto const &is_AlphaFieldNames = present(AlphaFieldNames);
-		    auto const &is_NumBlank = present(NumBlank);
-		    auto const &is_NumericFieldNames = present(NumericFieldNames);
+	        objectInfo.objectType = tmp_umit->second
+	        find_iterators = objectCacheMap.find(objectInfo.objectType)
 
-		    auto const &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1);
-		    auto const &epJSON_schema_it = find_iterators->second.schemaIterator;
-		    auto const &epJSON_schema_it_val = epJSON_schema_it.value();
+	    NumAlphas = 0
+	    NumNumbers = 0
+	    Status = -1
+	    auto const &is_AlphaBlank = present(AlphaBlank)
+	    auto const &is_AlphaFieldNames = present(AlphaFieldNames)
+	    auto const &is_NumBlank = present(NumBlank)
+	    auto const &is_NumericFieldNames = present(NumericFieldNames)
 
-		    // Locations in JSON schema relating to normal fields
-		    auto const &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"];
+	    auto const &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1)
+	    auto const &epJSON_schema_it = find_iterators->second.schemaIterator
+	    auto const &epJSON_schema_it_val = epJSON_schema_it.value()
 
-		    // Locations in JSON schema storing the positional aspects from the IDD format, legacy prefixed
-		    auto const &legacy_idd = epJSON_schema_it_val["legacy_idd"];
-		    auto const &legacy_idd_field_info = legacy_idd["field_info"];
-		    auto const &legacy_idd_fields = legacy_idd["fields"];
-		    auto const &schema_name_field = epJSON_schema_it_val.find("name");
+	    # Locations in JSON schema relating to normal fields
+	    auto const &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"]
 
-		    auto key = legacy_idd.find("extension");
-		    std::string extension_key;
-		    if (key != legacy_idd.end()) {
-		        extension_key = key.value();
-		    }
+	    # Locations in JSON schema storing the positional aspects from the IDD format, legacy prefixed
+	    auto const &legacy_idd = epJSON_schema_it_val["legacy_idd"]
+	    auto const &legacy_idd_field_info = legacy_idd["field_info"]
+	    auto const &legacy_idd_fields = legacy_idd["fields"]
+	    auto const &schema_name_field = epJSON_schema_it_val.find("name")
 
-		    Alphas = "";
-		    Numbers = 0;
-		    if (is_NumBlank) {
-		        NumBlank() = true;
-		    }
-		    if (is_AlphaBlank) {
-		        AlphaBlank() = true;
-		    }
-		    if (is_AlphaFieldNames) {
-		        AlphaFieldNames() = "";
-		    }
-		    if (is_NumericFieldNames) {
-		        NumericFieldNames() = "";
-		    }
+	    auto key = legacy_idd.find("extension")
+	    extension_key = ""
+	    if (key != legacy_idd.end()):
+	        extension_key = key.value()
 
-		    auto const &obj = epJSON_it;
-		    auto const &obj_val = obj.value();
+	    Alphas = ""
+	    Numbers = 0
+	    if (is_NumBlank): NumBlank() = True
+	    if (is_AlphaBlank): AlphaBlank() = True
+	    if (is_AlphaFieldNames): AlphaFieldNames() = ""
+	    if (is_NumericFieldNames): NumericFieldNames() = ""
 
-		    objectInfo.objectName = obj.key();
+	    auto const &obj = epJSON_it;
+	    auto const &obj_val = obj.value();
 
-		    auto const find_unused = unusedInputs.find(objectInfo);
-		    if (find_unused != unusedInputs.end()) {
-		        unusedInputs.erase(find_unused);
-		    }
+	    objectInfo.objectName = obj.key();
 
-		    size_t idf_max_fields = 0;
-		    auto found_idf_max_fields = obj_val.find("idf_max_fields");
-		    if (found_idf_max_fields != obj_val.end()) {
-		        idf_max_fields = *found_idf_max_fields;
-		    }
+	    auto const find_unused = unusedInputs.find(objectInfo);
+	    if (find_unused != unusedInputs.end()):
+	        unusedInputs.erase(find_unused)
 
-		    size_t idf_max_extensible_fields = 0;
-		    auto found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
-		    if (found_idf_max_extensible_fields != obj_val.end()) {
-		        idf_max_extensible_fields = *found_idf_max_extensible_fields;
-		    }
+	    size_t idf_max_fields = 0
+	    auto found_idf_max_fields = obj_val.find("idf_max_fields");
+	    if (found_idf_max_fields != obj_val.end()):
+	        idf_max_fields = *found_idf_max_fields
 
-		    int alpha_index = 1;
-		    int numeric_index = 1;
+	    size_t idf_max_extensible_fields = 0
+	    auto found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
+	    if (found_idf_max_extensible_fields != obj_val.end()):
+	        idf_max_extensible_fields = *found_idf_max_extensible_fields;
 
-		    for (size_t i = 0; i < legacy_idd_fields.size(); ++i) {
-		        std::string const &field = legacy_idd_fields[i];
-		        auto const &field_info = legacy_idd_field_info.find(field);
-		        if (field_info == legacy_idd_field_info.end()) {
-		            ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
-		        }
-		        auto const &field_type = field_info.value().at("field_type").get<std::string>();
-		        bool within_idf_fields = (i < idf_max_fields);
-		        if (field == "name" && schema_name_field != epJSON_schema_it_val.end()) {
-		            auto const &name_iter = schema_name_field.value();
-		            if (name_iter.find("retaincase") != name_iter.end()) {
-		                Alphas(alpha_index) = objectInfo.objectName;
-		            } else {
-		                Alphas(alpha_index) = UtilityRoutines::MakeUPPERCase(objectInfo.objectName);
-		            }
-		            if (is_AlphaBlank) AlphaBlank()(alpha_index) = objectInfo.objectName.empty();
-		            if (is_AlphaFieldNames) {
-		                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
-		            }
-		            NumAlphas++;
-		            alpha_index++;
-		            continue;
-		        }
+	    alpha_index = 1
+	    numeric_index = 1
 
-		        auto const &schema_field_obj = schema_obj_props[field];
-		        auto it = obj_val.find(field);
-		        if (it != obj_val.end()) {
-		            auto const &field_value = it.value();
-		            if (field_type == "a") {
-		                // process alpha value
-		                if (field_value.is_string()) {
-		                    auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
+	    for (size_t i = 0; i < legacy_idd_fields.size(); ++i) { # q porra é essa?
+	        std::string const &field = legacy_idd_fields[i];
+	        auto const &field_info = legacy_idd_field_info.find(field);
+	        if (field_info == legacy_idd_field_info.end()):
+	            ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
+	        
+	        auto const &field_type = field_info.value().at("field_type").get<std::string>();
+	        within_idf_fields = (i < idf_max_fields)
+	        if (field == "name" && schema_name_field != epJSON_schema_it_val.end()):
+	            auto const &name_iter = schema_name_field.value();
+	            if (name_iter.find("retaincase") != name_iter.end()):
+	                Alphas(alpha_index) = objectInfo.objectName
+	            else:
+	                Alphas(alpha_index) = UtilityRoutines::MakeUPPERCase(objectInfo.objectName);
 
-		                    Alphas(alpha_index) = value.first;
-		                    if (is_AlphaBlank) AlphaBlank()(alpha_index) = value.second;
+	            if (is_AlphaBlank):
+	            	AlphaBlank()(alpha_index) = objectInfo.objectName.empty()
+	            
+	            if (is_AlphaFieldNames):
+	                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
 
-		                } else {
-		                    if (field_value.is_number_integer()) {
-		                        i64toa(field_value.get<std::int64_t>(), s);
-		                    } else {
-		                        dtoa(field_value.get<double>(), s);
-		                    }
-		                    Alphas(alpha_index) = s;
-		                    if (is_AlphaBlank) AlphaBlank()(alpha_index) = false;
-		                }
-		            } else if (field_type == "n") {
-		                // process numeric value
-		                if (field_value.is_number()) {
-		                    if (field_value.is_number_integer()) {
-		                        Numbers(numeric_index) = field_value.get<std::int64_t>();
-		                    } else {
-		                        Numbers(numeric_index) = field_value.get<double>();
-		                    }
-		                    if (is_NumBlank) NumBlank()(numeric_index) = false;
-		                } else {
-		                    bool is_empty = field_value.get<std::string>().empty();
-		                    if (is_empty) {
-		                        findDefault(Numbers(numeric_index), schema_field_obj);
-		                    } else {
-		                        Numbers(numeric_index) = -99999; // autosize and autocalculate
-		                    }
-		                    if (is_NumBlank) NumBlank()(numeric_index) = is_empty;
-		                }
-		            }
-		        } else {
-		            if (field_type == "a") {
-		                if (!(within_idf_fields && findDefault(Alphas(alpha_index), schema_field_obj))) {
-		                    Alphas(alpha_index) = "";
-		                }
-		                if (is_AlphaBlank) AlphaBlank()(alpha_index) = true;
-		            } else if (field_type == "n") {
-		                if (within_idf_fields) {
-		                    findDefault(Numbers(numeric_index), schema_field_obj);
-		                } else {
-		                    Numbers(numeric_index) = 0;
-		                }
-		                if (is_NumBlank) NumBlank()(numeric_index) = true;
-		            }
-		        }
-		        if (field_type == "a") {
-		            if (within_idf_fields) NumAlphas++;
-		            if (is_AlphaFieldNames) {
-		                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
-		            }
-		            alpha_index++;
-		        } else if (field_type == "n") {
-		            if (within_idf_fields) NumNumbers++;
-		            if (is_NumericFieldNames) {
-		                NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
-		            }
-		            numeric_index++;
-		        }
-		    }
+	            NumAlphas += 1
+	            alpha_index += 1
+	            continue
 
-		    size_t extensible_count = 0;
-		    auto const &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
-		    if (legacy_idd_extensibles_iter != legacy_idd.end()) {
-		        auto const epJSON_extensions_array_itr = obj.value().find(extension_key);
-		        if (epJSON_extensions_array_itr != obj.value().end()) {
-		            auto const &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
-		            auto const &epJSON_extensions_array = epJSON_extensions_array_itr.value();
-		            auto const &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
+	        auto const &schema_field_obj = schema_obj_props[field];
+	        auto it = obj_val.find(field);
+	        if (it != obj_val.end()):
+	            auto const &field_value = it.value();
+	            if (field_type == "a"):
+	                # process alpha value
+	                if (field_value.is_string()):
+	                    auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
 
-		            for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) {
-		                auto const &epJSON_extension_obj = it.value();
+	                    Alphas(alpha_index) = value.first
+	                    if (is_AlphaBlank):
+	                    	AlphaBlank()(alpha_index) = value.second;
 
-		                for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) {
-		                    std::string const &field_name = legacy_idd_extensibles[i];
-		                    auto const &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
-		                    auto const &schema_field = schema_extension_fields[field_name];
+	                else:
+	                    if (field_value.is_number_integer()):
+	                        i64toa(field_value.get<std::int64_t>(), s);
+	                    else:
+	                        dtoa(field_value.get<double>(), s);
 
-		                    auto const &field_info = legacy_idd_field_info.find(field_name);
-		                    if (field_info == legacy_idd_field_info.end()) {
-		                        ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
-		                    }
-		                    auto const &field_type = field_info.value().at("field_type").get<std::string>();
-		                    bool within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields);
+	                    Alphas(alpha_index) = s
+	                    if (is_AlphaBlank):
+	                    	AlphaBlank()(alpha_index) = False
 
-		                    if (epJSON_obj_field_iter != epJSON_extension_obj.end()) {
-		                        auto const &field_value = epJSON_obj_field_iter.value();
+	            elif (field_type == "n"):
+	                # process numeric value
+	                if (field_value.is_number()):
+	                    if (field_value.is_number_integer()):
+	                        Numbers(numeric_index) = field_value.get<std::int64_t>();
+	                    else:
+	                        Numbers(numeric_index) = field_value.get<double>();
 
-		                        if (field_type == "a") {
-		                            if (field_value.is_string()) {
-		                                auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field);
+	                    if (is_NumBlank):
+	                    	NumBlank()(numeric_index) = False
+	                else:
+	                    is_empty = field_value.get<std::string>().empty()
+	                    if (is_empty):
+	                        findDefault(Numbers(numeric_index), schema_field_obj);
+	                    else:
+	                        Numbers(numeric_index) = -99999 # autosize and autocalculate
 
-		                                Alphas(alpha_index) = value.first;
-		                                if (is_AlphaBlank) AlphaBlank()(alpha_index) = value.second;
-		                            } else {
-		                                if (field_value.is_number_integer()) {
-		                                    i64toa(field_value.get<std::int64_t>(), s);
-		                                } else {
-		                                    dtoa(field_value.get<double>(), s);
-		                                }
-		                                Alphas(alpha_index) = s;
-		                                if (is_AlphaBlank) AlphaBlank()(alpha_index) = false;
-		                            }
-		                        } else if (field_type == "n") {
-		                            if (field_value.is_number()) {
-		                                if (field_value.is_number_integer()) {
-		                                    Numbers(numeric_index) = field_value.get<std::int64_t>();
-		                                } else {
-		                                    Numbers(numeric_index) = field_value.get<double>();
-		                                }
-		                                if (is_NumBlank) NumBlank()(numeric_index) = false;
-		                            } else {
-		                                bool is_empty = field_value.get<std::string>().empty();
-		                                if (is_empty) {
-		                                    findDefault(Numbers(numeric_index), schema_field);
-		                                } else {
-		                                    Numbers(numeric_index) = -99999; // autosize and autocalculate
-		                                }
-		                                if (is_NumBlank) NumBlank()(numeric_index) = is_empty;
-		                            }
-		                        }
-		                    } else {
+	                    if (is_NumBlank):
+	                    	NumBlank()(numeric_index) = is_empty
+	        else:
+	            if (field_type == "a"):
+	                if (!(within_idf_fields && findDefault(Alphas(alpha_index), schema_field_obj))):
+	                    Alphas(alpha_index) = ""
+	                
+	                if (is_AlphaBlank):
+	                	AlphaBlank()(alpha_index) = True
+	            elif (field_type == "n"):
+	                if (within_idf_fields):
+	                    findDefault(Numbers(numeric_index), schema_field_obj);
+	                else:
+	                    Numbers(numeric_index) = 0
+	                
+	                if (is_NumBlank) NumBlank()(numeric_index) = True
 
-		                        if (field_type == "a") {
-		                            if (!(within_idf_extensible_fields && findDefault(Alphas(alpha_index), schema_field))) {
-		                                Alphas(alpha_index) = "";
-		                            }
-		                            if (is_AlphaBlank) AlphaBlank()(alpha_index) = true;
-		                        } else if (field_type == "n") {
-		                            if (within_idf_extensible_fields) {
-		                                findDefault(Numbers(numeric_index), schema_field);
-		                            } else {
-		                                Numbers(numeric_index) = 0;
-		                            }
-		                            if (is_NumBlank) NumBlank()(numeric_index) = true;
-		                        }
-		                    }
+	        if (field_type == "a"):
+	            if (within_idf_fields):
+	            	NumAlphas += 1
+	            
+	            if (is_AlphaFieldNames):
+	                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+	            
+	            alpha_index += 1
+	        elif (field_type == "n"):
+	            if (within_idf_fields):
+	            	NumNumbers += 1
+	            if (is_NumericFieldNames):
+	                NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+	            
+	            numeric_index += 1
 
-		                    if (field_type == "a") {
-		                        if (within_idf_extensible_fields) NumAlphas++;
-		                        if (is_AlphaFieldNames) {
-		                            AlphaFieldNames()(alpha_index) =
-		                                (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
-		                        }
-		                        alpha_index++;
-		                    } else if (field_type == "n") {
-		                        if (within_idf_extensible_fields) NumNumbers++;
-		                        if (is_NumericFieldNames) {
-		                            NumericFieldNames()(numeric_index) =
-		                                (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
-		                        }
-		                        numeric_index++;
-		                    }
-		                }
-		            }
-		        }
-		    }
+	    size_t extensible_count = 0
+	    auto const &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
+	    
+	    if (legacy_idd_extensibles_iter != legacy_idd.end()):
+	        auto const epJSON_extensions_array_itr = obj.value().find(extension_key);
+	        
+	        if (epJSON_extensions_array_itr != obj.value().end()):
+	            auto const &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
+	            auto const &epJSON_extensions_array = epJSON_extensions_array_itr.value();
+	            auto const &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
 
-		    Status = 1;
-		}
+	            for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
+	                auto const &epJSON_extension_obj = it.value();
+
+	                for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
+	                    std::string const &field_name = legacy_idd_extensibles[i];
+	                    auto const &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
+	                    auto const &schema_field = schema_extension_fields[field_name];
+
+	                    auto const &field_info = legacy_idd_field_info.find(field_name);
+	                    if (field_info == legacy_idd_field_info.end()):
+	                        ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
+	                    
+	                    auto const &field_type = field_info.value().at("field_type").get<std::string>();
+	                    within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields)
+
+	                    if (epJSON_obj_field_iter != epJSON_extension_obj.end()):
+	                        auto const &field_value = epJSON_obj_field_iter.value();
+
+	                        if (field_type == "a"):
+	                            if (field_value.is_string()):
+	                                auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field);
+
+	                                Alphas(alpha_index) = value.first;
+	                                if (is_AlphaBlank):
+	                                	AlphaBlank()(alpha_index) = value.second
+	                            else:
+	                                if (field_value.is_number_integer()):
+	                                    i64toa(field_value.get<std::int64_t>(), s);
+	                                else:
+	                                    dtoa(field_value.get<double>(), s);
+	                                
+	                                Alphas(alpha_index) = s
+	                                if (is_AlphaBlank):
+	                                	AlphaBlank()(alpha_index) = False
+	                            
+	                        elif (field_type == "n"):
+	                            if (field_value.is_number()):
+	                                if (field_value.is_number_integer()):
+	                                    Numbers(numeric_index) = field_value.get<std::int64_t>();
+	                                else:
+	                                    Numbers(numeric_index) = field_value.get<double>();
+	                                
+	                                if (is_NumBlank):
+	                                	NumBlank()(numeric_index) = False
+	                            
+	                            else:
+	                                is_empty = field_value.get<std::string>().empty()
+	                                if (is_empty):
+	                                    findDefault(Numbers(numeric_index), schema_field)
+	                                else:
+	                                    Numbers(numeric_index) = -99999 # autosize and autocalculate
+	                                
+	                                if (is_NumBlank):
+	                                	NumBlank()(numeric_index) = is_empty
+	                    else:
+	                        if (field_type == "a"):
+	                            if (!(within_idf_extensible_fields && findDefault(Alphas(alpha_index), schema_field))):
+	                                Alphas(alpha_index) = ""
+	                            
+	                            if (is_AlphaBlank):
+	                            	AlphaBlank()(alpha_index) = True
+	                        
+	                        elif (field_type == "n"):
+	                            if (within_idf_extensible_fields):
+	                                findDefault(Numbers(numeric_index), schema_field)
+	                            else:
+	                                Numbers(numeric_index) = 0
+	                            
+	                            if (is_NumBlank):
+	                            	NumBlank()(numeric_index) = True
+
+	                    if (field_type == "a"):
+	                        if (within_idf_extensible_fields):
+	                        	NumAlphas += 1
+	                        if (is_AlphaFieldNames):
+	                            AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+	                        
+	                        alpha_index += 1
+	                    
+	                    elif (field_type == "n"):
+	                        if (within_idf_extensible_fields):
+	                        	NumNumbers += 1
+	                        if (is_NumericFieldNames):
+	                            NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+	                        
+	                        numeric_index += 1
+
+	    Status = 1 # ?
+	    return None
 
 	# DataTimings::EP_Count_Calls
 	ifdef EP_Count_Calls
@@ -996,167 +931,111 @@ class ExternalFunctions:
 	endif
 
 	# OutputReportPredefined::PreDefTableEntry
-	def PreDefTableEntry():
-		void PreDefTableEntry(int const columnIndex, std::string const &objName, int const tableEntryInt)
-	    {
-	        // SUBROUTINE INFORMATION:
-	        //       AUTHOR         Jason Glazer
-	        //       DATE WRITTEN   August 2006
-	        //       MODIFIED
-	        //       RE-ENGINEERED  na
+	def PreDefTableEntry(columnIndex, &objName, tableEntryInt):
+		# void PreDefTableEntry(int const columnIndex, std::string const &objName, int const tableEntryInt)
+	    '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Jason Glazer
+              DATE WRITTEN   August 2006
+              MODIFIED
+              RE-ENGINEERED  na
 
-	        // PURPOSE OF THIS SUBROUTINE:
-	        //   Creates an entry for predefined tables when the entry
-	        //   is a integer variable
+        PURPOSE OF THIS SUBROUTINE:
+          Creates an entry for predefined tables when the entry
+          is a integer variable
 
-	        // METHODOLOGY EMPLOYED:
-	        //   Simple assignments to public variables.
+        METHODOLOGY EMPLOYED:
+          Simple assignments to public variables.
+		'''
+        # SUBROUTINE PARAMETER DEFINITIONS:
+        static gio::Fmt fmtLD("*");
 
-	        // REFERENCES:
-	        // na
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        std::string stringEntry;
 
-	        // USE STATEMENTS:
+        incrementTableEntry()
+        # convert the integer to a string
+        gio::write(stringEntry, fmtLD) << tableEntryInt;
+        tableEntry(numTableEntry).charEntry = stringEntry;
+        tableEntry(numTableEntry).objectName = objName;
+        tableEntry(numTableEntry).indexColumn = columnIndex;
 
-	        // Locals
-	        // SUBROUTINE ARGUMENT DEFINITIONS:
-
-	        // SUBROUTINE PARAMETER DEFINITIONS:
-	        static gio::Fmt fmtLD("*");
-
-	        // INTERFACE BLOCK SPECIFICATIONS:
-	        // na
-
-	        // DERIVED TYPE DEFINITIONS:
-	        // na
-
-	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-	        std::string stringEntry;
-
-	        incrementTableEntry();
-	        // convert the integer to a string
-	        gio::write(stringEntry, fmtLD) << tableEntryInt;
-	        tableEntry(numTableEntry).charEntry = stringEntry;
-	        tableEntry(numTableEntry).objectName = objName;
-	        tableEntry(numTableEntry).indexColumn = columnIndex;
-	    }
+        return None
 
     # WindowComplexManager::InitComplexWindows
     def InitComplexWindows():
-    	void InitComplexWindows()
-	    {
+    	'''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Linda Lawrie
+              DATE WRITTEN   November 2012
+              MODIFIED       na
+              RE-ENGINEERED  na
 
-	        // SUBROUTINE INFORMATION:
-	        //       AUTHOR         Linda Lawrie
-	        //       DATE WRITTEN   November 2012
-	        //       MODIFIED       na
-	        //       RE-ENGINEERED  na
+        PURPOSE OF THIS SUBROUTINE:
+        Extract simple init for Complex Windows
+		'''
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        Once = True # Flag for insuring things happen once
 
-	        // PURPOSE OF THIS SUBROUTINE:
-	        // Extract simple init for Complex Windows
+        # One-time initialization
+        if (Once):
+            Once = False
+            InitBSDFWindows()
+            CalcStaticProperties()
 
-	        // METHODOLOGY EMPLOYED:
-	        // na
-
-	        // REFERENCES:
-	        // na
-
-	        // USE STATEMENTS:
-	        // na
-
-	        // Locals
-	        // SUBROUTINE ARGUMENT DEFINITIONS:
-	        // na
-
-	        // SUBROUTINE PARAMETER DEFINITIONS:
-	        // na
-
-	        // INTERFACE BLOCK SPECIFICATIONS:
-	        // na
-
-	        // DERIVED TYPE DEFINITIONS:
-	        // na
-
-	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-	        static bool Once(true); // Flag for insuring things happen once
-
-	        // One-time initialization
-	        if (Once) {
-	            Once = false;
-	            InitBSDFWindows();
-	            CalcStaticProperties();
-	        }
-	    }
+        return None
 
     # WindowComplexManager::UpdateComplexWindows
     def UpdateComplexWindows():
-    	void UpdateComplexWindows()
-	    {
+    	'''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Joe Klems
+              DATE WRITTEN   August 2011
+              MODIFIED       B. Griffith, Nov. 2012 revised for detailed timestep integration mode
+              RE-ENGINEERED  na
 
-	        // SUBROUTINE INFORMATION:
-	        //       AUTHOR         Joe Klems
-	        //       DATE WRITTEN   August 2011
-	        //       MODIFIED       B. Griffith, Nov. 2012 revised for detailed timestep integration mode
-	        //       RE-ENGINEERED  na
+        PURPOSE OF THIS SUBROUTINE:
+        Performs the shading-dependent initialization of the Complex Fenestration data;
+        On first call, calls the one-time initializition
 
-	        // PURPOSE OF THIS SUBROUTINE:
-	        // Performs the shading-dependent initialization of the Complex Fenestration data;
-	        // On first call, calls the one-time initializition
+        METHODOLOGY EMPLOYED:
+        <description>
+		'''
 
-	        // METHODOLOGY EMPLOYED:
-	        // <description>
+        # Using/Aliasing
+        using DataGlobals::KickOffSimulation;
+        using DataGlobals::KickOffSizing;
 
-	        // REFERENCES:
-	        // na
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        # LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
+        NumStates = 0 # Number of states for a given complex fen
+        ISurf = 0     # Index for sorting thru Surface array
+        IState = 0    # Index identifying the window state for a particular window
+        IWind = 0     # Index identifying a window in the WindowList
 
-	        // Using/Aliasing
-	        using DataGlobals::KickOffSimulation;
-	        using DataGlobals::KickOffSizing;
+        # !One-time initialization
+		# IF (Once) THEN
+		#   ONCE = .FALSE.
+		#   CALL InitBSDFWindows
+		#   CALL CalcStaticProperties
+		# ENDIF
 
-	        // Locals
-	        // SUBROUTINE ARGUMENT DEFINITIONS:
-	        // na
+        if (NumComplexWind == 0): return None
+        if (KickOffSizing || KickOffSimulation): return None
 
-	        // SUBROUTINE PARAMETER DEFINITIONS:
-	        // na
+        # Shading-dependent initialization; performed once for each shading period
 
-	        // INTERFACE BLOCK SPECIFICATIONS:
-	        // na
+        # Initialize the geometric quantities
 
-	        // DERIVED TYPE DEFINITIONS:
-	        // na
-
-	        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-	        // LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
-	        int NumStates; // Number of states for a given complex fen
-	        int ISurf;     // Index for sorting thru Surface array
-	        int IState;    // Index identifying the window state for a particular window
-	        int IWind;     // Index identifying a window in the WindowList
-
-	        // !One-time initialization
-	        //  IF (Once) THEN
-	        //    ONCE = .FALSE.
-	        //    CALL InitBSDFWindows
-	        //    CALL CalcStaticProperties
-	        //  ENDIF
-
-	        if (NumComplexWind == 0) return;
-
-	        if (KickOffSizing || KickOffSimulation) return;
-
-	        // Shading-dependent initialization; performed once for each shading period
-
-	        // Initialize the geometric quantities
-
-	        for (IWind = 1; IWind <= NumComplexWind; ++IWind) {
-	            ISurf = WindowList(IWind).SurfNo;
-	            NumStates = ComplexWind(ISurf).NumStates;
-	            for (IState = 1; IState <= NumStates; ++IState) {
-	                CFSShadeAndBeamInitialization(ISurf, IState);
-	            } // State loop
-	        }     // window loop
-	    }
-
-	return None
+        for IWind in range(1, NumComplexWind+1):
+            ISurf = WindowList(IWind).SurfNo
+            NumStates = ComplexWind(ISurf).NumStates
+            for IState in range(1, NumStates+1):
+                CFSShadeAndBeamInitialization(ISurf, IState)
+            # State loop
+        # window loop
+    
+    	return None
 
 class SolarShading(ExternalFunctions):
 	'''
