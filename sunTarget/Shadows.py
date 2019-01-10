@@ -116,8 +116,582 @@ class ExternalFunctions:
     Array1D_bool lNumericFieldBlanks;
     Array1D_bool lAlphaFieldBlanks;
 
-    # DaylightingManager::TotWindowsWithDayl
-    TotWindowsWithDayl = 0         # Total number of exterior windows in all daylit zones
+    # General::BlindBeamBeamTrans
+    def BlindBeamBeamTrans(ProfAng, SlatAng, SlatWidth, SlatSeparation, SlatThickness):
+    	'''
+        FUNCTION INFORMATION:
+              AUTHOR         Fred Winkelmann
+              DATE WRITTEN   Jan 2002
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        Calculates beam-to-beam transmittance of a window blind
+
+        METHODOLOGY EMPLOYED:
+        Based on solar profile angle and slat geometry
+
+        INPUTS:
+        		Real64 const ProfAng,        # Solar profile angle (rad)
+				Real64 const SlatAng,        # Slat angle (rad)
+				Real64 const SlatWidth,      # Slat width (m)
+				Real64 const SlatSeparation, # Slat separation (distance between surfaces of adjacent slats) (m)
+	            Real64 const SlatThickness   # Slat thickness (m)
+		'''
+        # Using/Aliasing
+        using DataGlobals::Pi;
+        using DataGlobals::PiOvr2;
+
+        # FUNCTION LOCAL VARIABLE DECLARATIONS:
+        fEdge = 0.0      # Slat edge correction factor
+        wbar = 0.0       # Intermediate variable
+        gamma = 0.0      # Intermediate variable
+        fEdge1 = 0.0     # Intermediate variable
+        CosProfAng = 0.0 # Cosine of profile angle
+
+        CosProfAng = math.cos(ProfAng)
+        gamma = SlatAng - ProfAng
+        wbar = SlatSeparation
+
+        if (CosProfAng != 0.0):
+        	wbar = SlatWidth * math.cos(gamma) / CosProfAng
+
+        BlindBeamBeamTrans = max(0.0, 1.0 - abs(wbar / SlatSeparation))
+
+        if (BlindBeamBeamTrans > 0.0):
+            # Correction factor that accounts for finite thickness of slats. It is used to modify the
+            # blind transmittance to account for reflection and absorption by the slat edges.
+            # fEdge is ratio of area subtended by edge of slat to area between tops of adjacent slats.
+            fEdge = 0.0
+            fEdge1 = 0.0
+
+            if (abs(std::sin(gamma)) > 0.01):
+                if ((SlatAng > 0.0 && SlatAng <= PiOvr2 && ProfAng <= SlatAng) || (SlatAng > PiOvr2 && SlatAng <= Pi && ProfAng > -(Pi - SlatAng))):
+                    fEdge1 = SlatThickness * abs(std::sin(gamma)) / ((SlatSeparation + SlatThickness / abs(std::sin(SlatAng))) * CosProfAng)
+                
+                fEdge = min(1.0, abs(fEdge1))
+
+            BlindBeamBeamTrans *= (1.0 - fEdge)
+
+        return BlindBeamBeamTrans;
+
+    # General::RoundSigDigits
+    def RoundSigDigits(RealValue, SigDigits):
+    	'''
+        FUNCTION INFORMATION:
+              AUTHOR         Linda K. Lawrie
+              DATE WRITTEN   March 2002
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS FUNCTION:
+        This function accepts a number as parameter as well as the number of
+        significant digits after the decimal point to report and returns a string
+        that is appropriate.
+
+        # INPUTS:
+        #		Real64 const RealValue
+        # 		int const SigDigits
+		'''
+        # USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY : IEEE_IS_NAN ! Use IEEE_IS_NAN when GFortran supports it
+
+        # FUNCTION PARAMETER DEFINITIONS:
+        DigitChar = "01234567890"
+        NAN_string = "NAN"
+        ZEROOOO = "0.000000000000000000000000000"
+        static gio::Fmt fmtLD("*");
+
+        # FUNCTION LOCAL VARIABLE DECLARATIONS:
+
+        if (np.isnan(RealValue)):
+        	return NAN_string
+
+        String = "" # Working string
+        if (RealValue != 0.0):
+            gio::write(String, fmtLD) << RealValue;
+        else:
+            String = ZEROOOO
+
+        std::string::size_type const EPos = index(String, 'E'); # Position of E in original string format xxEyy
+        std::string EString;                                    # E string retained from original string
+        if (EPos != std::string::npos):
+            EString = String.substr(EPos)
+            String.erase(EPos)
+
+        std::string::size_type const DotPos = index(String, '.'); # Position of decimal point in original string
+        assert(DotPos != std::string::npos);
+        assert(DotPos > 0); # Or SPos will not be valid
+
+        # (if, else, then) statement ?
+        char TestChar(DotPos + SigDigits + 1 < String.length() ? String[DotPos + SigDigits + 1] : ' '); # Test character (digit) for rounding, if position in digit string >= 5 (digit is 5 or greater) then will round
+
+        std::string::size_type const TPos = index(DigitChar, TestChar); # Position of Testchar in Digit string
+
+        std::string::size_type SPos; # Actual string position being replaced
+        if (SigDigits == 0):
+            SPos = DotPos - 1
+        else:
+            SPos = DotPos + SigDigits
+
+        if ((TPos != std::string::npos) && (TPos >= 5)):             # Must round to next Digit
+            char const Char2Rep = String[SPos];                       # Character (digit) to be replaced
+            std::string::size_type NPos = index(DigitChar, Char2Rep); # Position of "next" char in Digit String
+            std::string::size_type TPos1;
+            assert(NPos != std::string::npos);
+            String[SPos] = DigitChar[NPos + 1]
+            
+            while (NPos == 9): # Must change other char too
+                if (SigDigits == 1):
+                    assert(SPos >= 2u);
+                    TestChar = String[SPos - 2]
+                    
+                    if (TestChar == '.'):
+                        assert(SPos >= 3u);
+                        TestChar = String[SPos - 3]
+                        SPos =- 2
+                    
+                    if (TestChar == ' '):
+                        TestChar = '0'           # all 999s
+                    elif (TestChar == '-'): # Autodesk Added to fix bug for values like -9.9999
+                        assert(SPos >= 3u);
+                        String[SPos - 3] = TestChar # Shift sign left to avoid overwriting it
+                        TestChar = '0'              # all 999s
+                    
+                    TPos1 = index(DigitChar, TestChar);
+                    assert(TPos1 != std::string::npos);
+                    assert(SPos >= 2u);
+                    String[SPos - 2] = DigitChar[TPos1 + 1]
+                else:
+                    assert(SPos >= 1u);
+                    TestChar = String[SPos - 1]
+                    if (TestChar == '.'):
+                        assert(SPos >= 2u);
+                        TestChar = String[SPos - 2]
+                        SPos =- 1
+                    
+                    if (TestChar == ' '):
+                        TestChar = '0'           # all 999s
+                    elif (TestChar == '-'): # Autodesk Added to fix bug for values like -9.9999
+                        assert(SPos >= 2u);
+                        String[SPos - 2] = TestChar # Shift sign left to avoid overwriting it
+                        TestChar = '0'              # all 999s
+                    
+                    TPos1 = index(DigitChar, TestChar);
+                    assert(TPos1 != std::string::npos);
+                    assert(SPos >= 1u);
+                    String[SPos - 1] = DigitChar[TPos1 + 1]
+                
+                SPos =- 1
+                NPos = TPos1
+
+        bool IncludeDot; # True when decimal point output
+        if (SigDigits > 0 || EString != ""):
+            IncludeDot = True
+        else:
+            IncludeDot = False
+        
+        if (IncludeDot):
+            String.erase(min(DotPos + SigDigits + 1, len(String)))
+            String =+ EString
+        else:
+            String.erase(DotPos)
+        
+
+        return stripped(String)
+
+    # DaylightingManager
+    Array1D<Real64> PHSUNHR(24, 0.0);  	# Hourly values of PHSUN
+    Array1D<Real64> SPHSUNHR(24, 0.0); 	# Hourly values of the sine of PHSUN
+    Array1D<Real64> CPHSUNHR(24, 0.0); 	# Hourly values of the cosine of PHSUN
+    Array1D<Real64> THSUNHR(24, 0.0);  	# Hourly values of THSUN
+    Array2D<Real64> GILSK(24, 4, 0.0); 	# Horizontal illuminance from sky, by sky type, for each hour of the day
+    Array1D<Real64> GILSU(24, 0.0);    	# Horizontal illuminance from sun for each hour of the day
+    TotWindowsWithDayl = 0				# Total number of exterior windows in all daylit zones
+
+    # DaylightingDevices::FindTDDPipe
+    def FindTDDPipe(WinNum):
+    	'''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Peter Graham Ellis
+              DATE WRITTEN   May 2003
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        Given the TDD:DOME or TDD:DIFFUSER object number, returns TDD pipe number.
+
+        METHODOLOGY EMPLOYED:
+        Similar to UtilityRoutines::FindItemInList( defined in InputProcessor.
+
+        INPUT:
+        	int const WinNum
+    	'''
+        # Using/Aliasing
+        using DataSurfaces::Surface;
+
+        # FLOW:
+        FindTDDPipe = 0
+
+        if (NumOfTDDPipes <= 0):
+            ShowFatalError("FindTDDPipe: Surface = {}, TDD:Dome object does not reference a valid Diffuser object....needs DaylightingDevice:Tubular of same name as Surface.".format(Surface(WinNum).Name))
+
+        for PipeNum in range(1, NumOfTDDPipes+1):
+            if ((WinNum == TDDPipe(PipeNum).Dome) || (WinNum == TDDPipe(PipeNum).Diffuser)):
+                FindTDDPipe = PipeNum
+                break
+
+        return FindTDDPipe
+
+    # DaylightingDevices::TransTDD
+    def TransTDD(PipeNum, COSI, RadiationType):
+    	'''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Peter Graham Ellis
+              DATE WRITTEN   May 2003
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        Calculates the total transmittance of the TDD for specified radiation type.
+
+        METHODOLOGY EMPLOYED:
+        The transmittances for each component (i.e. TDD:DIFFUSER, TDD:DOME, and pipe) are calculated.
+        All transmittances are multiplied to get the total for the TDD:
+          TransTDD = transDome * transPipe * transDiff
+        Transmittance of beam radiation is calculated by interpolating the values in a
+        table created during initialization.  The table values are from Swift and Smith's
+        numerical integral for collimated beam radiation.
+        Transmittances of isotropic and anisotropic diffuse radiation are more complicated and call
+        other subroutines in this module.
+        All light reaching the TDD:DIFFUSER is assumed to be diffuse.
+        NOTE: Dome transmittance could be improved by taking into account curvature of the dome.
+
+        REFERENCES:
+        Swift, P. D., and Smith, G. B.  "Cylindrical Mirror Light Pipes",
+          Solar Energy Materials and Solar Cells 36 (1995), pp. 159-168.
+
+        INPUTS:
+        		int const PipeNum,      # TDD pipe object number
+                Real64 const COSI,      # Cosine of the incident angle
+                int const RadiationType # Radiation type flag
+        '''
+        # Using/Aliasing
+        using General::POLYF;
+
+        # FUNCTION LOCAL VARIABLE DECLARATIONS:
+        constDome = 0	# Construction object number for TDD:DOME
+        constDiff = 0	# Construction object number for TDD:DIFFUSER
+        transDome = 0.0
+        transPipe = 0.0
+        transDiff = 0.0
+
+        # FLOW:
+        TransTDD = 0.0	# returned value, it's not a recursive function
+
+        # Get constructions of each TDD component
+        constDome = Surface(TDDPipe(PipeNum).Dome).Construction
+        constDiff = Surface(TDDPipe(PipeNum).Diffuser).Construction
+
+        # Get the transmittance of each component and of total TDD
+        auto const SELECT_CASE_var(RadiationType);
+
+        if (SELECT_CASE_var == VisibleBeam):
+            transDome = POLYF(COSI, Construct(constDome).TransVisBeamCoef)
+            transPipe = InterpolatePipeTransBeam(COSI, TDDPipe(PipeNum).PipeTransVisBeam)
+            transDiff = Construct(constDiff).TransDiffVis # May want to change to POLYF also!
+
+            TransTDD = transDome * transPipe * transDiff
+
+        elif (SELECT_CASE_var == SolarBeam):
+            transDome = POLYF(COSI, Construct(constDome).TransSolBeamCoef)
+            transPipe = InterpolatePipeTransBeam(COSI, TDDPipe(PipeNum).PipeTransSolBeam)
+            transDiff = Construct(constDiff).TransDiff # May want to change to POLYF also!
+
+            TransTDD = transDome * transPipe * transDiff
+
+        elif (SELECT_CASE_var == SolarAniso):
+            TransTDD = CalcTDDTransSolAniso(PipeNum, COSI)
+
+        elif (SELECT_CASE_var == SolarIso):
+            TransTDD = TDDPipe(PipeNum).TransSolIso
+
+        return TransTDD
+
+    # DaylightingManager::GetDaylightingParametersInput
+    def GetDaylightingParametersInput():
+    	'''
+    	SUBROUTINE INFORMATION:
+    	    AUTHOR         Linda Lawrie
+    	    DATE WRITTEN   Oct 2004
+    	    MODIFIED       na
+    	    RE-ENGINEERED  na
+
+    	PURPOSE OF THIS SUBROUTINE:
+    	This subroutine provides a simple structure to get all daylighting parameters.
+        '''
+        # Using/Aliasing
+        using namespace DataIPShortCuts;
+
+        # RJH DElight Modification Begin
+        using namespace DElightManagerF; # Module for managing DElight subroutines
+        # RJH DElight Modification End
+        using DataSystemVariables::GoodIOStatValue;
+
+        # Locals
+        # SUBROUTINE ARGUMENT DEFINITIONS:
+        static gio::Fmt fmtA("(A)");
+
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        TotDaylightingControls = 0  # Total Daylighting:Controls inputs (splitflux or delight type)
+        IntWin = 0                  # Interior window surface index
+        bool ErrorsFound;            # Error flag
+        SurfNum = 0                 # Surface counter (loop)
+        WindowShadingControlPtr = 0 # Pointer for WindowShadingControl
+        ZoneNum = 0                 # Zone Number (loop counter)
+        SurfNumAdj = 0              # Surface Number for adjacent surface
+        ZoneNumAdj = 0              # Zone Number for adjacent zone
+        # RJH DElight Modification Begin - local variable declarations
+        dLatitude = 0.0       # double for argument passing
+        iErrorFlag = 0         # Error Flag for warning/errors returned from DElight
+        iDElightErrorFile = 0  # Unit number for reading DElight Error File
+        iReadStatus = 0        # Error File Read Status
+        cErrorLine = "" # Each DElight Error line can be up to 210 characters long
+        cErrorMsg = ""  # Each DElight Error Message can be up to 200 characters long
+        bool bEndofErrFile;     # End of Error File flag
+        bool bRecordsOnErrFile; # true if there are records on the error file
+        # RJH DElight Modification End - local variable declarations
+
+        NumReports = 0
+        NumNames = 0
+        NumNumbers = 0
+        IOStat = 0
+
+        ErrorsFound = False
+        cCurrentModuleObject = "Daylighting:Controls"
+        TotDaylightingControls = inputProcessor->getNumObjectsFound(cCurrentModuleObject);
+
+        if (TotDaylightingControls > 0):
+            GetInputDayliteRefPt(ErrorsFound)
+            GetDaylightingControls(TotDaylightingControls, ErrorsFound)
+            GeometryTransformForDaylighting()
+            GetInputIlluminanceMap(ErrorsFound)
+            GetLightWellData(ErrorsFound)
+            if (ErrorsFound):
+            	ShowFatalError("Program terminated for above reasons, related to DAYLIGHTING")
+            DayltgSetupAdjZoneListsAndPointers()
+
+        maxNumRefPtInAnyZone = 0
+        for SurfNum in range(1, TotSurfaces+1):
+            if (Surface(SurfNum).Class != SurfaceClass_Window):
+            	continue
+            
+            ZoneNum = Surface(SurfNum).Zone
+            numRefPoints = ZoneDaylight(ZoneNum).TotalDaylRefPoints
+            
+            if (numRefPoints > maxNumRefPtInAnyZone):
+                maxNumRefPtInAnyZone = numRefPoints
+
+            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0):
+                if (!SurfaceWindow(SurfNum).SurfDayLightInit):
+                    SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
+                    SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
+                    SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
+                    SurfaceWindow(SurfNum).SolidAngAtRefPtWtd = 0.0
+                    SurfaceWindow(SurfNum).IllumFromWinAtRefPt.allocate(2, numRefPoints)
+                    SurfaceWindow(SurfNum).IllumFromWinAtRefPt = 0.0
+                    SurfaceWindow(SurfNum).BackLumFromWinAtRefPt.allocate(2, numRefPoints)
+                    SurfaceWindow(SurfNum).BackLumFromWinAtRefPt = 0.0
+                    SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt.allocate(2, numRefPoints)
+                    SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt = 0.0
+                    SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep.allocate(numRefPoints)
+                    SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep = 0.0
+                    SurfaceWindow(SurfNum).LumWinFromRefPtRep.allocate(numRefPoints)
+                    SurfaceWindow(SurfNum).LumWinFromRefPtRep = 0.0
+                    SurfaceWindow(SurfNum).SurfDayLightInit = True
+            else:
+                SurfNumAdj = Surface(SurfNum).ExtBoundCond
+                if (SurfNumAdj > 0):
+                    ZoneNumAdj = Surface(SurfNumAdj).Zone
+                    
+                    if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
+                        if (!SurfaceWindow(SurfNum).SurfDayLightInit):
+                            SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
+                            SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
+                            SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
+                            SurfaceWindow(SurfNum).SolidAngAtRefPtWtd = 0.0
+                            SurfaceWindow(SurfNum).IllumFromWinAtRefPt.allocate(2, numRefPoints)
+                            SurfaceWindow(SurfNum).IllumFromWinAtRefPt = 0.0
+                            SurfaceWindow(SurfNum).BackLumFromWinAtRefPt.allocate(2, numRefPoints)
+                            SurfaceWindow(SurfNum).BackLumFromWinAtRefPt = 0.0
+                            SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt.allocate(2, numRefPoints)
+                            SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt = 0.0
+                            SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep.allocate(numRefPoints)
+                            SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep = 0.0
+                            SurfaceWindow(SurfNum).LumWinFromRefPtRep.allocate(numRefPoints)
+                            SurfaceWindow(SurfNum).LumWinFromRefPtRep = 0.0
+                            SurfaceWindow(SurfNum).SurfDayLightInit = True
+
+            if (Surface(SurfNum).ExtBoundCond == ExternalEnvironment):
+                WindowShadingControlPtr = Surface(SurfNum).WindowShadingControlPtr
+
+                if (Surface(SurfNum).HasShadeControl):
+                    if (WindowShadingControl(WindowShadingControlPtr).GlareControlIsActive):
+                        # Error if GlareControlIsActive but window is not in a Daylighting:Detailed zone
+                        if (ZoneDaylight(Surface(SurfNum).Zone).TotalDaylRefPoints == 0):
+                            ShowSevereError("Window = {} has Window Shading Control with".format(Surface(SurfNum).Name));
+                            ShowContinueError("GlareControlIsActive = Yes but it is not in a Daylighting zone.");
+                            ShowContinueError("Zone indicated = {}".format(Zone(ZoneNum).Name));
+                            ErrorsFound = True
+
+                        # Error if GlareControlIsActive and window is in a Daylighting:Detailed zone with
+                        # an interior window adjacent to another Daylighting:Detailed zone
+                        if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0):
+                            for IntWin in range(Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1):
+                            # for (IntWin = Zone(ZoneNum).SurfaceFirst; IntWin <= Zone(ZoneNum).SurfaceLast; ++IntWin) {
+                                SurfNumAdj = Surface(IntWin).ExtBoundCond
+                                if (Surface(IntWin).Class == SurfaceClass_Window && SurfNumAdj > 0):
+                                    ZoneNumAdj = Surface(SurfNumAdj).Zone
+
+                                    if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
+                                        ShowSevereError("Window = {} has Window Shading Control with".format(Surface(SurfNum).Name));
+                                        ShowContinueError("GlareControlIsActive = Yes and is in a Daylighting zone");
+                                        ShowContinueError("that shares an interior window with another Daylighting zone");
+                                        ShowContinueError("Adjacent Zone indicated = {}".format(Zone(ZoneNumAdj).Name));
+                                        ErrorsFound = True
+
+                    if (WindowShadingControl(WindowShadingControlPtr).ShadingControlType == WSCT_MeetDaylIlumSetp):
+                        # Error if window has ShadingControlType = MeetDaylightingIlluminanceSetpoint &
+                        # but is not in a Daylighting:Detailed zone
+                        if (ZoneDaylight(Surface(SurfNum).Zone).TotalDaylRefPoints == 0):
+                            ShowSevereError("Window = {} has Window Shading Control with".format(Surface(SurfNum).Name));
+                            ShowContinueError("MeetDaylightingIlluminanceSetpoint but it is not in a Daylighting zone.");
+                            ShowContinueError("Zone indicated = {}".format(Zone(ZoneNum).Name));
+                            ErrorsFound = True
+                        
+                        # Error if window has ShadingControlType = MeetDaylightIlluminanceSetpoint and is in a &
+                        # Daylighting:Detailed zone with an interior window adjacent to another Daylighting:Detailed zone
+                        if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0):
+                            for IntWin in range(Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1):
+                            # for (IntWin = Zone(ZoneNum).SurfaceFirst; IntWin <= Zone(ZoneNum).SurfaceLast; ++IntWin) {
+                                SurfNumAdj = Surface(IntWin).ExtBoundCond
+                                if (Surface(IntWin).Class == SurfaceClass_Window && SurfNumAdj > 0):
+                                    ZoneNumAdj = Surface(SurfNumAdj).Zone
+                                    
+                                    if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
+                                        ShowSevereError("Window = {} has Window Shading Control with".format(Surface(SurfNum).Name));
+                                        ShowContinueError("MeetDaylightIlluminanceSetpoint and is in a Daylighting zone");
+                                        ShowContinueError("that shares an interior window with another Daylighting zone");
+                                        ShowContinueError("Adjacent Zone indicated = {}".format(Zone(ZoneNumAdj).Name));
+                                        ErrorsFound = True
+
+        # RJH DElight Modification Begin - Calls to DElight preprocessing subroutines
+        if (doesDayLightingUseDElight()):
+            dLatitude = Latitude
+            print("Calculating DElight Daylighting Factors")
+            DElightInputGenerator()
+            # Init Error Flag to 0 (no Warnings or Errors)
+            print("ReturnFrom DElightInputGenerator")
+            iErrorFlag = 0
+            print("Calculating DElight DaylightCoefficients")
+            GenerateDElightDaylightCoefficients(dLatitude, iErrorFlag)
+
+            # Check Error Flag for Warnings or Errors returning from DElight
+            # RJH 2008-03-07: open file for READWRITE and DELETE file after processing
+            print("ReturnFrom DElight DaylightCoefficients Calc")
+            if (iErrorFlag != 0):
+                # Open DElight Daylight Factors Error File for reading
+                iDElightErrorFile = GetNewUnitNumber()
+                {
+                    IOFlags flags;
+                    flags.ACTION("READWRITE");
+                    gio::open(iDElightErrorFile, DataStringGlobals::outputDelightDfdmpFileName, flags);
+                }
+
+                # Sequentially read lines in DElight Daylight Factors Error File
+                # and process them using standard EPlus warning/error handling calls
+                # Process all error/warning messages first
+                # Then, if any error has occurred, ShowFatalError to terminate processing
+                bEndofErrFile = False
+                bRecordsOnErrFile = False
+                while (!bEndofErrFile):
+                    {
+                        IOFlags flags;
+                        gio::read(iDElightErrorFile, fmtA, flags) >> cErrorLine;
+                        iReadStatus = flags.ios();
+                    }
+                    if (iReadStatus < GoodIOStatValue):
+                        bEndofErrFile = True
+                        continue
+                    
+                    bRecordsOnErrFile = True
+                    # Is the current line a Warning message?
+                    if (has_prefix(cErrorLine, "WARNING: ")):
+                        cErrorMsg = cErrorLine.substr(9)
+                        ShowWarningError(cErrorMsg)
+                    
+                    # Is the current line an Error message?
+                    if (has_prefix(cErrorLine, "ERROR: ")):
+                        cErrorMsg = cErrorLine.substr(7)
+                        ShowSevereError(cErrorMsg)
+                        iErrorFlag = 1
+
+                # Close and Delete DElight Error File
+                if (bRecordsOnErrFile):
+                    {
+                        IOFlags flags;
+                        flags.DISPOSE("DELETE");
+                        gio::close(iDElightErrorFile, flags);
+                    }
+                else:
+                    {
+                        IOFlags flags;
+                        flags.DISPOSE("DELETE");
+                        gio::close(iDElightErrorFile, flags);
+                    }
+                
+                # If any DElight Error occurred then ShowFatalError to terminate
+                if (iErrorFlag > 0):
+                    ErrorsFound = True
+                
+            else:
+                # Open, Close, and Delete DElight Daylight Factors Error File for reading
+                iDElightErrorFile = GetNewUnitNumber()
+                {
+                    IOFlags flags;
+                    flags.ACTION("READWRITE");
+                    gio::open(iDElightErrorFile, DataStringGlobals::outputDelightDfdmpFileName, flags);
+                }
+                {
+                    IOFlags flags;
+                    flags.DISPOSE("DELETE");
+                    gio::close(iDElightErrorFile, flags);
+                }
+        # RJH DElight Modification End - Calls to DElight preprocessing subroutines
+
+        # TH 6/3/2010, added to report daylight factors
+        cCurrentModuleObject = "Output:DaylightFactors"
+        NumReports = inputProcessor->getNumObjectsFound(cCurrentModuleObject);
+        if (NumReports > 0):
+            inputProcessor->getObjectItem(cCurrentModuleObject,
+                                          1,
+                                          cAlphaArgs,
+                                          NumNames,
+                                          rNumericArgs,
+                                          NumNumbers,
+                                          IOStat,
+                                          lNumericFieldBlanks,
+                                          lAlphaFieldBlanks,
+                                          cAlphaFieldNames,
+                                          cNumericFieldNames);
+            if (has_prefix(cAlphaArgs(1), "SIZINGDAYS")):
+                DFSReportSizingDays = True
+            elif (has_prefix(cAlphaArgs(1), "ALLSHADOWCALCULATIONDAYS")):
+                DFSReportAllShadowCalculationDays = True
+
+        if (ErrorsFound):
+        	ShowFatalError("Program terminated for above reasons");
+
+    	return None   
 
     # DaylightingManager::CalcDayltgCoefficients
     def CalcDayltgCoefficients():
@@ -191,21 +765,21 @@ class ExternalFunctions:
         '''
 
         # using DataSystemVariables::DetailedSolarTimestepIntegration;
-        using DaylightingDevices::FindTDDPipe;
-        using DaylightingDevices::TransTDD;
-        using General::BlindBeamBeamTrans;
-        using General::RoundSigDigits;
+        # using DaylightingDevices::FindTDDPipe;
+        # using DaylightingDevices::TransTDD;
+        # using General::BlindBeamBeamTrans;
+        # using General::RoundSigDigits;
 
         # SUBROUTINE PARAMETER DEFINITIONS:
         static gio::Fmt fmtA("(A)");
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        ZoneNum = 0 # Zone number
-        IHR = 0     # Hour of day counter
-        IWin = 0    # Window counter
-        loop = 0    # DO loop indices
-        DaylFac1 = 0.0 # sky daylight factor at ref pt 1
-        DaylFac2 = 0.0 # sky daylight factor at ref pt 2
+        ZoneNum = 0		# Zone number
+        IHR = 0			# Hour of day counter
+        IWin = 0		# Window counter
+        loop = 0		# DO loop indices
+        DaylFac1 = 0.0	# sky daylight factor at ref pt 1
+        DaylFac2 = 0.0	# sky daylight factor at ref pt 2
 
         # added for output all daylight factors
         write_stat = 0
@@ -261,9 +835,9 @@ class ExternalFunctions:
         #-----------------------------------------!
         if (!DetailedSolarTimestepIntegration && !KickOffSizing && !KickOffSimulation):
             if (WarmupFlag):
-                DisplayString("Calculating Detailed Daylighting Factors, Start Date=" + CurMnDy)
+                print("Calculating Detailed Daylighting Factors, Start Date = {}".format(CurMnDy))
             else:
-                DisplayString("Updating Detailed Daylighting Factors, Start Date=" + CurMnDy)
+                print("Updating Detailed Daylighting Factors, Start Date = {}".format(CurMnDy))
 
         if (BeginSimFlag):
 
@@ -318,11 +892,11 @@ class ExternalFunctions:
                 		# Skip if sun is below horizon #Autodesk SUNCOSHR was uninitialized here
                     	continue
                     
-                    PHSUN = PiOvr2 - std::acos(SUNCOSHR(IHR, 3))
+                    PHSUN = PiOvr2 - math.acos(SUNCOSHR(IHR, 3))
                     PHSUNHR(IHR) = PHSUN
-                    SPHSUNHR(IHR) = std::sin(PHSUN)
-                    CPHSUNHR(IHR) = std::cos(PHSUN)
-                    THSUNHR(IHR) = std::atan2(SUNCOSHR(IHR, 2), SUNCOSHR(IHR, 1))
+                    SPHSUNHR(IHR) = math.sin(PHSUN)
+                    CPHSUNHR(IHR) = math.cos(PHSUN)
+                    THSUNHR(IHR) = math.atan2(SUNCOSHR(IHR, 2), SUNCOSHR(IHR, 1))
                     
                     # Get exterior horizontal illuminance from sky and sun
                     THSUN = THSUNHR(IHR)
@@ -345,11 +919,11 @@ class ExternalFunctions:
             
             if (!(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)):
             	# Skip if sun is below horizon
-                PHSUN = PiOvr2 - std::acos(SUNCOSHR(HourOfDay, 3))
+                PHSUN = PiOvr2 - math.acos(SUNCOSHR(HourOfDay, 3))
                 PHSUNHR(HourOfDay) = PHSUN
-                SPHSUNHR(HourOfDay) = std::sin(PHSUN)
-                CPHSUNHR(HourOfDay) = std::cos(PHSUN)
-                THSUNHR(HourOfDay) = std::atan2(SUNCOSHR(HourOfDay, 2), SUNCOSHR(HourOfDay, 1))
+                SPHSUNHR(HourOfDay) = math.sin(PHSUN)
+                CPHSUNHR(HourOfDay) = math.cos(PHSUN)
+                THSUNHR(HourOfDay) = math.atan2(SUNCOSHR(HourOfDay, 2), SUNCOSHR(HourOfDay, 1))
                 
                 # Get exterior horizontal illuminance from sky and sun
                 THSUN = THSUNHR(HourOfDay)
@@ -538,7 +1112,7 @@ class ExternalFunctions:
         # end zone loop
 	    return None
 
-	# using ScheduleManager::GetScheduleIndex
+	# ScheduleManager::GetScheduleIndex
     def GetScheduleIndex(std::string const &ScheduleName):
     	'''
         FUNCTION INFORMATION:
@@ -579,7 +1153,7 @@ class ExternalFunctions:
 
         return GetScheduleIndex
 
-    # using ScheduleManager::getNumObjectsFound
+    # ScheduleManager::getNumObjectsFound
     def getNumObjectsFound(std::string const &ObjectWord):
 		'''
 	    FUNCTION INFORMATION:
@@ -616,7 +1190,7 @@ class ExternalFunctions:
 
 	    return 0
 
-	# using ScheduleManager::getObjectItem
+	# ScheduleManager::getObjectItem
 	def getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, *args):
 		# void InputProcessor::getObjectItem(std::string const &Object,
   		#                            int const Number,
@@ -1039,37 +1613,37 @@ class ExternalFunctions:
 
 class SolarShading(ExternalFunctions):
 	'''
-    // MODULE INFORMATION:
-    //       AUTHOR         Rick Strand
-    //       DATE WRITTEN   March 1997
-    //       MODIFIED       December 1998, FCW
-    //       MODIFIED       July 1999, Linda Lawrie, eliminate shadefl.scr,
-    //                      do shadowing calculations during simulation
-    //       MODIFIED       June 2001, FCW, handle window blinds
-    //       MODIFIED       May 2004, LKL, Polygons > 4 sides (not subsurfaces)
-    //       MODIFIED       January 2007, LKL, Taking parameters back to original integer (HC)
-    //       MODIFIED       August 2011, JHK, Including Complex Fenestration optical calculations
-    //       MODIFIED       November 2012, BG, Timestep solar and daylighting calculations
-    //       RE-ENGINEERED  na
+    MODULE INFORMATION:
+          AUTHOR         Rick Strand
+          DATE WRITTEN   March 1997
+          MODIFIED       December 1998, FCW
+          MODIFIED       July 1999, Linda Lawrie, eliminate shadefl.scr,
+                         do shadowing calculations during simulation
+          MODIFIED       June 2001, FCW, handle window blinds
+          MODIFIED       May 2004, LKL, Polygons > 4 sides (not subsurfaces)
+          MODIFIED       January 2007, LKL, Taking parameters back to original integer (HC)
+          MODIFIED       August 2011, JHK, Including Complex Fenestration optical calculations
+          MODIFIED       November 2012, BG, Timestep solar and daylighting calculations
+          RE-ENGINEERED  na
 
-    // PURPOSE OF THIS MODULE:
-    // The purpose of this module is to encompass the routines and data
-    // which are need to perform the solar calculations in EnergyPlus.
-    // This also requires that shading and geometry routines and data
-    // which are used by the solar calculations be included in this module.
+    PURPOSE OF THIS MODULE:
+    The purpose of this module is to encompass the routines and data
+    which are need to perform the solar calculations in EnergyPlus.
+    This also requires that shading and geometry routines and data
+    which are used by the solar calculations be included in this module.
 
-    // METHODOLOGY EMPLOYED:
-    // Many of the methods used in this module have been carried over from the
-    // (I)BLAST program.  As such, there is not much documentation on the
-    // methodology used.  The original code was written mainly by George
-    // Walton and requires coordinate transformations.  It calculates
-    // shading using an overlapping polygon approach.
+    METHODOLOGY EMPLOYED:
+    Many of the methods used in this module have been carried over from the
+    (I)BLAST program.  As such, there is not much documentation on the
+    methodology used.  The original code was written mainly by George
+    Walton and requires coordinate transformations.  It calculates
+    shading using an overlapping polygon approach.
 
-    // REFERENCES:
-    // TARP Manual, NIST Publication.
-    // Passive Solar Extension of the BLAST Program, CERL/UIUC Publication.
+    REFERENCES:
+    TARP Manual, NIST Publication.
+    Passive Solar Extension of the BLAST Program, CERL/UIUC Publication.
 
-    // OTHER NOTES:
+    OTHER NOTES:
     # na
 	'''
 
@@ -2733,11 +3307,11 @@ class SolarCalculations(SolarShading):
             Ydif = vertex.y - base_Y0
             Zdif = vertex.z - base_Z0
 
-            if (std::abs(Xdif) <= 1.E-15):
+            if (abs(Xdif) <= 1.E-15):
             	Xdif = 0.0
-            if (std::abs(Ydif) <= 1.E-15):
+            if (abs(Ydif) <= 1.E-15):
             	Ydif = 0.0
-            if (std::abs(Zdif) <= 1.E-15):
+            if (abs(Zdif) <= 1.E-15):
             	Zdif = 0.0
 
             XVT(N) = base_lcsx.x * Xdif + base_lcsx.y * Ydif + base_lcsx.z * Zdif
@@ -3132,8 +3706,8 @@ class SolarCalculations(SolarShading):
                     auto const x(XTEMP(NV3))
                     auto const y(YTEMP(NV3))
                     for K in range(1, KK):
-                        if (std::abs(x - XTEMP(K)) > 2.0): continue
-                        if (std::abs(y - YTEMP(K)) > 2.0): continue
+                        if (abs(x - XTEMP(K)) > 2.0): continue
+                        if (abs(y - YTEMP(K)) > 2.0): continue
                         NV3 = KK
                         break # K DO loop
         
@@ -3267,8 +3841,8 @@ class SolarCalculations(SolarShading):
                                 auto const x(XTEMP(NVTEMP))
                                 auto const y(YTEMP(NVTEMP))
                                 for K in range(1, KK+1):
-                                    if (std::abs(x - XTEMP(K)) > 2.0): continue
-                                    if (std::abs(y - YTEMP(K)) > 2.0): continue
+                                    if (abs(x - XTEMP(K)) > 2.0): continue
+                                    if (abs(y - YTEMP(K)) > 2.0): continue
                                     NVTEMP = KK
                                     break # K loop
 
@@ -3294,8 +3868,8 @@ class SolarCalculations(SolarShading):
                             auto const x(XTEMP(NVTEMP))
                             auto const y(YTEMP(NVTEMP))
                             for K in range(1, KK+1):
-                                if (std::abs(x - XTEMP(K)) > 2.0): continue
-                                if (std::abs(y - YTEMP(K)) > 2.0): continue
+                                if (abs(x - XTEMP(K)) > 2.0): continue
+                                if (abs(y - YTEMP(K)) > 2.0): continue
                                 NVTEMP = KK
                                 break # K loop
 
@@ -3328,8 +3902,8 @@ class SolarCalculations(SolarShading):
                                     auto const x(XTEMP(NVTEMP))
                                     auto const y(YTEMP(NVTEMP))
                                     for K in range(1, KK+1):
-                                        if (std::abs(x - XTEMP(K)) > 2.0): continue
-                                        if (std::abs(y - YTEMP(K)) > 2.0): continue
+                                        if (abs(x - XTEMP(K)) > 2.0): continue
+                                        if (abs(y - YTEMP(K)) > 2.0): continue
                                         NVTEMP = KK
                                         break # K loop
 
@@ -3512,7 +4086,7 @@ class SolarCalculations(SolarShading):
             DELTAX = XTEMP(N) - XMIN
             DELTAY = YTEMP(N) - YXMIN
 
-            if (std::abs(DELTAX) > 0.5):
+            if (abs(DELTAX) > 0.5):
                 M += 1
                 SLOPE(M) = DELTAY / DELTAX
                 XTEMP(M) = XTEMP(N)
@@ -3674,7 +4248,7 @@ class SolarCalculations(SolarShading):
             HTRANS0(NS3, NV3) # Determine h.c. values of sides.
             # Skip overlaps of negligible area.
 
-            if (std::abs(HCAREA(NS3)) * HCMULT < std::abs(HCAREA(NS1))):
+            if (abs(HCAREA(NS3)) * HCMULT < abs(HCAREA(NS1))):
                 OverlapStatus = NoOverlap
             else:
                 if (HCAREA(NS1) * HCAREA(NS2) > 0.0) HCAREA(NS3) = -HCAREA(NS3) # Determine sign of area of overlap
@@ -4053,12 +4627,12 @@ class SolarCalculations(SolarShading):
             		(Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                     	continue
 
-                if (std::abs(WoShdgIsoSky(SurfNum)) > Eps):
+                if (abs(WoShdgIsoSky(SurfNum)) > Eps):
                     DifShdgRatioIsoSkyHRTS(iTimeStep, iHour, SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum))
                 else:
                     DifShdgRatioIsoSkyHRTS(iTimeStep, iHour, SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum) + Eps)
                 
-                if (std::abs(WoShdgHoriz(SurfNum)) > Eps):
+                if (abs(WoShdgHoriz(SurfNum)) > Eps):
                     DifShdgRatioHorizHRTS(iTimeStep, iHour, SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum))
                 else:
                     DifShdgRatioHorizHRTS(iTimeStep, iHour, SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum) + Eps)
@@ -4185,11 +4759,11 @@ class SolarCalculations(SolarShading):
                 YS = Surface(NGRS).lcsy.x * SUNCOS(1) + Surface(NGRS).lcsy.y * SUNCOS(2) + Surface(NGRS).lcsy.z * SUNCOS(3)
                 ZS = Surface(NGRS).lcsz.x * SUNCOS(1) + Surface(NGRS).lcsz.y * SUNCOS(2) + Surface(NGRS).lcsz.z * SUNCOS(3)
 
-                if (std::abs(ZS) > 1.e-4):
+                if (abs(ZS) > 1.e-4):
                     XShadowProjection = XS / ZS
                     YShadowProjection = YS / ZS
-                    if (std::abs(XShadowProjection) < 1.e-8): XShadowProjection = 0.0
-                    if (std::abs(YShadowProjection) < 1.e-8): YShadowProjection = 0.0
+                    if (abs(XShadowProjection) < 1.e-8): XShadowProjection = 0.0
+                    if (abs(YShadowProjection) < 1.e-8): YShadowProjection = 0.0
                 else:
                     XShadowProjection = 0.0
                     YShadowProjection = 0.0
@@ -4394,10 +4968,10 @@ class SolarCalculations(SolarShading):
                     j += 1 # será que é aqui ou depois do próximo loop?!
                     # for (size_type l = 0 l < NVR ++l): # [ l ] == ( 1, l+1 )
                     for l in range(l, NVR):
-                        auto const delX(std::abs(HCX[l] - HCX_N))
+                        auto const delX(abs(HCX[l] - HCX_N))
                         if (delX > 6):
                     		continue
-                        auto const delY(std::abs(HCY[l] - HCY_N))
+                        auto const delY(abs(HCY[l] - HCY_N))
                         if (delY > 6):
                         	continue
                         if (delX > 0):
@@ -4995,12 +5569,12 @@ class SolarCalculations(SolarShading):
                  (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                 continue
 
-            if (std::abs(WoShdgIsoSky(SurfNum)) > Eps):
+            if (abs(WoShdgIsoSky(SurfNum)) > Eps):
                 DifShdgRatioIsoSky(SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum))
             else:
                 DifShdgRatioIsoSky(SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum) + Eps)
             
-            if (std::abs(WoShdgHoriz(SurfNum)) > Eps):
+            if (abs(WoShdgHoriz(SurfNum)) > Eps):
                 DifShdgRatioHoriz(SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum))
             else:
                 DifShdgRatioHoriz(SurfNum) = (WithShdgHoriz(SurfNum)) / (WoShdgHoriz(SurfNum) + Eps)

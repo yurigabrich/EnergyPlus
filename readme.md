@@ -23,6 +23,53 @@ File `Shadows.py` (functions and variables dependencies):
     	    --> ? SingleLayerOptics
     	    EP_Count_Calls --> DataTimings.cc
 		`clear_state`
+
+		[class] ExternalFunctions
+			`CalcDayltgCoefficients` --> DaylightingManager
+				DetailedSolarTimestepIntegration() --> DataSystemVariables.cc
+					ZoneDaylight --> ?
+				FindTDDPipe --> DaylightingDevices.cc
+				TransTDD --> DaylightingDevices.cc
+				BlindBeamBeamTrans --> General.cc
+				RoundSigDigits --> General.cc
+				GetDaylightingParametersInput() --> DaylightingManager
+				CheckTDDsAndLightShelvesInDaylitZones() -->
+				AssociateWindowShadingControlWithDaylighting() -->
+				CheckTDDZone --> 
+				BeginSimFlag --> ?
+				NumOfZones --> ?
+				ZoneDaylight() --> ?
+				KickOffSizing --> ?
+				KickOffSimulation --> ?
+				WarmupFlag --> ?
+				CalcMinIntWinSolidAngs() --> ? acho q não será necessário, pois é para janela
+				TDDTransVisBeam --> ?
+				TDDFluxInc --> ?
+				TDDFluxTrans --> ?
+				NumOfTDDPipes --> ?
+				BeginDayFlag --> ?
+				SUNCOSHR() --> ?
+				SunIsUpValue --> ?
+				DayltgExtHorizIllum() --> ?
+				PHSUNHR() --> DaylightingManager.cc
+				SPHSUNHR() --> DaylightingManager.cc
+				CPHSUNHR() --> DaylightingManager.cc
+				THSUNHR() --> DaylightingManager.cc
+				GILSK() --> DaylightingManager.cc
+				GILSU() --> DaylightingManager.cc
+				CalcDayltgCoeffsRefMapPoints() --> ?
+				FirstTimeDaylFacCalc --> falta definição inicial ---------------------------
+				DFSReportSizingDays --> DetailedSolarTimestepIntegration() --> it's enough?
+				DFSReportAllShadowCalculationDays --> DetailedSolarTimestepIntegration() --> an 'else' of the above
+				DoingSizing --> ?
+				DoWeathSim --> ?
+				DoDesDaySim --> ?
+				KindOfSim --> ?
+				ksRunPeriodWeather --> ?
+				GetNewUnitNumber() --> ?
+
+
+
 	
 	`__init__`
 		`GetShadowingInput`
