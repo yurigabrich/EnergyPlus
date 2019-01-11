@@ -82,7 +82,20 @@ class ExternalFunctions:
 	Only those useful for the following computations was copied to here.
 	'''
 
-	# DataStringGlobals::outputShdFileName
+	# DataGlobals.cc
+    BeginSimFlag = False        # True until any actual simulation (full or sizing) has begun, False after first time step
+    NumOfZones = 0              # Total number of Zones for simulation
+    KickOffSimulation = False   # Kick off simulation -- meaning run each environment for 1 or 2 time steps.
+    KickOffSizing = False       # Kick off sizing -- meaning run each environment for 1 or 2 time steps.
+    WarmupFlag = False          # True during the warmup portion of a simulation
+    BeginDayFlag = False        # True at the start of each day, False after first time step in day
+    DoingSizing = False         # TRUE when "sizing" is being performed (some error messages won't be displayed)
+    DoWeathSim = False          # User input in SimulationControl object
+    DoDesDaySim = False         # User input in SimulationControl object
+    KindOfSim = 0               # See parameters. (ksDesignDay, ksRunPeriodDesign, ksRunPeriodWeather)
+    ksRunPeriodWeather = 3      # one of the parameters for KindOfSim
+
+    # DataStringGlobals::outputShdFileName
 	outputShdFileName = 'eplusout.shd'
 
 	# DataShadowingCombinations.cc
@@ -95,6 +108,7 @@ class ExternalFunctions:
 	Array1D<SurfaceData> Surface;
 	Array1D<SurfaceWindowCalc> SurfaceWindow;
 	NumOfZoneLists = 0
+    Array2D<Real64> SUNCOSHR(24, 3, 0.0); # Hourly values of SUNCOS (solar direction cosines) # Autodesk:Init Zero-initialization added to avoid use uninitialized
 
 	# DataSurfaces.hh
 	SchedExternalShadingFrac = False  # True if the external shading is scheduled or calculated externally to be imported
@@ -110,11 +124,117 @@ class ExternalFunctions:
     UnitsVar(OutputProcessor::Unit::None);   # Units enumeration --> UnitsVar ?
     MeterUnits(OutputProcessor::Unit::None); # Units enumeration --> MeterUnits ?
 
-	# DataIPShortCuts
+	# DataIPShortCuts.cc
 	Array1D_string cAlphaFieldNames;
     Array1D_string cNumericFieldNames;
     Array1D_bool lNumericFieldBlanks;
     Array1D_bool lAlphaFieldBlanks;
+
+    # DataEnvironment.cc
+    SunIsUpValue = 0.00001                  # if Cos Zenith Angle of the sun is >= this value, the sun is "up"
+
+    # DataDaylighting.hh::ZoneDaylightCalc
+    struct ZoneDaylightCalc
+    {
+        // Members
+        std::string Name;                  // Name of the daylighting:controls object
+        std::string ZoneName;              // name of the zone where the daylighting:controls object is located
+        int DaylightMethod;                // Type of Daylighting (1=SplitFlux, 2=DElight)
+        int AvailSchedNum;                 // pointer to availability schedule if present
+        int TotalDaylRefPoints;            // Number of daylighting reference points in a zone (0,1 or 2)
+        Array1D_int DaylRefPtNum;          // Reference number to DaylRefPt array that stores Daylighting:ReferencePoint
+        Array2D<Real64> DaylRefPtAbsCoord; // =0.0 ! X,Y,Z coordinates of all daylighting reference points
+        // in absolute coordinate system (m)
+        // Points 1 and 2 are the control reference points
+        Array1D_bool DaylRefPtInBounds; // True when coordinates are in bounds of zone coordinates
+        Array1D<Real64> FracZoneDaylit; // =0.0  ! Fraction of zone controlled by each reference point
+        Array1D<Real64> IllumSetPoint;  // =0.0  ! Illuminance setpoint at each reference point (lux)
+        int LightControlType;           // Lighting control type (same for all reference points)
+        // (1=continuous, 2=stepped, 3=continuous/off)
+        int glareRefPtNumber;                      // from field: Glare Calculation Daylighting Reference Point Name
+        Real64 ViewAzimuthForGlare;                // View direction relative to window for glare calculation (deg)
+        int MaxGlareallowed;                       // Maximum allowable discomfort glare index
+        Real64 MinPowerFraction;                   // Minimum fraction of power input that continuous dimming system can dim down to
+        Real64 MinLightFraction;                   // Minimum fraction of light output that continuous dimming system can dim down to
+        int LightControlSteps;                     // Number of levels (excluding zero) of stepped control system
+        Real64 LightControlProbability;            // For manual control of stepped systems, probability that lighting will
+        int TotalExtWindows;                       // Total number of exterior windows in the zone
+        Real64 AveVisDiffReflect;                  // Area-weighted average inside surface visible reflectance of zone
+        Real64 DElightGriddingResolution;          // Field: Delight Gridding Resolution
+        Array1D<Real64> RefPtPowerReductionFactor; // =1.0  ! Electric power reduction factor at reference points
+        // due to daylighting
+        Real64 ZonePowerReductionFactor;   // Electric power reduction factor for entire zone due to daylighting
+        Array1D<Real64> DaylIllumAtRefPt;  // =0.0 ! Daylight illuminance at reference points (lux)
+        Array1D<Real64> GlareIndexAtRefPt; // =0.0 ! Glare index at reference points
+        Array1D_int AdjIntWinZoneNums;     // List of zone numbers of adjacent zones that have exterior windows and
+        // share one or more interior windows with target zone
+        int NumOfIntWinAdjZones; // Number of adjacent zones that have exterior windows and share one or
+        // more interior windows with target zone
+        int NumOfIntWinAdjZoneExtWins; // number of exterior windows associated with zone via interior windows
+        Array1D<IntWinAdjZoneExtWinStruct>
+            IntWinAdjZoneExtWin;          // nested structure | info about exterior window associated with zone via interior window
+        int NumOfDayltgExtWins;           // Number of associated exterior windows providing daylight to this zone
+        Array1D_int DayltgExtWinSurfNums; // List of surface numbers of zone's exterior windows or
+        // exterior windows in adjacent zones sharing interior windows with the zone
+        std::vector<std::vector<int>> ShadeDeployOrderExtWins; // describes how the fenestration surfaces should deploy the shades. 
+        // It is a list of lists. Each sublist is a group of fenestration surfaces that should be deployed together. Many times the 
+        // sublists a just a single index to a fenestration surface if they are deployed one at a time.
+        Array1D_int MapShdOrdToLoopNum;  // list that maps back the original loop order when using ShadeDeployOrderExtWins for shade deployment
+        Real64 MinIntWinSolidAng;     // Minimum solid angle subtended by an interior window in a zone
+        Real64 TotInsSurfArea;        // Total inside surface area of a daylit zone (m2)
+        Real64 FloorVisRefl;          // Area-weighted visible reflectance of floor of a daylit zone
+        Real64 InterReflIllFrIntWins; // Inter-reflected illuminance due to beam and diffuse solar passing
+        //  through a zone's interior windows (lux)
+        Array1D<Real64> BacLum;                  // =0.0 ! Background luminance at each reference point (cd/m2)
+        Array2D<Real64> SolidAngAtRefPt;         // (MaxRefPoints,50)
+        Array2D<Real64> SolidAngAtRefPtWtd;      // (MaxRefPoints,50)
+        Array3D<Real64> IllumFromWinAtRefPt;     // (MaxRefPoints,2,50)
+        Array3D<Real64> BackLumFromWinAtRefPt;   // (MaxRefPoints,2,50)
+        Array3D<Real64> SourceLumFromWinAtRefPt; // (MaxRefPoints,2,50)
+        // Allocatable daylight factor arrays
+        // Arguments for Dayl---Sky are:
+        //  1: Daylit window number (1 to NumOfDayltgExtWins)
+        //  2: Reference point number (1 to MaxRefPoints)
+        //  3: Sky type (1 to 4; 1 = clear, 2 = clear turbid, 3 = intermediate, 4 = overcast
+        //  4: Shading index (1 to MaxSlatAngs+1; 1 = bare window; 2 = with shade, or, if blinds
+        //      2 = first slat position, 3 = second position, ..., MaxSlatAngs+1 = last position)
+        //  5: Sun position index (1 to 24)
+        Array5D<Real64> DaylIllFacSky;
+        Array5D<Real64> DaylSourceFacSky;
+        Array5D<Real64> DaylBackFacSky;
+        // Arguments for Dayl---Sun are:
+        //  1: Daylit window number (1 to NumOfDayltgExtWins)
+        //  2: Reference point number (1 to MaxRefPoints)
+        //  3: Shading index (1 to MaxShadeIndex; 1 = no shade; 2 = with shade, or, if blinds
+        //      2 = first slat position, 3 = second position, ..., MaxSlatAngs+1 = last position)
+        //  4: Sun position index (1 to 24)
+        Array4D<Real64> DaylIllFacSun;
+        Array4D<Real64> DaylIllFacSunDisk;
+        Array4D<Real64> DaylSourceFacSun;
+        Array4D<Real64> DaylSourceFacSunDisk;
+        Array4D<Real64> DaylBackFacSun;
+        Array4D<Real64> DaylBackFacSunDisk;
+        // Time exceeding maximum allowable discomfort glare index at reference points (hours)
+        Array1D<Real64> TimeExceedingGlareIndexSPAtRefPt;
+        // Time exceeding daylight illuminance setpoint at reference points (hours)
+        Array1D<Real64> TimeExceedingDaylightIlluminanceSPAtRefPt;
+        // True if at least one adjacent zone, sharing one or more interior windows, has daylighting control
+        bool AdjZoneHasDayltgCtrl;
+        int MapCount;          // Number of maps assigned to Zone
+        Array1D_int ZoneToMap; // Pointers to maps allocated to Zone
+
+        // Default Constructor
+        ZoneDaylightCalc()
+            : DaylightMethod(0), AvailSchedNum(0), TotalDaylRefPoints(0), LightControlType(1), ViewAzimuthForGlare(0.0), MaxGlareallowed(0),
+              MinPowerFraction(0.0), MinLightFraction(0.0), LightControlSteps(0), LightControlProbability(0.0), TotalExtWindows(0),
+              AveVisDiffReflect(0.0), ZonePowerReductionFactor(1.0), NumOfIntWinAdjZones(0), NumOfIntWinAdjZoneExtWins(0), NumOfDayltgExtWins(0),
+              MinIntWinSolidAng(0.0), TotInsSurfArea(0.0), FloorVisRefl(0.0), InterReflIllFrIntWins(0.0), AdjZoneHasDayltgCtrl(false), MapCount(0)
+        {
+        }
+    };
+
+    # DataDaylighting.cc
+    Array1D<ZoneDaylightCalc> ZoneDaylight;
 
     # General::BlindBeamBeamTrans
     def BlindBeamBeamTrans(ProfAng, SlatAng, SlatWidth, SlatSeparation, SlatThickness):
@@ -165,9 +285,9 @@ class ExternalFunctions:
             fEdge = 0.0
             fEdge1 = 0.0
 
-            if (abs(std::sin(gamma)) > 0.01):
-                if ((SlatAng > 0.0 && SlatAng <= PiOvr2 && ProfAng <= SlatAng) || (SlatAng > PiOvr2 && SlatAng <= Pi && ProfAng > -(Pi - SlatAng))):
-                    fEdge1 = SlatThickness * abs(std::sin(gamma)) / ((SlatSeparation + SlatThickness / abs(std::sin(SlatAng))) * CosProfAng)
+            if (abs(math.sin(gamma)) > 0.01):
+                if ((SlatAng > 0.0 && SlatAng <= PiOvr2 && ProfAng <= SlatAng) || (SlatAng > PiOvr2 && SlatAng <= math.pi && ProfAng > -(math.pi - SlatAng))):
+                    fEdge1 = SlatThickness * abs(math.sin(gamma)) / ((SlatSeparation + SlatThickness / abs(math.sin(SlatAng))) * CosProfAng)
                 
                 fEdge = min(1.0, abs(fEdge1))
 
@@ -299,7 +419,7 @@ class ExternalFunctions:
 
         return stripped(String)
 
-    # DaylightingManager
+    # DaylightingManager.cc
     Array1D<Real64> PHSUNHR(24, 0.0);  	# Hourly values of PHSUN
     Array1D<Real64> SPHSUNHR(24, 0.0); 	# Hourly values of the sine of PHSUN
     Array1D<Real64> CPHSUNHR(24, 0.0); 	# Hourly values of the cosine of PHSUN
@@ -307,6 +427,14 @@ class ExternalFunctions:
     Array2D<Real64> GILSK(24, 4, 0.0); 	# Horizontal illuminance from sky, by sky type, for each hour of the day
     Array1D<Real64> GILSU(24, 0.0);    	# Horizontal illuminance from sun for each hour of the day
     TotWindowsWithDayl = 0				# Total number of exterior windows in all daylit zones
+    Array1D_bool CheckTDDZone;
+    Array2D<Real64> TDDTransVisBeam;
+    Array3D<Real64> TDDFluxInc;
+    Array3D<Real64> TDDFluxTrans;
+    FirstTimeDaylFacCalc = True
+
+    # DaylightingDevices.cc
+    NumOfTDDPipes = 0                   # Number of TDD pipes in the input file
 
     # DaylightingDevices::FindTDDPipe
     def FindTDDPipe(WinNum):
@@ -416,6 +544,432 @@ class ExternalFunctions:
             TransTDD = TDDPipe(PipeNum).TransSolIso
 
         return TransTDD
+
+    # DaylightingManager::CheckTDDsAndLightShelvesInDaylitZones
+    def CheckTDDsAndLightShelvesInDaylitZones():
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Brent Griffith
+              DATE WRITTEN   Dec 2007
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        This subroutine checks daylighting input for TDDs and light shelfs
+         which need to be checked after daylighting input has been read in (CR 7145)
+         (eventually this should be changed once/if implementations change to decouple from daylighting calcs so that
+         these devices can be used in models without daylighting controls
+        CR 7145 was for TDDs, but also implenting check for light shelves, the other "daylighting device"
+
+        METHODOLOGY EMPLOYED:
+        loop thru daylighting devices and check that their zones have daylight controls
+        '''
+
+        # Using/Aliasing
+        using DataDaylighting::NoDaylighting;
+        using DataDaylighting::ZoneDaylight;
+        using DataHeatBalance::Zone;
+        using namespace DataDaylightingDevices;
+        using General::RoundSigDigits;
+
+        # SUBROUTINE PARAMETER DEFINITIONS:
+        static gio::Fmt fmtA("(A)");
+
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        PipeNum = 0  # TDD pipe object number
+        ShelfNum = 0 # light shelf object number
+        SurfNum = 0  # daylight device surface number
+        bool ErrorsFound;
+
+        if (CheckTDDs_firstTime):
+            CheckTDDZone.dimension(NumOfZones, true);
+            CheckTDDs_firstTime = False
+
+        ErrorsFound = False
+
+        for PipeNum in range(1, NumOfTDDPipes+1):
+            SurfNum = TDDPipe(PipeNum).Diffuser
+            
+            if (SurfNum > 0):
+                if (ZoneDaylight(Surface(SurfNum).Zone).DaylightMethod == NoDaylighting):
+                    ShowSevereError("DaylightingDevice:Tubular = " + TDDPipe(PipeNum).Name + ":  is not connected to a Zone that has Daylighting.  ");
+                    ShowContinueError("Add Daylighting:Controls to Zone named:  " + Zone(Surface(SurfNum).Zone).Name);
+                    ShowContinueError("A sufficient control is provided on the .dbg file.");
+                    ErrorsFound = True
+                    
+                    if (CheckTDDZone(Surface(SurfNum).Zone)):
+                        gio::write(OutputFileDebug, fmtA) << " ! Following control is to allow tubular reporting in this Zone";
+                        gio::write(OutputFileDebug, fmtA) << "Daylighting:Controls,  !- this control controls 0% of zone.";
+                        gio::write(OutputFileDebug, fmtA) << "   " + Zone(Surface(SurfNum).Zone).Name + ",  !- Zone Name";
+                        gio::write(OutputFileDebug, fmtA) << "     1,   !- Total Daylighting Reference Points";
+                        
+                        if (DaylRefWorldCoordSystem):
+                            # world coordinates, use zone origin for ref pt
+                            gio::write(OutputFileDebug, fmtA) << "   " + RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginX, 2) +
+                                                                     ",   !- X-Coordinate of First Reference Point {m}";
+                            gio::write(OutputFileDebug, fmtA) << "   " + RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginY, 2) +
+                                                                     ",   !- Y-Coordinate of First Reference Point {m}";
+                            gio::write(OutputFileDebug, fmtA) << "   " + RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginZ, 2) +
+                                                                     ",   !- Z-Coordinate of First Reference Point {m}";
+                        else:
+                            # relative coordinates, use 0,0,0 for ref pt
+                            gio::write(OutputFileDebug, fmtA) << "   0.0,   !- X-Coordinate of First Reference Point {m}";
+                            gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Y-Coordinate of First Reference Point {m}";
+                            gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Z-Coordinate of First Reference Point {m}";
+                        
+                        gio::write(OutputFileDebug, fmtA) << "      ,   !- X-Coordinate of Second Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "      ,   !- Y-Coordinate of Second Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "      ,   !- Z-Coordinate of Second Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Fraction of Zone Controlled by First Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Fraction of Zone Controlled by Second Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Illuminance Setpoint at First Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Illuminance Setpoint at Second Reference Point";
+                        gio::write(OutputFileDebug, fmtA) << "     3,   !- Lighting Control Type";
+                        gio::write(OutputFileDebug, fmtA)
+                            << "   0.0,   !- Glare Calculation Azimuth Angle of View Direction Clockwise from Zone y-Axis";
+                        gio::write(OutputFileDebug, fmtA) << "      ,   !- Maximum Allowable Discomfort Glare Index";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Minimum Input Power Fraction for Continuous Dimming Control";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Minimum Light Output Fraction for Continuous Dimming Control";
+                        gio::write(OutputFileDebug, fmtA) << "     0,   !- Number of Stepped Control Steps";
+                        gio::write(OutputFileDebug, fmtA) << "   0.0;   !- Probability Lighting will be Reset When Needed in Manual Stepped Control";
+
+                        CheckTDDZone(Surface(SurfNum).Zone) = False
+
+            else: # SurfNum == 0
+                # should not come here (would have already been caught in TDD get input), but is an error
+                ShowSevereError("DaylightingDevice:Tubular = " + TDDPipe(PipeNum).Name + ":  Diffuser surface not found ");
+                ErrorsFound = True
+
+        for ShelfNum in range(1, NumOfShelf+1):
+            SurfNum = Shelf(ShelfNum).Window
+            
+            if (SurfNum == 0):
+                # should not come here (would have already been caught in shelf get input), but is an error
+                ShowSevereError("DaylightingDevice:Shelf = " + Shelf(ShelfNum).Name + ":  window not found ");
+                ErrorsFound = True
+
+        if (ErrorsFound):
+            ShowFatalError("CheckTDDsAndLightShelvesInDaylitZones: Errors in DAYLIGHTING input.");
+        
+        return None
+
+    # DaylightingManager::AssociateWindowShadingControlWithDaylighting
+    def AssociateWindowShadingControlWithDaylighting():
+        '''
+        no description o.O
+        '''
+        for iShadeCtrl in range(1, TotWinShadingControl+1):
+            found = -1
+            
+            for jZone in range(1, NumOfZones+1):
+                if (UtilityRoutines::SameString(WindowShadingControl(iShadeCtrl).DaylightingControlName, ZoneDaylight(jZone).Name)):
+                    found = jZone
+                    break
+
+            if (found > 0):
+                WindowShadingControl(iShadeCtrl).DaylightControlIndex = found
+            else:
+                ShowWarningError("AssociateWindowShadingControlWithDaylighting: Daylighting object name used in WindowShadingControl not found.");
+                ShowContinueError("..The WindowShadingControl object=\"" + WindowShadingControl(iShadeCtrl).Name +
+                                  "\" and referenes an object named: \"" + WindowShadingControl(iShadeCtrl).DaylightingControlName + "\"");
+            
+        return None
+    
+
+    # DaylightingManager::CalcMinIntWinSolidAngs --> acho q não será necessário, pois é para janela
+    def CalcMinIntWinSolidAngs():
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Fred Winkelmann
+              DATE WRITTEN   Feb. 2004
+              MODIFIED:na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        For each Daylighting:Detailed zone finds the minimum solid angle subtended
+        by interior windows through which daylight can pass from adjacent zones with
+        exterior windows.
+
+        METHODOLOGY EMPLOYED:na
+        REFERENCES:na
+        '''
+        # Using/Aliasing
+        using namespace Vectors;
+
+        # Locals
+        # SUBROUTINE ARGUMENT DEFINITIONS: na
+        # SUBROUTINE PARAMETER DEFINITIONS: na
+        # INTERFACE BLOCK SPECIFICATIONS: na
+        # DERIVED TYPE DEFINITIONS: na
+
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+
+        ZoneNum = 0                    # Zone number
+        ZoneNumAdj = 0                 # Adjacent zone number
+        IWin = 0                       # Window surface number
+        IL = 0                         # Reference point number
+        loop = 0                       # DO loop index
+        bool is_Triangle;               # True if window is a triangle
+        bool is_Rectangle;              # True if window is a rectangle
+        bool IntWinNextToIntWinAdjZone; # True if an interior window is next to a zone with one or more exterior windows
+        IntWinSolidAng = 0.0          # Approximation to solid angle subtended by an interior window from a point a distance SQRT(zone floor area) away.
+        static Vector3<Real64> W1;      # Window vertices
+        static Vector3<Real64> W2;
+        static Vector3<Real64> W3;
+        static Vector3<Real64> WC;      # Center point of window
+        static Vector3<Real64> W21;     # Unit vectors from window vertex 2 to 1 and 2 to 3
+        static Vector3<Real64> W23;
+        HW = 0.0                      # Window height and width (m)
+        WW = 0.0
+        static Vector3<Real64> RREF;  # Location of a reference point in absolute coordinate system
+        static Vector3<Real64> Ray;   # Unit vector along ray from reference point to window center
+        static Vector3<Real64> REFWC; # Vector from reference point to center of window
+        static Vector3<Real64> WNORM; # Unit vector normal to window (pointing away from room)
+        DIS = 0.0                   # Distance from ref point to window center (m)
+        COSB = 0.0                  # Cosine of angle between ray from ref pt to center of window and window outward normal
+
+        # FLOW:
+        for ZoneNum in range(1, NumOfZones+1):
+            ZoneDaylight(ZoneNum).MinIntWinSolidAng = 2.0 * math.pi
+
+            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0): continue
+            if (ZoneDaylight(ZoneNum).NumOfIntWinAdjZones == 0): continue
+            
+            for IWin in range( Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1):
+
+                if (Surface(IWin).Class == SurfaceClass_Window && Surface(IWin).ExtBoundCond >= 1):
+                    ZoneNumAdj = Surface(Surface(IWin).ExtBoundCond).Zone
+                    IntWinNextToIntWinAdjZone = False
+                    
+                    for loop in range(1, ZoneDaylight(ZoneNum).NumOfIntWinAdjZones+1):
+                        if (ZoneNumAdj == ZoneDaylight(ZoneNum).AdjIntWinZoneNums(loop)):
+                            IntWinNextToIntWinAdjZone = True
+                            break
+
+                    if (IntWinNextToIntWinAdjZone):
+                        for IL in range(1, ZoneDaylight(ZoneNum).TotalDaylRefPoints+1):
+                            
+                            # Reference point in absolute coordinate system
+                            RREF = ZoneDaylight(ZoneNum).DaylRefPtAbsCoord({1, 3}, IL)
+                            is_Triangle = (Surface(IWin).Sides == 3)
+                            is_Rectangle = (Surface(IWin).Sides == 4)
+                            
+                            if (is_Rectangle):
+                                # Vertices of window numbered counter-clockwise starting at upper left as viewed
+                                # from inside of room. Assumes original vertices are numbered counter-clockwise from
+                                # upper left as viewed from outside.
+                                W3 = Surface(IWin).Vertex(2)
+                                W2 = Surface(IWin).Vertex(3)
+                                W1 = Surface(IWin).Vertex(4)
+                            elif (is_Triangle):
+                                W3 = Surface(IWin).Vertex(2)
+                                W2 = Surface(IWin).Vertex(3)
+                                W1 = Surface(IWin).Vertex(1)
+                            
+                            # Unit vectors from window vertex 2 to 1 and 2 to 3, center point of window,
+                            # and vector from ref pt to center of window
+                            W21 = W1 - W2
+                            W23 = W3 - W2
+                            HW = W21.magnitude()
+                            WW = W23.magnitude()
+                            
+                            if (is_Rectangle):
+                                WC = W2 + (W23 + W21) / 2.0
+                            elif (is_Triangle):
+                                WC = W2 + (W23 + W21) / 3.0
+                            
+                            # Vector from ref point to center of window
+                            REFWC = WC - RREF
+                            W21 /= HW
+                            W23 /= WW
+                            
+                            # Unit vector normal to window (pointing away from room)
+                            WNORM = Surface(IWin).OutNormVec
+                            
+                            # Distance from ref point to center of window
+                            DIS = REFWC.magnitude()
+                            
+                            # Unit vector from ref point to center of window
+                            Ray = REFWC / DIS
+                            
+                            # Cosine of angle between ray from ref pt to center of window and window outward normal
+                            COSB = dot(WNORM, Ray)
+                            if (COSB > 0.01765): # 0 <= B < 89 deg
+                                # Above test avoids case where ref point cannot receive daylight directly from the
+                                # interior window
+                                IntWinSolidAng = COSB * Surface(IWin).Area / (pow_2(DIS) + 0.001)
+                                ZoneDaylight(ZoneNum).MinIntWinSolidAng = min(ZoneDaylight(ZoneNum).MinIntWinSolidAng, IntWinSolidAng)
+                            
+                        # End of loop over reference points
+            # End of loop over surfaces in zone
+        # End of loop over zones
+
+        return None
+
+    # DaylightingManager::DayltgExtHorizIllum
+    def DayltgExtHorizIllum(HISK, &HISU):
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Fred Winkelmann
+              DATE WRITTEN   July 1997
+              MODIFIED       na
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        Calculates exterior daylight illuminance.
+
+        METHODOLOGY EMPLOYED:
+        Called by CalcDayltgCoefficients. Calculates illuminance
+        on unobstructed horizontal surface by integrating
+        over the luminance distribution of standard CIE skies.
+        Calculates horizontal beam illuminance.
+        REFERENCES:
+        Based on DOE-2.1E subroutine DHILL.
+
+        INPUTS:
+                Array1A<Real64> HISK, # Horizontal illuminance from sky for different sky types
+                Real64 &HISU          # Horizontal illuminance from sun for unit beam normal
+        '''
+
+        # Argument array dimensioning
+        HISK.dim = 4
+
+        # Locals
+        # SUBROUTINE ARGUMENT DEFINITIONS:
+        #  and overcast sky (lux)
+        #   illuminance (lux)
+
+        # SUBROUTINE PARAMETER DEFINITIONS:
+        NTH = 18                            # Number of azimuth steps for sky integration
+        NPH = 8                             # Number of altitude steps for sky integration
+        DTH = (2.0 * Pi) / double(NTH)      # Sky integration azimuth stepsize (radians)
+        DPH = PiOvr2 / double(NPH)          # Sky integration altitude stepsize (radians)
+
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        IPH = 0                            # Altitude index for sky integration
+        ITH = 0                            # Azimuth index for sky integration
+        static Array1D<Real64> PH(NPH);     # Altitude of sky element (radians)
+        static Array1D<Real64> TH(NTH);     # Azimuth of sky element (radians)
+        ISky = 0                           # Sky type index
+        static Array1D<Real64> SPHCPH(NPH); # Sine times cosine of altitude of sky element
+
+        # FLOW:
+        # Integrate to obtain illuminance from sky.
+        # The contribution in lumens/m2 from a patch of sky at altitude PH and azimuth TH
+        # is L(TH,PH)*SIN(PH)*COS(PH)*DTH*DPH, where L(TH,PH) is the luminance
+        # of the patch in cd/m2.
+        #  Init
+        if (DayltgExtHorizIllum_firstTime):
+            for IPH in range(1, NPH+1):
+                PH(IPH) = (IPH - 0.5) * DPH
+                SPHCPH(IPH) = math.sin(PH(IPH)) * math.cos(PH(IPH)) # DA = COS(PH)*DTH*DPH
+            
+            for ITH in range(1, NTH+1):
+                TH(ITH) = (ITH - 0.5) * DTH
+            
+            DayltgExtHorizIllum_firstTime = False
+
+        HISK = 0.0
+
+        # Sky integration
+        for IPH in range(1, NPH+1):
+            PH_IPH = PH(IPH)
+            SPHCPH_IPH = SPHCPH(IPH)
+
+            for ITH in range(1, NTH+1):
+                TH_ITH = TH(ITH)
+                
+                for ISky in range(1, 5):
+                    HISK(ISky) += DayltgSkyLuminance(ISky, TH_ITH, PH_IPH) * SPHCPH_IPH
+
+        for ISky in range(1, 5):
+            HISK(ISky) *= DTH * DPH
+
+        # Direct solar horizontal illum (for unit direct normal illuminance)
+        HISU = SPHSUN * 1.0
+    
+        return None
+
+    # DaylightingManager::CalcDayltgCoeffsRefMapPoints
+    def CalcDayltgCoeffsRefMapPoints(ZoneNum):
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Linda Lawrie
+              DATE WRITTEN   October 2004
+              MODIFIED       May 2006 (RR): added exterior window screens
+                             April 2012 (LKL); change to allow multiple maps per zone
+              RE-ENGINEERED  na
+
+        PURPOSE OF THIS SUBROUTINE:
+        This subroutine does the daylighting coefficient calculation for the
+        daylighting and illuminance map reference points.
+
+        METHODOLOGY EMPLOYED:
+        na
+
+        REFERENCES:
+        na
+
+        INPUT:
+                int const ZoneNum
+        '''
+
+        # Using/Aliasing
+        using DaylightingDevices::FindTDDPipe;
+        using DaylightingDevices::TransTDD;
+        using General::BlindBeamBeamTrans;
+        using General::RoundSigDigits;
+        using General::SafeDivide;
+        using namespace Vectors;
+
+        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+        IWin = 0    # Window counter
+        PipeNum = 0 # TDD pipe object number
+        loopwin = 0 # loop index for exterior windows associated with a daylit zone
+        TZoneNum = 0
+        bool ErrorsFound;
+        MapNum = 0
+
+        if (VeryFirstTime):
+            # make sure all necessary surfaces match to pipes
+            ErrorsFound = False
+            for TZoneNum in range(1, NumOfZones+1):
+
+                for loopwin in range(1, ZoneDaylight(TZoneNum).NumOfDayltgExtWins+1):
+                    IWin = ZoneDaylight(TZoneNum).DayltgExtWinSurfNums(loopwin)
+                    if (SurfaceWindow(IWin).OriginalClass != SurfaceClass_TDD_Diffuser):
+                        continue
+                    
+                    # Look up the TDD:DOME object
+                    PipeNum = FindTDDPipe(IWin)
+                    if (PipeNum == 0):
+                        ShowSevereError("GetTDDInput: Surface=" + Surface(IWin).Name +
+                                        ", TDD:Dome object does not reference a valid Diffuser object.");
+                        ShowContinueError("...needs DaylightingDevice:Tubular of same name as Surface.");
+                        ErrorsFound = True
+
+            if (ErrorsFound):
+                ShowFatalError("Not all TubularDaylightDome objects have corresponding DaylightingDevice:Tubular objects. Program terminates.");
+
+            VeryFirstTime = False
+
+        # Calc for daylighting reference points
+        CalcDayltgCoeffsRefPoints(ZoneNum)
+
+        if (!DoingSizing && !KickOffSimulation):
+            # Calc for illuminance map
+            if (TotIllumMaps > 0):
+                for MapNum in range(1, TotIllumMaps+1):
+                    if (IllumMapCalc(MapNum).Zone != ZoneNum):
+                        continue
+                    if (WarmupFlag):
+                        print("Calculating Daylighting Coefficients (Map Points), Zone = {}".format(Zone(ZoneNum).Name))
+                    else:
+                        print("Updating Daylighting Coefficients (Map Points), Zone = {}".format(Zone(ZoneNum).Name))
+                
+                CalcDayltgCoeffsMapPoints(ZoneNum)
+        
+        return None
 
     # DaylightingManager::GetDaylightingParametersInput
     def GetDaylightingParametersInput():
@@ -1795,7 +2349,7 @@ class SolarShading(ExternalFunctions):
 	    NTheta = 24                 # Number of azimuth angle steps for sky integration
 	    Eps = 1.e-10				# Small number
 	    DPhi = PiOvr2 / NPhi       	# Altitude step size
-	    DTheta = 2.0 * Pi / NTheta 	# Azimuth step size
+	    DTheta = 2.0 * math.pi / NTheta 	# Azimuth step size
 	    DThetaDPhi = DTheta * DPhi 	# Product of DTheta and DPhi
 	    PhiMin = 0.5 * DPhi        	# Minimum altitude
 
@@ -3398,7 +3952,7 @@ class SolarCalculations(SolarShading):
 
             # See comment at top of module regarding HCMULT
             auto l(l1)
-            for (int N = 1 N <= NumVertices ++N, ++l) { // [ l ] == ( NS, N )
+            for (int N = 1 N <= NumVertices ++N, ++l) { # [ l ] == ( NS, N )
                 HCX[l] = nint64(XVS(N) * HCMULT)
                 HCY[l] = nint64(YVS(N) * HCMULT)
 

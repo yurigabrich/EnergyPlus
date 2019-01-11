@@ -25,48 +25,48 @@ File `Shadows.py` (functions and variables dependencies):
 		`clear_state`
 
 		[class] ExternalFunctions
-			`CalcDayltgCoefficients` --> DaylightingManager
+			`CalcDayltgCoefficients` --> DaylightingManager.cc
 				DetailedSolarTimestepIntegration() --> DataSystemVariables.cc
-					ZoneDaylight --> ?
+					ZoneDaylight() --> DataDaylighting.cc
 				FindTDDPipe --> DaylightingDevices.cc
 				TransTDD --> DaylightingDevices.cc
 				BlindBeamBeamTrans --> General.cc
 				RoundSigDigits --> General.cc
-				GetDaylightingParametersInput() --> DaylightingManager
-				CheckTDDsAndLightShelvesInDaylitZones() -->
-				AssociateWindowShadingControlWithDaylighting() -->
-				CheckTDDZone --> 
-				BeginSimFlag --> ?
-				NumOfZones --> ?
-				ZoneDaylight() --> ?
-				KickOffSizing --> ?
-				KickOffSimulation --> ?
-				WarmupFlag --> ?
-				CalcMinIntWinSolidAngs() --> ? acho q não será necessário, pois é para janela
-				TDDTransVisBeam --> ?
-				TDDFluxInc --> ?
-				TDDFluxTrans --> ?
-				NumOfTDDPipes --> ?
-				BeginDayFlag --> ?
-				SUNCOSHR() --> ?
-				SunIsUpValue --> ?
-				DayltgExtHorizIllum() --> ?
+				GetDaylightingParametersInput() --> DaylightingManager.cc
+				CheckTDDsAndLightShelvesInDaylitZones() --> DaylightingManager.cc
+				AssociateWindowShadingControlWithDaylighting() --> DaylightingManager.cc
+				CheckTDDZone --> DaylightingManager.cc
+				BeginSimFlag --> DataGlobals.cc
+				NumOfZones --> DataGlobals.cc
+				ZoneDaylight() --> DataDaylighting.cc
+				KickOffSizing --> DataGlobals.cc
+				KickOffSimulation --> DataGlobals.cc
+				WarmupFlag --> DataGlobals.cc
+				CalcMinIntWinSolidAngs() --> DaylightingManager.cc --> acho q não será necessário, pois é para janela
+				TDDTransVisBeam --> DaylightingManager.cc
+				TDDFluxInc --> DaylightingManager.cc
+				TDDFluxTrans --> DaylightingManager.cc
+				NumOfTDDPipes --> DaylightingDevices.cc
+				BeginDayFlag --> DataGlobals.cc
+				SUNCOSHR() --> DataSurfaces.cc
+				SunIsUpValue --> DataEnvironment.cc
+				DayltgExtHorizIllum() --> DaylightingManager.cc
 				PHSUNHR() --> DaylightingManager.cc
 				SPHSUNHR() --> DaylightingManager.cc
 				CPHSUNHR() --> DaylightingManager.cc
 				THSUNHR() --> DaylightingManager.cc
 				GILSK() --> DaylightingManager.cc
 				GILSU() --> DaylightingManager.cc
-				CalcDayltgCoeffsRefMapPoints() --> ?
-				FirstTimeDaylFacCalc --> falta definição inicial ---------------------------
-				DFSReportSizingDays --> DetailedSolarTimestepIntegration() --> it's enough?
-				DFSReportAllShadowCalculationDays --> DetailedSolarTimestepIntegration() --> an 'else' of the above
-				DoingSizing --> ?
-				DoWeathSim --> ?
-				DoDesDaySim --> ?
-				KindOfSim --> ?
-				ksRunPeriodWeather --> ?
-				GetNewUnitNumber() --> ?
+				CalcDayltgCoeffsRefMapPoints() --> DaylightingManager.cc
+				FirstTimeDaylFacCalc --> DaylightingManager.cc
+				DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
+				DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
+				DoingSizing --> DataGlobals.cc
+				DoWeathSim --> DataGlobals.cc
+				DoDesDaySim --> DataGlobals.cc
+				KindOfSim --> DataGlobals.cc
+				ksRunPeriodWeather --> DataGlobals.cc
+				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(
 
 
 
