@@ -29,9 +29,20 @@ File `Shadows.py` (functions and variables dependencies):
 				DetailedSolarTimestepIntegration() --> DataSystemVariables.cc
 					ZoneDaylight() --> DataDaylighting.cc
 				FindTDDPipe --> DaylightingDevices.cc
+					Surface() --> DataSurfaces.cc
+					TDDPipe() --> DataDaylightingDevices.cc
 				TransTDD --> DaylightingDevices.cc
+					POLYF() --> General.cc
+					Surface() --> DataSurfaces.cc
+					Construct() --> DataHeatBalance.cc ? não está definido, só é usado...
+					InterpolatePipeTransBeam() --> DaylightingDevices.cc
+					TDDPipe() --> DataDaylightingDevices.cc
+					CalcTDDTransSolAniso() --> DaylightingDevices.cc
 				BlindBeamBeamTrans --> General.cc
+					PiOvr2 --> DataGlobals.cc
 				RoundSigDigits --> General.cc
+					TestChar --> ??? não sei como converter para Python
+					stripped() --> computing performance?
 				GetDaylightingParametersInput() --> DaylightingManager.cc
 				CheckTDDsAndLightShelvesInDaylitZones() --> DaylightingManager.cc
 				AssociateWindowShadingControlWithDaylighting() --> DaylightingManager.cc

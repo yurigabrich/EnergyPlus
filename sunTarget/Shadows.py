@@ -59,6 +59,7 @@ file, described below.
 # A BACK SURFACE – an inside surface – is one that may be partially sunlit/receive solar transmission for interior solar distribution.
 # ------------------------------------------
 
+import math
 
 # C++ Headers
 # include <cassert>		# defines one macro function that can be used as a standard debugging tool
@@ -121,8 +122,58 @@ class ExternalFunctions:
     DetailedSolarTimestepIntegration = False # when true, use detailed timestep integration for all solar,shading, etc.
 
     # OutputProcessor::Unit
-    UnitsVar(OutputProcessor::Unit::None);   # Units enumeration --> UnitsVar ?
-    MeterUnits(OutputProcessor::Unit::None); # Units enumeration --> MeterUnits ?
+    enum class Unit
+    {
+        kg_s,
+        C,
+        kgWater_kgDryAir,
+        ppm,
+        Pa,
+        m3_s,
+        None,
+        min,
+        W,
+        J,
+        m3,
+        kg,
+        ach,
+        W_W,
+        lux,
+        lum_W,
+        hr,
+        cd_m2,
+        J_kgWater,
+        m_s,
+        W_m2,
+        m,
+        Ah,
+        A,
+        V,
+        deltaC,
+        kmol_s,
+        rev_min,
+        Btu_h_W,
+        W_m2K,
+        J_kg,
+        kg_kg,
+        Perc,
+        deg,
+        s,
+        kg_m3,
+        kg_m2s,
+        J_kgK,
+        L,
+        K_m,
+        m2,
+        W_m2C,
+        rad,
+        J_m2,
+        clo,
+        W_K,
+        kgWater_s,
+        unknown,
+        customEMS
+    };
 
 	# DataIPShortCuts.cc
 	Array1D_string cAlphaFieldNames;
@@ -132,6 +183,9 @@ class ExternalFunctions:
 
     # DataEnvironment.cc
     SunIsUpValue = 0.00001                  # if Cos Zenith Angle of the sun is >= this value, the sun is "up"
+
+    # DataGlobals.cc
+    PiOvr2 = math.pi / 2.0                  # Pi/2
 
     # DataDaylighting.hh::ZoneDaylightCalc
     struct ZoneDaylightCalc
@@ -259,19 +313,13 @@ class ExternalFunctions:
 	            Real64 const SlatThickness   # Slat thickness (m)
 		'''
         # Using/Aliasing
-        using DataGlobals::Pi;
-        using DataGlobals::PiOvr2;
+        # using DataGlobals::Pi;
+        # using DataGlobals::PiOvr2;
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
-        fEdge = 0.0      # Slat edge correction factor
-        wbar = 0.0       # Intermediate variable
-        gamma = 0.0      # Intermediate variable
-        fEdge1 = 0.0     # Intermediate variable
-        CosProfAng = 0.0 # Cosine of profile angle
-
-        CosProfAng = math.cos(ProfAng)
-        gamma = SlatAng - ProfAng
-        wbar = SlatSeparation
+        CosProfAng = math.cos(ProfAng)  # Cosine of profile angle
+        gamma = SlatAng - ProfAng       # Intermediate variable
+        wbar = SlatSeparation           # Intermediate variable
 
         if (CosProfAng != 0.0):
         	wbar = SlatWidth * math.cos(gamma) / CosProfAng
@@ -282,8 +330,8 @@ class ExternalFunctions:
             # Correction factor that accounts for finite thickness of slats. It is used to modify the
             # blind transmittance to account for reflection and absorption by the slat edges.
             # fEdge is ratio of area subtended by edge of slat to area between tops of adjacent slats.
-            fEdge = 0.0
-            fEdge1 = 0.0
+            fEdge = 0.0      # Slat edge correction factor
+            fEdge1 = 0.0     # Intermediate variable
 
             if (abs(math.sin(gamma)) > 0.01):
                 if ((SlatAng > 0.0 && SlatAng <= PiOvr2 && ProfAng <= SlatAng) || (SlatAng > PiOvr2 && SlatAng <= math.pi && ProfAng > -(math.pi - SlatAng))):
@@ -332,35 +380,40 @@ class ExternalFunctions:
         else:
             String = ZEROOOO
 
-        std::string::size_type const EPos = index(String, 'E'); # Position of E in original string format xxEyy
-        std::string EString;                                    # E string retained from original string
-        if (EPos != std::string::npos):
+        # EString --> E string retained from original string
+        try:
+            EPos = String.index("E") # Position of E in original string format xxEyy
             EString = String.substr(EPos)
             String.erase(EPos)
+        except ValueError:
+            continue # ? --> Isso que o 'if' está fazendo?
+        # if (EPos != std::string::npos): # npos = non-position = not found
+        #     EString = String.substr(EPos)
+        #     String.erase(EPos)
 
-        std::string::size_type const DotPos = index(String, '.'); # Position of decimal point in original string
+        DotPos = String.index(".") # Position of decimal point in original string
         assert(DotPos != std::string::npos);
         assert(DotPos > 0); # Or SPos will not be valid
 
         # (if, else, then) statement ?
         char TestChar(DotPos + SigDigits + 1 < String.length() ? String[DotPos + SigDigits + 1] : ' '); # Test character (digit) for rounding, if position in digit string >= 5 (digit is 5 or greater) then will round
 
-        std::string::size_type const TPos = index(DigitChar, TestChar); # Position of Testchar in Digit string
+        TPos = DigitChar.index(TestChar) # Position of Testchar in Digit string
 
-        std::string::size_type SPos; # Actual string position being replaced
+        # SPos --> Actual string position being replaced
         if (SigDigits == 0):
             SPos = DotPos - 1
         else:
             SPos = DotPos + SigDigits
 
-        if ((TPos != std::string::npos) && (TPos >= 5)):             # Must round to next Digit
-            char const Char2Rep = String[SPos];                       # Character (digit) to be replaced
-            std::string::size_type NPos = index(DigitChar, Char2Rep); # Position of "next" char in Digit String
-            std::string::size_type TPos1;
+        if ((TPos != std::string::npos) && (TPos >= 5)):    # Must round to next Digit
+            char const Char2Rep = String[SPos];             # Character (digit) to be replaced
+            NPos = DigitChar.index(Char2Rep)                # Position of "next" char in Digit String
+            
             assert(NPos != std::string::npos);
             String[SPos] = DigitChar[NPos + 1]
             
-            while (NPos == 9): # Must change other char too
+            while (NPos == 9):                              # Must change other char too
                 if (SigDigits == 1):
                     assert(SPos >= 2u);
                     TestChar = String[SPos - 2]
@@ -371,13 +424,13 @@ class ExternalFunctions:
                         SPos =- 2
                     
                     if (TestChar == ' '):
-                        TestChar = '0'           # all 999s
-                    elif (TestChar == '-'): # Autodesk Added to fix bug for values like -9.9999
+                        TestChar = '0'                      # all 999s
+                    elif (TestChar == '-'):                 # Autodesk Added to fix bug for values like -9.9999
                         assert(SPos >= 3u);
-                        String[SPos - 3] = TestChar # Shift sign left to avoid overwriting it
-                        TestChar = '0'              # all 999s
+                        String[SPos - 3] = TestChar         # Shift sign left to avoid overwriting it
+                        TestChar = '0'                      # all 999s
                     
-                    TPos1 = index(DigitChar, TestChar);
+                    TPos1 = DigitChar.index(TestChar)
                     assert(TPos1 != std::string::npos);
                     assert(SPos >= 2u);
                     String[SPos - 2] = DigitChar[TPos1 + 1]
@@ -390,13 +443,13 @@ class ExternalFunctions:
                         SPos =- 1
                     
                     if (TestChar == ' '):
-                        TestChar = '0'           # all 999s
-                    elif (TestChar == '-'): # Autodesk Added to fix bug for values like -9.9999
+                        TestChar = '0'                      # all 999s
+                    elif (TestChar == '-'):                 # Autodesk Added to fix bug for values like -9.9999
                         assert(SPos >= 2u);
-                        String[SPos - 2] = TestChar # Shift sign left to avoid overwriting it
-                        TestChar = '0'              # all 999s
+                        String[SPos - 2] = TestChar         # Shift sign left to avoid overwriting it
+                        TestChar = '0'                      # all 999s
                     
-                    TPos1 = index(DigitChar, TestChar);
+                    TPos1 = DigitChar.index(TestChar)
                     assert(TPos1 != std::string::npos);
                     assert(SPos >= 1u);
                     String[SPos - 1] = DigitChar[TPos1 + 1]
@@ -404,7 +457,7 @@ class ExternalFunctions:
                 SPos =- 1
                 NPos = TPos1
 
-        bool IncludeDot; # True when decimal point output
+        # IncludeDot --> True when decimal point output
         if (SigDigits > 0 || EString != ""):
             IncludeDot = True
         else:
@@ -418,6 +471,90 @@ class ExternalFunctions:
         
 
         return stripped(String)
+
+    # General::POLYF --> Why 3 definitions?! :/
+    Real64 POLYF(Real64 const X,         // Cosine of angle of incidence
+                 Array1A<Real64> const A // Polynomial coefficients
+    )
+    {
+        // FUNCTION INFORMATION:
+        //       AUTHOR         Fred Winkelmann
+        //       DATE WRITTEN   February 1999
+        //       DATE MODIFIED  October 1999, FW: change to 6th order polynomial over
+        //                        entire incidence angle range
+
+        // PURPOSE OF THIS FUNCTION:
+        // Evaluates glazing beam transmittance or absorptance of the form
+        // A(1)*X + A(2)*X^2 + A(3)*X^3 + A(4)*X^4 + A(5)*X^5 + A(6)*X^6
+        // where X is the cosine of the angle of incidence (0.0 to 1.0)
+
+        // METHODOLOGY EMPLOYED:
+        // na
+
+        // REFERENCES:
+        // na
+
+        // USE STATEMENTS:
+        // na
+
+        // Return value
+        Real64 POLYF;
+
+        // Argument array dimensioning
+        A.dim(6);
+
+        // Locals
+        // FUNCTION ARGUMENT DEFINITIONS:
+
+        // FUNCTION PARAMETER DEFINITIONS:
+        // na
+
+        // INTERFACE BLOCK SPECIFICATIONS
+        // na
+
+        // DERIVED TYPE DEFINITIONS
+        // na
+
+        // FUNCTION LOCAL VARIABLE DECLARATIONS:
+        // na
+
+        if (X < 0.0 || X > 1.0) {
+            POLYF = 0.0;
+        } else {
+            POLYF = X * (A(1) + X * (A(2) + X * (A(3) + X * (A(4) + X * (A(5) + X * A(6))))));
+        }
+        return POLYF;
+    }
+
+    Real64 POLYF(Real64 const X,         // Cosine of angle of incidence
+                 Array1<Real64> const &A // Polynomial coefficients
+    )
+    {
+        // Return value
+        Real64 POLYF;
+
+        if (X < 0.0 || X > 1.0) {
+            POLYF = 0.0;
+        } else {
+            POLYF = X * (A(1) + X * (A(2) + X * (A(3) + X * (A(4) + X * (A(5) + X * A(6))))));
+        }
+        return POLYF;
+    }
+
+    Real64 POLYF(Real64 const X,          // Cosine of angle of incidence
+                 Array1S<Real64> const &A // Polynomial coefficients
+    )
+    {
+        // Return value
+        Real64 POLYF;
+
+        if (X < 0.0 || X > 1.0) {
+            POLYF = 0.0;
+        } else {
+            POLYF = X * (A(1) + X * (A(2) + X * (A(3) + X * (A(4) + X * (A(5) + X * A(6))))));
+        }
+        return POLYF;
+    }
 
     # DaylightingManager.cc
     Array1D<Real64> PHSUNHR(24, 0.0);  	# Hourly values of PHSUN
@@ -435,6 +572,146 @@ class ExternalFunctions:
 
     # DaylightingDevices.cc
     NumOfTDDPipes = 0                   # Number of TDD pipes in the input file
+
+    # DataDaylightingDevices.cc
+    Array1D<TDDPipeData> TDDPipe;
+
+    # DaylightingDevices::CalcTDDTransSolAniso
+    Real64 CalcTDDTransSolAniso(int const PipeNum, // TDD pipe object number
+                                Real64 const COSI  // Cosine of the incident angle
+    )
+    {
+
+        // SUBROUTINE INFORMATION:
+        //       AUTHOR         Peter Graham Ellis
+        //       DATE WRITTEN   July 2003
+        //       MODIFIED       na
+        //       RE-ENGINEERED  na
+
+        // PURPOSE OF THIS SUBROUTINE:
+        // Calculates the transmittance of the anisotropic sky.
+
+        // METHODOLOGY EMPLOYED:
+        // Similar to the Trans = FluxTrans/FluxInc integrations above, the anisotropic sky can be decomposed
+        // and have a different transmittance applied to each component.
+        //   FluxInc = IsoSkyRad + CircumSolarRad + HorizonRad
+        //   FluxTrans = T1*IsoSkyRad + T2*CircumSolarRad + T3*HorizonRad
+        // It turns out that FluxTrans/FluxInc is equivalent to AnisoSkyTDDMult/AnisoSkyMult.
+        // AnisoSkyMult has been conveniently calculated already in AnisoSkyViewFactors in SolarShading.cc.
+        // AnisoSkyMult = MultIsoSky*DifShdgRatioIsoSky + MultCircumSolar*SunlitFrac + MultHorizonZenith*DifShdgRatioHoriz
+        // In this routine a similar AnisoSkyTDDMult is calculated that applies the appropriate transmittance to each
+        // of the components above.  The result is Trans = AnisoSkyTDDMult/AnisoSkyMult.
+        // Shading and orientation are already taken care of by DifShdgRatioIsoSky and DifShdgRatioHoriz.
+
+        // REFERENCES:
+        // See AnisoSkyViewFactors in SolarShading.cc.
+
+        // USE STATEMENTS: na
+        // Using/Aliasing
+        using DataGlobals::HourOfDay;
+        using DataGlobals::TimeStep;
+        using DataHeatBalance::AnisoSkyMult;
+        using DataHeatBalance::curDifShdgRatioIsoSky;
+        using DataHeatBalance::DifShdgRatioHoriz;
+        using DataHeatBalance::DifShdgRatioHorizHRTS;
+        using DataHeatBalance::DifShdgRatioIsoSky;
+        using DataHeatBalance::MultCircumSolar;
+        using DataHeatBalance::MultHorizonZenith;
+        using DataHeatBalance::MultIsoSky;
+        using DataHeatBalance::SunlitFrac;
+        using DataSystemVariables::DetailedSkyDiffuseAlgorithm;
+
+        // Return value
+        Real64 CalcTDDTransSolAniso;
+
+        // Locals
+        // FUNCTION ARGUMENT DEFINITIONS:
+
+        // FUNCTION LOCAL VARIABLE DECLARATIONS:
+        int DomeSurf;           // TDD:DOME surface number
+        Real64 IsoSkyRad;       // Isotropic sky radiation component
+        Real64 CircumSolarRad;  // Circumsolar sky radiation component
+        Real64 HorizonRad;      // Horizon sky radiation component
+        Real64 AnisoSkyTDDMult; // Anisotropic sky multiplier for TDD
+
+        // FLOW:
+        DomeSurf = TDDPipe(PipeNum).Dome;
+
+        if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing) {
+            IsoSkyRad = MultIsoSky(DomeSurf) * DifShdgRatioIsoSky(DomeSurf);
+            HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHoriz(DomeSurf);
+        } else {
+            IsoSkyRad = MultIsoSky(DomeSurf) * curDifShdgRatioIsoSky(DomeSurf);
+            HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHorizHRTS(TimeStep, HourOfDay, DomeSurf);
+        }
+        CircumSolarRad = MultCircumSolar(DomeSurf) * SunlitFrac(TimeStep, HourOfDay, DomeSurf);
+
+        AnisoSkyTDDMult = TDDPipe(PipeNum).TransSolIso * IsoSkyRad + TransTDD(PipeNum, COSI, SolarBeam) * CircumSolarRad +
+                          TDDPipe(PipeNum).TransSolHorizon * HorizonRad;
+
+        if (AnisoSkyMult(DomeSurf) > 0.0) {
+            CalcTDDTransSolAniso = AnisoSkyTDDMult / AnisoSkyMult(DomeSurf);
+        } else {
+            CalcTDDTransSolAniso = 0.0;
+        }
+
+        return CalcTDDTransSolAniso;
+    }
+
+    # DaylightingDevices::InterpolatePipeTransBeam
+    Real64 InterpolatePipeTransBeam(Real64 const COSI,              // Cosine of the incident angle
+                                    Array1A<Real64> const transBeam // Table of beam transmittance vs. cosine angle
+    )
+    {
+
+        // SUBROUTINE INFORMATION:
+        //       AUTHOR         Peter Graham Ellis
+        //       DATE WRITTEN   July 2003
+        //       MODIFIED       na
+        //       RE-ENGINEERED  na
+
+        // PURPOSE OF THIS SUBROUTINE:
+        // Interpolates the beam transmittance vs. cosine angle table.
+
+        // METHODOLOGY EMPLOYED: na
+        // REFERENCES: na
+
+        // Using/Aliasing
+        using FluidProperties::FindArrayIndex; // USEd code could be copied here to eliminate dependence on FluidProperties
+
+        // Return value
+        Real64 InterpolatePipeTransBeam;
+
+        // Argument array dimensioning
+        transBeam.dim(NumOfAngles);
+
+        // Locals
+        // FUNCTION ARGUMENT DEFINITIONS:
+
+        // FUNCTION LOCAL VARIABLE DECLARATIONS:
+        int Lo;
+        int Hi;
+        Real64 m;
+        Real64 b;
+
+        // FLOW:
+        InterpolatePipeTransBeam = 0.0;
+
+        // Linearly interpolate transBeam/COSAngle table to get value at current cosine of the angle
+        Lo = FindArrayIndex(COSI, COSAngle);
+        Hi = Lo + 1;
+
+        if (Lo > 0 && Hi <= NumOfAngles) {
+            m = (transBeam(Hi) - transBeam(Lo)) / (COSAngle(Hi) - COSAngle(Lo));
+            b = transBeam(Lo) - m * COSAngle(Lo);
+
+            InterpolatePipeTransBeam = m * COSI + b;
+        } else {
+            InterpolatePipeTransBeam = 0.0;
+        }
+
+        return InterpolatePipeTransBeam;
+    }
 
     # DaylightingDevices::FindTDDPipe
     def FindTDDPipe(WinNum):
@@ -455,7 +732,7 @@ class ExternalFunctions:
         	int const WinNum
     	'''
         # Using/Aliasing
-        using DataSurfaces::Surface;
+        # using DataSurfaces::Surface;
 
         # FLOW:
         FindTDDPipe = 0
@@ -504,7 +781,7 @@ class ExternalFunctions:
                 int const RadiationType # Radiation type flag
         '''
         # Using/Aliasing
-        using General::POLYF;
+        # using General::POLYF;
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
         constDome = 0	# Construction object number for TDD:DOME
