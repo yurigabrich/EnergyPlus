@@ -25,8 +25,8 @@ File `Shadows.py` (functions and variables dependencies):
 		`clear_state`
 
 		[class] ExternalFunctions
-			`CalcDayltgCoefficients` --> DaylightingManager.cc
-				DetailedSolarTimestepIntegration() --> DataSystemVariables.cc
+			`CalcDayltgCoefficients`*(3) --> DaylightingManager.cc
+				DetailedSolarTimestepIntegration()*(4) --> DataSystemVariables.cc
 					ZoneDaylight() --> DataDaylighting.cc
 				FindTDDPipe --> DaylightingDevices.cc
 					Surface() --> DataSurfaces.cc
@@ -36,9 +36,22 @@ File `Shadows.py` (functions and variables dependencies):
 					Surface() --> DataSurfaces.cc
 					Construct() --> DataHeatBalance.cc ? não está definido, só é usado...
 					InterpolatePipeTransBeam() --> DaylightingDevices.cc
+						FindArrayIndex --> ? FluidProperties
 					TDDPipe() --> DataDaylightingDevices.cc
 					CalcTDDTransSolAniso() --> DaylightingDevices.cc
-				BlindBeamBeamTrans --> General.cc
+						HourOfDay --> ? DataGlobals
+        				TimeStep --> ? DataGlobals
+        				AnisoSkyMult --> ? DataHeatBalance
+				        curDifShdgRatioIsoSky --> ? DataHeatBalance
+				        DifShdgRatioHoriz --> ? DataHeatBalance
+				        DifShdgRatioHorizHRTS --> ? DataHeatBalance
+				        DifShdgRatioIsoSky --> ? DataHeatBalance
+				        MultCircumSolar --> ? DataHeatBalance
+				        MultHorizonZenith --> ? DataHeatBalance
+				        MultIsoSky --> ? DataHeatBalance
+				        SunlitFrac --> ? DataHeatBalance
+				        DetailedSkyDiffuseAlgorithm --> ? DataSystemVariables
+				BlindBeamBeamTrans --> General.cc --> referenced but not used
 					PiOvr2 --> DataGlobals.cc
 				RoundSigDigits --> General.cc
 					TestChar --> ??? não sei como converter para Python
@@ -79,9 +92,6 @@ File `Shadows.py` (functions and variables dependencies):
 				ksRunPeriodWeather --> DataGlobals.cc
 				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(
 
-
-
-	
 	`__init__`
 		`GetShadowingInput`
 		        --> UtilityRoutines::SameString() --> como funciona isso?
@@ -143,9 +153,10 @@ File `Shadows.py` (functions and variables dependencies):
 		SkyDifSolarShading()
 			*SHADOW()
 			OutputProcessor::Unit --> OutputProcessor.cc
-		DetailedSolarTimestepIntegration --> DataSystemVariables.cc
-		CalcDayltgCoefficients() --> DaylightingManager.cc
+		*(4)DetailedSolarTimestepIntegration --> DataSystemVariables.cc
+		*(3)CalcDayltgCoefficients() --> DaylightingManager.cc
 		TotWindowsWithDayl() --> DaylightingManager.cc
+		SUN3()
 
 	*`SHADOW`
 		CTRANS()
@@ -163,15 +174,14 @@ File `Shadows.py` (functions and variables dependencies):
 		EP_Count_Calls --> DataTimings.cc
 
 	SEM NENHUM VÍNCULO:
-		`polygon_contains_point`
-		`HTRANS`
-		`SurfaceScheduledSolarInc`
-		`PerformSolarCalculations`
+		`polygon_contains_point` --> used for subsurfaces purposes (`CHKSBS`)
+		`HTRANS` --> used for subsurfaces purposes (`CalcInteriorWinTransDifSolInitialDistribution` e `CalcComplexWindowOverlap`)
+		`SurfaceScheduledSolarInc` --> used for subsurfaces purposes (`CalcInteriorSolarDistribution`)
 			SUN3()
-		`ReportSurfaceShading`
+		`ReportSurfaceShading` --> called by no one
 			PreDefTableEntry --> OutputReportPredefined.cc
 			Surface() --> DataSurfaces.cc
-		`ReportSurfaceErrors`
+		`ReportSurfaceErrors` --> called by no one
 
 
 

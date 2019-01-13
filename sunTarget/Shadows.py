@@ -121,7 +121,7 @@ class ExternalFunctions:
 	# DataSystemVariables::DetailedSolarTimestepIntegration
     DetailedSolarTimestepIntegration = False # when true, use detailed timestep integration for all solar,shading, etc.
 
-    # OutputProcessor::Unit
+    # OutputProcessor::Unit --> I don't how it works...?
     enum class Unit
     {
         kg_s,
@@ -289,59 +289,6 @@ class ExternalFunctions:
 
     # DataDaylighting.cc
     Array1D<ZoneDaylightCalc> ZoneDaylight;
-
-    # General::BlindBeamBeamTrans
-    def BlindBeamBeamTrans(ProfAng, SlatAng, SlatWidth, SlatSeparation, SlatThickness):
-    	'''
-        FUNCTION INFORMATION:
-              AUTHOR         Fred Winkelmann
-              DATE WRITTEN   Jan 2002
-              MODIFIED       na
-              RE-ENGINEERED  na
-
-        PURPOSE OF THIS SUBROUTINE:
-        Calculates beam-to-beam transmittance of a window blind
-
-        METHODOLOGY EMPLOYED:
-        Based on solar profile angle and slat geometry
-
-        INPUTS:
-        		Real64 const ProfAng,        # Solar profile angle (rad)
-				Real64 const SlatAng,        # Slat angle (rad)
-				Real64 const SlatWidth,      # Slat width (m)
-				Real64 const SlatSeparation, # Slat separation (distance between surfaces of adjacent slats) (m)
-	            Real64 const SlatThickness   # Slat thickness (m)
-		'''
-        # Using/Aliasing
-        # using DataGlobals::Pi;
-        # using DataGlobals::PiOvr2;
-
-        # FUNCTION LOCAL VARIABLE DECLARATIONS:
-        CosProfAng = math.cos(ProfAng)  # Cosine of profile angle
-        gamma = SlatAng - ProfAng       # Intermediate variable
-        wbar = SlatSeparation           # Intermediate variable
-
-        if (CosProfAng != 0.0):
-        	wbar = SlatWidth * math.cos(gamma) / CosProfAng
-
-        BlindBeamBeamTrans = max(0.0, 1.0 - abs(wbar / SlatSeparation))
-
-        if (BlindBeamBeamTrans > 0.0):
-            # Correction factor that accounts for finite thickness of slats. It is used to modify the
-            # blind transmittance to account for reflection and absorption by the slat edges.
-            # fEdge is ratio of area subtended by edge of slat to area between tops of adjacent slats.
-            fEdge = 0.0      # Slat edge correction factor
-            fEdge1 = 0.0     # Intermediate variable
-
-            if (abs(math.sin(gamma)) > 0.01):
-                if ((SlatAng > 0.0 && SlatAng <= PiOvr2 && ProfAng <= SlatAng) || (SlatAng > PiOvr2 && SlatAng <= math.pi && ProfAng > -(math.pi - SlatAng))):
-                    fEdge1 = SlatThickness * abs(math.sin(gamma)) / ((SlatSeparation + SlatThickness / abs(math.sin(SlatAng))) * CosProfAng)
-                
-                fEdge = min(1.0, abs(fEdge1))
-
-            BlindBeamBeamTrans *= (1.0 - fEdge)
-
-        return BlindBeamBeamTrans;
 
     # General::RoundSigDigits
     def RoundSigDigits(RealValue, SigDigits):
@@ -577,37 +524,38 @@ class ExternalFunctions:
     Array1D<TDDPipeData> TDDPipe;
 
     # DaylightingDevices::CalcTDDTransSolAniso
-    Real64 CalcTDDTransSolAniso(int const PipeNum, // TDD pipe object number
-                                Real64 const COSI  // Cosine of the incident angle
-    )
-    {
+    def CalcTDDTransSolAniso(PipeNum, COSI):
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Peter Graham Ellis
+              DATE WRITTEN   July 2003
+              MODIFIED       na
+              RE-ENGINEERED  na
 
-        // SUBROUTINE INFORMATION:
-        //       AUTHOR         Peter Graham Ellis
-        //       DATE WRITTEN   July 2003
-        //       MODIFIED       na
-        //       RE-ENGINEERED  na
+        PURPOSE OF THIS SUBROUTINE:
+        Calculates the transmittance of the anisotropic sky.
 
-        // PURPOSE OF THIS SUBROUTINE:
-        // Calculates the transmittance of the anisotropic sky.
+        METHODOLOGY EMPLOYED:
+        Similar to the Trans = FluxTrans/FluxInc integrations above, the anisotropic sky can be decomposed
+        and have a different transmittance applied to each component.
+          FluxInc = IsoSkyRad + CircumSolarRad + HorizonRad
+          FluxTrans = T1*IsoSkyRad + T2*CircumSolarRad + T3*HorizonRad
+        It turns out that FluxTrans/FluxInc is equivalent to AnisoSkyTDDMult/AnisoSkyMult.
+        AnisoSkyMult has been conveniently calculated already in AnisoSkyViewFactors in SolarShading.cc.
+        AnisoSkyMult = MultIsoSky*DifShdgRatioIsoSky + MultCircumSolar*SunlitFrac + MultHorizonZenith*DifShdgRatioHoriz
+        In this routine a similar AnisoSkyTDDMult is calculated that applies the appropriate transmittance to each
+        of the components above.  The result is Trans = AnisoSkyTDDMult/AnisoSkyMult.
+        Shading and orientation are already taken care of by DifShdgRatioIsoSky and DifShdgRatioHoriz.
 
-        // METHODOLOGY EMPLOYED:
-        // Similar to the Trans = FluxTrans/FluxInc integrations above, the anisotropic sky can be decomposed
-        // and have a different transmittance applied to each component.
-        //   FluxInc = IsoSkyRad + CircumSolarRad + HorizonRad
-        //   FluxTrans = T1*IsoSkyRad + T2*CircumSolarRad + T3*HorizonRad
-        // It turns out that FluxTrans/FluxInc is equivalent to AnisoSkyTDDMult/AnisoSkyMult.
-        // AnisoSkyMult has been conveniently calculated already in AnisoSkyViewFactors in SolarShading.cc.
-        // AnisoSkyMult = MultIsoSky*DifShdgRatioIsoSky + MultCircumSolar*SunlitFrac + MultHorizonZenith*DifShdgRatioHoriz
-        // In this routine a similar AnisoSkyTDDMult is calculated that applies the appropriate transmittance to each
-        // of the components above.  The result is Trans = AnisoSkyTDDMult/AnisoSkyMult.
-        // Shading and orientation are already taken care of by DifShdgRatioIsoSky and DifShdgRatioHoriz.
+        REFERENCES:
+        See AnisoSkyViewFactors in SolarShading.cc.
 
-        // REFERENCES:
-        // See AnisoSkyViewFactors in SolarShading.cc.
-
-        // USE STATEMENTS: na
-        // Using/Aliasing
+        INPUTS:
+            int const PipeNum, # TDD pipe object number
+            Real64 const COSI  # Cosine of the incident angle
+        '''
+        # USE STATEMENTS: na
+        # Using/Aliasing
         using DataGlobals::HourOfDay;
         using DataGlobals::TimeStep;
         using DataHeatBalance::AnisoSkyMult;
@@ -621,97 +569,82 @@ class ExternalFunctions:
         using DataHeatBalance::SunlitFrac;
         using DataSystemVariables::DetailedSkyDiffuseAlgorithm;
 
-        // Return value
-        Real64 CalcTDDTransSolAniso;
+        # FUNCTION LOCAL VARIABLE DECLARATIONS:
+        DomeSurf = 0          # TDD:DOME surface number
+        IsoSkyRad = 0.0       # Isotropic sky radiation component
+        CircumSolarRad = 0.0  # Circumsolar sky radiation component
+        HorizonRad = 0.0      # Horizon sky radiation component
+        AnisoSkyTDDMult = 0.0 # Anisotropic sky multiplier for TDD
 
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
-        int DomeSurf;           // TDD:DOME surface number
-        Real64 IsoSkyRad;       // Isotropic sky radiation component
-        Real64 CircumSolarRad;  // Circumsolar sky radiation component
-        Real64 HorizonRad;      // Horizon sky radiation component
-        Real64 AnisoSkyTDDMult; // Anisotropic sky multiplier for TDD
-
-        // FLOW:
+        # FLOW:
         DomeSurf = TDDPipe(PipeNum).Dome;
 
-        if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing) {
-            IsoSkyRad = MultIsoSky(DomeSurf) * DifShdgRatioIsoSky(DomeSurf);
-            HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHoriz(DomeSurf);
-        } else {
-            IsoSkyRad = MultIsoSky(DomeSurf) * curDifShdgRatioIsoSky(DomeSurf);
-            HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHorizHRTS(TimeStep, HourOfDay, DomeSurf);
-        }
-        CircumSolarRad = MultCircumSolar(DomeSurf) * SunlitFrac(TimeStep, HourOfDay, DomeSurf);
+        if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
+            IsoSkyRad = MultIsoSky(DomeSurf) * DifShdgRatioIsoSky(DomeSurf)
+            HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHoriz(DomeSurf)
+        else:
+            IsoSkyRad = MultIsoSky(DomeSurf) * curDifShdgRatioIsoSky(DomeSurf)
+            HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHorizHRTS(TimeStep, HourOfDay, DomeSurf)
+        
+        CircumSolarRad = MultCircumSolar(DomeSurf) * SunlitFrac(TimeStep, HourOfDay, DomeSurf)
 
-        AnisoSkyTDDMult = TDDPipe(PipeNum).TransSolIso * IsoSkyRad + TransTDD(PipeNum, COSI, SolarBeam) * CircumSolarRad +
-                          TDDPipe(PipeNum).TransSolHorizon * HorizonRad;
+        AnisoSkyTDDMult = TDDPipe(PipeNum).TransSolIso * IsoSkyRad + TransTDD(PipeNum, COSI, SolarBeam) * CircumSolarRad + TDDPipe(PipeNum).TransSolHorizon * HorizonRad
 
-        if (AnisoSkyMult(DomeSurf) > 0.0) {
-            CalcTDDTransSolAniso = AnisoSkyTDDMult / AnisoSkyMult(DomeSurf);
-        } else {
-            CalcTDDTransSolAniso = 0.0;
-        }
+        if (AnisoSkyMult(DomeSurf) > 0.0):
+            CalcTDDTransSolAniso = AnisoSkyTDDMult / AnisoSkyMult(DomeSurf)
+        else:
+            CalcTDDTransSolAniso = 0.0
 
-        return CalcTDDTransSolAniso;
-    }
+        return CalcTDDTransSolAniso
 
     # DaylightingDevices::InterpolatePipeTransBeam
-    Real64 InterpolatePipeTransBeam(Real64 const COSI,              // Cosine of the incident angle
-                                    Array1A<Real64> const transBeam // Table of beam transmittance vs. cosine angle
-    )
-    {
+    def InterpolatePipeTransBeam(COSI, transBeam):
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Peter Graham Ellis
+              DATE WRITTEN   July 2003
+              MODIFIED       na
+              RE-ENGINEERED  na
 
-        // SUBROUTINE INFORMATION:
-        //       AUTHOR         Peter Graham Ellis
-        //       DATE WRITTEN   July 2003
-        //       MODIFIED       na
-        //       RE-ENGINEERED  na
+        PURPOSE OF THIS SUBROUTINE:
+        Interpolates the beam transmittance vs. cosine angle table.
 
-        // PURPOSE OF THIS SUBROUTINE:
-        // Interpolates the beam transmittance vs. cosine angle table.
+        METHODOLOGY EMPLOYED: na
+        REFERENCES: na
 
-        // METHODOLOGY EMPLOYED: na
-        // REFERENCES: na
+        INPUTS:
+            Real64 const COSI,              # Cosine of the incident angle
+            Array1A<Real64> const transBeam # Table of beam transmittance vs. cosine angle
+        '''
 
-        // Using/Aliasing
-        using FluidProperties::FindArrayIndex; // USEd code could be copied here to eliminate dependence on FluidProperties
+        # Using/Aliasing
+        using FluidProperties::FindArrayIndex; # USEd code could be copied here to eliminate dependence on FluidProperties
 
-        // Return value
-        Real64 InterpolatePipeTransBeam;
-
-        // Argument array dimensioning
+        # Argument array dimensioning
         transBeam.dim(NumOfAngles);
 
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
+        # FUNCTION LOCAL VARIABLE DECLARATIONS:
+        Lo = 0
+        Hi = 0
+        m = 0.0
+        b = 0.0
 
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
-        int Lo;
-        int Hi;
-        Real64 m;
-        Real64 b;
+        # FLOW:
+        InterpolatePipeTransBeam = 0.0
 
-        // FLOW:
-        InterpolatePipeTransBeam = 0.0;
+        # Linearly interpolate transBeam/COSAngle table to get value at current cosine of the angle
+        Lo = FindArrayIndex(COSI, COSAngle)
+        Hi = Lo + 1
 
-        // Linearly interpolate transBeam/COSAngle table to get value at current cosine of the angle
-        Lo = FindArrayIndex(COSI, COSAngle);
-        Hi = Lo + 1;
+        if (Lo > 0 && Hi <= NumOfAngles):
+            m = (transBeam(Hi) - transBeam(Lo)) / (COSAngle(Hi) - COSAngle(Lo))
+            b = transBeam(Lo) - m * COSAngle(Lo)
 
-        if (Lo > 0 && Hi <= NumOfAngles) {
-            m = (transBeam(Hi) - transBeam(Lo)) / (COSAngle(Hi) - COSAngle(Lo));
-            b = transBeam(Lo) - m * COSAngle(Lo);
-
-            InterpolatePipeTransBeam = m * COSI + b;
-        } else {
-            InterpolatePipeTransBeam = 0.0;
-        }
-
-        return InterpolatePipeTransBeam;
-    }
+            InterpolatePipeTransBeam = m * COSI + b
+        else:
+            InterpolatePipeTransBeam = 0.0
+        
+        return InterpolatePipeTransBeam
 
     # DaylightingDevices::FindTDDPipe
     def FindTDDPipe(WinNum):
@@ -952,7 +885,6 @@ class ExternalFunctions:
             
         return None
     
-
     # DaylightingManager::CalcMinIntWinSolidAngs --> acho q não será necessário, pois é para janela
     def CalcMinIntWinSolidAngs():
         '''
@@ -1194,7 +1126,7 @@ class ExternalFunctions:
         # Using/Aliasing
         using DaylightingDevices::FindTDDPipe;
         using DaylightingDevices::TransTDD;
-        using General::BlindBeamBeamTrans;
+        # using General::BlindBeamBeamTrans;
         using General::RoundSigDigits;
         using General::SafeDivide;
         using namespace Vectors;
@@ -3909,89 +3841,6 @@ class SolarCalculations(SolarShading):
 
     	return None
 
-    def polygon_contains_point(nsides, polygon_3d, &point_3d, ignorex, ignorey, ignorez): # geopandas tem uma função pronta para isso!
-    	'''
-        Function information:
-              Author         Linda Lawrie
-              Date written   October 2005
-              Modified       na
-              Re-engineered  na
-
-        Purpose of this function:
-        Determine if a point is inside a simple 2d polygon.  For a simple polygon (one whose
-        boundary never crosses itself).  The polygon does not need to be convex.
-        - int const nsides,           # number of sides (vertices)
-        - Array1A<Vector> polygon_3d, # points of polygon
-        - Vector const &point_3d,     # point to be tested
-        - bool const ignorex,
-        - bool const ignorey,
-        - bool const ignorez
-
-        Methodology employed:
-        <Description>
-
-        References:
-        M Shimrat, Position of Point Relative to Polygon, ACM Algorithm 112,
-        Communications of the ACM, Volume 5, Number 8, page 434, August 1962.
-        '''
-
-        # USE STATEMENTS:
-        # Using/Aliasing
-        using namespace DataVectorTypes
-
-        # Return value
-        bool inside # Return value, True=inside, False = not inside
-
-        # Argument array dimensioning
-        polygon_3d.dim(nsides)
-
-        # Function local variable declarations:
-        int i
-        int ip1
-
-        # Object Data
-        Array1D<Vector_2d> polygon(nsides)
-        Vector_2d point
-
-        inside = False
-        if (ignorex):
-            for (int i = 1 i <= nsides ++i):
-                polygon(i).x = polygon_3d(i).y
-                polygon(i).y = polygon_3d(i).z
-
-            point.x = point_3d.y
-            point.y = point_3d.z
-        elif (ignorey):
-            for (int i = 1 i <= nsides ++i):
-                polygon(i).x = polygon_3d(i).x
-                polygon(i).y = polygon_3d(i).z
-
-            point.x = point_3d.x
-            point.y = point_3d.z
-        elif (ignorez):
-            for (int i = 1 i <= nsides ++i):
-                polygon(i).x = polygon_3d(i).x
-                polygon(i).y = polygon_3d(i).y
-
-            point.x = point_3d.x
-            point.y = point_3d.y
-        else: # Illegal
-            assert(False)
-            point.x = point.y = 0.0 # Elim possibly used uninitialized warnings
-
-        for (i = 1 i <= nsides ++i):
-
-            if (i < nsides):
-                ip1 = i + 1
-            else:
-                ip1 = 1
-
-            if ((polygon(i).y < point.y && point.y <= polygon(ip1).y) || (point.y <= polygon(i).y && polygon(ip1).y < point.y)):
-                if ((point.x - polygon(i).x) - (point.y - polygon(i).y) * (polygon(ip1).x - polygon(i).x) / (polygon(ip1).y - polygon(i).y) < 0):
-                    inside = !inside
-
-        return inside # bool statement
-
     def CLIP(NVT, &XVT, &YVT, &ZVT):
 		'''
         SUBROUTINE INFORMATION:
@@ -4149,122 +3998,6 @@ class SolarCalculations(SolarShading):
             YVT(N) = base_lcsy.x * Xdif + base_lcsy.y * Ydif + base_lcsy.z * Zdif
             ZVT(N) = base_lcsz.x * Xdif + base_lcsz.y * Ydif + base_lcsz.z * Zdif
 
-    	return None
-
-    def HTRANS(I, NS, NumVertices):
-    	'''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Legacy Code
-              DATE WRITTEN
-              MODIFIED       na
-              RE-ENGINEERED  Lawrie, Oct 2000
-
-        PURPOSE OF THIS SUBROUTINE:
-        This subroutine sets up the homogeneous coordinates.
-        This routine converts the cartesian coordinates of a surface
-        or shadow polygon to homogeneous coordinates.  It also
-        computes the area of the polygon.
-        - int const I,          # Mode selector: 0 - Compute H.C. of sides
-        - int const NS,         # Figure Number
-        - int const NumVertices # Number of vertices
-
-        METHODOLOGY EMPLOYED:
-        Note: Original legacy code used integer arithmetic (tests in subroutines
-        INCLOS and INTCPT are sensitive to round-off error).  However, porting to Fortran 77
-        (BLAST/IBLAST) required some variables to become REAL(r64) instead.
-
-        Notes on homogeneous coordinates:
-        A point (X,Y) is represented by a 3-element vector
-        (W*X,W*Y,W), where W may be any REAL(r64) number except 0.  a line
-        is also represented by a 3-element vector (A,B,C).  The
-        directed line (A,B,C) from point (W*X1,W*Y1,W) to point
-        (V*X2,V*Y2,V) is given by (A,B,C) = (W*X1,W*Y1,W) cross
-        (V*X2,V*Y2,V).  The sequence of the cross product is a
-        convention to determine sign.  The condition that a point lie
-        on a line is that (A,B,C) dot (W*X,W*Y,W) = 0.  'Normalize'
-        the representation of a point by setting W to 1.  Then if
-        (A,B,C) dot (X,Y,1) > 0.0, The point is to the left of the
-        line, and if it is less than zero, the point is to the right
-        of the line.  The intercept of two lines is given by
-        (W*X,W*Y,W) = (A1,B1,C1) cross (A2,B2,C3).
-
-        REFERENCES:
-        BLAST/IBLAST code, original author George Walton
-        W. M. Newman & R. F. Sproull, 'Principles of Interactive Computer Graphics', Appendix II, McGraw-Hill, 1973.
-        'CRC Math Tables', 22 ED, 'Analytic Geometry', P.369
-        '''
-
-        # Using/Aliasing
-        using General::TrimSigDigits
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-        #                1 - Compute H.C. of vertices & sides
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
-
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-
-        if (NS > 2 * MaxHCS):
-            raise RuntimeError("Solar Shading: HTrans: Too many Figures (> {})".format(TrimSigDigits(MaxHCS)))
-
-        HCNV(NS) = NumVertices
-
-        # Tuned Linear indexing
-        assert(equal_dimensions(HCX, HCY))
-        assert(equal_dimensions(HCX, HCA))
-        assert(equal_dimensions(HCX, HCB))
-        assert(equal_dimensions(HCX, HCC))
-        auto const l1(HCX.index(NS, 1))
-        
-        # Transform vertices of figure ns.
-        if (I != 0):
-
-            # See comment at top of module regarding HCMULT
-            auto l(l1)
-            for (int N = 1 N <= NumVertices ++N, ++l) { # [ l ] == ( NS, N )
-                HCX[l] = nint64(XVS(N) * HCMULT)
-                HCY[l] = nint64(YVS(N) * HCMULT)
-
-        # Establish extra point for finding lines between points.
-        auto l(HCX.index(NS, NumVertices + 1))
-        Int64 HCX_m(HCX[l] = HCX[l1]) # [ l ] == ( NS, NumVertices + 1 ), [ l1 ] == ( NS, 1 )
-        Int64 HCY_m(HCY[l] = HCY[l1]) # [ l ] == ( NS, NumVertices + 1 ), [ l1 ] == ( NS, 1 )
-
-        # Determine lines between points.
-        l = l1
-        auto m(l1 + 1u)
-        HCX_l = 0
-        HCY_l = 0
-        SUM = 0.0 # Sum variable
-        
-        # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
-        for N in range(1, NumVertices+1):
-        	l += 1 # será q vai somar o par ordenado?
-        	m += 1 # será q vai somar o par ordenado?
-            HCX_l = HCX_m
-            HCY_l = HCY_m
-            HCX_m = HCX[m]
-            HCY_m = HCY[m]
-            HCA[l] = HCY_l - HCY_m
-            HCB[l] = HCX_m - HCX_l
-            SUM += HCC[l] = (HCY_m * HCX_l) - (HCX_m * HCY_l)
-
-        # Compute area of polygon.
-        #  SUM=0.0D0
-        #  DO N = 1, NumVertices
-        #    SUM = SUM + HCX(N,NS)*HCY(N+1,NS) - HCY(N,NS)*HCX(N+1,NS) ! Since HCX and HCY integerized, value of SUM should be ok
-        #  END DO
-        HCAREA(NS) = SUM * sqHCMULT_fac
-        #  HCAREA(NS)=0.5d0*SUM*(kHCMULT)
-    	
     	return None
 
     def HTRANS0(NS, NumVertices):
@@ -5882,55 +5615,6 @@ class SolarCalculations(SolarShading):
         
     	return None
 
-	def SurfaceScheduledSolarInc(SurfNum, ConstNum):
-    	'''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Simon Vidanovic
-              DATE WRITTEN   June 2013
-              MODIFIED       na
-              RE-ENGINEERED  na
-
-        PURPOSE OF THIS SUBROUTINE:
-        Returns scheduled surface gain pointer for given surface-construction combination
-        - int const SurfNum, # Surface number
-        - int const ConstNum # Construction number
-        - return int
-
-        METHODOLOGY EMPLOYED:
-        # na
-
-        REFERENCES:
-        # na
-        '''
-
-        # USE STATEMENTS:
-
-        # Return value
-        int SurfaceScheduledSolarInc
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
-
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-
-        SurfaceScheduledSolarInc = 0
-
-        for i in range(1, TotSurfIncSolSSG+1):
-            if ((SurfIncSolSSG(i).SurfPtr == SurfNum) && (SurfIncSolSSG(i).ConstrPtr == ConstNum)):
-                SurfaceScheduledSolarInc = i
-                return SurfaceScheduledSolarInc
-
-        return SurfaceScheduledSolarInc
-
     def PerformSolarCalculations():
     	'''
         SUBROUTINE INFORMATION:
@@ -5960,9 +5644,9 @@ class SolarCalculations(SolarShading):
         '''
 
         # Using/Aliasing
-        using DataSystemVariables::DetailedSolarTimestepIntegration
-        using DaylightingManager::CalcDayltgCoefficients
-        using DaylightingManager::TotWindowsWithDayl
+        # using DataSystemVariables::DetailedSolarTimestepIntegration
+        # using DaylightingManager::CalcDayltgCoefficients
+        # using DaylightingManager::TotWindowsWithDayl
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
@@ -6444,257 +6128,6 @@ class SolarCalculations(SolarShading):
                 DifShdgRatioIsoSkyHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioIsoSky(SurfNum)
                 DifShdgRatioHorizHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioHoriz(SurfNum)
 
-    	return None
-
-	def ReportSurfaceShading():
-    	'''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Linda Lawrie
-              DATE WRITTEN   April 2000
-              MODIFIED       na
-              RE-ENGINEERED  na
-
-        PURPOSE OF THIS SUBROUTINE:
-        This subroutine uses the internal variables used in the Shading
-        calculations and prepares them for reporting (at timestep level).
-
-        METHODOLOGY EMPLOYED:
-        Because all of the calculations are done on a "daily" basis in this
-        module, it is difficult to formulate the values that might be useful
-        for reporting.  SunlitFrac was the first of these two arrays to be
-        made into "two dimensions".  It is not clear that both have to be
-        two dimensions.
-
-        REFERENCES:
-        # na
-        '''
-
-        # Using/Aliasing
-        using namespace OutputReportPredefined
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-        # na
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        # na
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
-
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        SurfNum = 0 # Loop Counter
-        RepCol = 0  # the column of the predefined report
-
-        for SurfNum in range(1, TotSurfaces+1):
-            SurfSunlitFrac(SurfNum) = SunlitFrac(TimeStep, HourOfDay, SurfNum)
-            SurfSunlitArea(SurfNum) = SunlitFrac(TimeStep, HourOfDay, SurfNum) * Surface(SurfNum).Area
-        
-        # added for predefined reporting
-        RepCol = 0
-        if (Month == 3 && DayOfMonth == 21):
-            if ((HourOfDay == 9) && (TimeStep == 4)):
-                RepCol = pdchSlfMar21_9
-            elif ((HourOfDay == 12) && (TimeStep == 4)):
-                RepCol = pdchSlfMar21_12
-            elif ((HourOfDay == 15) && (TimeStep == 4)):
-                RepCol = pdchSlfMar21_15
-        elif (Month == 6 && DayOfMonth == 21):
-            if ((HourOfDay == 9) && (TimeStep == 4)):
-                RepCol = pdchSlfJun21_9
-            elif ((HourOfDay == 12) && (TimeStep == 4)):
-                RepCol = pdchSlfJun21_12
-            elif ((HourOfDay == 15) && (TimeStep == 4)):
-                RepCol = pdchSlfJun21_15
-        elif (Month == 12 && DayOfMonth == 21):
-            if ((HourOfDay == 9) && (TimeStep == 4)):
-                RepCol = pdchSlfDec21_9
-            elif ((HourOfDay == 12) && (TimeStep == 4)):
-                RepCol = pdchSlfDec21_12
-            elif ((HourOfDay == 15) && (TimeStep == 4)):
-                RepCol = pdchSlfDec21_15
-        
-        if (RepCol != 0):
-            for SurfNum in range(1, TotSurfaces+1):
-                if (Surface(SurfNum).Class == SurfaceClass_Window):
-                    PreDefTableEntry(RepCol, Surface(SurfNum).Name, SurfSunlitFrac(SurfNum))
-        
-    	return None
-
-    def ReportSurfaceErrors():
-    	'''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Linda Lawrie
-              DATE WRITTEN   November 2004
-              MODIFIED       na
-              RE-ENGINEERED  na
-
-        PURPOSE OF THIS SUBROUTINE:
-        This subroutine reports some recurring type errors that can get mixed up with more important
-        errors in the error file.
-
-        METHODOLOGY EMPLOYED:
-        # na
-
-        REFERENCES:
-        # na
-        '''
-
-        # Using/Aliasing
-        using namespace DataErrorTracking # for error tracking
-        using General::RoundSigDigits
-
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS:
-        # na
-
-        # SUBROUTINE PARAMETER DEFINITIONS:
-        static Array1D_string const MSG(4, {"misses", "", "within", "overlaps"})
-
-        # INTERFACE BLOCK SPECIFICATIONS
-        # na
-
-        # DERIVED TYPE DEFINITIONS
-        # na
-
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Loop1 = 0
-        Loop2 = 0
-        Count = 0
-        TotCount = 0
-        std::string CountOut
-        Array1D_bool SurfErrorReported
-        Array1D_bool SurfErrorReported2
-
-        if (NumTooManyFigures + NumTooManyVertices + NumBaseSubSurround > 0):
-            print("\n===== Recurring Surface Error Summary =====")
-            print("The following surface error messages occurred.\n")
-
-            if (NumBaseSubSurround > 0):
-                print("Base Surface does not surround subsurface errors occuring...")
-                print("Check that the GlobalGeometryRules object is expressing the proper starting corner and direction [CounterClockwise/Clockwise]\n")
-
-            SurfErrorReported.dimension(TotSurfaces, False)
-            TotCount = 0
-            for Loop1 in range(1, NumBaseSubSurround+1):
-                Count = 0
-                if (SurfErrorReported(TrackBaseSubSurround(Loop1).SurfIndex1)): continue
-                
-                for Loop2 in range(1, NumBaseSubSurround+1):
-                    if (TrackBaseSubSurround(Loop1).SurfIndex1 == TrackBaseSubSurround(Loop2).SurfIndex1 &&
-                        TrackBaseSubSurround(Loop1).MiscIndex == TrackBaseSubSurround(Loop2).MiscIndex):
-                        Count += 1
-
-                gio::write(CountOut, fmtLD) << Count
-                TotCount += Count
-                TotalWarningErrors += Count - 1
-                raise RunTimeWarning("Base surface does not surround subsurface (CHKSBS), Overlap Status=" +
-                                 cOverLapStatus(TrackBaseSubSurround(Loop1).MiscIndex))
-                ShowContinueError("  The base surround errors occurred " + stripped(CountOut) + " times.")
-                
-                for (Loop2 = 1 Loop2 <= NumBaseSubSurround ++Loop2):
-                    if (TrackBaseSubSurround(Loop1).SurfIndex1 == TrackBaseSubSurround(Loop2).SurfIndex1 &&
-                        TrackBaseSubSurround(Loop1).MiscIndex == TrackBaseSubSurround(Loop2).MiscIndex):
-                        ShowContinueError("Surface \"" + Surface(TrackBaseSubSurround(Loop1).SurfIndex1).Name + "\" " +
-                                          MSG(TrackBaseSubSurround(Loop1).MiscIndex) + " SubSurface \"" +
-                                          Surface(TrackBaseSubSurround(Loop2).SurfIndex2).Name + "\"")
-                
-                SurfErrorReported(TrackBaseSubSurround(Loop1).SurfIndex1) = True
-            
-            if (TotCount > 0):
-                print("")
-                gio::write(CountOut, fmtLD) << TotCount
-                ShowContinueError("  The base surround errors occurred " + stripped(CountOut) + " times (total).")
-                print("")
-
-            SurfErrorReported2.allocate(TotSurfaces)
-            SurfErrorReported = False
-            TotCount = 0
-            if (NumTooManyVertices > 0):
-                print("Too many vertices [>=" + RoundSigDigits(MaxHCV) + "] in shadow overlap errors occurring...")
-                print("These occur throughout the year and may occur several times for the same surfaces. You may be able to reduce them by "
-                            "adding Output:Diagnostics,DoNotMirrorDetachedShading")
-
-            for (Loop1 = 1 Loop1 <= NumTooManyVertices ++Loop1):
-                Count = 0
-                SurfErrorReported2 = False
-                if (SurfErrorReported(TrackTooManyVertices(Loop1).SurfIndex1)): continue
-                
-                for (Loop2 = 1 Loop2 <= NumTooManyVertices ++Loop2):
-                    if (TrackTooManyVertices(Loop1).SurfIndex1 == TrackTooManyVertices(Loop2).SurfIndex1):
-                        ++Count
-                
-                gio::write(CountOut, fmtLD) << Count
-                TotCount += Count
-                TotalWarningErrors += Count - 1
-                print("")
-                raise RunTimeWarning("Too many vertices [>=" + RoundSigDigits(MaxHCV) + "] in a shadow overlap")
-                ShowContinueError("Overlapping figure=" + Surface(TrackTooManyVertices(Loop1).SurfIndex1).Name + ", Surface Class=[" +
-                                  cSurfaceClass(Surface(TrackTooManyVertices(Loop1).SurfIndex1).Class) + ']')
-                ShowContinueError("  This error occurred " + stripped(CountOut) + " times.")
-                
-                for (Loop2 = 1 Loop2 <= NumTooManyVertices ++Loop2):
-                    if (TrackTooManyVertices(Loop1).SurfIndex1 == TrackTooManyVertices(Loop2).SurfIndex1):
-                        if (SurfErrorReported2(TrackTooManyVertices(Loop2).SurfIndex2)): continue
-                        
-                        ShowContinueError("Figure being Overlapped=" + Surface(TrackTooManyVertices(Loop2).SurfIndex2).Name + ", Surface Class=[" +
-                                          cSurfaceClass(Surface(TrackTooManyVertices(Loop2).SurfIndex2).Class) + ']')
-                        SurfErrorReported2(TrackTooManyVertices(Loop2).SurfIndex2) = True
-                
-                SurfErrorReported(TrackTooManyVertices(Loop1).SurfIndex1) = True
-            
-            if (TotCount > 0):
-                print("")
-                gio::write(CountOut, fmtLD) << TotCount
-                ShowContinueError("  The too many vertices errors occurred " + stripped(CountOut) + " times (total).")
-                print("")
-
-            SurfErrorReported = False
-            TotCount = 0
-            if (NumTooManyFigures > 0):
-                print("Too many figures [>=" + RoundSigDigits(MaxHCS) + "] in shadow overlap errors occurring...")
-                print("These occur throughout the year and may occur several times for the same surfaces. You may be able to reduce them by "
-                            "adding OutputDiagnostics,DoNotMirrorDetachedShading")
-            
-            for (Loop1 = 1 Loop1 <= NumTooManyFigures ++Loop1):
-                Count = 0
-                SurfErrorReported2 = False
-                if (SurfErrorReported(TrackTooManyFigures(Loop1).SurfIndex1)): continue
-                
-                for (Loop2 = 1 Loop2 <= NumTooManyFigures ++Loop2):
-                    if (TrackTooManyFigures(Loop1).SurfIndex1 == TrackTooManyFigures(Loop2).SurfIndex1):
-                        ++Count
-                
-                gio::write(CountOut, fmtLD) << Count
-                TotCount += Count
-                TotalWarningErrors += Count - 1
-                print("")
-                raise RunTimeWarning("Too many figures [>={}] in a shadow overlap".format(RoundSigDigits(MaxHCS)))
-                ShowContinueError("Overlapping figure={}, Surface Class=[{}]".format(Surface(TrackTooManyFigures(Loop1).SurfIndex1).Name, cSurfaceClass(Surface(TrackTooManyFigures(Loop1).SurfIndex1).Class)))
-                ShowContinueError("\tThis error occurred {} times.".format(stripped(CountOut)))
-                
-                for Loop2 in range(1, NumTooManyFigures+1):
-                    if (TrackTooManyFigures(Loop1).SurfIndex1 == TrackTooManyFigures(Loop2).SurfIndex1):
-                        if (SurfErrorReported2(TrackTooManyFigures(Loop2).SurfIndex2)): continue
-
-                        ShowContinueError("Figure being Overlapped=" + Surface(TrackTooManyFigures(Loop2).SurfIndex2).Name + ", Surface Class=[" +
-                                          cSurfaceClass(Surface(TrackTooManyFigures(Loop2).SurfIndex2).Class) + ']')
-                        SurfErrorReported2(TrackTooManyFigures(Loop2).SurfIndex2) = True
-                
-                SurfErrorReported(TrackTooManyFigures(Loop1).SurfIndex1) = True
-            
-            if (TotCount > 0):
-                print("")
-                gio::write(CountOut, fmtLD) << TotCount
-                ShowContinueError("\tThe too many figures errors occurred {} times (total).".format(stripped(CountOut)))
-                print("")
-            
-            SurfErrorReported.deallocate()
-            SurfErrorReported2.deallocate()
-        
     	return None
 
 # end of SolarCalculations
