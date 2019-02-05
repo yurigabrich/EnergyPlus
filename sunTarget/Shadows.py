@@ -7,7 +7,6 @@ file, described below.
 // EnergyPlus, Copyright (c) 1996-2018, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
-# national Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
 // contributors. All rights reserved.
 //
 // NOTICE: This Software was developed under funding from the U.S. Department of Energy and the
@@ -60,14 +59,12 @@ file, described below.
 # ------------------------------------------
 
 import math
-
-# C++ Headers
-# include <cassert>		# defines one macro function that can be used as a standard debugging tool
-# include <cmath>		# declares a set of functions to compute common mathematical operations and transformations. Python's module available by default as 'math.' or 'cmath.'
-# include <memory>		# defines general utilities to manage dynamic memory
+import pandas as pd
+from collections import namedtuple
+from enum import Enum
 
 # ObjexxFCL Headers
-include <ObjexxFCL/Array.functions.hh>	# CHANGE to Python dataseries?
+# include <ObjexxFCL/Array.functions.hh>	# CHANGE to Python dataseries?
 include <ObjexxFCL/Fmath.hh>
 include <ObjexxFCL/Vector3.hh>
 include <ObjexxFCL/gio.hh>
@@ -75,7 +72,7 @@ include <ObjexxFCL/member.functions.hh>
 include <ObjexxFCL/string.functions.hh>
 
 # EnergyPlus Headers
-include <Vectors.hh>						# CHANGE to Python dataframes package
+include <Vectors.hh>					# CHANGE to Python dataframes package
 
 class ExternalFunctions:
 	'''
@@ -97,19 +94,593 @@ class ExternalFunctions:
     ksRunPeriodWeather = 3      # one of the parameters for KindOfSim
 
     # DataStringGlobals::outputShdFileName
-	outputShdFileName = 'eplusout.shd'
+	outputShdFileName = 'eplusout.shd'     # to save the simulations result
 
-	# DataShadowingCombinations.cc
-	Array1D<ShadowingCombinations> ShadowComb;
+	# DataShadowingCombinations.hh
+    ShadowingCombinations_ = namedtuple('ShadowingCombinations_', ['UseThisSurf', 'NumGenSurf', 'GenSurf', 'NumBackSurf', 'BackSurf', 'NumSubSurf', 'SubSurf'])
+    ShadowingCombinations = ShadowingCombinations_(UseThisSurf=False, NumGenSurf=0, GenSurf=pd.Series(), NumBackSurf=0, BackSurf=pd.Series(), NumSubSurf=0, SubSurf=pd.Series())
+    '''
+        // Members
+        bool UseThisSurf;     // True when this surface should be used in calculations
+        int NumGenSurf;       // Number of General surfaces for this surf
+        GenSurf = pd.Series()  // Array of General Surface Numbers
+        int NumBackSurf;      // Number of Back (Interior) surfaces for this surf
+        BackSurf = pd.Series() // Array of Back (Interior) surface numbers
+        int NumSubSurf;       // Number of SubSurfaces for this surf
+        SubSurf = pd.Series() // Array of SubSurface surface Numbers
 
-	# DataHeatBalance.cc
-	Array1D<ZoneListData> ZoneList;
+        // Default Constructor
+        ShadowingCombinations() : UseThisSurf(false), NumGenSurf(0), NumBackSurf(0), NumSubSurf(0)
+        {
+        }
+    '''
 
-	# DataSurfaces.cc
-	Array1D<SurfaceData> Surface;
-	Array1D<SurfaceWindowCalc> SurfaceWindow;
+    # DataShadowingCombinations.cc
+	ShadowComb = pd.Series()
+
+	# DataHeatBalance.hh
+    ZoneListData_ = namedtuple('ZoneListData', ['Name', 'NumOfZones', 'MaxZoneNameLength', 'Zone'])
+    ZoneListData = ZoneListData_(Name="", NumOfZones=0, MaxZoneNameLength=0, Zone=pd.Series())
+    '''
+        // Members
+        std::string Name;                         // Zone List name
+        int NumOfZones;                           // Number of zones in the list
+        std::string::size_type MaxZoneNameLength; // Max Name length of zones in the list
+        Zone = pd.Series()                        // Pointers to zones in the list
+
+        // Default Constructor
+        ZoneListData() : NumOfZones(0), MaxZoneNameLength(0u)
+        {
+        }
+    '''
+
+    ConstructionData_ = namedtuple('ConstructionData', ['Name', 'TotLayers', 'TotSolidLayers', 'TotGlassLayers', 'LayerPoint', 'IsUsed', 'IsUsedCTF',
+                                   'InsideAbsorpVis', 'OutsideAbsorpVis', 'InsideAbsorpSolar', 'OutsideAbsorpSolar', 'InsideAbsorpThermal', 'OutsideAbsorpThermal',
+                                   'OutsideRoughness', 'DayltPropPtr', 'W5FrameDivider', 'CTFCross', 'CTFFlux', 'CTFInside', 'CTFOutside', 'CTFSourceIn',
+                                   'CTFSourceOut', 'CTFTimeStep', 'CTFSourceOut', 'CTFSourceIn', 'CTFTSourceQ', 'CTFTUserOut', 'CTFTUserIn', 'CTFTUserSource',
+                                   'NumHistories', 'NumCTFTerms', 'UValue', 'SolutionDimensions', 'SourceAfterLayer', 'TempAfterLayer', 'ThicknessPerpend',
+                                   'AbsDiffIn', 'AbsDiffOut', 'AbsDiff', 'BlAbsDiff', 'BlAbsDiffGnd', 'BlAbsDiffSky', 'AbsDiffBack', 'BlAbsDiffBack', 'AbsDiffShade',
+                                   'AbsDiffBlind', 'AbsDiffBlindGnd', 'AbsDiffBlindSky', 'AbsDiffBackShade', 'AbsDiffBackBlind', 'ShadeAbsorpThermal', 'AbsBeamCoef',
+                                   'AbsBeamBackCoef', 'AbsBeamShadeCoef', 'TransDiff', 'BlTransDiff', 'BlTransDiffGnd', 'BlTransDiffSky', 'TransDiffVis',
+                                   'BlTransDiffVis', 'ReflectSolDiffBack', 'BlReflectSolDiffBack', 'ReflectSolDiffFront', 'BlReflectSolDiffFront', 'ReflectVisDiffBack',
+                                   'BlReflectVisDiffBack', 'ReflectVisDiffFront', 'BlReflectVisDiffFront', 'TransSolBeamCoef', 'TransVisBeamCoef', 'ReflSolBeamFrontCoef',
+                                   'ReflSolBeamBackCoef', 'tBareSolCoef', 'tBareVisCoef', 'rfBareSolCoef', 'rfBareVisCoef', 'rbBareSolCoef', 'rbBareVisCoef',
+                                   'afBareSolCoef', 'abBareSolCoef', 'tBareSolDiff', 'tBareVisDiff', 'rfBareSolDiff', 'rfBareVisDiff', 'rbBareSolDiff', 'rbBareVisDiff',
+                                   'afBareSolDiff', 'abBareSolDiff', 'FromWindow5DataFile', 'W5FileMullionWidth', 'W5FileMullionOrientation', 'W5FileGlazingSysWidth',
+                                   'W5FileGlazingSysHeight', 'SummerSHGC', 'VisTransNorm', 'SolTransNorm', 'SourceSinkPresent', 'TypeIsWindow', 'WindowTypeBSDF',
+                                   'TypeIsEcoRoof', 'TypeIsIRT', 'TypeIsCfactorWall', 'TypeIsFfactorFloor', 'TCFlag', 'TCMasterConst', 'TCLayerID', 'TCGlassID',
+                                   'CFactor', 'Height', 'FFactor', 'Area', 'PerimeterExposed', 'ReverseConstructionNumLayersWarning', 'ReverseConstructionLayersOrderWarning'])
+    ConstructionData = ConstructionData_(Name=?, TotLayers=0, TotSolidLayers=0, TotGlassLayers=0, LayerPoint=(MaxLayersInConstruct, 0), IsUsed=False, IsUsedCTF=False,
+                                         InsideAbsorpVis=0.0, OutsideAbsorpVis=0.0, InsideAbsorpSolar=0.0, OutsideAbsorpSolar=0.0, InsideAbsorpThermal=0.0,
+                                         OutsideAbsorpThermal=0.0, OutsideRoughness=0, DayltPropPtr=0, W5FrameDivider=0, CTFCross=({0, MaxCTFTerms - 1}, 0.0),
+                                         CTFFlux=(MaxCTFTerms - 1, 0.0), CTFInside=({0, MaxCTFTerms - 1}, 0.0), CTFOutside=({0, MaxCTFTerms - 1}, 0.0),
+                                         CTFSourceIn=({0, MaxCTFTerms - 1}, 0.0), CTFSourceOut=({0, MaxCTFTerms - 1}, 0.0), CTFTimeStep=?, CTFSourceOut=({0, MaxCTFTerms - 1}, 0.0),
+                                         CTFSourceIn=({0, MaxCTFTerms - 1}, 0.0), CTFTSourceQ=?, CTFTUserOut=?, CTFTUserIn=?, CTFTUserSource=?, NumHistories=0, NumCTFTerms=0,
+                                         UValue=0.0, SolutionDimensions=0, SourceAfterLayer=0, TempAfterLayer=0, ThicknessPerpend=0, AbsDiffIn=0.0, AbsDiffOut=0.0,
+                                         AbsDiff=(MaxSolidWinLayers, 0.0), BlAbsDiff=(MaxSlatAngs, MaxSolidWinLayers, 0.0), BlAbsDiffGnd=(MaxSlatAngs, MaxSolidWinLayers, 0.0),
+                                         BlAbsDiffSky=(MaxSlatAngs, MaxSolidWinLayers, 0.0), AbsDiffBack=(MaxSolidWinLayers, 0.0), BlAbsDiffBack=(MaxSlatAngs, MaxSolidWinLayers, 0.0),
+                                         AbsDiffShade=0.0, AbsDiffBlind=(MaxSlatAngs, 0.0), AbsDiffBlindGnd=(MaxSlatAngs, 0.0), AbsDiffBlindSky=(MaxSlatAngs, 0.0), AbsDiffBackShade=0.0,
+                                         AbsDiffBackBlind=(MaxSlatAngs, 0.0), ShadeAbsorpThermal=0.0, AbsBeamCoef=(6, MaxSolidWinLayers, 0.0), AbsBeamBackCoef=(6, MaxSolidWinLayers, 0.0),
+                                         AbsBeamShadeCoef=(6, 0.0), TransDiff=0.0, BlTransDiff=(MaxSlatAngs, 0.0), BlTransDiffGnd=(MaxSlatAngs, 0.0), BlTransDiffSky=(MaxSlatAngs, 0.0),
+                                         TransDiffVis=0.0, BlTransDiffVis=(MaxSlatAngs, 0.0), ReflectSolDiffBack=0.0, BlReflectSolDiffBack=(MaxSlatAngs, 0.0), ReflectSolDiffFront=0.0,
+                                         BlReflectSolDiffFront=(MaxSlatAngs, 0.0), ReflectVisDiffBack=0.0, BlReflectVisDiffBack=(MaxSlatAngs, 0.0), ReflectVisDiffFront=0.0,
+                                         BlReflectVisDiffFront=(MaxSlatAngs, 0.0), TransSolBeamCoef=(6, 0.0), TransVisBeamCoef=(6, 0.0), ReflSolBeamFrontCoef=(6, 0.0),
+                                         ReflSolBeamBackCoef=(6, 0.0), tBareSolCoef=(6, 5, 0.0), tBareVisCoef=(6, 5, 0.0), rfBareSolCoef=(6, 5, 0.0), rfBareVisCoef=(6, 5, 0.0),
+                                         rbBareSolCoef=(6, 5, 0.0), rbBareVisCoef=(6, 5, 0.0), afBareSolCoef=(6, 5, 0.0), abBareSolCoef=(6, 5, 0.0), tBareSolDiff=(5, 0.0),
+                                         tBareVisDiff=(5, 0.0), rfBareSolDiff=(5, 0.0), rfBareVisDiff=(5, 0.0), rbBareSolDiff=(5, 0.0), rbBareVisDiff=(5, 0.0), afBareSolDiff=(5, 0.0),
+                                         abBareSolDiff=(5, 0.0), FromWindow5DataFile=False, W5FileMullionWidth=0.0, W5FileMullionOrientation=0, W5FileGlazingSysWidth=0.0,
+                                         W5FileGlazingSysHeight=0.0, SummerSHGC=0.0, VisTransNorm=0.0, SolTransNorm=0.0, SourceSinkPresent=False, TypeIsWindow=False, WindowTypeBSDF=False,
+                                         TypeIsEcoRoof=False, TypeIsIRT=False, TypeIsCfactorWall=False, TypeIsFfactorFloor=False, TCFlag=0, TCMasterConst=0, TCLayerID=0, TCGlassID=0,
+                                         CFactor=0.0, Height=0.0, FFactor=0.0, Area=0.0, PerimeterExposed=0.0, ReverseConstructionNumLayersWarning=False, ReverseConstructionLayersOrderWarning=False)
+    '''
+        // Members
+        std::string Name; // Name of construction
+        int TotLayers;    // Total number of layers for the construction; for windows
+                          //  this is the total of the glass, gas and shade layers
+        int TotSolidLayers;     // Total number of solid (glass or shade) layers (windows only)
+        int TotGlassLayers;     // Total number of glass layers (windows only)
+        Array1D_int LayerPoint; // Pointer array which refers back to
+                                // the Material structure; LayerPoint(i)=j->Material(j)%Name,etc
+        bool IsUsed;                // Marked true when the construction is used
+        bool IsUsedCTF;             // Mark true when the construction is used for a surface with CTF calculations
+        Real64 InsideAbsorpVis;     // Inside Layer visible absorptance of an opaque surface; not used for windows.
+        Real64 OutsideAbsorpVis;    // Outside Layer visible absorptance of an opaque surface; not used for windows.
+        Real64 InsideAbsorpSolar;   // Inside Layer solar absorptance of an opaque surface; not used for windows.
+        Real64 OutsideAbsorpSolar;  // Outside Layer solar absorptance of an opaque surface; not used for windows.
+        Real64 InsideAbsorpThermal; // Inside Layer Thermal absorptance for opaque surfaces or windows;
+                                    // for windows, applies to innermost glass layer
+        Real64 OutsideAbsorpThermal; // Outside Layer Thermal absorptance
+        int OutsideRoughness;        // Outside Surface roughness index (6=very smooth, 5=smooth,
+                                     // 4=medium smooth, 3=medium rough, 2=rough, 1=very rough)
+        int DayltPropPtr;   // Pointer to Daylight Construction Properties
+        int W5FrameDivider; // FrameDivider number for window construction from Window5 data file;
+                            //  zero is construction not from Window5 file or Window5 construction has no frame.
+                            // Conductive properties for the construction
+        Array1D<Real64> CTFCross;     // Cross or Y terms of the CTF equation
+        Array1D<Real64> CTFFlux;      // Flux history terms of the CTF equation
+        Array1D<Real64> CTFInside;    // Inside or Z terms of the CTF equation
+        Array1D<Real64> CTFOutside;   // Outside or X terms of the CTF equation
+        Array1D<Real64> CTFSourceIn;  // Heat source/sink inside terms of CTF equation
+        Array1D<Real64> CTFSourceOut; // Heat source/sink outside terms of CTF equation
+        Real64 CTFTimeStep;           // Time increment for stable simulation of construct (could be greater than TimeStep)
+                                      // The next three series of terms are used to calculate the temperature at the location of a source/sink
+                                      // in the QTF formulation.  This calculation is necessary to allow the proper simulation of a
+                                      // radiant system.
+        Array1D<Real64> CTFTSourceOut; // Outside terms of the CTF equation for interior temp
+                                       // calc@source location
+        Array1D<Real64> CTFTSourceIn; // Inside terms of the CTF equation for interior temp
+                                      // calc@source location
+        Array1D<Real64> CTFTSourceQ; // Source/sink terms of the CTF equation for interior temp
+                                     // calc@source location
+                                     // The next three series of terms are used to calculate the temperature at a location specified by the user.
+                                     // This location must be between two layers and is intended to allow the user to evaluate whether or not
+                                     // condensation is a possibility between material layers.
+        Array1D<Real64> CTFTUserOut; // Outside terms of the CTF equation for interior temp
+                                     // calc@user location
+        Array1D<Real64> CTFTUserIn; // Inside terms of the CTF equation for interior temp
+                                    // calc@user location
+        Array1D<Real64> CTFTUserSource; // Source/sink terms of the CTF equation for interior temp
+                                        // calc@user location
+        int NumHistories; // CTFTimeStep/TimeStepZone or the number of temp/flux history series
+                          // for the construction
+        int NumCTFTerms;        // Number of CTF terms for this construction (not including terms at current time)
+        Real64 UValue;          // Overall heat transfer coefficient for the construction
+        int SolutionDimensions; // Number of dimensions in the solution (1 for normal constructions,
+                                // 1 or 2 for constructions with sources or sinks)-->may allow 3-D later?
+        int SourceAfterLayer;    // Source/sink is present after this layer in the construction
+        int TempAfterLayer;      // User is requesting a temperature calculation after this layer in the construction
+        Real64 ThicknessPerpend; // Thickness between planes of symmetry in the direction
+                                 // perpendicular to the main direction of heat transfer
+                                 // (same as half the distance between tubes)
+                                 // Moisture Transfer Functions term belong here as well
+                                 // BLAST detailed solar model parameters
+        Real64 AbsDiffIn;  // Inner absorptance coefficient for diffuse radiation
+        Real64 AbsDiffOut; // Outer absorptance coefficient for diffuse radiation
+                           // Variables for window constructions
+        Array1D<Real64> AbsDiff; // Diffuse solar absorptance for each glass layer,
+                                 // bare glass or shade on
+        Array2D<Real64> BlAbsDiff; // Diffuse solar absorptance for each glass layer vs.
+                                   // slat angle, blind on
+        Array2D<Real64> BlAbsDiffGnd; // Diffuse ground solar absorptance for each glass layer
+                                      // vs. slat angle, blind on
+        Array2D<Real64> BlAbsDiffSky; // Diffuse sky solar absorptance for each glass layer
+                                      // vs. slat angle, blind on
+        Array1D<Real64> AbsDiffBack;   // Diffuse back solar absorptance for each glass layer
+        Array2D<Real64> BlAbsDiffBack; // Diffuse back solar absorptance for each glass layer,
+                                       //  vs. slat angle, blind on
+        Real64 AbsDiffShade;              // Diffuse solar absorptance for shade
+        Array1D<Real64> AbsDiffBlind;     // Diffuse solar absorptance for blind, vs. slat angle
+        Array1D<Real64> AbsDiffBlindGnd;  // Diffuse ground solar absorptance for blind, vs. slat angle
+        Array1D<Real64> AbsDiffBlindSky;  // Diffuse sky solar absorptance for blind, vs. slat angle
+        Real64 AbsDiffBackShade;          // Diffuse back solar absorptance for shade
+        Array1D<Real64> AbsDiffBackBlind; // Diffuse back solar absorptance for blind, vs. slat angle
+        Real64 ShadeAbsorpThermal;        // Diffuse back thermal absorptance of shade
+        Array2D<Real64> AbsBeamCoef;      // Coefficients of incidence-angle polynomial for solar
+                                          // absorptance for each solid glazing layer
+        Array2D<Real64> AbsBeamBackCoef;  // As for AbsBeamCoef but for back-incident solar
+        Array1D<Real64> AbsBeamShadeCoef; // Coefficients of incidence-angle polynomial for solar
+                                          // absorptance of shade
+        Real64 TransDiff;                      // Diffuse solar transmittance, bare glass or shade on
+        Array1D<Real64> BlTransDiff;           // Diffuse solar transmittance, blind present, vs. slat angle
+        Array1D<Real64> BlTransDiffGnd;        // Ground diffuse solar transmittance, blind present, vs. slat angle
+        Array1D<Real64> BlTransDiffSky;        // Sky diffuse solar transmittance, blind present, vs. slat angle
+        Real64 TransDiffVis;                   // Diffuse visible transmittance, bare glass or shade on
+        Array1D<Real64> BlTransDiffVis;        // Diffuse visible transmittance, blind present, vs. slat angle
+        Real64 ReflectSolDiffBack;             // Diffuse back solar reflectance, bare glass or shade on
+        Array1D<Real64> BlReflectSolDiffBack;  // Diffuse back solar reflectance, blind present, vs. slat angle
+        Real64 ReflectSolDiffFront;            // Diffuse front solar reflectance, bare glass or shade on
+        Array1D<Real64> BlReflectSolDiffFront; // Diffuse front solar reflectance, blind present, vs. slat angle
+        Real64 ReflectVisDiffBack;             // Diffuse back visible reflectance, bare glass or shade on
+        Array1D<Real64> BlReflectVisDiffBack;  // Diffuse back visible reflectance, blind present, vs. slat angle
+        Real64 ReflectVisDiffFront;            // Diffuse front visible reflectance, bare glass or shade on
+        Array1D<Real64> BlReflectVisDiffFront; // Diffuse front visible reflectance, blind present, vs. slat angle
+        Array1D<Real64> TransSolBeamCoef;      // Coeffs of incidence-angle polynomial for beam sol trans,
+                                               // bare glass or shade on
+        Array1D<Real64> TransVisBeamCoef; // Coeffs of incidence-angle polynomial for beam vis trans,
+                                          // bare glass or shade on
+        Array1D<Real64> ReflSolBeamFrontCoef; // Coeffs of incidence-angle polynomial for beam sol front refl,
+                                              // bare glass or shade on
+        Array1D<Real64> ReflSolBeamBackCoef; // Like ReflSolBeamFrontCoef, but for back-incident beam solar
+        Array2D<Real64> tBareSolCoef;        // Isolated glass solar transmittance coeffs of inc. angle polynomial
+        Array2D<Real64> tBareVisCoef;        // Isolated glass visible transmittance coeffs of inc. angle polynomial
+        Array2D<Real64> rfBareSolCoef;       // Isolated glass front solar reflectance coeffs of inc. angle polynomial
+        Array2D<Real64> rfBareVisCoef;       // Isolated glass front visible reflectance coeffs of inc. angle polynomial
+        Array2D<Real64> rbBareSolCoef;       // Isolated glass back solar reflectance coeffs of inc. angle polynomial
+        Array2D<Real64> rbBareVisCoef;       // Isolated glass back visible reflectance coeffs of inc. angle polynomial
+        Array2D<Real64> afBareSolCoef;       // Isolated glass front solar absorptance coeffs of inc. angle polynomial
+        Array2D<Real64> abBareSolCoef;       // Isolated glass back solar absorptance coeffs of inc. angle polynomial
+        Array1D<Real64> tBareSolDiff;        // Isolated glass diffuse solar transmittance
+        Array1D<Real64> tBareVisDiff;        // Isolated glass diffuse visible transmittance
+        Array1D<Real64> rfBareSolDiff;       // Isolated glass diffuse solar front reflectance
+        Array1D<Real64> rfBareVisDiff;       // Isolated glass diffuse visible front reflectance
+        Array1D<Real64> rbBareSolDiff;       // Isolated glass diffuse solar back reflectance
+        Array1D<Real64> rbBareVisDiff;       // Isolated glass diffuse visible back reflectance
+        Array1D<Real64> afBareSolDiff;       // Isolated glass diffuse solar front absorptance
+        Array1D<Real64> abBareSolDiff;       // Isolated glass diffuse solar back absorptance
+        bool FromWindow5DataFile;            // True if this is a window construction extracted from the Window5 data file
+        Real64 W5FileMullionWidth;           // Width of mullion for construction from Window5 data file (m)
+        int W5FileMullionOrientation;        // Orientation of mullion, if present, for Window5 data file construction,
+        Real64 W5FileGlazingSysWidth;        // Glass width for construction from Window5 data file (m)
+        Real64 W5FileGlazingSysHeight;       // Glass height for construction form Window5 data file (m)
+        Real64 SummerSHGC;                   // Calculated ASHRAE SHGC for summer conditions
+        Real64 VisTransNorm;                 // The normal visible transmittance
+        Real64 SolTransNorm;                 // the normal solar transmittance
+        bool SourceSinkPresent;              // .TRUE. if there is a source/sink within this construction
+        bool TypeIsWindow;                   // True if a window construction, false otherwise
+        bool WindowTypeBSDF;                 // True for complex window, false otherwise
+        bool TypeIsEcoRoof;                  // -- true for construction with ecoRoof outside, the flag
+                                             //-- is turned on when the outside layer is of type EcoRoof
+        bool TypeIsIRT;          // -- true for construction with IRT material
+        bool TypeIsCfactorWall;  // -- true for construction with Construction:CfactorUndergroundWall
+        bool TypeIsFfactorFloor; // -- true for construction with Construction:FfactorGroundFloor
+        
+        // Added TH 12/22/2008 for thermochromic windows
+        int TCFlag; // 0: this construction is not a thermochromic window construction
+                    // 1: it is a TC window construction
+        int TCLayer;       // Reference to the TC glazing material layer in the Material array
+        int TCMasterConst; // The master TC construction referenced by its slave constructions
+        int TCLayerID;     // Which material layer is the TC glazing, counting all material layers.
+        int TCGlassID;     // Which glass layer is the TC glazing, counting from glass layers only.
+        
+        // For CFactor underground walls
+        Real64 CFactor;
+        Real64 Height;
+        
+        // For FFactor slabs-on-grade or underground floors
+        Real64 FFactor;
+        Real64 Area;
+        Real64 PerimeterExposed;
+        bool ReverseConstructionNumLayersWarning;
+        bool ReverseConstructionLayersOrderWarning;
+
+        // Default Constructor
+        ConstructionData()
+            : TotLayers(0), TotSolidLayers(0), TotGlassLayers(0), LayerPoint(MaxLayersInConstruct, 0), IsUsed(false), IsUsedCTF(false),
+              InsideAbsorpVis(0.0), OutsideAbsorpVis(0.0), InsideAbsorpSolar(0.0), OutsideAbsorpSolar(0.0), InsideAbsorpThermal(0.0),
+              OutsideAbsorpThermal(0.0), OutsideRoughness(0), DayltPropPtr(0), W5FrameDivider(0), CTFCross({0, MaxCTFTerms - 1}, 0.0),
+              CTFFlux(MaxCTFTerms - 1, 0.0), CTFInside({0, MaxCTFTerms - 1}, 0.0), CTFOutside({0, MaxCTFTerms - 1}, 0.0),
+              CTFSourceIn({0, MaxCTFTerms - 1}, 0.0), CTFSourceOut({0, MaxCTFTerms - 1}, 0.0), CTFTSourceOut({0, MaxCTFTerms - 1}, 0.0),
+              CTFTSourceIn({0, MaxCTFTerms - 1}, 0.0), CTFTSourceQ({0, MaxCTFTerms - 1}, 0.0), CTFTUserOut({0, MaxCTFTerms - 1}, 0.0),
+              CTFTUserIn({0, MaxCTFTerms - 1}, 0.0), CTFTUserSource({0, MaxCTFTerms - 1}, 0.0), NumHistories(0), NumCTFTerms(0), UValue(0.0),
+              SolutionDimensions(0), SourceAfterLayer(0), TempAfterLayer(0), ThicknessPerpend(0.0), AbsDiffIn(0.0), AbsDiffOut(0.0),
+              AbsDiff(MaxSolidWinLayers, 0.0), BlAbsDiff(MaxSlatAngs, MaxSolidWinLayers, 0.0), BlAbsDiffGnd(MaxSlatAngs, MaxSolidWinLayers, 0.0),
+              BlAbsDiffSky(MaxSlatAngs, MaxSolidWinLayers, 0.0), AbsDiffBack(MaxSolidWinLayers, 0.0),
+              BlAbsDiffBack(MaxSlatAngs, MaxSolidWinLayers, 0.0), AbsDiffShade(0.0), AbsDiffBlind(MaxSlatAngs, 0.0),
+              AbsDiffBlindGnd(MaxSlatAngs, 0.0), AbsDiffBlindSky(MaxSlatAngs, 0.0), AbsDiffBackShade(0.0), AbsDiffBackBlind(MaxSlatAngs, 0.0),
+              ShadeAbsorpThermal(0.0), AbsBeamCoef(6, MaxSolidWinLayers, 0.0), AbsBeamBackCoef(6, MaxSolidWinLayers, 0.0), AbsBeamShadeCoef(6, 0.0),
+              TransDiff(0.0), BlTransDiff(MaxSlatAngs, 0.0), BlTransDiffGnd(MaxSlatAngs, 0.0), BlTransDiffSky(MaxSlatAngs, 0.0), TransDiffVis(0.0),
+              BlTransDiffVis(MaxSlatAngs, 0.0), ReflectSolDiffBack(0.0), BlReflectSolDiffBack(MaxSlatAngs, 0.0), ReflectSolDiffFront(0.0),
+              BlReflectSolDiffFront(MaxSlatAngs, 0.0), ReflectVisDiffBack(0.0), BlReflectVisDiffBack(MaxSlatAngs, 0.0), ReflectVisDiffFront(0.0),
+              BlReflectVisDiffFront(MaxSlatAngs, 0.0), TransSolBeamCoef(6, 0.0), TransVisBeamCoef(6, 0.0), ReflSolBeamFrontCoef(6, 0.0),
+              ReflSolBeamBackCoef(6, 0.0), tBareSolCoef(6, 5, 0.0), tBareVisCoef(6, 5, 0.0), rfBareSolCoef(6, 5, 0.0), rfBareVisCoef(6, 5, 0.0),
+              rbBareSolCoef(6, 5, 0.0), rbBareVisCoef(6, 5, 0.0), afBareSolCoef(6, 5, 0.0), abBareSolCoef(6, 5, 0.0), tBareSolDiff(5, 0.0),
+              tBareVisDiff(5, 0.0), rfBareSolDiff(5, 0.0), rfBareVisDiff(5, 0.0), rbBareSolDiff(5, 0.0), rbBareVisDiff(5, 0.0), afBareSolDiff(5, 0.0),
+              abBareSolDiff(5, 0.0), FromWindow5DataFile(false), W5FileMullionWidth(0.0), W5FileMullionOrientation(0), W5FileGlazingSysWidth(0.0),
+              W5FileGlazingSysHeight(0.0), SummerSHGC(0.0), VisTransNorm(0.0), SolTransNorm(0.0), SourceSinkPresent(false), TypeIsWindow(false),
+              WindowTypeBSDF(false), TypeIsEcoRoof(false), TypeIsIRT(false), TypeIsCfactorWall(false), TypeIsFfactorFloor(false), TCFlag(0),
+              TCLayer(0), TCMasterConst(0), TCLayerID(0), TCGlassID(0), CFactor(0.0), Height(0.0), FFactor(0.0), Area(0.0), PerimeterExposed(0.0),
+              ReverseConstructionNumLayersWarning(false), ReverseConstructionLayersOrderWarning(false), WindowTypeEQL(false), EQLConsPtr(0),
+              AbsDiffFrontEQL(CFSMAXNL, 0.0), AbsDiffBackEQL(CFSMAXNL, 0.0), TransDiffFrontEQL(0.0), TransDiffBackEQL(0.0)
+        {
+        }
+    '''
+
+    # DataHeatBalance.cc
+	ZoneList = pd.Series()
+    Construct = ConstructionData
+
+	# DataSurfaces.hh
+    Vertices = pd.Series()
+    Plane = Vector4<Real64>; # ?
+
+    SurfaceData_ = namedtuple('SurfaceData', ['Name', 'Construction', 'EMSConstructionOverrideON', 'EMSConstructionOverrideValue',
+                                                'ConstructionStoredInputValue', 'Class', 'Shape', 'Sides', 'Area', 'GrossArea',
+                                                'NetAreaShadowCalc', 'Perimeter', 'Azimuth', 'Height', 'Reveal', 'Tilt', 'Width',
+                                                'HeatTransSurf', 'OutsideHeatSourceTermSchedule', 'InsideHeatSourceTermSchedule',
+                                                'HeatTransferAlgorithm', 'BaseSurfName', 'BaseSurf', 'NumSubSurfaces', 'ZoneName',
+                                                'Zone', 'ExtBoundCondName', 'LowTempErrCount', 'HighTempErrCount', 'ExtSolar',
+                                                'ExtWind', 'IntConvCoeff', 'EMSOverrideIntConvCoef', 'EMSValueForIntConvCoef',
+                                                'ExtConvCoeff', 'EMSOverrideExtConvCoef', 'EMSValueForExtConvCoef', 'ViewFactorGround',
+                                                'ViewFactorSky', 'ViewFactorGroundIR', 'ViewFactorSkyIR', 'OSCPtr', 'OSCMPtr',
+                                                'SchedShadowSurfIndex', 'ShadowSurfSchedVaries', 'ShadowingSurf', 'IsTransparent',
+                                                'SchedMinValue', 'ShadowSurfDiffuseSolRefl', 'ShadowSurfDiffuseVisRefl',
+                                                'ShadowSurfGlazingFrac', 'ShadowSurfGlazingConstruct', 'ShadowSurfPossibleObstruction',
+                                                'ShadowSurfPossibleReflector', 'ShadowSurfRecSurfNum', 'MaterialMovInsulExt',
+                                                'MaterialMovInsulInt', 'SchedMovInsulExt', 'SchedMovInsulInt', 'MovInsulIntPresent',
+                                                'MovInsulIntPresentPrevTS', 'NewVertex', 'Vertex', 'Centroid', 'lcsx', 'lcsy', 'lcsz',
+                                                'NewellAreaVector', 'NewellSurfaceNormalVector', 'OutNormVec', 'SinAzim', 'CosAzim',
+                                                'SinTilt', 'CosTilt', 'IsConvex', 'IsDegenerate', 'shapeCat', 'plane', 'surface2d',
+                                                '...Window Parameters...',
+                                                'Shelf', 'TAirRef', 'OutDryBulbTemp', 'OutDryBulbTempEMSOverrideOn',
+                                                'OutDryBulbTempEMSOverrideValue', 'OutWetBulbTemp', 'OutWetBulbTempEMSOverrideOn',
+                                                'OutWetBulbTempEMSOverrideValue', 'WindSpeed', 'WindSpeedEMSOverrideOn',
+                                                'WindSpeedEMSOverrideValue', 'WindDir', 'WindDirEMSOverrideOn', 'WindDirEMSOverrideValue',
+                                                'SchedExternalShadingFrac', 'ExternalShadingSchInd', 'HasSurroundingSurfProperties',
+                                                'SurroundingSurfacesNum', 'HasLinkedOutAirNode', 'LinkedOutAirNode', 'UNomWOFilm',
+                                                'UNomFilm', 'ExtEcoRoof', 'ExtCavityPresent', 'ExtCavNum', 'IsPV', 'IsICS', 'IsPool',
+                                                'ICSPtr', 'MirroredSurf', 'IntConvClassification', 'IntConvHcModelEq', 'IntConvHcUserCurveIndex',
+                                                'OutConvClassification', 'OutConvHfModelEq', 'OutConvHfUserCurveIndex', 'OutConvHnModelEq',
+                                                'OutConvHnUserCurveIndex', 'OutConvFaceArea', 'OutConvFacePerimeter', 'OutConvFaceHeight',
+                                                'IntConvZoneWallHeight', 'IntConvZonePerimLength', 'IntConvZoneHorizHydrDiam',
+                                                'IntConvWindowWallRatio', 'IntConvWindowLocation', 'IntConvSurfGetsRadiantHeat',
+                                                'IntConvSurfHasActiveInIt', 'PartOfVentSlabOrRadiantSurface', 'GenericContam',
+                                                'DisabledShadowingZoneList'])
+    SurfaceData = SurfaceData_(Name=?, Construction=0, EMSConstructionOverrideON=False, EMSConstructionOverrideValue=0,
+                                ConstructionStoredInputValue=0, Class=0, Shape=?SurfaceShape::None, Sides=0, Area=0.0,
+                                GrossArea=0.0, NetAreaShadowCalc=0.0, Perimeter=0.0, Azimuth=0.0, Height=0.0, Reveal=0.0,
+                                Tilt=0.0, Width=0.0, HeatTransSurf=False, OutsideHeatSourceTermSchedule=0, InsideHeatSourceTermSchedule=0,
+                                HeatTransferAlgorithm=?HeatTransferModel_NotSet, BaseSurfName=?, BaseSurf=0, NumSubSurfaces=0, ZoneName=?,
+                                Zone=0, ExtBoundCondName=?, ExtBoundCond=0, LowTempErrCount=0, HighTempErrCount=0, ExtSolar=False, ExtWind=False,
+                                IntConvCoeff=0, EMSOverrideIntConvCoef=False, EMSValueForIntConvCoef=0.0, ExtConvCoeff=0, EMSOverrideExtConvCoef=False,
+                                EMSValueForExtConvCoef=0.0, ViewFactorGround=0.0, ViewFactorSky=0.0, ViewFactorGroundIR=0.0, ViewFactorSkyIR=0.0,
+                                OSCPtr=0, OSCMPtr=0, SchedShadowSurfIndex=0, ShadowSurfSchedVaries=False, ShadowingSurf=False, IsTransparent=False,
+                                SchedMinValue=0.0, ShadowSurfDiffuseSolRefl=0.0, ShadowSurfDiffuseVisRefl=0.0, ShadowSurfGlazingFrac=0.0,
+                                ShadowSurfGlazingConstruct=0, ShadowSurfPossibleObstruction=True, ShadowSurfPossibleReflector=False, ShadowSurfRecSurfNum=0,
+                                MaterialMovInsulExt=0, MaterialMovInsulInt=0, SchedMovInsulExt=0, SchedMovInsulInt=0, MovInsulIntPresent=False,
+                                MovInsulIntPresentPrevTS=False, NewVertex=?, Vertex=?, Centroid=(0.0, 0.0, 0.0), lcsx=(0.0, 0.0, 0.0), lcsy=(0.0, 0.0, 0.0),
+                                lcsz=(0.0, 0.0, 0.0), NewellAreaVector=(0.0, 0.0, 0.0), NewellSurfaceNormalVector=(0.0, 0.0, 0.0), OutNormVec=(3, 0.0),
+                                SinAzim=0.0, CosAzim=0.0, SinTilt=0.0, CosTilt=0.0, IsConvex=True, IsDegenerate=False, shapeCat=?ShapeCat::Unknown,
+                                plane=(0.0, 0.0, 0.0, 0.0), surface2d=?,
+                                ...Window Parameters...=,
+                                Shelf=0, TAirRef=?ZoneMeanAirTemp, OutDryBulbTemp=0.0, OutDryBulbTempEMSOverrideOn=False, OutDryBulbTempEMSOverrideValue=0.0,
+                                OutWetBulbTemp=0.0, OutWetBulbTempEMSOverrideOn=False, OutWetBulbTempEMSOverrideValue=0.0, WindSpeed=0.0,
+                                WindSpeedEMSOverrideOn=False, WindSpeedEMSOverrideValue=0.0, WindDir=0.0, WindDirEMSOverrideOn=False, WindDirEMSOverrideValue=0.0,
+                                SchedExternalShadingFrac=False, ExternalShadingSchInd=0, HasSurroundingSurfProperties=False, SurroundingSurfacesNum=0,
+                                HasLinkedOutAirNode=False, LinkedOutAirNode=0, UNomWOFilm="-              ", UNomFilm="-              ", ExtEcoRoof=False,
+                                ExtCavityPresent=False, ExtCavNum=0, IsPV=False, IsICS=False, IsPool=False, ICSPtr=0, MirroredSurf=False, IntConvClassification=0,
+                                IntConvHcModelEq=0, IntConvHcUserCurveIndex=0, OutConvClassification=0, OutConvHfModelEq=0, OutConvHfUserCurveIndex=0,
+                                OutConvHnModelEq=0, OutConvHnUserCurveIndex=0, OutConvFaceArea=0.0, OutConvFacePerimeter=0.0, OutConvFaceHeight=0.0,
+                                IntConvZoneWallHeight=0.0, IntConvZonePerimLength=0.0, IntConvZoneHorizHydrDiam=0.0, IntConvWindowWallRatio=0.0,
+                                IntConvWindowLocation=?InConvWinLoc_NotSet, IntConvSurfGetsRadiantHeat=False, IntConvSurfHasActiveInIt=False,
+                                PartOfVentSlabOrRadiantSurface=False, GenericContam=0.0, DisabledShadowingZoneList=?)
+    '''
+        // Types
+        using Vertices = pd.Series();
+        using Plane = Vector4<Real64>;
+
+        // Members
+        std::string Name;                 // User supplied name of the surface (must be unique)
+        int Construction;                 // Pointer to the construction in the Construct derived type
+        bool EMSConstructionOverrideON;   // if true, EMS is calling to override the construction value
+        int EMSConstructionOverrideValue; // pointer value to use for Construction when overridden
+        int ConstructionStoredInputValue; // holds the original value for Construction per surface input
+        int Class;
+        
+        // Geometry related parameters
+        SurfaceShape Shape; // Surface shape (Triangle=1,Quadrilateral=2,Rectangle=3,
+                            // Rectangular Window/Door=4,Rectangular Overhang=5,
+                            // Rectangular Left Fin=6,Rectangular Right Fin=7,
+                            // Triangular Window=8)
+        int Sides;                // Number of side/vertices for this surface (based on Shape)
+        Real64 Area;              // Surface area of the surface (less any subsurfaces) {m2}
+        Real64 GrossArea;         // Surface area of the surface (including subsurfaces) {m2}
+        Real64 NetAreaShadowCalc; // Area of a wall/floor/ceiling less subsurfaces assuming
+                                  //  all windows, if present, have unity multiplier.
+                                  // Wall/floor/ceiling/roof areas that include windows include
+                                  //  frame (unity) areas.
+                                  // Areas of Windows including divider (unity) area.
+                                  // These areas are used in shadowing / sunlit area calculations.
+        Real64 Perimeter; // Perimeter length of the surface {m}
+        Real64 Azimuth;   // Direction the surface outward normal faces (degrees) or FACING
+        Real64 Height;    // Height of the surface (m)
+        Real64 Reveal;    // Depth of the window reveal (m) if this surface is a window
+        Real64 Tilt;      // Angle (deg) between the ground outward normal and the surface outward normal
+        Real64 Width;     // Width of the surface (m)
+        
+        // Boundary conditions and interconnections
+        bool HeatTransSurf;                // True if surface is a heat transfer surface,
+        int OutsideHeatSourceTermSchedule; // Pointer to the schedule of additional source of heat flux rate applied to the outside surface
+        int InsideHeatSourceTermSchedule;  // Pointer to the schedule of additional source of heat flux rate applied to the inside surface
+                                           // False if a (detached) shadowing (sub)surface
+        int HeatTransferAlgorithm; // used for surface-specific heat transfer algorithm.
+        std::string BaseSurfName;  // Name of BaseSurf
+        int BaseSurf;              // "Base surface" for this surface.  Applies mainly to subsurfaces
+                                   // in which case it points back to the base surface number.
+                                   // Equals 0 for detached shading.
+                                   // BaseSurf equals surface number for all other surfaces.
+        int NumSubSurfaces;   // Number of subsurfaces this surface has (doors/windows)
+        std::string ZoneName; // User supplied name of the Zone
+        int Zone;             // Interior environment or zone the surface is a part of
+                              // Note that though attached shading surfaces are part of a zone, this
+                              // value is 0 there to facilitate using them as detached surfaces (more
+                              // accurate shading.
+        std::string ExtBoundCondName; // Name for the Outside Environment Object
+        int ExtBoundCond;             // For an "interzone" surface, this is the adjacent surface number.
+                                      // for an internal/adiabatic surface this is the current surface number.
+                                      // Otherwise, 0=external environment, -1=ground,
+                                      // -2=other side coefficients (OSC--won't always use CTFs)
+                                      // -3=other side conditions model
+                                      // During input, interim values of UnreconciledZoneSurface ("Surface") and
+                                      // UnenteredAdjacentZoneSurface ("Zone") are used until reconciled.
+        int LowTempErrCount;
+        int HighTempErrCount;
+        bool ExtSolar; // True if the "outside" of the surface is exposed to solar
+        bool ExtWind;  // True if the "outside" of the surface is exposed to wind
+        
+        // Heat transfer coefficients
+        int IntConvCoeff; // Interior Convection Coefficient pointer (different data structure)
+                          // when being overridden
+        bool EMSOverrideIntConvCoef;   // if true, EMS is calling to override interior convection coefficeint
+        Real64 EMSValueForIntConvCoef; // Value EMS is calling to use for interior convection coefficient [W/m2-K]
+        int ExtConvCoeff;              // Exterior Convection Coefficient pointer (different data structure)
+                                       // when being overridden
+        bool EMSOverrideExtConvCoef;   // if true, EMS is calling to override exterior convection coefficeint
+        Real64 EMSValueForExtConvCoef; // Value EMS is calling to use for exterior convection coefficient [W/m2-K]
+        Real64 ViewFactorGround;       // View factor to the ground from the exterior of the surface for diffuse solar radiation
+        Real64 ViewFactorSky;          // View factor to the sky from the exterior of the surface for diffuse solar radiation
+        Real64 ViewFactorGroundIR;     // View factor to the ground and shadowing surfaces from the exterior of the surface for IR radiation
+        Real64 ViewFactorSkyIR;        // View factor to the sky from the exterior of the surface for IR radiation
+        
+        // Special/optional other side coefficients (OSC)
+        int OSCPtr;  // Pointer to OSC data structure
+        int OSCMPtr; // "Pointer" to OSCM data structure (other side conditions from a model)
+
+        // Optional parameters specific to shadowing surfaces and subsurfaces (detached shading, overhangs, wings, etc.)
+        int SchedShadowSurfIndex;   // Schedule for a shadowing (sub)surface
+        bool ShadowSurfSchedVaries; // true if the scheduling (transmittance) on a shading surface varies.
+        bool ShadowingSurf;         // True if a surface is a shadowing surface
+        bool IsTransparent;         // True if the schedule values are always 1.0 (or the minimum is 1.0)
+        Real64 SchedMinValue;       // Schedule minimum value.
+        
+        // Optional parameters specific to solar reflection from surfaces
+        Real64 ShadowSurfDiffuseSolRefl;    // Diffuse solar reflectance of opaque portion
+        Real64 ShadowSurfDiffuseVisRefl;    // Diffuse visible reflectance of opaque portion
+        Real64 ShadowSurfGlazingFrac;       // Glazing fraction
+        int ShadowSurfGlazingConstruct;     // Glazing construction number
+        bool ShadowSurfPossibleObstruction; // True if a surface can be an exterior obstruction
+        bool ShadowSurfPossibleReflector;   // True if a surface can be an exterior reflector, not used!
+        int ShadowSurfRecSurfNum;           // Receiving surface number
+
+        // Optional movable insulation parameters
+        int MaterialMovInsulExt;       // Pointer to the material used for exterior movable insulation
+        int MaterialMovInsulInt;       // Pointer to the material used for interior movable insulation
+        int SchedMovInsulExt;          // Schedule for exterior movable insulation
+        int SchedMovInsulInt;          // Schedule for interior movable insulation
+        bool MovInsulIntPresent;       // True when movable insulation is present
+        bool MovInsulIntPresentPrevTS; // True when movable insulation was present during the previous time step
+        
+        // Vertices
+        NewVertex = pd.Series()
+        Vertices Vertex; // Surface Vertices are represented by Number of Sides and Vector (type)
+        Vector Centroid; // computed centroid (also known as center of mass or surface balance point)
+        Vector lcsx;
+        Vector lcsy;
+        Vector lcsz;
+        Vector NewellAreaVector;
+        Vector NewellSurfaceNormalVector; // same as OutNormVec in vector notation
+        OutNormVec = pd.Series()          // Direction cosines (outward normal vector) for surface
+        Real64 SinAzim;                   // Sine of surface azimuth angle
+        Real64 CosAzim;                   // Cosine of surface azimuth angle
+        Real64 SinTilt;                   // Sine of surface tilt angle
+        Real64 CosTilt;                   // Cosine of surface tilt angle
+        bool IsConvex;                    // true if the surface is convex.
+        bool IsDegenerate;                // true if the surface is degenerate.
+        
+        // Precomputed parameters for PierceSurface performance
+        ShapeCat shapeCat;   // Shape category
+        Plane plane;         // Plane
+        Surface2D surface2d; // 2D projected surface for efficient intersection testing
+        
+        // Window Parameters (when surface is Window)
+        int WindowShadingControlPtr; // Pointer to shading control (windows only)
+        bool HasShadeControl;           // True if the surface is listed in a WindowShadingControl object
+        int ShadedConstruction;         // Shaded construction (windows only)
+        int StormWinConstruction;       // Construction with storm window (windows only)
+        int StormWinShadedConstruction; // Shaded construction with storm window (windows only)
+        int FrameDivider;               // Pointer to frame and divider information (windows only)
+        Real64 Multiplier;              // Multiplies glazed area, frame area and divider area (windows only)
+        
+        // Daylighting pointers
+        int Shelf;   // Pointer to daylighting shelf
+        int TAirRef; // Flag for reference air temperature
+                     // ZoneMeanAirTemp   = 1 = mean air temperature or MAT => for mixing air model with all convection algos
+                     // except inlet-dependent algo
+                     // AdjacentAirTemp   = 2 = adjacent air temperature or TempEffBulkAir => for nodal or zonal air model
+                     // with all convection algos except inlet-dependent algo
+                     // ZoneSupplyAirTemp = 3 = supply air temperature => for mixing air model with inlet-dependent algo
+                     // Default value is 'ZoneMeanAirTemp' and value for each particular surface will be changed only if
+                     // the inlet-dependent convection algorithm and/or nodal and zonal air models are used.
+        Real64 OutDryBulbTemp;                 // Surface outside dry bulb air temperature, for surface heat balance (C)
+        bool OutDryBulbTempEMSOverrideOn;      // if true, EMS is calling to override the surface's outdoor air temp
+        Real64 OutDryBulbTempEMSOverrideValue; // value to use for EMS override of outdoor air drybulb temp (C)
+        Real64 OutWetBulbTemp;                 // Surface outside wet bulb air temperature, for surface heat balance (C)
+        bool OutWetBulbTempEMSOverrideOn;      // if true, EMS is calling to override the surface's outdoor wetbulb
+        Real64 OutWetBulbTempEMSOverrideValue; // value to use for EMS override of outdoor air wetbulb temp (C)
+        Real64 WindSpeed;                      // Surface outside wind speed, for surface heat balance (m/s)
+        bool WindSpeedEMSOverrideOn;
+        Real64 WindSpeedEMSOverrideValue;
+
+        // XL added 7/19/2017
+        Real64 WindDir;                 // Surface outside wind direction, for surface heat balance and ventilation(degree)
+        bool WindDirEMSOverrideOn;      // if true, EMS is calling to override the surface's outside wind direction
+        Real64 WindDirEMSOverrideValue; // value to use for EMS override of the surface's outside wind speed
+
+        // XL added 7/25/2017
+        bool SchedExternalShadingFrac;     // true if the external shading is scheduled or calculated externally to be imported
+        int ExternalShadingSchInd;         // Schedule for a the external shading
+        bool HasSurroundingSurfProperties; // true if surrounding surfaces properties are listed for an external surface
+        int SurroundingSurfacesNum;        // Index of a surrounding surfaces list (defined in SurfaceProperties::SurroundingSurfaces)
+        bool HasLinkedOutAirNode;          // true if an OutdoorAir::Node is linked to the surface
+        int LinkedOutAirNode;              // Index of the an OutdoorAir:Node
+
+        std::string UNomWOFilm; // Nominal U Value without films stored as string
+        std::string UNomFilm;   // Nominal U Value with films stored as string
+        bool ExtEcoRoof;        // True if the top outside construction material is of type Eco Roof
+        bool ExtCavityPresent;  // true if there is an exterior vented cavity on surface
+        int ExtCavNum;          // index for this surface in ExtVentedCavity structure (if any)
+        bool IsPV;              // true if this is a photovoltaic surface (dxf output)
+        bool IsICS;             // true if this is an ICS collector
+        bool IsPool;            // true if this is a pool
+        int ICSPtr;             // Index to ICS collector
+        
+        // TH added 3/26/2010
+        bool MirroredSurf; // True if it is a mirrored surface
+
+        // additional attributes for convection correlations
+        int IntConvClassification;       // current classification for inside face air flow regime and surface orientation
+        int IntConvHcModelEq;            // current convection model for inside face
+        int IntConvHcUserCurveIndex;     // current index to user convection model if used
+        int OutConvClassification;       // current classification for outside face wind regime and convection orientation
+        int OutConvHfModelEq;            // current convection model for forced convection at outside face
+        int OutConvHfUserCurveIndex;     // current index to user forced convection model if used
+        int OutConvHnModelEq;            // current Convection model for natural convection at outside face
+        int OutConvHnUserCurveIndex;     // current index to user natural convection model if used
+        Real64 OutConvFaceArea;          // area of larger building envelope facade that surface is a part of
+        Real64 OutConvFacePerimeter;     // perimeter of larger building envelope facade that surface is a part of
+        Real64 OutConvFaceHeight;        // height of larger building envelope facade that surface is a part of
+        Real64 IntConvZoneWallHeight;    // [m] height of larger inside building wall element that surface is a part of
+        Real64 IntConvZonePerimLength;   // [m] length of perimeter zone's exterior wall
+        Real64 IntConvZoneHorizHydrDiam; // [m] hydraulic diameter, usually 4 times the zone floor area div by perimeter
+        Real64 IntConvWindowWallRatio;   // [-] area of windows over area of exterior wall for zone
+        int IntConvWindowLocation;       // relative location of window in zone for interior Hc models
+        bool IntConvSurfGetsRadiantHeat;
+        bool IntConvSurfHasActiveInIt;
+        bool PartOfVentSlabOrRadiantSurface; // surface cannot be part of both a radiant surface & ventilated slab group
+        
+        // LG added 1/6/12
+        Real64 GenericContam; // [ppm] Surface generic contaminant as a storage term for
+
+        std::vector<int> DisabledShadowingZoneList; // Array of all disabled shadowing zone number to the current surface
+                                                    // the surface diffusion model
+
+        // Default Constructor
+        SurfaceData()
+            : Construction(0), EMSConstructionOverrideON(false), EMSConstructionOverrideValue(0), ConstructionStoredInputValue(0), Class(0),
+              Shape(SurfaceShape::None), Sides(0), Area(0.0), GrossArea(0.0), NetAreaShadowCalc(0.0), Perimeter(0.0), Azimuth(0.0), Height(0.0),
+              Reveal(0.0), Tilt(0.0), Width(0.0), HeatTransSurf(false), OutsideHeatSourceTermSchedule(0), InsideHeatSourceTermSchedule(0),
+              HeatTransferAlgorithm(HeatTransferModel_NotSet), BaseSurf(0), NumSubSurfaces(0), Zone(0), ExtBoundCond(0), LowTempErrCount(0),
+              HighTempErrCount(0), ExtSolar(false), ExtWind(false), IntConvCoeff(0), EMSOverrideIntConvCoef(false), EMSValueForIntConvCoef(0.0),
+              ExtConvCoeff(0), EMSOverrideExtConvCoef(false), EMSValueForExtConvCoef(0.0), ViewFactorGround(0.0), ViewFactorSky(0.0),
+              ViewFactorGroundIR(0.0), ViewFactorSkyIR(0.0), OSCPtr(0), OSCMPtr(0), SchedShadowSurfIndex(0), ShadowSurfSchedVaries(false),
+              ShadowingSurf(false), IsTransparent(false), SchedMinValue(0.0), ShadowSurfDiffuseSolRefl(0.0), ShadowSurfDiffuseVisRefl(0.0),
+              ShadowSurfGlazingFrac(0.0), ShadowSurfGlazingConstruct(0), ShadowSurfPossibleObstruction(true), ShadowSurfPossibleReflector(false),
+              ShadowSurfRecSurfNum(0), MaterialMovInsulExt(0), MaterialMovInsulInt(0), SchedMovInsulExt(0), SchedMovInsulInt(0),
+              MovInsulIntPresent(false), MovInsulIntPresentPrevTS(false), Centroid(0.0, 0.0, 0.0), lcsx(0.0, 0.0, 0.0), lcsy(0.0, 0.0, 0.0),
+              lcsz(0.0, 0.0, 0.0), NewellAreaVector(0.0, 0.0, 0.0), NewellSurfaceNormalVector(0.0, 0.0, 0.0), OutNormVec(3, 0.0), SinAzim(0.0),
+              CosAzim(0.0), SinTilt(0.0), CosTilt(0.0), IsConvex(true), IsDegenerate(false), shapeCat(ShapeCat::Unknown), plane(0.0, 0.0, 0.0, 0.0),
+              
+              WindowShadingControlPtr(0), HasShadeControl(false), ShadedConstruction(0), StormWinConstruction(0), StormWinShadedConstruction(0), FrameDivider(0),
+              Multiplier(1.0),
+
+              Shelf(0), TAirRef(ZoneMeanAirTemp), OutDryBulbTemp(0.0), OutDryBulbTempEMSOverrideOn(false),
+              OutDryBulbTempEMSOverrideValue(0.0), OutWetBulbTemp(0.0), OutWetBulbTempEMSOverrideOn(false), OutWetBulbTempEMSOverrideValue(0.0),
+              WindSpeed(0.0), WindSpeedEMSOverrideOn(false), WindSpeedEMSOverrideValue(0.0), WindDir(0.0), WindDirEMSOverrideOn(false),
+              WindDirEMSOverrideValue(0.0), SchedExternalShadingFrac(false), ExternalShadingSchInd(0), HasSurroundingSurfProperties(false),
+              SurroundingSurfacesNum(0), HasLinkedOutAirNode(false), LinkedOutAirNode(0), UNomWOFilm("-              "), UNomFilm("-              "),
+              ExtEcoRoof(false), ExtCavityPresent(false), ExtCavNum(0), IsPV(false), IsICS(false), IsPool(false), ICSPtr(0), MirroredSurf(false),
+              IntConvClassification(0), IntConvHcModelEq(0), IntConvHcUserCurveIndex(0), OutConvClassification(0), OutConvHfModelEq(0),
+              OutConvHfUserCurveIndex(0), OutConvHnModelEq(0), OutConvHnUserCurveIndex(0),
+              OutConvFaceArea(0.0), OutConvFacePerimeter(0.0), OutConvFaceHeight(0.0), IntConvZoneWallHeight(0.0), IntConvZonePerimLength(0.0),
+              IntConvZoneHorizHydrDiam(0.0), IntConvWindowWallRatio(0.0), IntConvWindowLocation(InConvWinLoc_NotSet),
+              IntConvSurfGetsRadiantHeat(false), IntConvSurfHasActiveInIt(false), PartOfVentSlabOrRadiantSurface(false), GenericContam(0.0)
+    '''
+
+    # DataSurfaces.cc
+	Surface = pd.Series()
+	SurfaceWindow = pd.Series() # PROVAVELMENTE NÃO SERÁ NECESSÁRIO
 	NumOfZoneLists = 0
-    Array2D<Real64> SUNCOSHR(24, 3, 0.0); # Hourly values of SUNCOS (solar direction cosines) # Autodesk:Init Zero-initialization added to avoid use uninitialized
+    ?pd.DataFrame() SUNCOSHR(24, 3, 0.0); # Hourly values of SUNCOS (solar direction cosines) # Autodesk:Init Zero-initialization added to avoid use uninitialized
+    # três colunas ou linhas?
 
 	# DataSurfaces.hh
 	SchedExternalShadingFrac = False  # True if the external shading is scheduled or calculated externally to be imported
@@ -122,8 +693,8 @@ class ExternalFunctions:
     DetailedSolarTimestepIntegration = False # when true, use detailed timestep integration for all solar,shading, etc.
 
     # OutputProcessor::Unit --> I don't how it works...?
-    enum class Unit
-    {
+    class Unit(Enum):
+        # enum.auto()
         kg_s,
         C,
         kgWater_kgDryAir,
@@ -172,14 +743,13 @@ class ExternalFunctions:
         W_K,
         kgWater_s,
         unknown,
-        customEMS
-    };
+        customEMS,
 
 	# DataIPShortCuts.cc
-	Array1D_string cAlphaFieldNames;
-    Array1D_string cNumericFieldNames;
-    Array1D_bool lNumericFieldBlanks;
-    Array1D_bool lAlphaFieldBlanks;
+	cAlphaFieldNames = pd.Series()
+    cNumericFieldNames = pd.Series()
+    lNumericFieldBlanks = pd.Series()
+    lAlphaFieldBlanks = pd.Series()
 
     # DataEnvironment.cc
     SunIsUpValue = 0.00001                  # if Cos Zenith Angle of the sun is >= this value, the sun is "up"
@@ -188,23 +758,40 @@ class ExternalFunctions:
     PiOvr2 = math.pi / 2.0                  # Pi/2
 
     # DataDaylighting.hh::ZoneDaylightCalc
-    struct ZoneDaylightCalc
-    {
+    ZoneDaylightCalc_ = namedtuple('ZoneDaylightCalc', ['Name', 'ZoneName', 'DaylightMethod', 'AvailSchedNum', 'TotalDaylRefPoints',
+                                    'DaylRefPtNum', 'DaylRefPtAbsCoord', 'DaylRefPtInBounds', 'FracZoneDaylit', 'IllumSetPoint',
+                                    'LightControlType', 'glareRefPtNumber', 'ViewAzimuthForGlare', 'MaxGlareallowed', 'MinPowerFraction',
+                                    'MinLightFraction', 'LightControlSteps', 'LightControlProbability', 'TotalExtWindows', 'AveVisDiffReflect',
+                                    'DElightGriddingResolution', 'RefPtPowerReductionFactor', 'ZonePowerReductionFactor', 'DaylIllumAtRefPt',
+                                    'GlareIndexAtRefPt', 'AdjIntWinZoneNums', 'NumOfIntWinAdjZones', 'NumOfIntWinAdjZoneExtWins',
+                                    'IntWinAdjZoneExtWin', 'NumOfDayltgExtWins', 'DayltgExtWinSurfNums', 'ShadeDeployOrderExtWins',
+                                    'MapShdOrdToLoopNum', 'MinIntWinSolidAng', 'TotInsSurfArea', 'FloorVisRefl', 'InterReflIllFrIntWins',
+                                    'BacLum', 'SolidAngAtRefPt', 'SolidAngAtRefPtWtd', 'IllumFromWinAtRefPt', 'BackLumFromWinAtRefPt',
+                                    'SourceLumFromWinAtRefPt', 'DaylIllFacSky', 'DaylSourceFacSky', 'DaylBackFacSky', 'DaylIllFacSun',
+                                    'DaylIllFacSunDisk', 'DaylSourceFacSun', 'DaylSourceFacSunDisk', 'DaylBackFacSun', 'DaylBackFacSunDisk',
+                                    'TimeExceedingGlareIndexSPAtRefPt', 'TimeExceedingDaylightIlluminanceSPAtRefPt', 'AdjZoneHasDayltgCtrl',
+                                    'MapCount', 'ZoneToMap'])
+    ZoneDaylightCalc = ZoneDaylightCalc_(DaylightMethod=0, AvailSchedNum=0, TotalDaylRefPoints=0, LightControlType=1, ViewAzimuthForGlare=0.0,
+                                         MaxGlareallowed=0, MinPowerFraction=0.0, MinLightFraction=0.0, LightControlSteps=0, LightControlProbability=0.0,
+                                         TotalExtWindows=0, AveVisDiffReflect=0.0, ZonePowerReductionFactor=1.0, NumOfIntWinAdjZones=0, NumOfIntWinAdjZoneExtWins=0,
+                                         NumOfDayltgExtWins=0, MinIntWinSolidAng=0.0, TotInsSurfArea=0.0, FloorVisRefl=0.0, InterReflIllFrIntWins=0.0,
+                                         AdjZoneHasDayltgCtrl=False, MapCount=0)
+    '''
         // Members
         std::string Name;                  // Name of the daylighting:controls object
         std::string ZoneName;              // name of the zone where the daylighting:controls object is located
         int DaylightMethod;                // Type of Daylighting (1=SplitFlux, 2=DElight)
         int AvailSchedNum;                 // pointer to availability schedule if present
         int TotalDaylRefPoints;            // Number of daylighting reference points in a zone (0,1 or 2)
-        Array1D_int DaylRefPtNum;          // Reference number to DaylRefPt array that stores Daylighting:ReferencePoint
-        Array2D<Real64> DaylRefPtAbsCoord; // =0.0 ! X,Y,Z coordinates of all daylighting reference points
-        // in absolute coordinate system (m)
-        // Points 1 and 2 are the control reference points
-        Array1D_bool DaylRefPtInBounds; // True when coordinates are in bounds of zone coordinates
-        Array1D<Real64> FracZoneDaylit; // =0.0  ! Fraction of zone controlled by each reference point
-        Array1D<Real64> IllumSetPoint;  // =0.0  ! Illuminance setpoint at each reference point (lux)
-        int LightControlType;           // Lighting control type (same for all reference points)
-        // (1=continuous, 2=stepped, 3=continuous/off)
+        DaylRefPtNum = pd.Series()         // Reference number to DaylRefPt array that stores Daylighting:ReferencePoint
+        DaylRefPtAbsCoord = pd.DataFrame() // =0.0 ! X,Y,Z coordinates of all daylighting reference points
+                                           // in absolute coordinate system (m)
+                                           // Points 1 and 2 are the control reference points
+        DaylRefPtInBounds = pd.Series()    // True when coordinates are in bounds of zone coordinates
+        FracZoneDaylit = pd.Series()       // =0.0  ! Fraction of zone controlled by each reference point
+        IllumSetPoint = pd.Series()        // =0.0  ! Illuminance setpoint at each reference point (lux)
+        int LightControlType;              // Lighting control type (same for all reference points)
+                                           // (1=continuous, 2=stepped, 3=continuous/off)
         int glareRefPtNumber;                      // from field: Glare Calculation Daylighting Reference Point Name
         Real64 ViewAzimuthForGlare;                // View direction relative to window for glare calculation (deg)
         int MaxGlareallowed;                       // Maximum allowable discomfort glare index
@@ -215,67 +802,71 @@ class ExternalFunctions:
         int TotalExtWindows;                       // Total number of exterior windows in the zone
         Real64 AveVisDiffReflect;                  // Area-weighted average inside surface visible reflectance of zone
         Real64 DElightGriddingResolution;          // Field: Delight Gridding Resolution
-        Array1D<Real64> RefPtPowerReductionFactor; // =1.0  ! Electric power reduction factor at reference points
-        // due to daylighting
-        Real64 ZonePowerReductionFactor;   // Electric power reduction factor for entire zone due to daylighting
-        Array1D<Real64> DaylIllumAtRefPt;  // =0.0 ! Daylight illuminance at reference points (lux)
-        Array1D<Real64> GlareIndexAtRefPt; // =0.0 ! Glare index at reference points
-        Array1D_int AdjIntWinZoneNums;     // List of zone numbers of adjacent zones that have exterior windows and
-        // share one or more interior windows with target zone
+        RefPtPowerReductionFactor = pd.Series()    // =1.0  ! Electric power reduction factor at reference points
+                                                   // due to daylighting
+        Real64 ZonePowerReductionFactor;           // Electric power reduction factor for entire zone due to daylighting
+        DaylIllumAtRefPt = pd.Series()             // =0.0 ! Daylight illuminance at reference points (lux)
+        GlareIndexAtRefPt = pd.Series()            // =0.0 ! Glare index at reference points
+        AdjIntWinZoneNums = pd.Series()            // List of zone numbers of adjacent zones that have exterior windows and
+                                                   // share one or more interior windows with target zone
         int NumOfIntWinAdjZones; // Number of adjacent zones that have exterior windows and share one or
-        // more interior windows with target zone
-        int NumOfIntWinAdjZoneExtWins; // number of exterior windows associated with zone via interior windows
-        Array1D<IntWinAdjZoneExtWinStruct>
-            IntWinAdjZoneExtWin;          // nested structure | info about exterior window associated with zone via interior window
-        int NumOfDayltgExtWins;           // Number of associated exterior windows providing daylight to this zone
-        Array1D_int DayltgExtWinSurfNums; // List of surface numbers of zone's exterior windows or
-        // exterior windows in adjacent zones sharing interior windows with the zone
+                                 // more interior windows with target zone
+        int NumOfIntWinAdjZoneExtWins;      // number of exterior windows associated with zone via interior windows
+        IntWinAdjZoneExtWin = pd.Series()   // nested structure | info about exterior window associated with zone via interior window
+        int NumOfDayltgExtWins;             // Number of associated exterior windows providing daylight to this zone
+        DayltgExtWinSurfNums = pd.Series()  // List of surface numbers of zone's exterior windows or
+                                            // exterior windows in adjacent zones sharing interior windows with the zone
         std::vector<std::vector<int>> ShadeDeployOrderExtWins; // describes how the fenestration surfaces should deploy the shades. 
-        // It is a list of lists. Each sublist is a group of fenestration surfaces that should be deployed together. Many times the 
-        // sublists a just a single index to a fenestration surface if they are deployed one at a time.
-        Array1D_int MapShdOrdToLoopNum;  // list that maps back the original loop order when using ShadeDeployOrderExtWins for shade deployment
+                                                               // It is a list of lists. Each sublist is a group of fenestration surfaces that should be deployed together. Many times the 
+                                                               // sublists a just a single index to a fenestration surface if they are deployed one at a time.
+        MapShdOrdToLoopNum = pd.Series()  // list that maps back the original loop order when using ShadeDeployOrderExtWins for shade deployment
         Real64 MinIntWinSolidAng;     // Minimum solid angle subtended by an interior window in a zone
         Real64 TotInsSurfArea;        // Total inside surface area of a daylit zone (m2)
         Real64 FloorVisRefl;          // Area-weighted visible reflectance of floor of a daylit zone
         Real64 InterReflIllFrIntWins; // Inter-reflected illuminance due to beam and diffuse solar passing
-        //  through a zone's interior windows (lux)
-        Array1D<Real64> BacLum;                  // =0.0 ! Background luminance at each reference point (cd/m2)
-        Array2D<Real64> SolidAngAtRefPt;         // (MaxRefPoints,50)
-        Array2D<Real64> SolidAngAtRefPtWtd;      // (MaxRefPoints,50)
-        Array3D<Real64> IllumFromWinAtRefPt;     // (MaxRefPoints,2,50)
-        Array3D<Real64> BackLumFromWinAtRefPt;   // (MaxRefPoints,2,50)
-        Array3D<Real64> SourceLumFromWinAtRefPt; // (MaxRefPoints,2,50)
+                                      //  through a zone's interior windows (lux)
+        BacLum = pd.Series()                  // =0.0 ! Background luminance at each reference point (cd/m2)
+        SolidAngAtRefPt = pd.DataFrame()         // (MaxRefPoints,50)
+        SolidAngAtRefPtWtd = pd.DataFrame()      // (MaxRefPoints,50)
+        IllumFromWinAtRefPt = pd.DataFrame()     // (MaxRefPoints,2,50)
+        BackLumFromWinAtRefPt = pd.DataFrame()   // (MaxRefPoints,2,50)
+        SourceLumFromWinAtRefPt = pd.DataFrame() // (MaxRefPoints,2,50)
+        
         // Allocatable daylight factor arrays
         // Arguments for Dayl---Sky are:
         //  1: Daylit window number (1 to NumOfDayltgExtWins)
         //  2: Reference point number (1 to MaxRefPoints)
         //  3: Sky type (1 to 4; 1 = clear, 2 = clear turbid, 3 = intermediate, 4 = overcast
         //  4: Shading index (1 to MaxSlatAngs+1; 1 = bare window; 2 = with shade, or, if blinds
-        //      2 = first slat position, 3 = second position, ..., MaxSlatAngs+1 = last position)
+        //                                        2 = first slat position, 3 = second position, ..., MaxSlatAngs+1 = last position)
         //  5: Sun position index (1 to 24)
-        Array5D<Real64> DaylIllFacSky;
-        Array5D<Real64> DaylSourceFacSky;
-        Array5D<Real64> DaylBackFacSky;
+        DaylIllFacSky = pd.DataFrame()
+        DaylSourceFacSky = pd.DataFrame()
+        DaylBackFacSky = pd.DataFrame()
+        
         // Arguments for Dayl---Sun are:
         //  1: Daylit window number (1 to NumOfDayltgExtWins)
         //  2: Reference point number (1 to MaxRefPoints)
         //  3: Shading index (1 to MaxShadeIndex; 1 = no shade; 2 = with shade, or, if blinds
-        //      2 = first slat position, 3 = second position, ..., MaxSlatAngs+1 = last position)
+        //                                        2 = first slat position, 3 = second position, ..., MaxSlatAngs+1 = last position)
         //  4: Sun position index (1 to 24)
-        Array4D<Real64> DaylIllFacSun;
-        Array4D<Real64> DaylIllFacSunDisk;
-        Array4D<Real64> DaylSourceFacSun;
-        Array4D<Real64> DaylSourceFacSunDisk;
-        Array4D<Real64> DaylBackFacSun;
-        Array4D<Real64> DaylBackFacSunDisk;
+        DaylIllFacSun = pd.DataFrame()
+        DaylIllFacSunDisk = pd.DataFrame()
+        DaylSourceFacSun = pd.DataFrame()
+        DaylSourceFacSunDisk = pd.DataFrame()
+        DaylBackFacSun = pd.DataFrame()
+        DaylBackFacSunDisk = pd.DataFrame()
+        
         // Time exceeding maximum allowable discomfort glare index at reference points (hours)
-        Array1D<Real64> TimeExceedingGlareIndexSPAtRefPt;
+        TimeExceedingGlareIndexSPAtRefPt = pd.Series()
+        
         // Time exceeding daylight illuminance setpoint at reference points (hours)
-        Array1D<Real64> TimeExceedingDaylightIlluminanceSPAtRefPt;
+        TimeExceedingDaylightIlluminanceSPAtRefPt = pd.Series()
+        
         // True if at least one adjacent zone, sharing one or more interior windows, has daylighting control
         bool AdjZoneHasDayltgCtrl;
-        int MapCount;          // Number of maps assigned to Zone
-        Array1D_int ZoneToMap; // Pointers to maps allocated to Zone
+        int MapCount;           // Number of maps assigned to Zone
+        ZoneToMap = pd.Series() // Pointers to maps allocated to Zone
 
         // Default Constructor
         ZoneDaylightCalc()
@@ -285,10 +876,10 @@ class ExternalFunctions:
               MinIntWinSolidAng(0.0), TotInsSurfArea(0.0), FloorVisRefl(0.0), InterReflIllFrIntWins(0.0), AdjZoneHasDayltgCtrl(false), MapCount(0)
         {
         }
-    };
+    '''
 
     # DataDaylighting.cc
-    Array1D<ZoneDaylightCalc> ZoneDaylight;
+    ZoneDaylight = pd.Series()
 
     # General::RoundSigDigits
     def RoundSigDigits(RealValue, SigDigits):
@@ -419,109 +1010,54 @@ class ExternalFunctions:
 
         return stripped(String)
 
-    # General::POLYF --> Why 3 definitions?! :/
-    Real64 POLYF(Real64 const X,         // Cosine of angle of incidence
-                 Array1A<Real64> const A // Polynomial coefficients
-    )
-    {
-        // FUNCTION INFORMATION:
-        //       AUTHOR         Fred Winkelmann
-        //       DATE WRITTEN   February 1999
-        //       DATE MODIFIED  October 1999, FW: change to 6th order polynomial over
-        //                        entire incidence angle range
+    # General::POLYF --> ? REVER COMPORTAMENTO DO 'A'
+    # ACHO Q ESSA FUNÇÃO NÃO SERÁ USADA PARA A SOMBRA!
+    def POLYF(X, A):
+    '''
+        FUNCTION INFORMATION:
+                AUTHOR         Fred Winkelmann
+                DATE WRITTEN   February 1999
+                DATE MODIFIED  October 1999, FW: change to 6th order polynomial over
+                               entire incidence angle range
 
-        // PURPOSE OF THIS FUNCTION:
-        // Evaluates glazing beam transmittance or absorptance of the form
-        // A(1)*X + A(2)*X^2 + A(3)*X^3 + A(4)*X^4 + A(5)*X^5 + A(6)*X^6
-        // where X is the cosine of the angle of incidence (0.0 to 1.0)
+        PURPOSE OF THIS FUNCTION:
+                Evaluates glazing beam transmittance or absorptance of the form
+                A(1)*X + A(2)*X^2 + A(3)*X^3 + A(4)*X^4 + A(5)*X^5 + A(6)*X^6
+                where X is the cosine of the angle of incidence (0.0 to 1.0)
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
-        // USE STATEMENTS:
-        // na
-
-        // Return value
-        Real64 POLYF;
-
-        // Argument array dimensioning
+        INPUTS:
+                Real64 const X,         # Cosine of angle of incidence
+                Array1A<Real64> const A # Polynomial coefficients
+    '''
+        # Argument array dimensioning
         A.dim(6);
 
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
-        // na
-
-        if (X < 0.0 || X > 1.0) {
-            POLYF = 0.0;
-        } else {
-            POLYF = X * (A(1) + X * (A(2) + X * (A(3) + X * (A(4) + X * (A(5) + X * A(6))))));
-        }
-        return POLYF;
-    }
-
-    Real64 POLYF(Real64 const X,         // Cosine of angle of incidence
-                 Array1<Real64> const &A // Polynomial coefficients
-    )
-    {
-        // Return value
-        Real64 POLYF;
-
-        if (X < 0.0 || X > 1.0) {
-            POLYF = 0.0;
-        } else {
-            POLYF = X * (A(1) + X * (A(2) + X * (A(3) + X * (A(4) + X * (A(5) + X * A(6))))));
-        }
-        return POLYF;
-    }
-
-    Real64 POLYF(Real64 const X,          // Cosine of angle of incidence
-                 Array1S<Real64> const &A // Polynomial coefficients
-    )
-    {
-        // Return value
-        Real64 POLYF;
-
-        if (X < 0.0 || X > 1.0) {
-            POLYF = 0.0;
-        } else {
-            POLYF = X * (A(1) + X * (A(2) + X * (A(3) + X * (A(4) + X * (A(5) + X * A(6))))));
-        }
-        return POLYF;
-    }
+        if (X < 0.0 || X > 1.0):
+            POLYF = 0.0
+        else:
+            POLYF = X * ( A(1) + X * ( A(2) + X * ( A(3) + X * ( A(4) + X * ( A(5) + X * A(6) )))))
+        
+        return POLYF
 
     # DaylightingManager.cc
-    Array1D<Real64> PHSUNHR(24, 0.0);  	# Hourly values of PHSUN
-    Array1D<Real64> SPHSUNHR(24, 0.0); 	# Hourly values of the sine of PHSUN
-    Array1D<Real64> CPHSUNHR(24, 0.0); 	# Hourly values of the cosine of PHSUN
-    Array1D<Real64> THSUNHR(24, 0.0);  	# Hourly values of THSUN
-    Array2D<Real64> GILSK(24, 4, 0.0); 	# Horizontal illuminance from sky, by sky type, for each hour of the day
-    Array1D<Real64> GILSU(24, 0.0);    	# Horizontal illuminance from sun for each hour of the day
+    ?pd.Series() PHSUNHR(24, 0.0);  	# Hourly values of PHSUN
+    ?pd.Series() SPHSUNHR(24, 0.0); 	# Hourly values of the sine of PHSUN
+    ?pd.Series() CPHSUNHR(24, 0.0); 	# Hourly values of the cosine of PHSUN
+    ?pd.Series() THSUNHR(24, 0.0);  	# Hourly values of THSUN
+    ?pd.DataFrame() GILSK(24, 4, 0.0); 	# Horizontal illuminance from sky, by sky type, for each hour of the day
+    ?pd.Series() GILSU(24, 0.0);    	# Horizontal illuminance from sun for each hour of the day
     TotWindowsWithDayl = 0				# Total number of exterior windows in all daylit zones
-    Array1D_bool CheckTDDZone;
-    Array2D<Real64> TDDTransVisBeam;
-    Array3D<Real64> TDDFluxInc;
-    Array3D<Real64> TDDFluxTrans;
+    CheckTDDZone = pd.Series()
+    TDDTransVisBeam = pd.DataFrame()
+    TDDFluxInc = pd.DataFrame()
+    TDDFluxTrans = pd.DataFrame()
     FirstTimeDaylFacCalc = True
 
     # DaylightingDevices.cc
     NumOfTDDPipes = 0                   # Number of TDD pipes in the input file
 
     # DataDaylightingDevices.cc
-    Array1D<TDDPipeData> TDDPipe;
+    TDDPipe = pd.Series()
 
     # DaylightingDevices::CalcTDDTransSolAniso
     def CalcTDDTransSolAniso(PipeNum, COSI):
@@ -1057,10 +1593,10 @@ class ExternalFunctions:
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         IPH = 0                            # Altitude index for sky integration
         ITH = 0                            # Azimuth index for sky integration
-        static Array1D<Real64> PH(NPH);     # Altitude of sky element (radians)
-        static Array1D<Real64> TH(NTH);     # Azimuth of sky element (radians)
+        PH = pd.Series(NPH*[0])     # Altitude of sky element (radians)
+        TH = pd.Series(NTH*[0])     # Azimuth of sky element (radians)
         ISky = 0                           # Sky type index
-        static Array1D<Real64> SPHCPH(NPH); # Sine times cosine of altitude of sky element
+        SPHCPH = pd.Series(NPH*[0]) # Sine times cosine of altitude of sky element
 
         # FLOW:
         # Integrate to obtain illuminance from sky.
@@ -1962,10 +2498,10 @@ class ExternalFunctions:
 		#                            Array1S<Real64> Numbers,
 		#                            int &NumNumbers,
 		#                            int &Status,
-		#                            Optional<Array1D_bool> NumBlank,
-		#                            Optional<Array1D_bool> AlphaBlank,
-		#                            Optional<Array1D_string> AlphaFieldNames,
-		#                            Optional<Array1D_string> NumericFieldNames)
+		#                            Optional<pd.Series()> NumBlank,
+		#                            Optional<pd.Series()> AlphaBlank,
+		#                            Optional<pd.Series()> AlphaFieldNames,
+		#                            Optional<pd.Series()> NumericFieldNames)
 		#							 *args = (NumBlank, AlphaBlank, AlphaFieldNames, NumericFieldNames)
 		'''
 	    SUBROUTINE INFORMATION:
@@ -2247,7 +2783,7 @@ class ExternalFunctions:
 	    Status = 1 # ?
 	    return None
 
-	# DataTimings::EP_Count_Calls
+	# DataTimings::EP_Count_Calls --> como definir esta merda?!
 	ifdef EP_Count_Calls
 	    int NumShadow_Calls(0);
 	    int NumShadowAtTS_Calls(0);
@@ -2299,7 +2835,7 @@ class ExternalFunctions:
 
         return None
 
-    # WindowComplexManager::InitComplexWindows
+    # WindowComplexManager::InitComplexWindows --> Será usado?
     def InitComplexWindows():
     	'''
         SUBROUTINE INFORMATION:
@@ -2322,7 +2858,7 @@ class ExternalFunctions:
 
         return None
 
-    # WindowComplexManager::UpdateComplexWindows
+    # WindowComplexManager::UpdateComplexWindows --> Será usado?
     def UpdateComplexWindows():
     	'''
         SUBROUTINE INFORMATION:
@@ -2570,9 +3106,9 @@ class SolarShading(ExternalFunctions):
 	    # SUBROUTINE SPECIFICATIONS FOR MODULE SolarShading
 
 	    # Object Data ------------->  Que porra é essa?!
-	    Array1D<SurfaceErrorTracking> TrackTooManyFigures
-	    Array1D<SurfaceErrorTracking> TrackTooManyVertices
-	    Array1D<SurfaceErrorTracking> TrackBaseSubSurround
+	    TrackTooManyFigures = pd.Series()
+        TrackTooManyVertices = pd.Series()
+	    TrackBaseSubSurround = pd.Series()
 
 	    static gio::Fmt fmtLD("*")
 
@@ -2654,7 +3190,7 @@ class SolarShading(ExternalFunctions):
 # end of SolarShading
 
 
-class SolarCalculations(SolarShading):
+class SolarCalculations(SolarShading): # ExternalFunctions will be passed automatically?
 	
 	def __init__(self):
 		'''
@@ -4320,7 +4856,7 @@ class SolarCalculations(SolarShading):
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        typedef Array2D<Int64>::size_type size_type
+        ?typedef pd.DataFrame()::size_type size_type
         bool INTFLAG # For overlap status
         int S        # Test vertex
         int KK       # Duplicate test index
@@ -4614,7 +5150,7 @@ class SolarCalculations(SolarShading):
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        static Array1D<Real64> SLOPE # Slopes from left-most vertex to others
+        SLOPE = pd.Series() # Slopes from left-most vertex to others
         Real64 DELTAX                # Difference between X coordinates of two vertices
         Real64 DELTAY                # Difference between Y coordinates of two vertices
         Real64 SAVES                 # Temporary location for exchange of variables
@@ -5258,9 +5794,9 @@ class SolarCalculations(SolarShading):
         NGRS = 0  # Coordinate transformation index
         NZ = 0    # Zone Number of surface
         NVT = 0
-        static Array1D<Real64> XVT # X Vertices of Shadows
-        static Array1D<Real64> YVT # Y vertices of Shadows
-        static Array1D<Real64> ZVT # Z vertices of Shadows
+        XVT = pd.Series() # X Vertices of Shadows
+        YVT = pd.Series() # Y vertices of Shadows
+        ZVT = pd.Series() # Z vertices of Shadows
         OneTimeFlag = True
         HTS = 0         # Heat transfer surface number of the general receiving surface
         GRSNR = 0       # Surface number of general receiving surface
@@ -5412,13 +5948,13 @@ class SolarCalculations(SolarShading):
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        typedef Array2D<Int64>::size_type size_type
+        ?typedef pd.DataFrame()::size_type size_type
         GSSNR = 0             # General shadowing surface number
         MainOverlapStatus = 0 # Overlap status of the main overlap calculation not the check for
         # multiple overlaps (unless there was an error)
-        static Array1D<Real64> XVT
-        static Array1D<Real64> YVT
-        static Array1D<Real64> ZVT
+        XVT = pd.Series()
+        YVT = pd.Series()
+        ZVT = pd.Series()
         OneTimeFlag = True
         NS1 = 0         # Number of the figure being overlapped
         NS2 = 0         # Number of the figure doing overlapping
@@ -5772,7 +6308,7 @@ class SolarCalculations(SolarShading):
         # SUBROUTINE ARGUMENT DEFINITIONS:
 
         # SUBROUTINE PARAMETER DEFINITIONS:
-        static Array1D<Real64> const SineSolDeclCoef(9,
+        ?static pd.Series() const SineSolDeclCoef(9,
                                                      {0.00561800,
                                                       0.0657911,
                                                       -0.392779,
@@ -5782,7 +6318,7 @@ class SolarCalculations(SolarShading):
                                                       -0.00007951,
                                                       -0.00011691,
                                                       0.00002096}) # Fitted coefficients of Fourier series | SINE OF DECLINATION | COEFFICIENTS
-        static Array1D<Real64> const EqOfTimeCoef(9,
+        ?static pd.Series() const EqOfTimeCoef(9,
                                                   {0.00021971,
                                                    -0.122649,
                                                    0.00762856,
