@@ -9,38 +9,40 @@ For more informations [check here](https://github.com/NREL/EnergyPlus#license--c
 
 File `Shadows.py` (functions and variables dependencies):
 
-`[class] SolarCalculations`
-	`[class] SolarShading`
-		`__init__`
-		    ~~DataPrecisionGlobals.cc~~ (ver as casas decimais usadas na precisão para definir o msm em Python)
-		    --> DataGlobals.cc
-		    --> DataEnvironment.cc
-	        --> DataHeatBalance.cc
-	        --> DataSurfaces.cc
-	        --> DataBSDFWindow.cc
-    	    --> DataVectorTypes.hh (Definição dos vetores. Procurar o equivalente em Python)
-    	    --> ? FenestrationCommon
-    	    --> ? SingleLayerOptics
-    	    EP_Count_Calls --> DataTimings.cc
-		`clear_state`
-
-		[class] ExternalFunctions
-			`CalcDayltgCoefficients`*(3) --> DaylightingManager.cc
-				DetailedSolarTimestepIntegration()*(4) --> DataSystemVariables.cc
-					ZoneDaylight() --> DataDaylighting.cc
-				FindTDDPipe --> DaylightingDevices.cc
-					Surface() --> DataSurfaces.cc
-					TDDPipe() --> DataDaylightingDevices.cc
-				TransTDD --> DaylightingDevices.cc
-					POLYF() --> General.cc
-					Surface() --> DataSurfaces.cc
-					Construct() --> DataHeatBalance.cc ? não está definido, só é usado...
-					InterpolatePipeTransBeam() --> DaylightingDevices.cc
+[class] SolarCalculations()
+	[class] SolarShading)()
+		__init__()
+    	    ? FenestrationCommon
+    	    ? SingleLayerOptics
+		clear_state()
+		[class] ExternalFunctions()
+		    SurfaceData --> usado por `.SchedExternalShadingFrac` e `.ExternalShadingSchInd`
+		    	Vertices
+		    		Vertex --> falta definir, mas já está no arquivo
+		    	Plane
+		    		plane --> falta definir, mas já está no arquivo
+			CalcDayltgCoefficients()
+				DetailedSolarTimestepIntegration
+					ZoneDaylight()
+						? ZoneDaylight --> definido como Pandas Series (l.882)
+				FindTDDPipe(WinNum)
+					Surface()
+						? Surface --> definido como Pandas Series (l.679)
+					TDDPipe()
+						? TDDPipe --> definido como Pandas Series (l.1060)
+				TransTDD(PipeNum, COSI, RadiationType)
+					POLYF(X, A)
+					Surface()
+						? Surface --> definido como Pandas Series (l.679)
+					Construct()
+						ConstructionData
+					InterpolatePipeTransBeam(COSI, transBeam)
 						FindArrayIndex --> ? FluidProperties
-					TDDPipe() --> DataDaylightingDevices.cc
-					CalcTDDTransSolAniso() --> DaylightingDevices.cc
-						HourOfDay --> ? DataGlobals
-        				TimeStep --> ? DataGlobals
+					TDDPipe()
+						? TDDPipe --> definido como Pandas Series (l.1060)
+					CalcTDDTransSolAniso(PipeNum, COSI)
+						HourOfDay --> ? DataGlobals --> não foi definido ainda
+        				TimeStep --> ? DataGlobals --> não foi definido ainda
         				AnisoSkyMult --> ? DataHeatBalance
 				        curDifShdgRatioIsoSky --> ? DataHeatBalance
 				        DifShdgRatioHoriz --> ? DataHeatBalance
@@ -51,156 +53,147 @@ File `Shadows.py` (functions and variables dependencies):
 				        MultIsoSky --> ? DataHeatBalance
 				        SunlitFrac --> ? DataHeatBalance
 				        DetailedSkyDiffuseAlgorithm --> ? DataSystemVariables
-				BlindBeamBeamTrans --> General.cc --> referenced but not used
-					PiOvr2 --> DataGlobals.cc
-				RoundSigDigits --> General.cc
+				RoundSigDigits(RealValue, SigDigits)
 					TestChar --> ??? não sei como converter para Python
 					stripped() --> computing performance?
-				GetDaylightingParametersInput() --> DaylightingManager.cc
-				CheckTDDsAndLightShelvesInDaylitZones() --> DaylightingManager.cc
-				AssociateWindowShadingControlWithDaylighting() --> DaylightingManager.cc
-				CheckTDDZone --> DaylightingManager.cc
-				BeginSimFlag --> DataGlobals.cc
-				NumOfZones --> DataGlobals.cc
-				ZoneDaylight() --> DataDaylighting.cc
-				KickOffSizing --> DataGlobals.cc
-				KickOffSimulation --> DataGlobals.cc
-				WarmupFlag --> DataGlobals.cc
+				GetDaylightingParametersInput()				
+				CheckTDDsAndLightShelvesInDaylitZones()
+				AssociateWindowShadingControlWithDaylighting()
+				CheckTDDZone
+				BeginSimFlag
+				NumOfZones
+				ZoneDaylight()
+				KickOffSizing
+				KickOffSimulation
+				WarmupFlag
 				CalcMinIntWinSolidAngs() --> DaylightingManager.cc --> acho q não será necessário, pois é para janela
-				TDDTransVisBeam --> DaylightingManager.cc
-				TDDFluxInc --> DaylightingManager.cc
-				TDDFluxTrans --> DaylightingManager.cc
-				NumOfTDDPipes --> DaylightingDevices.cc
-				BeginDayFlag --> DataGlobals.cc
-				SUNCOSHR() --> DataSurfaces.cc
-				SunIsUpValue --> DataEnvironment.cc
-				DayltgExtHorizIllum() --> DaylightingManager.cc
-				PHSUNHR() --> DaylightingManager.cc
-				SPHSUNHR() --> DaylightingManager.cc
-				CPHSUNHR() --> DaylightingManager.cc
-				THSUNHR() --> DaylightingManager.cc
-				GILSK() --> DaylightingManager.cc
-				GILSU() --> DaylightingManager.cc
-				CalcDayltgCoeffsRefMapPoints() --> DaylightingManager.cc
-				FirstTimeDaylFacCalc --> DaylightingManager.cc
-				DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
-				DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
-				DoingSizing --> DataGlobals.cc
-				DoWeathSim --> DataGlobals.cc
-				DoDesDaySim --> DataGlobals.cc
-				KindOfSim --> DataGlobals.cc
-				ksRunPeriodWeather --> DataGlobals.cc
-				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(
-
-	`__init__`
-		`GetShadowingInput`
-		        --> UtilityRoutines::SameString() --> como funciona isso?
-		        --> UtilityRoutines::FindItemInList() --> como funciona isso?
-		    getNumObjectsFound() --> InputProcessor.cc
-		    getObjectItem() --> InputProcessor.cc
-		    lNumericFieldBlanks --> DataIPShortCuts.cc
-            lAlphaFieldBlanks --> DataIPShortCuts.cc
-            cAlphaFieldNames --> DataIPShortCuts.cc
-            cNumericFieldNames --> DataIPShortCuts.cc
-            .SchedExternalShadingFrac --> .? DataSurfaces.hh (bool)
-            .ExternalShadingSchInd --> .? DataSurfaces.hh (bool)
-            DisableGroupSelfShading --> DataSystemVariables.cc
-			ScheduleFileShadingProcessed --> ScheduleManager.cc
-			ZoneList --> DataHeatBalance.cc
-			NumOfZoneLists --> DataHeatBalance.cc
-			ShadingTransmittanceVaries --> DataSurfaces.cc
-			SolarDistribution --> DataHeatBalance.cc
-			MinimalShadowing --> DataHeatBalance.cc
-			Surface() --> DataSurfaces.cc
-
-		`AllocateModuleArrays`
-			TotSurfaces --> DataSurfaces.cc
-			NumOfTimeStepInHour --> DataGlobals.cc
-			MaxBkSurf --> DataBSDFWindow.cc
-			NumOfZones --> DataGlobals.cc
-			MaxSolidWinLayers --> DataHeatBalance.cc
-			MaxVerticesPerSurface --> DataSurfaces.cc
-			SurfaceWindow() --> DataSurfaces.cc
-			Surface() --> DataSurfaces.cc
-			OutputProcessor::Unit --> OutputProcessor.cc
-
-		`DetermineShadowingCombinations`
-			IgnoreSolarRadiation --> DataEnvironment.cc
-			ExternalEnvironment --> DataSurfaces.cc
-			OtherSideCondModeledExt --> DataSurfaces.cc
-			EP_Count_Calls --> DataTimings.cc
-			CHKGSS()
-			    Surface() --> DataSurfaces.cc
-	
-	`SHDGSS`
-		CLIP()
-		CTRANS()
-		HTRANS0()
-		HTRANS1()
-		MULTOL()
-			**DeterminePolygonOverlap()
-		**DeterminePolygonOverlap()
-
-	`PerformSolarCalculations`
-		CalcPerSolarBeam()
-			EP_Count_Calls --> DataTimings.cc
-			FigureSunCosines()
-				SUN4()
-			FigureSolarBeamAtTimestep()
-				*SHADOW()
-			InitComplexWindows() --> WindowComplexManager.cc
-			UpdateComplexWindows() --> WindowComplexManager.cc
+				TDDTransVisBeam
+				TDDFluxInc
+				TDDFluxTrans
+				NumOfTDDPipes
+				BeginDayFlag
+				SUNCOSHR()
+				SunIsUpValue
+				DayltgExtHorizIllum(HISK, &HISU)
+					PiOvr2
+				PHSUNHR()
+				SPHSUNHR()
+				CPHSUNHR()
+				THSUNHR()
+				GILSK()
+				GILSU()
+				CalcDayltgCoeffsRefMapPoints(ZoneNum)
+				FirstTimeDaylFacCalc
+				? DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
+				? DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
+				DoingSizing
+				DoWeathSim
+				? DoDesDaySim --> onde foi definido?
+				KindOfSim
+				ksRunPeriodWeather
+				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(			
+	__init__()
+		outputShdFileName
+		[ifdef?] EP_Count_Calls
+		PiOvr2		
+	GetShadowingInput()
+		GetScheduleIndex(&ScheduleName)
+        ? UtilityRoutines::SameString() --> como funciona isso?
+        ? UtilityRoutines::FindItemInList() --> como funciona isso?
+	    getNumObjectsFound(&ObjectWord)
+	    getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
+	    lNumericFieldBlanks
+        lAlphaFieldBlanks
+        cAlphaFieldNames
+        cNumericFieldNames
+        DisableGroupSelfShading
+		ScheduleFileShadingProcessed --> definido dentro de GetShadowingInput(), mudar para External...
+		ZoneList
+		NumOfZoneLists
+		ShadingTransmittanceVaries --> definido em __init__ de SolarShading, mudar para External...
+		SolarDistribution --> definido em __init__ de SolarShading, mudar para External...
+		MinimalShadowing --> definido em __init__ de SolarShading, mudar para External...
+		Surface()
+			? Surface --> definido como Pandas Series (l.679)			
+	AllocateModuleArrays()
+		TotSurfaces --> definido em __init__ de SolarShading, mudar para External...
+		NumOfTimeStepInHour
+		MaxBkSurf
+		NumOfZones
+		MaxSolidWinLayers
+		MaxVerticesPerSurface
+		SurfaceWindow() --> DataSurfaces.cc
+			? SurfaceWindow --> definido como Pandas Series (l.680)
+		Surface() --> DataSurfaces.cc
+			? Surface --> definido como Pandas Series (l.679)
+		[class] Unit --> OutputProcessor::Unit		
+	DetermineShadowingCombinations()
+		ShadowComb
+		[struct] ShadowingCombinations
+		IgnoreSolarRadiation --> definido em __init__ de SolarShading, mudar para External...
+		ExternalEnvironment --> definido em __init__ de SolarShading, mudar para External...
+		OtherSideCondModeledExt --> definido em __init__ de SolarShading, mudar para External...
+		[ifdef?] EP_Count_Calls --> DataTimings.cc --> já definido em External
+		CHKGSS(NRS, NSS, ZMIN, &CannotShade)
+		    Surface()
+		    	? Surface --> definido como Pandas Series (l.679)
+	SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS)
+		CLIP(NVT, &XVT, &YVT, &ZVT)
+		CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT)
+		HTRANS0(NS, NumVertices)
+		HTRANS1(NS, NumVertices)
+		MULTOL(NNN, LOC0, NRFIGS)
+			DeterminePolygonOverlap(NS1, NS2, NS3)
+		DeterminePolygonOverlap(NS1, NS2, NS3)	
+	PerformSolarCalculations()
+		CalcPerSolarBeam(AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
+			[ifdef?] EP_Count_Calls
+			FigureSunCosines(iHour, iTimeStep, EqOfTime, SinSolarDeclin, CosSolarDeclin)
+				SUN4(CurrentTime, EqOfTime, SinSolarDeclin, CosSolarDeclin)
+			FigureSolarBeamAtTimestep(iHour, iTimeStep)
+				SHADOW(iHour, TS)
+					CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT)
+					HTRANS1(NS, NumVertices)
+					SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS)
+					[ifdef?] EP_Count_Calls
+			InitComplexWindows()
+			UpdateComplexWindows()
 		SkyDifSolarShading()
-			*SHADOW()
-			OutputProcessor::Unit --> OutputProcessor.cc
-		*(4)DetailedSolarTimestepIntegration --> DataSystemVariables.cc
-		*(3)CalcDayltgCoefficients() --> DaylightingManager.cc
-		TotWindowsWithDayl() --> DaylightingManager.cc
-		SUN3()
-
-	*`SHADOW`
-		CTRANS()
-		HTRANS1()
-		SHDGSS()
-		EP_Count_Calls --> DataTimings.cc
-
-	**`DeterminePolygonOverlap`
-		HTRANS0()
-		INCLOS()
-		INTCPT()
-		CLIPPOLY()
-			EP_Count_Calls --> DataTimings.cc
-		ORDER()
-		EP_Count_Calls --> DataTimings.cc
-
-	SEM NENHUM VÍNCULO:
+			SHADOW(iHour, TS)
+				CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT)
+				HTRANS1(NS, NumVertices)
+				SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS)
+				[ifdef?] EP_Count_Calls
+			[class] Unit --> OutputProcessor::Unit
+		DetailedSolarTimestepIntegration
+		CalcDayltgCoefficients()
+			PiOvr2
+		TotWindowsWithDayl
+		SUN3(JulianDayOfYear, &SineOfSolarDeclination, &EquationOfTime)
+	DeterminePolygonOverlap(NS1, NS2, NS3)
+		HTRANS0(NS, NumVertices)
+		INCLOS(N1, N1NumVert, N2, N2NumVert, &NumVerticesOverlap, &NIN)
+		INTCPT(NV1, NV2, &NV3, NS1, NS2)
+		CLIPPOLY(NS1, NS2, NV1, NV2, &NV3)
+			[ifdef?] EP_Count_Calls
+		ORDER(NV3, NS3)
+		[ifdef?] EP_Count_Calls
+	SEM NENHUM VÍNCULO (pode ser excluído?):
 		`polygon_contains_point` --> used for subsurfaces purposes (`CHKSBS`)
 		`HTRANS` --> used for subsurfaces purposes (`CalcInteriorWinTransDifSolInitialDistribution` e `CalcComplexWindowOverlap`)
 		`SurfaceScheduledSolarInc` --> used for subsurfaces purposes (`CalcInteriorSolarDistribution`)
-			SUN3()
+			SUN3(JulianDayOfYear, &SineOfSolarDeclination, &EquationOfTime)
 		`ReportSurfaceShading` --> called by no one
 			PreDefTableEntry --> OutputReportPredefined.cc
 			Surface() --> DataSurfaces.cc
 		`ReportSurfaceErrors` --> called by no one
-
-
+		[struct] ZoneListData --> DataHeatBalance.hh ('ExternalFunctions')
+		[struct] ZoneDaylightCalc --> DataDaylighting.hh ('ExternalFunctions')
+		PreDefTableEntry(columnIndex, &objName, tableEntryInt) --> OutputReportPredefined.cc ('ExternalFunctions')
 
 
 ---
 
-
-### DataEnvironment.cc
-[![img](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/html/DataEnvironment_8cc__incl.png)](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/EnergyPlus/DataEnvironment.cc)
-
-### DataEnvironment.hh
-[![img](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/html/DataEnvironment_8hh__incl.png)](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/EnergyPlus/DataEnvironment.hh)
-
-### SolarShading.cc
-[![img](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/html/SolarShading_8cc__incl.png)](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/EnergyPlus/SolarShading.cc)
-
-### SolarShading.hh
-[![img](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/html/SolarShading_8hh__incl.png)](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/EnergyPlus/SolarShading.hh)
-
-[![img](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/html/SolarShading_8hh__dep__incl.png)](https://github.com/yurigabrich/EnergyPlusShadow/blob/develop/EnergyPlus/SolarShading.hh)
+[![img](https://realtimeboard.com/app/board/o9J_k06IFRE=/?moveToWidget=3074457346456838114)
 
 > ref: [Open-source tool to visualize C/C++ header file dependencies?](https://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies)

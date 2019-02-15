@@ -682,10 +682,6 @@ class ExternalFunctions:
     ?pd.DataFrame() SUNCOSHR(24, 3, 0.0); # Hourly values of SUNCOS (solar direction cosines) # Autodesk:Init Zero-initialization added to avoid use uninitialized
     # três colunas ou linhas?
 
-	# DataSurfaces.hh
-	SchedExternalShadingFrac = False  # True if the external shading is scheduled or calculated externally to be imported
-    ExternalShadingSchInd = 0         # Schedule for a the external shading
-
     # DataSystemVariables.cc
     DisableGroupSelfShading = False   # when True, defined shadowing surfaces group is ignored when calculating sunlit fraction
 
@@ -2412,7 +2408,7 @@ class ExternalFunctions:
 	    return None
 
 	# ScheduleManager::GetScheduleIndex
-    def GetScheduleIndex(std::string const &ScheduleName):
+    def GetScheduleIndex(&ScheduleName):
     	'''
         FUNCTION INFORMATION:
               AUTHOR         Linda K. Lawrie
@@ -2803,7 +2799,7 @@ class ExternalFunctions:
 	    int NumCalcScriptF_Calls(0);
 	endif
 
-	# OutputReportPredefined::PreDefTableEntry
+	# OutputReportPredefined.cc::PreDefTableEntry
 	def PreDefTableEntry(columnIndex, &objName, tableEntryInt):
 		# void PreDefTableEntry(int const columnIndex, std::string const &objName, int const tableEntryInt)
 	    '''
@@ -3090,13 +3086,13 @@ class SolarShading(ExternalFunctions):
 	    YTEMP1 = []					# Temporary 'Y' values for HC vertices of the overlap
 	    maxNumberOfFigures = 0
 
-	    NPhi = 6                    # Number of altitude angle steps for sky integration
-	    NTheta = 24                 # Number of azimuth angle steps for sky integration
-	    Eps = 1.e-10				# Small number
-	    DPhi = PiOvr2 / NPhi       	# Altitude step size
-	    DTheta = 2.0 * math.pi / NTheta 	# Azimuth step size
-	    DThetaDPhi = DTheta * DPhi 	# Product of DTheta and DPhi
-	    PhiMin = 0.5 * DPhi        	# Minimum altitude
+	    NPhi = 6                           # Number of altitude angle steps for sky integration
+	    NTheta = 24                        # Number of azimuth angle steps for sky integration
+	    Eps = 1.e-10				       # Small number
+	    DPhi = PiOvr2 / NPhi       	       # Altitude step size
+	    DTheta = 2.0 * math.pi / NTheta    # Azimuth step size
+	    DThetaDPhi = DTheta * DPhi 	       # Product of DTheta and DPhi
+	    PhiMin = 0.5 * DPhi        	       # Minimum altitude
 
 	    sin_Phi = []
 	    cos_Phi = []
@@ -3363,7 +3359,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 	    
 	    return None
 
-    
     def GetShadowingInput():
 		'''
         SUBROUTINE INFORMATION:
