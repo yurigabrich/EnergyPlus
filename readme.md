@@ -10,6 +10,7 @@ For more informations [check here](https://github.com/NREL/EnergyPlus#license--c
 File `Shadows.py` (functions and variables dependencies):
 
 [class] SolarCalculations()
+
 	[class] SolarShading)()
 		__init__()
     	    ? FenestrationCommon
@@ -194,6 +195,6 @@ File `Shadows.py` (functions and variables dependencies):
 
 ---
 
-[![img](https://realtimeboard.com/app/board/o9J_k06IFRE=/?moveToWidget=3074457346456838114)
+[img-dependency](https://realtimeboard.com/app/board/o9J_k06IFRE=/?moveToWidget=3074457346456838114)
 
 > ref: [Open-source tool to visualize C/C++ header file dependencies?](https://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies)
