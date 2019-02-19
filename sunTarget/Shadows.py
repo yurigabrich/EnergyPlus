@@ -92,6 +92,8 @@ class ExternalFunctions:
     DoDesDaySim = False         # User input in SimulationControl object
     KindOfSim = 0               # See parameters. (ksDesignDay, ksRunPeriodDesign, ksRunPeriodWeather)
     ksRunPeriodWeather = 3      # one of the parameters for KindOfSim
+    HourOfDay = 0               # Counter for hours in a simulation day
+    TimeStep = 0                # Counter for time steps (fractional hours)
 
     # DataStringGlobals::outputShdFileName
 	outputShdFileName = 'eplusout.shd'     # to save the simulations result
@@ -368,6 +370,17 @@ class ExternalFunctions:
     # DataHeatBalance.cc
 	ZoneList = pd.Series()
     Construct = ConstructionData
+    AnisoSkyMult = pd.Series()              # Multiplier on exterior-surface sky view factor to
+                                            # account for anisotropy of sky radiance; = 1.0 for
+                                            # for isotropic sky
+    curDifShdgRatioIsoSky = pd.Series()     # Diffuse shading ratio (WithShdgIsoSky/WoShdgIsoSky)
+    DifShdgRatioHoriz = pd.Series()         # Horizon shading ratio (WithShdgHoriz/WoShdgHoriz)
+    DifShdgRatioHorizHRTS = pd.DataFrame()  # Horizon shading ratio (WithShdgHoriz/WoShdgHoriz)
+    DifShdgRatioIsoSky = pd.Series()        # Diffuse shading ratio (WithShdgIsoSky/WoShdgIsoSky)
+    MultCircumSolar = pd.Series()           # Contribution to eff sky view factor from circumsolar brightening
+    MultHorizonZenith = pd.Series()         # Contribution to eff sky view factor from horizon or zenith brightening
+    MultIsoSky = pd.Series()                # Contribution to eff sky view factor from isotropic sky
+    SunlitFrac = pd.DataFrame()             # TimeStep fraction of heat transfer surface that is sunlit
 
 	# DataSurfaces.hh
     Vertices = pd.Series()
@@ -683,9 +696,8 @@ class ExternalFunctions:
     # três colunas ou linhas?
 
     # DataSystemVariables.cc
-    DisableGroupSelfShading = False   # when True, defined shadowing surfaces group is ignored when calculating sunlit fraction
-
-	# DataSystemVariables::DetailedSolarTimestepIntegration
+    DisableGroupSelfShading = False          # when True, defined shadowing surfaces group is ignored when calculating sunlit fraction
+    DetailedSkyDiffuseAlgorithm = False      # use detailed diffuse shading algorithm for sky (shading transmittance varies)
     DetailedSolarTimestepIntegration = False # when true, use detailed timestep integration for all solar,shading, etc.
 
     # OutputProcessor::Unit --> I don't how it works...?
@@ -1086,20 +1098,6 @@ class ExternalFunctions:
             int const PipeNum, # TDD pipe object number
             Real64 const COSI  # Cosine of the incident angle
         '''
-        # USE STATEMENTS: na
-        # Using/Aliasing
-        using DataGlobals::HourOfDay;
-        using DataGlobals::TimeStep;
-        using DataHeatBalance::AnisoSkyMult;
-        using DataHeatBalance::curDifShdgRatioIsoSky;
-        using DataHeatBalance::DifShdgRatioHoriz;
-        using DataHeatBalance::DifShdgRatioHorizHRTS;
-        using DataHeatBalance::DifShdgRatioIsoSky;
-        using DataHeatBalance::MultCircumSolar;
-        using DataHeatBalance::MultHorizonZenith;
-        using DataHeatBalance::MultIsoSky;
-        using DataHeatBalance::SunlitFrac;
-        using DataSystemVariables::DetailedSkyDiffuseAlgorithm;
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
         DomeSurf = 0          # TDD:DOME surface number

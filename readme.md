@@ -42,18 +42,18 @@ File `Shadows.py` (functions and variables dependencies):
 					TDDPipe()
 						? TDDPipe --> definido como Pandas Series (l.1060)
 					CalcTDDTransSolAniso(PipeNum, COSI)
-						HourOfDay --> ? DataGlobals --> não foi definido ainda
-        				TimeStep --> ? DataGlobals --> não foi definido ainda
-        				AnisoSkyMult --> ? DataHeatBalance
-				        curDifShdgRatioIsoSky --> ? DataHeatBalance
-				        DifShdgRatioHoriz --> ? DataHeatBalance
-				        DifShdgRatioHorizHRTS --> ? DataHeatBalance
-				        DifShdgRatioIsoSky --> ? DataHeatBalance
-				        MultCircumSolar --> ? DataHeatBalance
-				        MultHorizonZenith --> ? DataHeatBalance
-				        MultIsoSky --> ? DataHeatBalance
-				        SunlitFrac --> ? DataHeatBalance
-				        DetailedSkyDiffuseAlgorithm --> ? DataSystemVariables
+						HourOfDay
+        				TimeStep
+        				AnisoSkyMult
+				        curDifShdgRatioIsoSky
+				        DifShdgRatioHoriz
+				        DifShdgRatioHorizHRTS
+				        DifShdgRatioIsoSky
+				        MultCircumSolar
+				        MultHorizonZenith
+				        MultIsoSky
+				        SunlitFrac
+				        DetailedSkyDiffuseAlgorithm
 				RoundSigDigits(RealValue, SigDigits)
 					TestChar --> ??? não sei como converter para Python
 					stripped() --> computing performance?
@@ -89,55 +89,55 @@ File `Shadows.py` (functions and variables dependencies):
 				? DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
 				DoingSizing
 				DoWeathSim
-				? DoDesDaySim --> onde foi definido?
+				DoDesDaySim
 				KindOfSim
 				ksRunPeriodWeather
 				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(			
 	__init__()
 		outputShdFileName
 		[ifdef?] EP_Count_Calls
-		PiOvr2		
-	GetShadowingInput()
-		GetScheduleIndex(&ScheduleName)
-        ? UtilityRoutines::SameString() --> como funciona isso?
-        ? UtilityRoutines::FindItemInList() --> como funciona isso?
-	    getNumObjectsFound(&ObjectWord)
-	    getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
-	    lNumericFieldBlanks
-        lAlphaFieldBlanks
-        cAlphaFieldNames
-        cNumericFieldNames
-        DisableGroupSelfShading
-		ScheduleFileShadingProcessed --> definido dentro de GetShadowingInput(), mudar para External...
-		ZoneList
-		NumOfZoneLists
-		ShadingTransmittanceVaries --> definido em __init__ de SolarShading, mudar para External...
-		SolarDistribution --> definido em __init__ de SolarShading, mudar para External...
-		MinimalShadowing --> definido em __init__ de SolarShading, mudar para External...
-		Surface()
-			? Surface --> definido como Pandas Series (l.679)			
-	AllocateModuleArrays()
-		TotSurfaces --> definido em __init__ de SolarShading, mudar para External...
-		NumOfTimeStepInHour
-		MaxBkSurf
-		NumOfZones
-		MaxSolidWinLayers
-		MaxVerticesPerSurface
-		SurfaceWindow() --> DataSurfaces.cc
-			? SurfaceWindow --> definido como Pandas Series (l.680)
-		Surface() --> DataSurfaces.cc
-			? Surface --> definido como Pandas Series (l.679)
-		[class] Unit --> OutputProcessor::Unit		
-	DetermineShadowingCombinations()
-		ShadowComb
-		[struct] ShadowingCombinations
-		IgnoreSolarRadiation --> definido em __init__ de SolarShading, mudar para External...
-		ExternalEnvironment --> definido em __init__ de SolarShading, mudar para External...
-		OtherSideCondModeledExt --> definido em __init__ de SolarShading, mudar para External...
-		[ifdef?] EP_Count_Calls --> DataTimings.cc --> já definido em External
-		CHKGSS(NRS, NSS, ZMIN, &CannotShade)
-		    Surface()
-		    	? Surface --> definido como Pandas Series (l.679)
+		PiOvr2
+		DetermineShadowingCombinations()
+			ShadowComb
+			[struct] ShadowingCombinations
+			IgnoreSolarRadiation
+			ExternalEnvironment
+			OtherSideCondModeledExt
+			[ifdef?] EP_Count_Calls --> DataTimings.cc --> já definido em External
+			CHKGSS(NRS, NSS, ZMIN, &CannotShade)
+			    Surface()
+			    	? Surface --> definido como Pandas Series (l.679)
+		AllocateModuleArrays()
+			TotSurfaces
+			NumOfTimeStepInHour
+			MaxBkSurf
+			NumOfZones
+			MaxSolidWinLayers
+			MaxVerticesPerSurface
+			SurfaceWindow() --> DataSurfaces.cc --> é do tipo SurfaceWindowCalc() com várias características de absorsação de luz pela janela
+				? SurfaceWindow --> definido como Pandas Series (l.680)
+			Surface() --> DataSurfaces.cc
+				? Surface --> definido como Pandas Series (l.679)
+			[class] Unit --> OutputProcessor::Unit
+		GetShadowingInput()
+			GetScheduleIndex(&ScheduleName)
+	        ? UtilityRoutines::SameString() --> como funciona isso?
+	        ? UtilityRoutines::FindItemInList() --> como funciona isso?
+		    getNumObjectsFound(&ObjectWord)
+		    getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
+		    lNumericFieldBlanks
+	        lAlphaFieldBlanks
+	        cAlphaFieldNames
+	        cNumericFieldNames
+	        DisableGroupSelfShading
+			ScheduleFileShadingProcessed --> definido dentro de GetShadowingInput(), mudar para External...
+			ZoneList
+			NumOfZoneLists
+			ShadingTransmittanceVaries --> definido em __init__ de SolarShading, mudar para External...
+			SolarDistribution --> definido em __init__ de SolarShading, mudar para External...
+			MinimalShadowing --> definido em __init__ de SolarShading, mudar para External...
+			Surface()
+				? Surface --> definido como Pandas Series (l.679)
 	SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS)
 		CLIP(NVT, &XVT, &YVT, &ZVT)
 		CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT)
