@@ -63,21 +63,11 @@ import pandas as pd
 from collections import namedtuple
 from enum import Enum
 
-# ObjexxFCL Headers
-# include <ObjexxFCL/Array.functions.hh>	# CHANGE to Python dataseries?
-include <ObjexxFCL/Fmath.hh>
-include <ObjexxFCL/Vector3.hh>
-include <ObjexxFCL/gio.hh>
-include <ObjexxFCL/member.functions.hh>
-include <ObjexxFCL/string.functions.hh>
-
-# EnergyPlus Headers
-include <Vectors.hh>					# CHANGE to Python dataframes package
-
 class ExternalFunctions:
 	'''
 	Definition of a variety of additional functions from another packages.
 	Only those useful for the following computations was copied to here.
+    Nontheless, some are particularly defined inside other 'class' statement.
 	'''
 
 	# DataGlobals.cc
@@ -96,7 +86,7 @@ class ExternalFunctions:
     TimeStep = 0                # Counter for time steps (fractional hours)
 
     # DataStringGlobals::outputShdFileName
-	outputShdFileName = 'eplusout.shd'     # to save the simulations result
+	outputShdFileName = 'eplusout.shd'     # file to save the simulations result
 
 	# DataShadowingCombinations.hh
     ShadowingCombinations_ = namedtuple('ShadowingCombinations_', ['UseThisSurf', 'NumGenSurf', 'GenSurf', 'NumBackSurf', 'BackSurf', 'NumSubSurf', 'SubSurf'])
@@ -384,7 +374,7 @@ class ExternalFunctions:
 
 	# DataSurfaces.hh
     Vertices = pd.Series()
-    Plane = Vector4<Real64>; # ?
+    Plane = pd.DataFrame() # Vector4<Real64> ?
 
     SurfaceData_ = namedtuple('SurfaceData', ['Name', 'Construction', 'EMSConstructionOverrideON', 'EMSConstructionOverrideValue',
                                                 'ConstructionStoredInputValue', 'Class', 'Shape', 'Sides', 'Area', 'GrossArea',
@@ -913,7 +903,7 @@ class ExternalFunctions:
         DigitChar = "01234567890"
         NAN_string = "NAN"
         ZEROOOO = "0.000000000000000000000000000"
-        static gio::Fmt fmtLD("*");
+        ?static gio::Fmt fmtLD("*");
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
 
@@ -922,7 +912,7 @@ class ExternalFunctions:
 
         String = "" # Working string
         if (RealValue != 0.0):
-            gio::write(String, fmtLD) << RealValue;
+            ?gio::write(String, fmtLD) << RealValue;
         else:
             String = ZEROOOO
 
@@ -1148,7 +1138,7 @@ class ExternalFunctions:
         '''
 
         # Using/Aliasing
-        using FluidProperties::FindArrayIndex; # USEd code could be copied here to eliminate dependence on FluidProperties
+        # using FluidProperties::FindArrayIndex; # USEd code could be copied here to eliminate dependence on FluidProperties
 
         # Argument array dimensioning
         transBeam.dim(NumOfAngles);
@@ -1176,6 +1166,7 @@ class ExternalFunctions:
         
         return InterpolatePipeTransBeam
 
+    # PAREI AQUI!
     # DaylightingDevices::FindTDDPipe
     def FindTDDPipe(WinNum):
     	'''

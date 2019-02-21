@@ -22,11 +22,12 @@ File `Shadows.py` (functions and variables dependencies):
 		    		Vertex --> falta definir, mas já está no arquivo
 		    	Plane
 		    		plane --> falta definir, mas já está no arquivo
-			CalcDayltgCoefficients()
+			CalcDayltgCoefficients() * local de definição
 				DetailedSolarTimestepIntegration
 					ZoneDaylight()
 						? ZoneDaylight --> definido como Pandas Series (l.882)
 				FindTDDPipe(WinNum)
+					NumOfTDDPipes
 					Surface()
 						? Surface --> definido como Pandas Series (l.679)
 					TDDPipe()
@@ -38,27 +39,52 @@ File `Shadows.py` (functions and variables dependencies):
 					Construct()
 						ConstructionData
 					InterpolatePipeTransBeam(COSI, transBeam)
+						NumOfAngles --> ? não sei de onde vêm
+						COSAngle --> ? não sei de onde vêm
 						FindArrayIndex --> ? FluidProperties
 					TDDPipe()
 						? TDDPipe --> definido como Pandas Series (l.1060)
 					CalcTDDTransSolAniso(PipeNum, COSI)
 						HourOfDay
         				TimeStep
-        				AnisoSkyMult
-				        curDifShdgRatioIsoSky
-				        DifShdgRatioHoriz
-				        DifShdgRatioHorizHRTS
-				        DifShdgRatioIsoSky
-				        MultCircumSolar
-				        MultHorizonZenith
-				        MultIsoSky
-				        SunlitFrac
+        				SolarBeam
+        				AnisoSkyMult()
+        					? AnisoSkyMult --> definido como Pandas Series (l.363)
+				        curDifShdgRatioIsoSky()
+				        	? curDifShdgRatioIsoSky --> definido como Pandas Series (l.366)
+				        DifShdgRatioHoriz()
+				        	? DifShdgRatioHoriz --> definido como Pandas Series (l.367)
+				        DifShdgRatioHorizHRTS()
+				        	? DifShdgRatioHorizHRTS --> definido como Pandas DataFrame (l.368)
+				        DifShdgRatioIsoSky()
+				        	? DifShdgRatioIsoSky --> definido como Pandas Series (l.369)
+				        MultCircumSolar()
+				        	? MultCircumSolar --> definido como Pandas Series (l.370)
+				        MultHorizonZenith()
+				        	? MultHorizonZenith --> definido como Pandas Series (l.371)
+				        MultIsoSky()
+				        	? MultIsoSky --> definido como Pandas Series (l.372)
+				        SunlitFrac()
+				        	? SunlitFrac --> definido como Pandas DataFrame (l.373)
 				        DetailedSkyDiffuseAlgorithm
+				        ShadingTransmittanceVaries --> definido em __init__ de SolarShading, mudar para External...
+				        SolarDistribution --> definido em __init__ de SolarShading, mudar para External...
+				        MinimalShadowing --> definido em __init__ de SolarShading, mudar para External...
+				        TDDPipe()
+				        	? TDDPipe --> definido como Pandas Series (l.1060)
+				        TransTDD(PipeNum, COSI, RadiationType) --> recursivo ou loop infinito?
 				RoundSigDigits(RealValue, SigDigits)
 					TestChar --> ??? não sei como converter para Python
 					stripped() --> computing performance?
 				GetDaylightingParametersInput()				
 				CheckTDDsAndLightShelvesInDaylitZones()
+					NumOfTDDPipes
+					CheckTDDZone
+					TDDPipe()
+						? TDDPipe --> definido como Pandas Series (l.1060)
+					RoundSigDigits(RealValue, SigDigits)
+						TestChar --> ??? não sei como converter para Python
+						stripped() --> computing performance?
 				AssociateWindowShadingControlWithDaylighting()
 				CheckTDDZone
 				BeginSimFlag
@@ -83,7 +109,13 @@ File `Shadows.py` (functions and variables dependencies):
 				THSUNHR()
 				GILSK()
 				GILSU()
+				TotWindowsWithDayl
 				CalcDayltgCoeffsRefMapPoints(ZoneNum)
+					TDDPipe()
+						? TDDPipe --> definido como Pandas Series (l.1060)
+					RoundSigDigits(RealValue, SigDigits)
+						TestChar --> ??? não sei como converter para Python
+						stripped() --> computing performance?
 				FirstTimeDaylFacCalc
 				? DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
 				? DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
@@ -138,15 +170,19 @@ File `Shadows.py` (functions and variables dependencies):
 			MinimalShadowing --> definido em __init__ de SolarShading, mudar para External...
 			Surface()
 				? Surface --> definido como Pandas Series (l.679)
+			RoundSigDigits(RealValue, SigDigits)
+				TestChar --> ??? não sei como converter para Python
+				stripped() --> computing performance?
 	SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS)
 		CLIP(NVT, &XVT, &YVT, &ZVT)
 		CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT)
 		HTRANS0(NS, NumVertices)
 		HTRANS1(NS, NumVertices)
 		MULTOL(NNN, LOC0, NRFIGS)
-			DeterminePolygonOverlap(NS1, NS2, NS3)
-		DeterminePolygonOverlap(NS1, NS2, NS3)	
+			DeterminePolygonOverlap(NS1, NS2, NS3) * uso
+		DeterminePolygonOverlap(NS1, NS2, NS3) * uso
 	PerformSolarCalculations()
+		TotWindowsWithDayl
 		CalcPerSolarBeam(AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
 			[ifdef?] EP_Count_Calls
 			FigureSunCosines(iHour, iTimeStep, EqOfTime, SinSolarDeclin, CosSolarDeclin)
@@ -167,11 +203,10 @@ File `Shadows.py` (functions and variables dependencies):
 				[ifdef?] EP_Count_Calls
 			[class] Unit --> OutputProcessor::Unit
 		DetailedSolarTimestepIntegration
-		CalcDayltgCoefficients()
+		CalcDayltgCoefficients() * local de uso
 			PiOvr2
-		TotWindowsWithDayl
 		SUN3(JulianDayOfYear, &SineOfSolarDeclination, &EquationOfTime)
-	DeterminePolygonOverlap(NS1, NS2, NS3)
+	DeterminePolygonOverlap(NS1, NS2, NS3) * definição
 		HTRANS0(NS, NumVertices)
 		INCLOS(N1, N1NumVert, N2, N2NumVert, &NumVerticesOverlap, &NIN)
 		INTCPT(NV1, NV2, &NV3, NS1, NS2)
@@ -179,6 +214,9 @@ File `Shadows.py` (functions and variables dependencies):
 			[ifdef?] EP_Count_Calls
 		ORDER(NV3, NS3)
 		[ifdef?] EP_Count_Calls
+		RoundSigDigits(RealValue, SigDigits)
+			TestChar --> ??? não sei como converter para Python
+			stripped() --> computing performance?
 	SEM NENHUM VÍNCULO (pode ser excluído?):
 		`polygon_contains_point` --> used for subsurfaces purposes (`CHKSBS`)
 		`HTRANS` --> used for subsurfaces purposes (`CalcInteriorWinTransDifSolInitialDistribution` e `CalcComplexWindowOverlap`)
