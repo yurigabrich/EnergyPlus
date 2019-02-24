@@ -1,6 +1,6 @@
 '''
-SPDX-License-Identifier: MIT License
-For more information check at: https://spdx.org/licenses/MIT.html
+SPDX-License-Identifier: BSD-3-Clause
+For more information check at: https://spdx.org/licenses/BSD-3-Clause.html
 
 Copyright (C) 2018 - 2019
 Yuri Bastos Gabrich <yuribgabrich[at]gmail.com>
