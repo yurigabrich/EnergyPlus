@@ -45,10 +45,13 @@ File `Shadows.py` (functions and variables dependencies):
 						? Surface --> definido como Pandas Series (l.679)
 					Construct()
 						ConstructionData
+					VisibleBeam --> ? DataDaylightingDevices
 					InterpolatePipeTransBeam(COSI, transBeam)
 						NumOfAngles --> ? não sei de onde vêm
 						COSAngle --> ? não sei de onde vêm
 						FindArrayIndex --> ? FluidProperties
+					SolarBeam --> ? DataDaylightingDevices
+					SolarAniso --> ? DataDaylightingDevices
 					TDDPipe()
 						? TDDPipe --> definido como Pandas Series (l.1060)
 					CalcTDDTransSolAniso(PipeNum, COSI)
@@ -79,16 +82,26 @@ File `Shadows.py` (functions and variables dependencies):
 				        MinimalShadowing --> definido em __init__ de SolarShading, mudar para External...
 				        TDDPipe()
 				        	? TDDPipe --> definido como Pandas Series (l.1060)
-				        TransTDD(PipeNum, COSI, RadiationType) --> recursivo ou loop infinito?
 				RoundSigDigits(RealValue, SigDigits)
 					TestChar --> ??? não sei como converter para Python
 					stripped() --> computing performance?
 				GetDaylightingParametersInput()				
 				CheckTDDsAndLightShelvesInDaylitZones()
+					CheckTDDs_firstTime --> ? DaylightingManager
+					NumOfZones
+					? CheckTDDZone() --> definido como Pandas Series (l.1028)
 					NumOfTDDPipes
-					CheckTDDZone
 					TDDPipe()
 						? TDDPipe --> definido como Pandas Series (l.1060)
+					ZoneDaylight()
+						? ZoneDaylight --> definido como Pandas Series (l.882)
+					Surface()
+						? Surface --> definido como Pandas Series (l.679)
+					NoDaylighting --> ? DataDaylighting
+					Zone(...) --> ? tem uma caralhada de referências
+					DaylRefWorldCoordSystem --> ? DataSurfaces
+					NumOfShelf --> ? DataDaylightingDevices
+					Shelf(...) -- ? vêm de SurfaceData ?
 					RoundSigDigits(RealValue, SigDigits)
 						TestChar --> ??? não sei como converter para Python
 						stripped() --> computing performance?
@@ -123,6 +136,12 @@ File `Shadows.py` (functions and variables dependencies):
 					RoundSigDigits(RealValue, SigDigits)
 						TestChar --> ??? não sei como converter para Python
 						stripped() --> computing performance?
+					FindTDDPipe(WinNum)
+						NumOfTDDPipes
+						Surface()
+							? Surface --> definido como Pandas Series (l.679)
+						TDDPipe()
+							? TDDPipe --> definido como Pandas Series (l.1060)
 				FirstTimeDaylFacCalc
 				? DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
 				? DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
