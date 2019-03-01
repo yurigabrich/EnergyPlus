@@ -105,7 +105,12 @@ File `Shadows.py` (functions and variables dependencies):
 					RoundSigDigits(RealValue, SigDigits)
 						TestChar --> ??? não sei como converter para Python
 						stripped() --> computing performance?
-				AssociateWindowShadingControlWithDaylighting()
+				AssociateWindowShadingControlWithDaylighting() --> REALMENTE VAI SER USADO?
+					TotWinShadingControl --> ? DataSurfaces
+					NumOfZones
+					? UtilityRoutines::SameString() --> como funciona isso?
+					WindowShadingControl() --> ? DataSurfaces
+					ZoneDaylight()
 				CheckTDDZone
 				BeginSimFlag
 				NumOfZones
@@ -114,6 +119,14 @@ File `Shadows.py` (functions and variables dependencies):
 				KickOffSimulation
 				WarmupFlag
 				CalcMinIntWinSolidAngs() --> DaylightingManager.cc --> acho q não será necessário, pois é para janela
+					NumOfZones
+					ZoneDaylight()
+					Zone(...) --> ? tem uma caralhada de referências
+					Surface()
+						? Surface --> definido como Pandas Series (l.679)
+					SurfaceClass_Window --> ? DataSurfaces
+					dot() --> ? produto escalar ?
+					pow_2() --> ? elevado ao quadrado ?
 				TDDTransVisBeam
 				TDDFluxInc
 				TDDFluxTrans
@@ -123,6 +136,10 @@ File `Shadows.py` (functions and variables dependencies):
 				SunIsUpValue
 				DayltgExtHorizIllum(HISK, &HISU)
 					PiOvr2
+					double() --> ? não parece ser definição de variável ?
+					DayltgExtHorizIllum_firstTime --> ? DaylightingManager
+					DayltgSkyLuminance --> ? DaylightingManager
+					SPHSUN --> definido dentro de CalcDayltgCoefficients()
 				PHSUNHR()
 				SPHSUNHR()
 				CPHSUNHR()

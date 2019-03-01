@@ -1362,7 +1362,6 @@ class ExternalFunctions:
         
         return None
 
-    # PAREI AQUI!
     # DaylightingManager::AssociateWindowShadingControlWithDaylighting
     def AssociateWindowShadingControlWithDaylighting():
         '''
@@ -1418,9 +1417,9 @@ class ExternalFunctions:
         IWin = 0                       # Window surface number
         IL = 0                         # Reference point number
         loop = 0                       # DO loop index
-        bool is_Triangle;               # True if window is a triangle
-        bool is_Rectangle;              # True if window is a rectangle
-        bool IntWinNextToIntWinAdjZone; # True if an interior window is next to a zone with one or more exterior windows
+        # bool is_Triangle;               # True if window is a triangle
+        # bool is_Rectangle;              # True if window is a rectangle
+        # bool IntWinNextToIntWinAdjZone; # True if an interior window is next to a zone with one or more exterior windows
         IntWinSolidAng = 0.0          # Approximation to solid angle subtended by an interior window from a point a distance SQRT(zone floor area) away.
         static Vector3<Real64> W1;      # Window vertices
         static Vector3<Real64> W2;
@@ -1444,7 +1443,7 @@ class ExternalFunctions:
             if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0): continue
             if (ZoneDaylight(ZoneNum).NumOfIntWinAdjZones == 0): continue
             
-            for IWin in range( Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1):
+            for IWin in range( Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1 ):
 
                 if (Surface(IWin).Class == SurfaceClass_Window && Surface(IWin).ExtBoundCond >= 1):
                     ZoneNumAdj = Surface(Surface(IWin).ExtBoundCond).Zone
@@ -1578,7 +1577,7 @@ class ExternalFunctions:
             
             DayltgExtHorizIllum_firstTime = False
 
-        HISK = 0.0
+        HISK = 0.0 # --> definido lá em cima com dimensão 4...
 
         # Sky integration
         for IPH in range(1, NPH+1):
@@ -1599,6 +1598,7 @@ class ExternalFunctions:
     
         return None
 
+    # PAREI AQUI!
     # DaylightingManager::CalcDayltgCoeffsRefMapPoints
     def CalcDayltgCoeffsRefMapPoints(ZoneNum):
         '''
