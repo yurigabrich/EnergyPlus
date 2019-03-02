@@ -1598,7 +1598,6 @@ class ExternalFunctions:
     
         return None
 
-    # PAREI AQUI!
     # DaylightingManager::CalcDayltgCoeffsRefMapPoints
     def CalcDayltgCoeffsRefMapPoints(ZoneNum):
         '''
@@ -1623,20 +1622,11 @@ class ExternalFunctions:
                 int const ZoneNum
         '''
 
-        # Using/Aliasing
-        using DaylightingDevices::FindTDDPipe;
-        using DaylightingDevices::TransTDD;
-        # using General::BlindBeamBeamTrans;
-        using General::RoundSigDigits;
-        using General::SafeDivide;
-        using namespace Vectors;
-
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        IWin = 0    # Window counter
-        PipeNum = 0 # TDD pipe object number
-        loopwin = 0 # loop index for exterior windows associated with a daylit zone
+        IWin = 0        # Window counter
+        PipeNum = 0     # TDD pipe object number
+        loopwin = 0     # loop index for exterior windows associated with a daylit zone
         TZoneNum = 0
-        bool ErrorsFound;
         MapNum = 0
 
         if (VeryFirstTime):
@@ -1698,7 +1688,7 @@ class ExternalFunctions:
         # RJH DElight Modification Begin
         using namespace DElightManagerF; # Module for managing DElight subroutines
         # RJH DElight Modification End
-        using DataSystemVariables::GoodIOStatValue;
+        # using DataSystemVariables::GoodIOStatValue;
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1707,21 +1697,21 @@ class ExternalFunctions:
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         TotDaylightingControls = 0  # Total Daylighting:Controls inputs (splitflux or delight type)
         IntWin = 0                  # Interior window surface index
-        bool ErrorsFound;            # Error flag
+        # bool ErrorsFound;         # Error flag
         SurfNum = 0                 # Surface counter (loop)
         WindowShadingControlPtr = 0 # Pointer for WindowShadingControl
         ZoneNum = 0                 # Zone Number (loop counter)
         SurfNumAdj = 0              # Surface Number for adjacent surface
         ZoneNumAdj = 0              # Zone Number for adjacent zone
         # RJH DElight Modification Begin - local variable declarations
-        dLatitude = 0.0       # double for argument passing
-        iErrorFlag = 0         # Error Flag for warning/errors returned from DElight
-        iDElightErrorFile = 0  # Unit number for reading DElight Error File
-        iReadStatus = 0        # Error File Read Status
-        cErrorLine = "" # Each DElight Error line can be up to 210 characters long
-        cErrorMsg = ""  # Each DElight Error Message can be up to 200 characters long
-        bool bEndofErrFile;     # End of Error File flag
-        bool bRecordsOnErrFile; # true if there are records on the error file
+        dLatitude = 0.0             # double for argument passing
+        iErrorFlag = 0              # Error Flag for warning/errors returned from DElight
+        iDElightErrorFile = 0       # Unit number for reading DElight Error File
+        iReadStatus = 0             # Error File Read Status
+        cErrorLine = ""             # Each DElight Error line can be up to 210 characters long
+        cErrorMsg = ""              # Each DElight Error Message can be up to 200 characters long
+        # bool bEndofErrFile;       # End of Error File flag
+        # bool bRecordsOnErrFile;   # true if there are records on the error file
         # RJH DElight Modification End - local variable declarations
 
         NumReports = 0
@@ -1956,6 +1946,7 @@ class ExternalFunctions:
 
     	return None   
 
+    # PAREI AQUI!
     # DaylightingManager::CalcDayltgCoefficients
     def CalcDayltgCoefficients():
     	'''

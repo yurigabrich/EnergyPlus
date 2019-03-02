@@ -85,7 +85,32 @@ File `Shadows.py` (functions and variables dependencies):
 				RoundSigDigits(RealValue, SigDigits)
 					TestChar --> ??? não sei como converter para Python
 					stripped() --> computing performance?
-				GetDaylightingParametersInput()				
+				GetDaylightingParametersInput()
+					getNumObjectsFound(&ObjectWord)
+					GetInputDayliteRefPt(ErrorsFound) --> ? DaylightingManager
+					GetDaylightingControls(TotDaylightingControls, ErrorsFound) --> ? DaylightingManager
+					GeometryTransformForDaylighting() --> ? DaylightingManager
+					GetInputIlluminanceMap(ErrorsFound) --> ? DaylightingManager
+					GetLightWellData(ErrorsFound) --> ? DaylightingManager
+					DayltgSetupAdjZoneListsAndPointers() --> ? DaylightingManager
+					TotSurfaces
+					Surface()
+					SurfaceClass_Window --> ? DataSurfacesSurfaceClass_Window
+					ZoneDaylight()
+						? ZoneDaylight --> definido como Pandas Series (l.882)
+					SurfaceWindow() --> DataSurfaces.cc --> é do tipo SurfaceWindowCalc() com várias características de absorsação de luz pela janela
+						? SurfaceWindow --> definido como Pandas Series (l.680)
+					ExternalEnvironment
+					WindowShadingControl() --> ? DataSurfaces
+					WSCT_MeetDaylIlumSetp --> ? DataSurfaces
+					doesDayLightingUseDElight() --> ? DaylightingManager
+					DElightInputGenerator() --> ? DElightManagerF
+					GenerateDElightDaylightCoefficients(dLatitude, iErrorFlag) --> ? DElightManagerF
+					GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(
+					GoodIOStatValue --> ? DataSystemVariables
+					has_prefix(?) --> ? no idea about it
+					getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
+					cAlphaArgs(?) --> ? DataIPShortCuts
 				CheckTDDsAndLightShelvesInDaylitZones()
 					CheckTDDs_firstTime --> ? DaylightingManager
 					NumOfZones
@@ -148,17 +173,20 @@ File `Shadows.py` (functions and variables dependencies):
 				GILSU()
 				TotWindowsWithDayl
 				CalcDayltgCoeffsRefMapPoints(ZoneNum)
-					TDDPipe()
-						? TDDPipe --> definido como Pandas Series (l.1060)
-					RoundSigDigits(RealValue, SigDigits)
-						TestChar --> ??? não sei como converter para Python
-						stripped() --> computing performance?
-					FindTDDPipe(WinNum)
-						NumOfTDDPipes
-						Surface()
-							? Surface --> definido como Pandas Series (l.679)
-						TDDPipe()
-							? TDDPipe --> definido como Pandas Series (l.1060)
+					VeryFirstTime --> ? DaylightingManager
+					NumOfZones
+					ZoneDaylight()
+					SurfaceWindow() --> DataSurfaces.cc --> é do tipo SurfaceWindowCalc() com várias características de absorsação de luz pela janela
+						? SurfaceWindow --> definido como Pandas Series (l.680)
+					SurfaceClass_TDD_Diffuser --> ? DataSurfaces
+					CalcDayltgCoeffsRefPoints(ZoneNum) --> ? DaylightingManage
+					DoingSizing
+					KickOffSimulation
+					TotIllumMaps --> ? DataDaylighting
+					IllumMapCalc() --> ? DataDaylighting
+					WarmupFlag
+					Zone(...) --> ? tem uma caralhada de referências
+					CalcDayltgCoeffsMapPoints(ZoneNum) --> ? DaylightingManager
 				FirstTimeDaylFacCalc
 				? DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
 				? DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
@@ -167,7 +195,7 @@ File `Shadows.py` (functions and variables dependencies):
 				DoDesDaySim
 				KindOfSim
 				ksRunPeriodWeather
-				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(			
+				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(
 	__init__()
 		outputShdFileName
 		[ifdef?] EP_Count_Calls
