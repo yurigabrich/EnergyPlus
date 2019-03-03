@@ -1946,7 +1946,6 @@ class ExternalFunctions:
 
     	return None   
 
-    # PAREI AQUI!
     # DaylightingManager::CalcDayltgCoefficients
     def CalcDayltgCoefficients():
     	'''
@@ -2031,7 +2030,7 @@ class ExternalFunctions:
         ZoneNum = 0		# Zone number
         IHR = 0			# Hour of day counter
         IWin = 0		# Window counter
-        loop = 0		# DO loop indices
+        # loop = 0		# DO loop indices
         DaylFac1 = 0.0	# sky daylight factor at ref pt 1
         DaylFac2 = 0.0	# sky daylight factor at ref pt 2
 
@@ -2366,6 +2365,7 @@ class ExternalFunctions:
         # end zone loop
 	    return None
 
+    # PAREI AQUI!
 	# ScheduleManager::GetScheduleIndex
     def GetScheduleIndex(&ScheduleName):
     	'''
@@ -4231,8 +4231,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
     	return None
 
-
-
     def CHKGSS(NRS, NSS, ZMIN, &CannotShade):
     	'''
         SUBROUTINE INFORMATION:
@@ -5716,8 +5714,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             #     	CalcFrameDividerShadow(SurfNum, Surface(SurfNum).FrameDivider, iHour)
         
     	return None
-
-	
 
     def SHADOW(iHour, TS):
     	'''

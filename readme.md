@@ -30,8 +30,9 @@ File `Shadows.py` (functions and variables dependencies):
 		    	Plane
 		    		plane --> falta definir, mas já está no arquivo
 			CalcDayltgCoefficients() * local de definição
+				CalcDayltghCoefficients_firstTime --> ? DaylightingManager
 				DetailedSolarTimestepIntegration
-					ZoneDaylight()
+					ZoneDaylight() --> ?
 						? ZoneDaylight --> definido como Pandas Series (l.882)
 				FindTDDPipe(WinNum)
 					NumOfTDDPipes
@@ -96,7 +97,7 @@ File `Shadows.py` (functions and variables dependencies):
 					TotSurfaces
 					Surface()
 					SurfaceClass_Window --> ? DataSurfacesSurfaceClass_Window
-					ZoneDaylight()
+					ZoneDaylight() --> ?
 						? ZoneDaylight --> definido como Pandas Series (l.882)
 					SurfaceWindow() --> DataSurfaces.cc --> é do tipo SurfaceWindowCalc() com várias características de absorsação de luz pela janela
 						? SurfaceWindow --> definido como Pandas Series (l.680)
@@ -118,7 +119,7 @@ File `Shadows.py` (functions and variables dependencies):
 					NumOfTDDPipes
 					TDDPipe()
 						? TDDPipe --> definido como Pandas Series (l.1060)
-					ZoneDaylight()
+					ZoneDaylight() --> ?
 						? ZoneDaylight --> definido como Pandas Series (l.882)
 					Surface()
 						? Surface --> definido como Pandas Series (l.679)
@@ -135,17 +136,20 @@ File `Shadows.py` (functions and variables dependencies):
 					NumOfZones
 					? UtilityRoutines::SameString() --> como funciona isso?
 					WindowShadingControl() --> ? DataSurfaces
-					ZoneDaylight()
+					ZoneDaylight() --> ?
 				CheckTDDZone
-				BeginSimFlag
+				BeginSimFlag --> ? DataGlobals
 				NumOfZones
-				ZoneDaylight()
+				Zone(...) --> ? tem uma caralhada de referências
+				ZoneDaylight() --> ?
+				DayltgAveInteriorReflectance(ZoneNum) --> ? DaylightingManager
 				KickOffSizing
 				KickOffSimulation
 				WarmupFlag
+				CurMnDy --> ? DataEnvironment
 				CalcMinIntWinSolidAngs() --> DaylightingManager.cc --> acho q não será necessário, pois é para janela
 					NumOfZones
-					ZoneDaylight()
+					ZoneDaylight() --> ?
 					Zone(...) --> ? tem uma caralhada de referências
 					Surface()
 						? Surface --> definido como Pandas Series (l.679)
@@ -159,6 +163,7 @@ File `Shadows.py` (functions and variables dependencies):
 				BeginDayFlag
 				SUNCOSHR()
 				SunIsUpValue
+				PiOvr2
 				DayltgExtHorizIllum(HISK, &HISU)
 					PiOvr2
 					double() --> ? não parece ser definição de variável ?
@@ -171,11 +176,14 @@ File `Shadows.py` (functions and variables dependencies):
 				THSUNHR()
 				GILSK()
 				GILSU()
+				HourOfDay
+				SplitFluxDaylighting --> ? DataDaylighting
+				doSkyReporting --> ? não aparece no html ?
 				TotWindowsWithDayl
 				CalcDayltgCoeffsRefMapPoints(ZoneNum)
 					VeryFirstTime --> ? DaylightingManager
 					NumOfZones
-					ZoneDaylight()
+					ZoneDaylight() --> ?
 					SurfaceWindow() --> DataSurfaces.cc --> é do tipo SurfaceWindowCalc() com várias características de absorsação de luz pela janela
 						? SurfaceWindow --> definido como Pandas Series (l.680)
 					SurfaceClass_TDD_Diffuser --> ? DataSurfaces
@@ -188,14 +196,24 @@ File `Shadows.py` (functions and variables dependencies):
 					Zone(...) --> ? tem uma caralhada de referências
 					CalcDayltgCoeffsMapPoints(ZoneNum) --> ? DaylightingManager
 				FirstTimeDaylFacCalc
-				? DFSReportSizingDays --> GetDaylightingParametersInput() --> it's enough?
-				? DFSReportAllShadowCalculationDays --> GetDaylightingParametersInput() --> an 'else' of the above
+				OutputFileInits --> ? DataGlobals
+				Format_700 --> ? definido e usado dentro dessa função, mas não sei como usar ? parece ser um tipo de formatação de string
+				Surface()
+			    	? Surface --> definido como Pandas Series (l.679)
+				DFSReportSizingDays --> definido em GetDaylightingParametersInput() --> it's enough?
+				DFSReportAllShadowCalculationDays --> definido em GetDaylightingParametersInput() --> an 'else' of the above
 				DoingSizing
 				DoWeathSim
 				DoDesDaySim
 				KindOfSim
 				ksRunPeriodWeather
 				GetNewUnitNumber() --> ? aparece no html, mas não no arquivo... :(
+				SurfaceWindow() --> DataSurfaces.cc --> é do tipo SurfaceWindowCalc() com várias características de absorsação de luz pela janela
+					? SurfaceWindow --> definido como Pandas Series (l.680)
+				MaxSlatAngs --> ? DataSurfaces
+				OutputFileDFS --> ? DaylightingManager
+				fmtA --> ? definido e usado dentro dessa função, mas não sei como usar ? parece ser um tipo de formatação de string
+				double() --> ? não parece ser definição de variável ?
 	__init__()
 		outputShdFileName
 		[ifdef?] EP_Count_Calls
