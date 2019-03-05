@@ -2365,7 +2365,6 @@ class ExternalFunctions:
         # end zone loop
 	    return None
 
-    # PAREI AQUI!
 	# ScheduleManager::GetScheduleIndex
     def GetScheduleIndex(&ScheduleName):
     	'''
@@ -2383,8 +2382,8 @@ class ExternalFunctions:
         GetScheduleIndex = 0
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
-        DayCtr = 0
-        WeekCtr = 0
+        # DayCtr = 0
+        # WeekCtr = 0
 
         if (!ScheduleInputProcessed):
             ProcessScheduleInput()
@@ -2408,7 +2407,7 @@ class ExternalFunctions:
         return GetScheduleIndex
 
     # ScheduleManager::getNumObjectsFound
-    def getNumObjectsFound(std::string const &ObjectWord):
+    def getNumObjectsFound(&ObjectWord):
 		'''
 	    FUNCTION INFORMATION:
 	          AUTHOR         Linda K. Lawrie
@@ -2424,6 +2423,9 @@ class ExternalFunctions:
 	    METHODOLOGY EMPLOYED:
 	    Look up object in list of objects.  If there, return the
 	    number of objects found in the current input.  If not, return 0.
+
+        INPUT:
+        std::string const &ObjectWord
 	    '''
 	    auto const &find_obj = epJSON.find(ObjectWord);
 
@@ -2444,7 +2446,8 @@ class ExternalFunctions:
 
 	    return 0
 
-	# ScheduleManager::getObjectItem
+	# PAREI AQUI!
+    # ScheduleManager::getObjectItem
 	def getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, *args):
 		# void InputProcessor::getObjectItem(std::string const &Object,
   		#                            int const Number,
@@ -3489,7 +3492,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         if (UseImportedSunlitFrac):
             # for (auto surf : Surface): # ???????
             for surf in Surface:
-                ExtShadingSchedNum = ScheduleManager::GetScheduleIndex(surf.Name + "_shading")
+                ExtShadingSchedNum = GetScheduleIndex(surf.Name + "_shading")
                 if (ExtShadingSchedNum):
                     surf.SchedExternalShadingFrac = True
                     surf.ExternalShadingSchInd = ExtShadingSchedNum

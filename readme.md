@@ -88,6 +88,10 @@ File `Shadows.py` (functions and variables dependencies):
 					stripped() --> computing performance?
 				GetDaylightingParametersInput()
 					getNumObjectsFound(&ObjectWord)
+						caseInsensitiveObjectMap --> ? não tem no html
+						convertToUpper() --> ? não tem no html
+						static_cast() --> ? não tem no html
+						schema[...] --> ? não tem no html
 					GetInputDayliteRefPt(ErrorsFound) --> ? DaylightingManager
 					GetDaylightingControls(TotDaylightingControls, ErrorsFound) --> ? DaylightingManager
 					GeometryTransformForDaylighting() --> ? DaylightingManager
@@ -134,7 +138,7 @@ File `Shadows.py` (functions and variables dependencies):
 				AssociateWindowShadingControlWithDaylighting() --> REALMENTE VAI SER USADO?
 					TotWinShadingControl --> ? DataSurfaces
 					NumOfZones
-					? UtilityRoutines::SameString() --> como funciona isso?
+					SameString() --> ? UtilityRoutines ? como funciona isso?
 					WindowShadingControl() --> ? DataSurfaces
 					ZoneDaylight() --> ?
 				CheckTDDZone
@@ -242,9 +246,21 @@ File `Shadows.py` (functions and variables dependencies):
 			[class] Unit --> OutputProcessor::Unit
 		GetShadowingInput()
 			GetScheduleIndex(&ScheduleName)
-	        ? UtilityRoutines::SameString() --> como funciona isso?
-	        ? UtilityRoutines::FindItemInList() --> como funciona isso?
+				ScheduleInputProcessed --> ? ScheduleManager
+				ProcessScheduleInput(...) --> ? ScheduleManager
+				NumSchedules --> ? ScheduleManager
+				FindItemInList() --> ? UtilityRoutines ? como funciona isso?
+				Schedule() --> ? ScheduleManager
+				WeekSchedule() --> ? ScheduleManager
+				MaxDayTypes --> ? ScheduleManager
+				DaySchedule() --> ? ScheduleManager
+	        SameString() --> ? UtilityRoutines ? como funciona isso?
+	        FindItemInList() --> ? UtilityRoutines ? como funciona isso?
 		    getNumObjectsFound(&ObjectWord)
+		    	caseInsensitiveObjectMap --> ? não tem no html
+				convertToUpper() --> ? não tem no html
+				static_cast() --> ? não tem no html
+				schema[...] --> ? não tem no html
 		    getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
 		    lNumericFieldBlanks
 	        lAlphaFieldBlanks
