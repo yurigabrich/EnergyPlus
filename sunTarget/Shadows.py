@@ -2446,7 +2446,6 @@ class ExternalFunctions:
 
 	    return 0
 
-	# PAREI AQUI!
     # ScheduleManager::getObjectItem
 	def getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, *args):
 		# void InputProcessor::getObjectItem(std::string const &Object,
@@ -2456,11 +2455,11 @@ class ExternalFunctions:
 		#                            Array1S<Real64> Numbers,
 		#                            int &NumNumbers,
 		#                            int &Status,
+        #                            *args = (NumBlank, AlphaBlank, AlphaFieldNames, NumericFieldNames)
 		#                            Optional<pd.Series()> NumBlank,
 		#                            Optional<pd.Series()> AlphaBlank,
 		#                            Optional<pd.Series()> AlphaFieldNames,
 		#                            Optional<pd.Series()> NumericFieldNames)
-		#							 *args = (NumBlank, AlphaBlank, AlphaFieldNames, NumericFieldNames)
 		'''
 	    SUBROUTINE INFORMATION:
 	          AUTHOR         Linda K. Lawrie
@@ -2472,15 +2471,15 @@ class ExternalFunctions:
 	    This subroutine gets the 'number' 'object' from the IDFRecord data structure.
 	    '''
 
-	    int adjustedNumber = getJSONObjNum(Object, Number) # if incoming input is idf, then use idf object order
+	    adjustedNumber = getJSONObjNum(Object, Number) # if incoming input is idf, then use idf object order
 
-	    auto objectInfo = ObjectInfo()
+	    objectInfo = ObjectInfo()
 	    objectInfo.objectType = Object
 	    # auto sorted_iterators = find_iterators
 
-	    auto find_iterators = objectCacheMap.find(Object)
+	    find_iterators = objectCacheMap.find(Object)
 	    if (find_iterators == objectCacheMap.end()):
-	        auto const tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object))
+	        tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object))
 	        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
 	            return None
 
@@ -2490,68 +2489,73 @@ class ExternalFunctions:
 	    NumAlphas = 0
 	    NumNumbers = 0
 	    Status = -1
-	    auto const &is_AlphaBlank = present(AlphaBlank)
-	    auto const &is_AlphaFieldNames = present(AlphaFieldNames)
-	    auto const &is_NumBlank = present(NumBlank)
-	    auto const &is_NumericFieldNames = present(NumericFieldNames)
+	    &is_AlphaBlank = present(AlphaBlank)
+	    &is_AlphaFieldNames = present(AlphaFieldNames)
+	    &is_NumBlank = present(NumBlank)
+	    &is_NumericFieldNames = present(NumericFieldNames)
 
-	    auto const &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1)
-	    auto const &epJSON_schema_it = find_iterators->second.schemaIterator
-	    auto const &epJSON_schema_it_val = epJSON_schema_it.value()
+	    &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1)
+	    &epJSON_schema_it = find_iterators->second.schemaIterator
+	    &epJSON_schema_it_val = epJSON_schema_it.value()
 
 	    # Locations in JSON schema relating to normal fields
-	    auto const &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"]
+	    &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"]
 
 	    # Locations in JSON schema storing the positional aspects from the IDD format, legacy prefixed
-	    auto const &legacy_idd = epJSON_schema_it_val["legacy_idd"]
-	    auto const &legacy_idd_field_info = legacy_idd["field_info"]
-	    auto const &legacy_idd_fields = legacy_idd["fields"]
-	    auto const &schema_name_field = epJSON_schema_it_val.find("name")
+	    &legacy_idd = epJSON_schema_it_val["legacy_idd"]
+	    &legacy_idd_field_info = legacy_idd["field_info"]
+	    &legacy_idd_fields = legacy_idd["fields"]
+	    &schema_name_field = epJSON_schema_it_val.find("name")
 
-	    auto key = legacy_idd.find("extension")
+	    key = legacy_idd.find("extension")
 	    extension_key = ""
 	    if (key != legacy_idd.end()):
 	        extension_key = key.value()
 
 	    Alphas = ""
 	    Numbers = 0
-	    if (is_NumBlank): NumBlank() = True
-	    if (is_AlphaBlank): AlphaBlank() = True
-	    if (is_AlphaFieldNames): AlphaFieldNames() = ""
-	    if (is_NumericFieldNames): NumericFieldNames() = ""
+	    if (is_NumBlank): NumBlank() = True                 # declaração de variável duvidosa...
+	    if (is_AlphaBlank): AlphaBlank() = True             # declaração de variável duvidosa...
+	    if (is_AlphaFieldNames): AlphaFieldNames() = ""     # declaração de variável duvidosa...
+	    if (is_NumericFieldNames): NumericFieldNames() = "" # declaração de variável duvidosa...
 
-	    auto const &obj = epJSON_it;
-	    auto const &obj_val = obj.value();
+	    &obj = epJSON_it;
+	    &obj_val = obj.value();
 
 	    objectInfo.objectName = obj.key();
 
-	    auto const find_unused = unusedInputs.find(objectInfo);
+	    find_unused = unusedInputs.find(objectInfo);
 	    if (find_unused != unusedInputs.end()):
 	        unusedInputs.erase(find_unused)
 
-	    size_t idf_max_fields = 0
-	    auto found_idf_max_fields = obj_val.find("idf_max_fields");
+	    # size_t idf_max_fields = 0
+        idf_max_fields = size_t*[0]
+	    found_idf_max_fields = obj_val.find("idf_max_fields");
 	    if (found_idf_max_fields != obj_val.end()):
 	        idf_max_fields = *found_idf_max_fields
 
-	    size_t idf_max_extensible_fields = 0
-	    auto found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
+	    # size_t idf_max_extensible_fields = 0
+        idf_max_extensible_fields = size_t*[0]
+	    found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
 	    if (found_idf_max_extensible_fields != obj_val.end()):
 	        idf_max_extensible_fields = *found_idf_max_extensible_fields;
 
 	    alpha_index = 1
 	    numeric_index = 1
 
-	    for (size_t i = 0; i < legacy_idd_fields.size(); ++i) { # q porra é essa?
-	        std::string const &field = legacy_idd_fields[i];
-	        auto const &field_info = legacy_idd_field_info.find(field);
+        # for (size_t i = 0; i < legacy_idd_fields.size(); ++i) {
+        for i in range(0, legacy_idd_fields.size(), 1):
+	        &field = legacy_idd_fields[i]
+	        &field_info = legacy_idd_field_info.find(field)
+
 	        if (field_info == legacy_idd_field_info.end()):
 	            ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
 	        
-	        auto const &field_type = field_info.value().at("field_type").get<std::string>();
+	        &field_type = field_info.value().at("field_type").get<std::string>();
 	        within_idf_fields = (i < idf_max_fields)
+
 	        if (field == "name" && schema_name_field != epJSON_schema_it_val.end()):
-	            auto const &name_iter = schema_name_field.value();
+	            &name_iter = schema_name_field.value();
 	            if (name_iter.find("retaincase") != name_iter.end()):
 	                Alphas(alpha_index) = objectInfo.objectName
 	            else:
@@ -2567,14 +2571,14 @@ class ExternalFunctions:
 	            alpha_index += 1
 	            continue
 
-	        auto const &schema_field_obj = schema_obj_props[field];
-	        auto it = obj_val.find(field);
+	        &schema_field_obj = schema_obj_props[field];
+	        it = obj_val.find(field);
 	        if (it != obj_val.end()):
-	            auto const &field_value = it.value();
+	            &field_value = it.value();
 	            if (field_type == "a"):
 	                # process alpha value
 	                if (field_value.is_string()):
-	                    auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
+	                    value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
 
 	                    Alphas(alpha_index) = value.first
 	                    if (is_AlphaBlank):
@@ -2641,37 +2645,37 @@ class ExternalFunctions:
 	            numeric_index += 1
 
 	    size_t extensible_count = 0
-	    auto const &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
+	    &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
 	    
 	    if (legacy_idd_extensibles_iter != legacy_idd.end()):
-	        auto const epJSON_extensions_array_itr = obj.value().find(extension_key);
+	        epJSON_extensions_array_itr = obj.value().find(extension_key);
 	        
 	        if (epJSON_extensions_array_itr != obj.value().end()):
-	            auto const &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
-	            auto const &epJSON_extensions_array = epJSON_extensions_array_itr.value();
-	            auto const &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
+	            &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
+	            &epJSON_extensions_array = epJSON_extensions_array_itr.value();
+	            &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
 
 	            for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
-	                auto const &epJSON_extension_obj = it.value();
+	                &epJSON_extension_obj = it.value();
 
 	                for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
 	                    std::string const &field_name = legacy_idd_extensibles[i];
-	                    auto const &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
-	                    auto const &schema_field = schema_extension_fields[field_name];
+	                    &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
+	                    &schema_field = schema_extension_fields[field_name];
 
-	                    auto const &field_info = legacy_idd_field_info.find(field_name);
+	                    &field_info = legacy_idd_field_info.find(field_name);
 	                    if (field_info == legacy_idd_field_info.end()):
 	                        ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
 	                    
-	                    auto const &field_type = field_info.value().at("field_type").get<std::string>();
+	                    &field_type = field_info.value().at("field_type").get<std::string>();
 	                    within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields)
 
 	                    if (epJSON_obj_field_iter != epJSON_extension_obj.end()):
-	                        auto const &field_value = epJSON_obj_field_iter.value();
+	                        &field_value = epJSON_obj_field_iter.value();
 
 	                        if (field_type == "a"):
 	                            if (field_value.is_string()):
-	                                auto const value = getObjectItemValue(field_value.get<std::string>(), schema_field);
+	                                value = getObjectItemValue(field_value.get<std::string>(), schema_field);
 
 	                                Alphas(alpha_index) = value.first;
 	                                if (is_AlphaBlank):
@@ -2741,6 +2745,7 @@ class ExternalFunctions:
 	    Status = 1 # ?
 	    return None
 
+    # PAREI AQUI!
 	# DataTimings::EP_Count_Calls --> como definir esta merda?!
 	ifdef EP_Count_Calls
 	    int NumShadow_Calls(0);
@@ -2782,7 +2787,7 @@ class ExternalFunctions:
         static gio::Fmt fmtLD("*");
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        std::string stringEntry;
+        stringEntry = ""
 
         incrementTableEntry()
         # convert the integer to a string
@@ -2832,11 +2837,7 @@ class ExternalFunctions:
         METHODOLOGY EMPLOYED:
         <description>
 		'''
-
-        # Using/Aliasing
-        using DataGlobals::KickOffSimulation;
-        using DataGlobals::KickOffSizing;
-
+        
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         # LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
         NumStates = 0 # Number of states for a given complex fen

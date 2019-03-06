@@ -115,6 +115,23 @@ File `Shadows.py` (functions and variables dependencies):
 					GoodIOStatValue --> ? DataSystemVariables
 					has_prefix(?) --> ? no idea about it
 					getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
+						getJSONObjNum(?Object, ?Number) --> InputProcessor
+						ObjectInfo() --> ? não tem no html
+						objectCacheMap --> ? não tem no html
+						caseInsensitiveObjectMap --> ? não tem no html
+						convertToUpper() --> ? não tem no html
+						epJSON --> InputProcessor
+						present(...) --> ? não tem no html
+						unusedInputs --> ? não tem no html
+						size_t --> ? não tem no html
+						Alphas(...) --> ? não tem no html
+						MakeUPPERCase(InputString) --> UtilityRoutines
+						isEpJSON --> DataGlobals
+						getObjectItemValue(field_value, schema_field_obj) --> InputProcessor
+						i64toa(...) --> ? não tem no html
+						dtoa(...) --> ? não tem no html
+						Numbers(...) --> ? não tem no html
+						findDefault(default_value, schema_field_obj) --> InputProcessor
 					cAlphaArgs(?) --> ? DataIPShortCuts
 				CheckTDDsAndLightShelvesInDaylitZones()
 					CheckTDDs_firstTime --> ? DaylightingManager
@@ -262,6 +279,23 @@ File `Shadows.py` (functions and variables dependencies):
 				static_cast() --> ? não tem no html
 				schema[...] --> ? não tem no html
 		    getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, \*args)
+		    	getJSONObjNum(?Object, ?Number) --> InputProcessor
+				ObjectInfo() --> ? não tem no html
+				objectCacheMap --> ? não tem no html
+				caseInsensitiveObjectMap --> ? não tem no html
+				convertToUpper() --> ? não tem no html
+				epJSON --> InputProcessor
+				present(...) --> ? não tem no html
+				unusedInputs --> ? não tem no html
+				size_t --> ? não tem no html
+				Alphas(...) --> ? não tem no html
+				MakeUPPERCase(InputString) --> UtilityRoutines
+				isEpJSON --> DataGlobals
+				getObjectItemValue(field_value, schema_field_obj) --> InputProcessor
+				i64toa(...) --> ? não tem no html
+				dtoa(...) --> ? não tem no html
+				Numbers(...) --> ? não tem no html
+				findDefault(default_value, schema_field_obj) --> InputProcessor
 		    lNumericFieldBlanks
 	        lAlphaFieldBlanks
 	        cAlphaFieldNames
@@ -299,7 +333,15 @@ File `Shadows.py` (functions and variables dependencies):
 					SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS)
 					[ifdef?] EP_Count_Calls
 			InitComplexWindows()
+				InitBSDFWindows() --> WindowComplexManager
+				CalcStaticProperties() --> WindowComplexManager
 			UpdateComplexWindows()
+				NumComplexWind --> WindowComplexManager
+				KickOffSizing
+				KickOffSimulation
+				WindowList() --> WindowComplexManager
+				ComplexWind() --> DataBSDFWindow
+				CFSShadeAndBeamInitialization(iSurf, iState) --> WindowComplexManager
 		SkyDifSolarShading()
 			SHADOW(iHour, TS)
 				CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT)
@@ -328,12 +370,16 @@ File `Shadows.py` (functions and variables dependencies):
 		`SurfaceScheduledSolarInc` --> used for subsurfaces purposes (`CalcInteriorSolarDistribution`)
 			SUN3(JulianDayOfYear, &SineOfSolarDeclination, &EquationOfTime)
 		`ReportSurfaceShading` --> called by no one
-			PreDefTableEntry --> OutputReportPredefined.cc
+			PreDefTableEntry(columnIndex, &objName, tableEntryInt) ('ExternalFunctions')
+				incrementTableEntry() --> OutputReportPredefined
+				tableEntry(?) --> OutputReportPredefined
 			Surface() --> DataSurfaces.cc
 		`ReportSurfaceErrors` --> called by no one
 		[struct] ZoneListData --> DataHeatBalance.hh ('ExternalFunctions')
 		[struct] ZoneDaylightCalc --> DataDaylighting.hh ('ExternalFunctions')
-		PreDefTableEntry(columnIndex, &objName, tableEntryInt) --> OutputReportPredefined.cc ('ExternalFunctions')
+		PreDefTableEntry(columnIndex, &objName, tableEntryInt) ('ExternalFunctions')
+			incrementTableEntry() --> OutputReportPredefined
+			tableEntry(?) --> OutputReportPredefined
 
 
 ---
