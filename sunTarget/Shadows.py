@@ -660,7 +660,7 @@ class ExternalFunctions:
 
     # DataSurfaces.cc
 	Surface = pd.Series()
-	SurfaceWindow = pd.Series() # PROVAVELMENTE NÃO SERÁ NECESSÁRIO
+	# SurfaceWindow = pd.Series() # PROVAVELMENTE NÃO SERÁ NECESSÁRIO
 	NumOfZoneLists = 0
     ?pd.DataFrame() SUNCOSHR(24, 3, 0.0); # Hourly values of SUNCOS (solar direction cosines) # Autodesk:Init Zero-initialization added to avoid use uninitialized
     # três colunas ou linhas?
@@ -1024,7 +1024,7 @@ class ExternalFunctions:
     ?pd.Series() THSUNHR(24, 0.0);  	# Hourly values of THSUN
     ?pd.DataFrame() GILSK(24, 4, 0.0); 	# Horizontal illuminance from sky, by sky type, for each hour of the day
     ?pd.Series() GILSU(24, 0.0);    	# Horizontal illuminance from sun for each hour of the day
-    TotWindowsWithDayl = 0				# Total number of exterior windows in all daylit zones
+    # TotWindowsWithDayl = 0				# Total number of exterior windows in all daylit zones
     CheckTDDZone = pd.Series()
     TDDTransVisBeam = pd.DataFrame()
     TDDFluxInc = pd.DataFrame()
@@ -1275,13 +1275,6 @@ class ExternalFunctions:
         loop thru daylighting devices and check that their zones have daylight controls
         '''
 
-        # Using/Aliasing
-        using DataDaylighting::NoDaylighting;
-        using DataDaylighting::ZoneDaylight;
-        using DataHeatBalance::Zone;
-        using namespace DataDaylightingDevices;
-        using General::RoundSigDigits;
-
         # SUBROUTINE PARAMETER DEFINITIONS:
         static gio::Fmt fmtA("(A)");
 
@@ -1363,156 +1356,154 @@ class ExternalFunctions:
         return None
 
     # DaylightingManager::AssociateWindowShadingControlWithDaylighting
-    def AssociateWindowShadingControlWithDaylighting():
-        '''
-        no description o.O
-        '''
-        for iShadeCtrl in range(1, TotWinShadingControl+1):
-            found = -1
+    # def AssociateWindowShadingControlWithDaylighting():
+    #     '''
+    #     no description o.O
+    #     '''
+    #     for iShadeCtrl in range(1, TotWinShadingControl+1):
+    #         found = -1
             
-            for jZone in range(1, NumOfZones+1):
-                if (UtilityRoutines::SameString(WindowShadingControl(iShadeCtrl).DaylightingControlName, ZoneDaylight(jZone).Name)):
-                    found = jZone
-                    break
+    #         for jZone in range(1, NumOfZones+1):
+    #             if (UtilityRoutines::SameString(WindowShadingControl(iShadeCtrl).DaylightingControlName, ZoneDaylight(jZone).Name)):
+    #                 found = jZone
+    #                 break
 
-            if (found > 0):
-                WindowShadingControl(iShadeCtrl).DaylightControlIndex = found
-            else:
-                ShowWarningError("AssociateWindowShadingControlWithDaylighting: Daylighting object name used in WindowShadingControl not found.");
-                ShowContinueError("..The WindowShadingControl object=\"" + WindowShadingControl(iShadeCtrl).Name +
-                                  "\" and referenes an object named: \"" + WindowShadingControl(iShadeCtrl).DaylightingControlName + "\"");
+    #         if (found > 0):
+    #             WindowShadingControl(iShadeCtrl).DaylightControlIndex = found
+    #         else:
+    #             ShowWarningError("AssociateWindowShadingControlWithDaylighting: Daylighting object name used in WindowShadingControl not found.");
+    #             ShowContinueError("..The WindowShadingControl object=\"" + WindowShadingControl(iShadeCtrl).Name +
+    #                               "\" and referenes an object named: \"" + WindowShadingControl(iShadeCtrl).DaylightingControlName + "\"");
             
-        return None
+    #     return None
     
     # DaylightingManager::CalcMinIntWinSolidAngs --> acho q não será necessário, pois é para janela
-    def CalcMinIntWinSolidAngs():
-        '''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Fred Winkelmann
-              DATE WRITTEN   Feb. 2004
-              MODIFIED:na
-              RE-ENGINEERED  na
+    # def CalcMinIntWinSolidAngs():
+    #     '''
+    #     SUBROUTINE INFORMATION:
+    #           AUTHOR         Fred Winkelmann
+    #           DATE WRITTEN   Feb. 2004
+    #           MODIFIED:na
+    #           RE-ENGINEERED  na
 
-        PURPOSE OF THIS SUBROUTINE:
-        For each Daylighting:Detailed zone finds the minimum solid angle subtended
-        by interior windows through which daylight can pass from adjacent zones with
-        exterior windows.
+    #     PURPOSE OF THIS SUBROUTINE:
+    #     For each Daylighting:Detailed zone finds the minimum solid angle subtended
+    #     by interior windows through which daylight can pass from adjacent zones with
+    #     exterior windows.
 
-        METHODOLOGY EMPLOYED:na
-        REFERENCES:na
-        '''
-        # Using/Aliasing
-        using namespace Vectors;
+    #     METHODOLOGY EMPLOYED:na
+    #     REFERENCES:na
+    #     '''
 
-        # Locals
-        # SUBROUTINE ARGUMENT DEFINITIONS: na
-        # SUBROUTINE PARAMETER DEFINITIONS: na
-        # INTERFACE BLOCK SPECIFICATIONS: na
-        # DERIVED TYPE DEFINITIONS: na
+    #     # Locals
+    #     # SUBROUTINE ARGUMENT DEFINITIONS: na
+    #     # SUBROUTINE PARAMETER DEFINITIONS: na
+    #     # INTERFACE BLOCK SPECIFICATIONS: na
+    #     # DERIVED TYPE DEFINITIONS: na
 
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+    #     # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 
-        ZoneNum = 0                    # Zone number
-        ZoneNumAdj = 0                 # Adjacent zone number
-        IWin = 0                       # Window surface number
-        IL = 0                         # Reference point number
-        loop = 0                       # DO loop index
-        # bool is_Triangle;               # True if window is a triangle
-        # bool is_Rectangle;              # True if window is a rectangle
-        # bool IntWinNextToIntWinAdjZone; # True if an interior window is next to a zone with one or more exterior windows
-        IntWinSolidAng = 0.0          # Approximation to solid angle subtended by an interior window from a point a distance SQRT(zone floor area) away.
-        static Vector3<Real64> W1;      # Window vertices
-        static Vector3<Real64> W2;
-        static Vector3<Real64> W3;
-        static Vector3<Real64> WC;      # Center point of window
-        static Vector3<Real64> W21;     # Unit vectors from window vertex 2 to 1 and 2 to 3
-        static Vector3<Real64> W23;
-        HW = 0.0                      # Window height and width (m)
-        WW = 0.0
-        static Vector3<Real64> RREF;  # Location of a reference point in absolute coordinate system
-        static Vector3<Real64> Ray;   # Unit vector along ray from reference point to window center
-        static Vector3<Real64> REFWC; # Vector from reference point to center of window
-        static Vector3<Real64> WNORM; # Unit vector normal to window (pointing away from room)
-        DIS = 0.0                   # Distance from ref point to window center (m)
-        COSB = 0.0                  # Cosine of angle between ray from ref pt to center of window and window outward normal
+    #     ZoneNum = 0                    # Zone number
+    #     ZoneNumAdj = 0                 # Adjacent zone number
+    #     IWin = 0                       # Window surface number
+    #     IL = 0                         # Reference point number
+    #     loop = 0                       # DO loop index
+    #     # bool is_Triangle;               # True if window is a triangle
+    #     # bool is_Rectangle;              # True if window is a rectangle
+    #     # bool IntWinNextToIntWinAdjZone; # True if an interior window is next to a zone with one or more exterior windows
+    #     IntWinSolidAng = 0.0          # Approximation to solid angle subtended by an interior window from a point a distance SQRT(zone floor area) away.
+    #     static Vector3<Real64> W1;      # Window vertices
+    #     static Vector3<Real64> W2;
+    #     static Vector3<Real64> W3;
+    #     static Vector3<Real64> WC;      # Center point of window
+    #     static Vector3<Real64> W21;     # Unit vectors from window vertex 2 to 1 and 2 to 3
+    #     static Vector3<Real64> W23;
+    #     HW = 0.0                      # Window height and width (m)
+    #     WW = 0.0
+    #     static Vector3<Real64> RREF;  # Location of a reference point in absolute coordinate system
+    #     static Vector3<Real64> Ray;   # Unit vector along ray from reference point to window center
+    #     static Vector3<Real64> REFWC; # Vector from reference point to center of window
+    #     static Vector3<Real64> WNORM; # Unit vector normal to window (pointing away from room)
+    #     DIS = 0.0                   # Distance from ref point to window center (m)
+    #     COSB = 0.0                  # Cosine of angle between ray from ref pt to center of window and window outward normal
 
-        # FLOW:
-        for ZoneNum in range(1, NumOfZones+1):
-            ZoneDaylight(ZoneNum).MinIntWinSolidAng = 2.0 * math.pi
+    #     # FLOW:
+    #     for ZoneNum in range(1, NumOfZones+1):
+    #         ZoneDaylight(ZoneNum).MinIntWinSolidAng = 2.0 * math.pi
 
-            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0): continue
-            if (ZoneDaylight(ZoneNum).NumOfIntWinAdjZones == 0): continue
+    #         if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0): continue
+    #         if (ZoneDaylight(ZoneNum).NumOfIntWinAdjZones == 0): continue
             
-            for IWin in range( Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1 ):
+    #         for IWin in range( Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1 ):
 
-                if (Surface(IWin).Class == SurfaceClass_Window && Surface(IWin).ExtBoundCond >= 1):
-                    ZoneNumAdj = Surface(Surface(IWin).ExtBoundCond).Zone
-                    IntWinNextToIntWinAdjZone = False
+    #             if (Surface(IWin).Class == SurfaceClass_Window && Surface(IWin).ExtBoundCond >= 1):
+    #                 ZoneNumAdj = Surface(Surface(IWin).ExtBoundCond).Zone
+    #                 IntWinNextToIntWinAdjZone = False
                     
-                    for loop in range(1, ZoneDaylight(ZoneNum).NumOfIntWinAdjZones+1):
-                        if (ZoneNumAdj == ZoneDaylight(ZoneNum).AdjIntWinZoneNums(loop)):
-                            IntWinNextToIntWinAdjZone = True
-                            break
+    #                 for loop in range(1, ZoneDaylight(ZoneNum).NumOfIntWinAdjZones+1):
+    #                     if (ZoneNumAdj == ZoneDaylight(ZoneNum).AdjIntWinZoneNums(loop)):
+    #                         IntWinNextToIntWinAdjZone = True
+    #                         break
 
-                    if (IntWinNextToIntWinAdjZone):
-                        for IL in range(1, ZoneDaylight(ZoneNum).TotalDaylRefPoints+1):
+    #                 if (IntWinNextToIntWinAdjZone):
+    #                     for IL in range(1, ZoneDaylight(ZoneNum).TotalDaylRefPoints+1):
                             
-                            # Reference point in absolute coordinate system
-                            RREF = ZoneDaylight(ZoneNum).DaylRefPtAbsCoord({1, 3}, IL)
-                            is_Triangle = (Surface(IWin).Sides == 3)
-                            is_Rectangle = (Surface(IWin).Sides == 4)
+    #                         # Reference point in absolute coordinate system
+    #                         RREF = ZoneDaylight(ZoneNum).DaylRefPtAbsCoord({1, 3}, IL)
+    #                         is_Triangle = (Surface(IWin).Sides == 3)
+    #                         is_Rectangle = (Surface(IWin).Sides == 4)
                             
-                            if (is_Rectangle):
-                                # Vertices of window numbered counter-clockwise starting at upper left as viewed
-                                # from inside of room. Assumes original vertices are numbered counter-clockwise from
-                                # upper left as viewed from outside.
-                                W3 = Surface(IWin).Vertex(2)
-                                W2 = Surface(IWin).Vertex(3)
-                                W1 = Surface(IWin).Vertex(4)
-                            elif (is_Triangle):
-                                W3 = Surface(IWin).Vertex(2)
-                                W2 = Surface(IWin).Vertex(3)
-                                W1 = Surface(IWin).Vertex(1)
+    #                         if (is_Rectangle):
+    #                             # Vertices of window numbered counter-clockwise starting at upper left as viewed
+    #                             # from inside of room. Assumes original vertices are numbered counter-clockwise from
+    #                             # upper left as viewed from outside.
+    #                             W3 = Surface(IWin).Vertex(2)
+    #                             W2 = Surface(IWin).Vertex(3)
+    #                             W1 = Surface(IWin).Vertex(4)
+    #                         elif (is_Triangle):
+    #                             W3 = Surface(IWin).Vertex(2)
+    #                             W2 = Surface(IWin).Vertex(3)
+    #                             W1 = Surface(IWin).Vertex(1)
                             
-                            # Unit vectors from window vertex 2 to 1 and 2 to 3, center point of window,
-                            # and vector from ref pt to center of window
-                            W21 = W1 - W2
-                            W23 = W3 - W2
-                            HW = W21.magnitude()
-                            WW = W23.magnitude()
+    #                         # Unit vectors from window vertex 2 to 1 and 2 to 3, center point of window,
+    #                         # and vector from ref pt to center of window
+    #                         W21 = W1 - W2
+    #                         W23 = W3 - W2
+    #                         HW = W21.magnitude()
+    #                         WW = W23.magnitude()
                             
-                            if (is_Rectangle):
-                                WC = W2 + (W23 + W21) / 2.0
-                            elif (is_Triangle):
-                                WC = W2 + (W23 + W21) / 3.0
+    #                         if (is_Rectangle):
+    #                             WC = W2 + (W23 + W21) / 2.0
+    #                         elif (is_Triangle):
+    #                             WC = W2 + (W23 + W21) / 3.0
                             
-                            # Vector from ref point to center of window
-                            REFWC = WC - RREF
-                            W21 /= HW
-                            W23 /= WW
+    #                         # Vector from ref point to center of window
+    #                         REFWC = WC - RREF
+    #                         W21 /= HW
+    #                         W23 /= WW
                             
-                            # Unit vector normal to window (pointing away from room)
-                            WNORM = Surface(IWin).OutNormVec
+    #                         # Unit vector normal to window (pointing away from room)
+    #                         WNORM = Surface(IWin).OutNormVec
                             
-                            # Distance from ref point to center of window
-                            DIS = REFWC.magnitude()
+    #                         # Distance from ref point to center of window
+    #                         DIS = REFWC.magnitude()
                             
-                            # Unit vector from ref point to center of window
-                            Ray = REFWC / DIS
+    #                         # Unit vector from ref point to center of window
+    #                         Ray = REFWC / DIS
                             
-                            # Cosine of angle between ray from ref pt to center of window and window outward normal
-                            COSB = dot(WNORM, Ray)
-                            if (COSB > 0.01765): # 0 <= B < 89 deg
-                                # Above test avoids case where ref point cannot receive daylight directly from the
-                                # interior window
-                                IntWinSolidAng = COSB * Surface(IWin).Area / (pow_2(DIS) + 0.001)
-                                ZoneDaylight(ZoneNum).MinIntWinSolidAng = min(ZoneDaylight(ZoneNum).MinIntWinSolidAng, IntWinSolidAng)
+    #                         # Cosine of angle between ray from ref pt to center of window and window outward normal
+    #                         COSB = dot(WNORM, Ray)
+    #                         if (COSB > 0.01765): # 0 <= B < 89 deg
+    #                             # Above test avoids case where ref point cannot receive daylight directly from the
+    #                             # interior window
+    #                             IntWinSolidAng = COSB * Surface(IWin).Area / (pow_2(DIS) + 0.001)
+    #                             ZoneDaylight(ZoneNum).MinIntWinSolidAng = min(ZoneDaylight(ZoneNum).MinIntWinSolidAng, IntWinSolidAng)
                             
-                        # End of loop over reference points
-            # End of loop over surfaces in zone
-        # End of loop over zones
+    #                     # End of loop over reference points
+    #         # End of loop over surfaces in zone
+    #     # End of loop over zones
 
-        return None
+    #     return None
 
     # DaylightingManager::DayltgExtHorizIllum
     def DayltgExtHorizIllum(HISK, &HISU):
@@ -1636,8 +1627,8 @@ class ExternalFunctions:
 
                 for loopwin in range(1, ZoneDaylight(TZoneNum).NumOfDayltgExtWins+1):
                     IWin = ZoneDaylight(TZoneNum).DayltgExtWinSurfNums(loopwin)
-                    if (SurfaceWindow(IWin).OriginalClass != SurfaceClass_TDD_Diffuser):
-                        continue
+                    # if (SurfaceWindow(IWin).OriginalClass != SurfaceClass_TDD_Diffuser):
+                    #     continue
                     
                     # Look up the TDD:DOME object
                     PipeNum = FindTDDPipe(IWin)
@@ -1682,8 +1673,6 @@ class ExternalFunctions:
     	PURPOSE OF THIS SUBROUTINE:
     	This subroutine provides a simple structure to get all daylighting parameters.
         '''
-        # Using/Aliasing
-        using namespace DataIPShortCuts;
 
         # RJH DElight Modification Begin
         using namespace DElightManagerF; # Module for managing DElight subroutines
@@ -1745,44 +1734,44 @@ class ExternalFunctions:
                 maxNumRefPtInAnyZone = numRefPoints
 
             if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0):
-                if (!SurfaceWindow(SurfNum).SurfDayLightInit):
-                    SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
-                    SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
-                    SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
-                    SurfaceWindow(SurfNum).SolidAngAtRefPtWtd = 0.0
-                    SurfaceWindow(SurfNum).IllumFromWinAtRefPt.allocate(2, numRefPoints)
-                    SurfaceWindow(SurfNum).IllumFromWinAtRefPt = 0.0
-                    SurfaceWindow(SurfNum).BackLumFromWinAtRefPt.allocate(2, numRefPoints)
-                    SurfaceWindow(SurfNum).BackLumFromWinAtRefPt = 0.0
-                    SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt.allocate(2, numRefPoints)
-                    SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt = 0.0
-                    SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep.allocate(numRefPoints)
-                    SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep = 0.0
-                    SurfaceWindow(SurfNum).LumWinFromRefPtRep.allocate(numRefPoints)
-                    SurfaceWindow(SurfNum).LumWinFromRefPtRep = 0.0
-                    SurfaceWindow(SurfNum).SurfDayLightInit = True
+                # if (!SurfaceWindow(SurfNum).SurfDayLightInit):
+                #     SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
+                #     SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
+                #     SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
+                #     SurfaceWindow(SurfNum).SolidAngAtRefPtWtd = 0.0
+                #     SurfaceWindow(SurfNum).IllumFromWinAtRefPt.allocate(2, numRefPoints)
+                #     SurfaceWindow(SurfNum).IllumFromWinAtRefPt = 0.0
+                #     SurfaceWindow(SurfNum).BackLumFromWinAtRefPt.allocate(2, numRefPoints)
+                #     SurfaceWindow(SurfNum).BackLumFromWinAtRefPt = 0.0
+                #     SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt.allocate(2, numRefPoints)
+                #     SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt = 0.0
+                #     SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep.allocate(numRefPoints)
+                #     SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep = 0.0
+                #     SurfaceWindow(SurfNum).LumWinFromRefPtRep.allocate(numRefPoints)
+                #     SurfaceWindow(SurfNum).LumWinFromRefPtRep = 0.0
+                #     SurfaceWindow(SurfNum).SurfDayLightInit = True
             else:
                 SurfNumAdj = Surface(SurfNum).ExtBoundCond
                 if (SurfNumAdj > 0):
                     ZoneNumAdj = Surface(SurfNumAdj).Zone
                     
                     if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
-                        if (!SurfaceWindow(SurfNum).SurfDayLightInit):
-                            SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
-                            SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
-                            SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
-                            SurfaceWindow(SurfNum).SolidAngAtRefPtWtd = 0.0
-                            SurfaceWindow(SurfNum).IllumFromWinAtRefPt.allocate(2, numRefPoints)
-                            SurfaceWindow(SurfNum).IllumFromWinAtRefPt = 0.0
-                            SurfaceWindow(SurfNum).BackLumFromWinAtRefPt.allocate(2, numRefPoints)
-                            SurfaceWindow(SurfNum).BackLumFromWinAtRefPt = 0.0
-                            SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt.allocate(2, numRefPoints)
-                            SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt = 0.0
-                            SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep.allocate(numRefPoints)
-                            SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep = 0.0
-                            SurfaceWindow(SurfNum).LumWinFromRefPtRep.allocate(numRefPoints)
-                            SurfaceWindow(SurfNum).LumWinFromRefPtRep = 0.0
-                            SurfaceWindow(SurfNum).SurfDayLightInit = True
+                        # if (!SurfaceWindow(SurfNum).SurfDayLightInit):
+                            # SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
+                            # SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
+                            # SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
+                            # SurfaceWindow(SurfNum).SolidAngAtRefPtWtd = 0.0
+                            # SurfaceWindow(SurfNum).IllumFromWinAtRefPt.allocate(2, numRefPoints)
+                            # SurfaceWindow(SurfNum).IllumFromWinAtRefPt = 0.0
+                            # SurfaceWindow(SurfNum).BackLumFromWinAtRefPt.allocate(2, numRefPoints)
+                            # SurfaceWindow(SurfNum).BackLumFromWinAtRefPt = 0.0
+                            # SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt.allocate(2, numRefPoints)
+                            # SurfaceWindow(SurfNum).SourceLumFromWinAtRefPt = 0.0
+                            # SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep.allocate(numRefPoints)
+                            # SurfaceWindow(SurfNum).IllumFromWinAtRefPtRep = 0.0
+                            # SurfaceWindow(SurfNum).LumWinFromRefPtRep.allocate(numRefPoints)
+                            # SurfaceWindow(SurfNum).LumWinFromRefPtRep = 0.0
+                            # SurfaceWindow(SurfNum).SurfDayLightInit = True
 
             if (Surface(SurfNum).ExtBoundCond == ExternalEnvironment):
                 WindowShadingControlPtr = Surface(SurfNum).WindowShadingControlPtr
@@ -2017,12 +2006,6 @@ class ExternalFunctions:
         Based on DOE-2.1E subroutine DCOF.
         '''
 
-        # using DataSystemVariables::DetailedSolarTimestepIntegration;
-        # using DaylightingDevices::FindTDDPipe;
-        # using DaylightingDevices::TransTDD;
-        # using General::BlindBeamBeamTrans;
-        # using General::RoundSigDigits;
-
         # SUBROUTINE PARAMETER DEFINITIONS:
         static gio::Fmt fmtA("(A)");
 
@@ -2059,7 +2042,7 @@ class ExternalFunctions:
         if (CalcDayltghCoefficients_firstTime):
             GetDaylightingParametersInput()
             CheckTDDsAndLightShelvesInDaylitZones()
-            AssociateWindowShadingControlWithDaylighting()
+            # AssociateWindowShadingControlWithDaylighting()
             CalcDayltghCoefficients_firstTime = False
             
             if (allocated(CheckTDDZone)):
@@ -2075,13 +2058,13 @@ class ExternalFunctions:
         # exterior windows in Daylighting:Detailed zones. Note that it is possible for a
         # Daylighting:Detailed zone to have zero exterior windows of its own, but it may have an interior
         # through which daylight passes from adjacent zones with exterior windows.
-        if (BeginSimFlag):
-            TotWindowsWithDayl = 0
-            for ZoneNum in range(1, NumOfZones+1):
-                TotWindowsWithDayl += ZoneDaylight(ZoneNum).NumOfDayltgExtWins
+        # if (BeginSimFlag):
+            # TotWindowsWithDayl = 0
+            # for ZoneNum in range(1, NumOfZones+1):
+                # TotWindowsWithDayl += ZoneDaylight(ZoneNum).NumOfDayltgExtWins
 
-        if (TotWindowsWithDayl == 0):
-        	return None
+        # if (TotWindowsWithDayl == 0):
+        	# return None
 
         #-----------------------------------------!
         # Detailed daylighting factor calculation !
@@ -2096,7 +2079,7 @@ class ExternalFunctions:
 
             # Find minimum solid angle subtended by an interior window in Daylighting:Detailed zones.
             # Used in calculating daylighting through interior windows.
-            CalcMinIntWinSolidAngs()
+            # CalcMinIntWinSolidAngs()
 
             TDDTransVisBeam.allocate(24, NumOfTDDPipes)
             TDDFluxInc.allocate(24, 4, NumOfTDDPipes)
@@ -2203,66 +2186,66 @@ class ExternalFunctions:
 
         if (doSkyReporting):
             if (!KickOffSizing && !KickOffSimulation):
-                if (FirstTimeDaylFacCalc && TotWindowsWithDayl > 0):
-                    # Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
-                    # for first time that daylight factors are calculated and so is insensitive to possible variation
-                    # due to change in ground reflectance from month to month, or change in storm window status.
-                    gio::write(OutputFileInits, Format_700);
+                # if (FirstTimeDaylFacCalc && TotWindowsWithDayl > 0):
+                #     # Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
+                #     # for first time that daylight factors are calculated and so is insensitive to possible variation
+                #     # due to change in ground reflectance from month to month, or change in storm window status.
+                #     gio::write(OutputFileInits, Format_700);
 
-                    for ZoneNum in range(1, NumOfZones+1):
-                        if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
-                    		continue
-                        for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
-                            IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
-                            # For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
-                            # component will not be calculated for these windows until the time-step loop.
-                            if (Surface(IWin).Zone == ZoneNum):
-                                # clear sky
-                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 1, loop)
-                                DaylFac2 = 0.0
-                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop)
+                #     for ZoneNum in range(1, NumOfZones+1):
+                #         if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
+                #     		continue
+                #         for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
+                #             IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
+                #             # For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
+                #             # component will not be calculated for these windows until the time-step loop.
+                #             if (Surface(IWin).Zone == ZoneNum):
+                #                 # clear sky
+                #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 1, loop)
+                #                 DaylFac2 = 0.0
+                #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop)
 
-                                gio::write(OutputFileInits, fmtA) << " Clear Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
-                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-                                                                         RoundSigDigits(DaylFac2, 4);
+                #                 gio::write(OutputFileInits, fmtA) << " Clear Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
+                #                                                          Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                #                                                          RoundSigDigits(DaylFac2, 4);
 
-                                # clear Turbid sky
-                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 1, loop)
-                                DaylFac2 = 0.0
-                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop)
+                #                 # clear Turbid sky
+                #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 1, loop)
+                #                 DaylFac2 = 0.0
+                #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop)
 
-                                gio::write(OutputFileInits, fmtA) << " Clear Turbid Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
-                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-                                                                         RoundSigDigits(DaylFac2, 4);
+                #                 gio::write(OutputFileInits, fmtA) << " Clear Turbid Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
+                #                                                          ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                #                                                          RoundSigDigits(DaylFac2, 4);
 
-                                # Intermediate sky
-                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 1, loop)
-                                DaylFac2 = 0.0
-                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop)
+                #                 # Intermediate sky
+                #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 1, loop)
+                #                 DaylFac2 = 0.0
+                #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop)
                                 
-                                gio::write(OutputFileInits, fmtA) << " Intermediate Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
-                                                                         ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-                                                                         RoundSigDigits(DaylFac2, 4);
+                #                 gio::write(OutputFileInits, fmtA) << " Intermediate Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
+                #                                                          ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                #                                                          RoundSigDigits(DaylFac2, 4);
 
-                                # Overcast sky
-                                DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 1, loop)
-                                DaylFac2 = 0.0
-                                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                                	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop)
+                #                 # Overcast sky
+                #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 1, loop)
+                #                 DaylFac2 = 0.0
+                #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
+                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop)
 
-                                gio::write(OutputFileInits, fmtA) << " Overcast Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
-                                                                         Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
-                                                                         RoundSigDigits(DaylFac2, 4);
-                    FirstTimeDaylFacCalc = False
-                    doSkyReporting = False
+                #                 gio::write(OutputFileInits, fmtA) << " Overcast Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
+                #                                                          Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
+                #                                                          RoundSigDigits(DaylFac2, 4);
+                #     FirstTimeDaylFacCalc = False
+                #     doSkyReporting = False
 
         # TH 7/2010 report all daylight factors for the two reference points of daylight zones ...
 
         # Skip if no daylight windows
-        if (TotWindowsWithDayl == 0): return None
+        # if (TotWindowsWithDayl == 0): return None
 
         # Skip if no request of reporting
         if ((!DFSReportSizingDays) && (!DFSReportAllShadowCalculationDays)): return None
@@ -2312,15 +2295,15 @@ class ExternalFunctions:
                 # component will not be calculated for these windows until the time-step loop.
                 if (Surface(IWin).Zone == ZoneNum):
 
-                    if (SurfaceWindow(IWin).MovableSlats):
-                        # variable slat angle - MaxSlatangle sets
-                        ISA = MaxSlatAngs + 1
-                    elif (Surface(IWin).HasShadeControl):
-                        # window shade or blind with fixed slat angle
-                        ISA = 2
-                    else:
-                        # base window
-                        ISA = 1
+                    # if (SurfaceWindow(IWin).MovableSlats):
+                    #     # variable slat angle - MaxSlatangle sets
+                    #     ISA = MaxSlatAngs + 1
+                    # elif (Surface(IWin).HasShadeControl):
+                    #     # window shade or blind with fixed slat angle
+                    #     ISA = 2
+                    # else:
+                    #     # base window
+                    #     ISA = 1
 
                     # loop over each slat angle
                     for ISlatAngle in range(1, ISA+1):
@@ -2799,75 +2782,75 @@ class ExternalFunctions:
         return None
 
     # WindowComplexManager::InitComplexWindows --> Será usado?
-    def InitComplexWindows():
-    	'''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Linda Lawrie
-              DATE WRITTEN   November 2012
-              MODIFIED       na
-              RE-ENGINEERED  na
+  #   def InitComplexWindows():
+  #   	'''
+  #       SUBROUTINE INFORMATION:
+  #             AUTHOR         Linda Lawrie
+  #             DATE WRITTEN   November 2012
+  #             MODIFIED       na
+  #             RE-ENGINEERED  na
 
-        PURPOSE OF THIS SUBROUTINE:
-        Extract simple init for Complex Windows
-		'''
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Once = True # Flag for insuring things happen once
+  #       PURPOSE OF THIS SUBROUTINE:
+  #       Extract simple init for Complex Windows
+		# '''
+  #       # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+  #       Once = True # Flag for insuring things happen once
 
-        # One-time initialization
-        if (Once):
-            Once = False
-            InitBSDFWindows()
-            CalcStaticProperties()
+  #       # One-time initialization
+  #       if (Once):
+  #           Once = False
+  #           InitBSDFWindows()
+  #           CalcStaticProperties()
 
-        return None
+  #       return None
 
     # WindowComplexManager::UpdateComplexWindows --> Será usado?
-    def UpdateComplexWindows():
-    	'''
-        SUBROUTINE INFORMATION:
-              AUTHOR         Joe Klems
-              DATE WRITTEN   August 2011
-              MODIFIED       B. Griffith, Nov. 2012 revised for detailed timestep integration mode
-              RE-ENGINEERED  na
+  #   def UpdateComplexWindows():
+  #   	'''
+  #       SUBROUTINE INFORMATION:
+  #             AUTHOR         Joe Klems
+  #             DATE WRITTEN   August 2011
+  #             MODIFIED       B. Griffith, Nov. 2012 revised for detailed timestep integration mode
+  #             RE-ENGINEERED  na
 
-        PURPOSE OF THIS SUBROUTINE:
-        Performs the shading-dependent initialization of the Complex Fenestration data;
-        On first call, calls the one-time initializition
+  #       PURPOSE OF THIS SUBROUTINE:
+  #       Performs the shading-dependent initialization of the Complex Fenestration data;
+  #       On first call, calls the one-time initializition
 
-        METHODOLOGY EMPLOYED:
-        <description>
-		'''
+  #       METHODOLOGY EMPLOYED:
+  #       <description>
+		# '''
         
-        # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        # LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
-        NumStates = 0 # Number of states for a given complex fen
-        ISurf = 0     # Index for sorting thru Surface array
-        IState = 0    # Index identifying the window state for a particular window
-        IWind = 0     # Index identifying a window in the WindowList
+  #       # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
+  #       # LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
+  #       NumStates = 0 # Number of states for a given complex fen
+  #       ISurf = 0     # Index for sorting thru Surface array
+  #       IState = 0    # Index identifying the window state for a particular window
+  #       IWind = 0     # Index identifying a window in the WindowList
 
-        # !One-time initialization
-		# IF (Once) THEN
-		#   ONCE = .FALSE.
-		#   CALL InitBSDFWindows
-		#   CALL CalcStaticProperties
-		# ENDIF
+  #       # !One-time initialization
+		# # IF (Once) THEN
+		# #   ONCE = .FALSE.
+		# #   CALL InitBSDFWindows
+		# #   CALL CalcStaticProperties
+		# # ENDIF
 
-        if (NumComplexWind == 0): return None
-        if (KickOffSizing || KickOffSimulation): return None
+  #       if (NumComplexWind == 0): return None
+  #       if (KickOffSizing || KickOffSimulation): return None
 
-        # Shading-dependent initialization; performed once for each shading period
+  #       # Shading-dependent initialization; performed once for each shading period
 
-        # Initialize the geometric quantities
+  #       # Initialize the geometric quantities
 
-        for IWind in range(1, NumComplexWind+1):
-            ISurf = WindowList(IWind).SurfNo
-            NumStates = ComplexWind(ISurf).NumStates
-            for IState in range(1, NumStates+1):
-                CFSShadeAndBeamInitialization(ISurf, IState)
-            # State loop
-        # window loop
+  #       for IWind in range(1, NumComplexWind+1):
+  #           ISurf = WindowList(IWind).SurfNo
+  #           NumStates = ComplexWind(ISurf).NumStates
+  #           for IState in range(1, NumStates+1):
+  #               CFSShadeAndBeamInitialization(ISurf, IState)
+  #           # State loop
+  #       # window loop
     
-    	return None
+  #   	return None
 
 class SolarShading(ExternalFunctions):
 	'''
@@ -2934,7 +2917,7 @@ class SolarShading(ExternalFunctions):
 	    OtherSideCondModeledExt = -4            # the Surface derived type.
 	                                            # Note:  Positive values correspond to an interzone adjacent surface
 	   # using DataBSDFWindow::MaxBkSurf
-	    MaxBkSurf = 20                          # was 20    Maximum number of back surfaces in solar overlap &
+	    # MaxBkSurf = 20                          # was 20    Maximum number of back surfaces in solar overlap &
 	                                            # interior solar distribution
 	    using namespace DataVectorTypes
 	    using namespace FenestrationCommon
@@ -3333,18 +3316,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         PURPOSE OF THIS SUBROUTINE:
         This subroutine gets the Shadowing Calculation object.
 		'''
-        # Using/Aliasing
-        using General::RoundSigDigits
-        using namespace DataIPShortCuts
-        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
-        using DataSystemVariables::DetailedSolarTimestepIntegration
-        using DataSystemVariables::DisableAllSelfShading
-        using DataSystemVariables::DisableGroupSelfShading
-        using DataSystemVariables::ReportExtShadingSunlitFrac
-        using DataSystemVariables::SutherlandHodgman
-        using DataSystemVariables::UseImportedSunlitFrac
-        using DataSystemVariables::UseScheduledSunlitFrac
-        # using ScheduleManager::ScheduleFileShadingProcessed
+
         ScheduleFileShadingProcessed = False
 
         # SUBROUTINE PARAMETER DEFINITIONS:
@@ -3623,9 +3595,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
     	'''
 
-        ## Using/Aliasing
-        using General::RoundSigDigits
-
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS: variáveis de loop!
         # int SurfLoop
         # int ZoneLoop
@@ -3640,8 +3609,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         SunlitFracHR.dimension(24, TotSurfaces, 0.0)
         SunlitFrac.dimension(NumOfTimeStepInHour, 24, TotSurfaces, 0.0)
         SunlitFracWithoutReveal.dimension(NumOfTimeStepInHour, 24, TotSurfaces, 0.0)
-        BackSurfaces.dimension(NumOfTimeStepInHour, 24, MaxBkSurf, TotSurfaces, 0)
-        OverlapAreas.dimension(NumOfTimeStepInHour, 24, MaxBkSurf, TotSurfaces, 0.0)
+        # BackSurfaces.dimension(NumOfTimeStepInHour, 24, MaxBkSurf, TotSurfaces, 0)
+        # OverlapAreas.dimension(NumOfTimeStepInHour, 24, MaxBkSurf, TotSurfaces, 0.0)
         CosIncAngHR.dimension(24, TotSurfaces, 0.0)
         CosIncAng.dimension(NumOfTimeStepInHour, 24, TotSurfaces, 0.0)
         AnisoSkyMult.dimension(TotSurfaces, 1.0) # For isotropic sky: recalculated in AnisoSkyViewFactors if anisotropic radiance
@@ -3767,25 +3736,25 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         QRadSWwinAbsTotEnergy.dimension(TotSurfaces, 0.0)
         WinShadingAbsorbedSolarEnergy.dimension(TotSurfaces, 0.0)
         # for (auto &e : SurfaceWindow):
-    	for e in SurfaceWindow:
-            e.BmSolAbsdOutsReveal = 0.0
-            e.BmSolRefldOutsRevealReport = 0.0
-            e.BmSolAbsdInsReveal = 0.0
-            e.BmSolRefldInsReveal = 0.0
-            e.BmSolRefldInsRevealReport = 0.0
-            e.OutsRevealDiffOntoGlazing = 0.0
-            e.InsRevealDiffOntoGlazing = 0.0
-            e.InsRevealDiffIntoZone = 0.0
-            e.OutsRevealDiffOntoFrame = 0.0
-            e.InsRevealDiffOntoFrame = 0.0
+    	# for e in SurfaceWindow:
+     #        e.BmSolAbsdOutsReveal = 0.0
+     #        e.BmSolRefldOutsRevealReport = 0.0
+     #        e.BmSolAbsdInsReveal = 0.0
+     #        e.BmSolRefldInsReveal = 0.0
+     #        e.BmSolRefldInsRevealReport = 0.0
+     #        e.OutsRevealDiffOntoGlazing = 0.0
+     #        e.InsRevealDiffOntoGlazing = 0.0
+     #        e.InsRevealDiffIntoZone = 0.0
+     #        e.OutsRevealDiffOntoFrame = 0.0
+     #        e.InsRevealDiffOntoFrame = 0.0
 
         # Added report variables for inside reveal to debug CR 7596. TH 5/26/2009
         # for (auto &e : SurfaceWindow):
-        for e in SurfaceWindow:
-            e.InsRevealDiffOntoGlazingReport = 0.0
-            e.InsRevealDiffIntoZoneReport = 0.0
-            e.InsRevealDiffOntoFrameReport = 0.0
-            e.BmSolAbsdInsRevealReport = 0.0
+        # for e in SurfaceWindow:
+        #     e.InsRevealDiffOntoGlazingReport = 0.0
+        #     e.InsRevealDiffIntoZoneReport = 0.0
+        #     e.InsRevealDiffOntoFrameReport = 0.0
+        #     e.BmSolAbsdInsRevealReport = 0.0
 
 
         print("Initializing Surface (Shading) Report Variables")
@@ -3925,10 +3894,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         REFERENCES:
         BLAST/IBLAST code, original author George Walton
         '''
-
-        # Using/Aliasing
-        using namespace DataErrorTracking
-        using General::TrimSigDigits
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
@@ -5364,18 +5329,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         BLAST/IBLAST code, original author George Walton
         '''
 
-        # Using/Aliasing
-        using DataEnvironment::DayOfMonth
-        using DataEnvironment::Month
-        using DataGlobals::HourOfDay
-        using DataGlobals::TimeStep
-        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
-        using DataSystemVariables::DetailedSolarTimestepIntegration
-        using DataSystemVariables::ReportExtShadingSunlitFrac
-        using ScheduleManager::LookUpScheduleValue
-        using WindowComplexManager::InitComplexWindows
-        using WindowComplexManager::UpdateComplexWindows
-
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
 
@@ -5421,9 +5374,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             BackSurfaces = 0
             OverlapAreas = 0.0
             # for (auto &e : SurfaceWindow):
-        	for e in SurfaceWindow:
-                e.OutProjSLFracMult = 1.0
-                e.InOutProjSLFracMult = 1.0
+        	# for e in SurfaceWindow:
+         #        e.OutProjSLFracMult = 1.0
+         #        e.InOutProjSLFracMult = 1.0
         else:
             SunlitFracHR(HourOfDay, {1, TotSurfaces}) = 0.0
             SunlitFrac(TimeStep, HourOfDay, {1, TotSurfaces}) = 0.0
@@ -5432,11 +5385,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             CosIncAngHR(HourOfDay, {1, TotSurfaces}) = 0.0
             CosIncAng(TimeStep, HourOfDay, {1, TotSurfaces}) = 0.0
             AOSurf({1, TotSurfaces}) = 0.0
-            BackSurfaces(TimeStep, HourOfDay, {1, MaxBkSurf}, {1, TotSurfaces}) = 0
-            OverlapAreas(TimeStep, HourOfDay, {1, MaxBkSurf}, {1, TotSurfaces}) = 0.0
-            for SurfNum in range(1, TotSurfaces+1):
-                SurfaceWindow(SurfNum).OutProjSLFracMult(HourOfDay) = 1.0
-                SurfaceWindow(SurfNum).InOutProjSLFracMult(HourOfDay) = 1.0
+            # BackSurfaces(TimeStep, HourOfDay, {1, MaxBkSurf}, {1, TotSurfaces}) = 0
+            # OverlapAreas(TimeStep, HourOfDay, {1, MaxBkSurf}, {1, TotSurfaces}) = 0.0
+            # for SurfNum in range(1, TotSurfaces+1):
+            #     SurfaceWindow(SurfNum).OutProjSLFracMult(HourOfDay) = 1.0
+            #     SurfaceWindow(SurfNum).InOutProjSLFracMult(HourOfDay) = 1.0
 
         if (!DetailedSolarTimestepIntegration):
             for iHour in range(1, 25): # Do for all hours
@@ -5446,7 +5399,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             FigureSunCosines(HourOfDay, TimeStep, AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
         
         # Initialize/update the Complex Fenestration geometry and optical properties
-        UpdateComplexWindows()
+        # UpdateComplexWindows()
         if (!DetailedSolarTimestepIntegration):
             for iHour in range(1, 25): # Do for all hours.
                 for TS in range(1, NumOfTimeStepInHour+1):
@@ -5502,10 +5455,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
         '''
 
-        # Using/Aliasing
-        using DataGlobals::TimeStepZone
-        using DataSystemVariables::DetailedSolarTimestepIntegration
-
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
 
@@ -5559,13 +5508,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         REFERENCES:
         # na
         '''
-
-        # Using/Aliasing
-        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
-        using DataSystemVariables::DetailedSolarTimestepIntegration
-        using DataSystemVariables::ReportExtShadingSunlitFrac
-        using DataSystemVariables::UseScheduledSunlitFrac
-        using ScheduleManager::LookUpScheduleValue
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
@@ -5884,10 +5826,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # using DataSystemVariables::DisableGroupSelfShading
         DisableGroupSelfShading = False                     # when true, defined shadowing surfaces group is ignored
                                                             # when calculating sunlit fraction
-        using ScheduleManager::GetCurrentScheduleValue
-        using ScheduleManager::GetScheduleMinValue
-        using ScheduleManager::GetScheduleName
-        using ScheduleManager::LookUpScheduleValue
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
@@ -6133,11 +6071,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
         '''
 
-        # Using/Aliasing
-        # using DataSystemVariables::DetailedSolarTimestepIntegration
-        # using DaylightingManager::CalcDayltgCoefficients
-        # using DaylightingManager::TotWindowsWithDayl
-
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
         # na
@@ -6192,7 +6125,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 SumDec = 0.0
                 SumET = 0.0
                 for Count in range(1, ShadowingDaysLeft+1):
-                    SUN3(PerDayOfYear, SinDec, EqTime)
+                    # SUN3(PerDayOfYear, SinDec, EqTime)
                     SumDec += SinDec
                     SumET += EqTime
                     PerDayOfYear += 1
@@ -6203,7 +6136,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 AvgEqOfTime = SumET / double(ShadowingDaysLeft)
             
             else:
-                SUN3(DayOfYear, AvgSinSolarDeclin, AvgEqOfTime)
+                # SUN3(DayOfYear, AvgSinSolarDeclin, AvgEqOfTime)
                 AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
                 # trigger display of progress in the simulation every two weeks
                 if (!WarmupFlag && BeginDayFlag && (DayOfSim % 14 == 0)):
@@ -6219,15 +6152,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 	CalcSkySolDiffuseReflFactors()
 
             #  Calculate daylighting coefficients
-            CalcDayltgCoefficients()
+            # CalcDayltgCoefficients()
 
         if (!WarmupFlag):
             ShadowingDaysLeft
 
         # Recalculate daylighting coefficients if storm window has been added
         # or removed from one or more windows at beginning of day
-        if (TotWindowsWithDayl > 0 && !BeginSimFlag && !BeginEnvrnFlag && !WarmupFlag && TotStormWin > 0 && StormWinChangeThisDay):
-            CalcDayltgCoefficients()
+        # if (TotWindowsWithDayl > 0 && !BeginSimFlag && !BeginEnvrnFlag && !WarmupFlag && TotStormWin > 0 && StormWinChangeThisDay):
+        #     CalcDayltgCoefficients()
         
     	return None
 
@@ -6424,9 +6357,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         REFERENCES:
         # na
         '''
-
-        # Using/Aliasing
-        using DataSystemVariables::DetailedSkyDiffuseAlgorithm
 
         # Locals
         # SUBROUTINE PARAMETER DEFINITIONS:
