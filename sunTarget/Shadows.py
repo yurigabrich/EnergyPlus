@@ -122,28 +122,28 @@ class ExternalFunctions:
                                    'W5FileGlazingSysHeight', 'SummerSHGC', 'VisTransNorm', 'SolTransNorm', 'SourceSinkPresent', 'TypeIsWindow', 'WindowTypeBSDF',
                                    'TypeIsEcoRoof', 'TypeIsIRT', 'TypeIsCfactorWall', 'TypeIsFfactorFloor', 'TCFlag', 'TCMasterConst', 'TCLayerID', 'TCGlassID',
                                    'CFactor', 'Height', 'FFactor', 'Area', 'PerimeterExposed', 'ReverseConstructionNumLayersWarning', 'ReverseConstructionLayersOrderWarning'])
-    ConstructionData = ConstructionData_(Name=?, TotLayers=0, TotSolidLayers=0, TotGlassLayers=0, LayerPoint=(MaxLayersInConstruct, 0), IsUsed=False, IsUsedCTF=False,
-                                         InsideAbsorpVis=0.0, OutsideAbsorpVis=0.0, InsideAbsorpSolar=0.0, OutsideAbsorpSolar=0.0, InsideAbsorpThermal=0.0,
-                                         OutsideAbsorpThermal=0.0, OutsideRoughness=0, DayltPropPtr=0, W5FrameDivider=0, CTFCross=({0, MaxCTFTerms - 1}, 0.0),
-                                         CTFFlux=(MaxCTFTerms - 1, 0.0), CTFInside=({0, MaxCTFTerms - 1}, 0.0), CTFOutside=({0, MaxCTFTerms - 1}, 0.0),
-                                         CTFSourceIn=({0, MaxCTFTerms - 1}, 0.0), CTFSourceOut=({0, MaxCTFTerms - 1}, 0.0), CTFTimeStep=?, CTFSourceOut=({0, MaxCTFTerms - 1}, 0.0),
-                                         CTFSourceIn=({0, MaxCTFTerms - 1}, 0.0), CTFTSourceQ=?, CTFTUserOut=?, CTFTUserIn=?, CTFTUserSource=?, NumHistories=0, NumCTFTerms=0,
-                                         UValue=0.0, SolutionDimensions=0, SourceAfterLayer=0, TempAfterLayer=0, ThicknessPerpend=0, AbsDiffIn=0.0, AbsDiffOut=0.0,
-                                         AbsDiff=(MaxSolidWinLayers, 0.0), BlAbsDiff=(MaxSlatAngs, MaxSolidWinLayers, 0.0), BlAbsDiffGnd=(MaxSlatAngs, MaxSolidWinLayers, 0.0),
-                                         BlAbsDiffSky=(MaxSlatAngs, MaxSolidWinLayers, 0.0), AbsDiffBack=(MaxSolidWinLayers, 0.0), BlAbsDiffBack=(MaxSlatAngs, MaxSolidWinLayers, 0.0),
-                                         AbsDiffShade=0.0, AbsDiffBlind=(MaxSlatAngs, 0.0), AbsDiffBlindGnd=(MaxSlatAngs, 0.0), AbsDiffBlindSky=(MaxSlatAngs, 0.0), AbsDiffBackShade=0.0,
-                                         AbsDiffBackBlind=(MaxSlatAngs, 0.0), ShadeAbsorpThermal=0.0, AbsBeamCoef=(6, MaxSolidWinLayers, 0.0), AbsBeamBackCoef=(6, MaxSolidWinLayers, 0.0),
-                                         AbsBeamShadeCoef=(6, 0.0), TransDiff=0.0, BlTransDiff=(MaxSlatAngs, 0.0), BlTransDiffGnd=(MaxSlatAngs, 0.0), BlTransDiffSky=(MaxSlatAngs, 0.0),
-                                         TransDiffVis=0.0, BlTransDiffVis=(MaxSlatAngs, 0.0), ReflectSolDiffBack=0.0, BlReflectSolDiffBack=(MaxSlatAngs, 0.0), ReflectSolDiffFront=0.0,
-                                         BlReflectSolDiffFront=(MaxSlatAngs, 0.0), ReflectVisDiffBack=0.0, BlReflectVisDiffBack=(MaxSlatAngs, 0.0), ReflectVisDiffFront=0.0,
-                                         BlReflectVisDiffFront=(MaxSlatAngs, 0.0), TransSolBeamCoef=(6, 0.0), TransVisBeamCoef=(6, 0.0), ReflSolBeamFrontCoef=(6, 0.0),
-                                         ReflSolBeamBackCoef=(6, 0.0), tBareSolCoef=(6, 5, 0.0), tBareVisCoef=(6, 5, 0.0), rfBareSolCoef=(6, 5, 0.0), rfBareVisCoef=(6, 5, 0.0),
-                                         rbBareSolCoef=(6, 5, 0.0), rbBareVisCoef=(6, 5, 0.0), afBareSolCoef=(6, 5, 0.0), abBareSolCoef=(6, 5, 0.0), tBareSolDiff=(5, 0.0),
-                                         tBareVisDiff=(5, 0.0), rfBareSolDiff=(5, 0.0), rfBareVisDiff=(5, 0.0), rbBareSolDiff=(5, 0.0), rbBareVisDiff=(5, 0.0), afBareSolDiff=(5, 0.0),
-                                         abBareSolDiff=(5, 0.0), FromWindow5DataFile=False, W5FileMullionWidth=0.0, W5FileMullionOrientation=0, W5FileGlazingSysWidth=0.0,
-                                         W5FileGlazingSysHeight=0.0, SummerSHGC=0.0, VisTransNorm=0.0, SolTransNorm=0.0, SourceSinkPresent=False, TypeIsWindow=False, WindowTypeBSDF=False,
-                                         TypeIsEcoRoof=False, TypeIsIRT=False, TypeIsCfactorWall=False, TypeIsFfactorFloor=False, TCFlag=0, TCMasterConst=0, TCLayerID=0, TCGlassID=0,
-                                         CFactor=0.0, Height=0.0, FFactor=0.0, Area=0.0, PerimeterExposed=0.0, ReverseConstructionNumLayersWarning=False, ReverseConstructionLayersOrderWarning=False)
+#     ConstructionData = ConstructionData_(Name=?, TotLayers=0, TotSolidLayers=0, TotGlassLayers=0, LayerPoint=(MaxLayersInConstruct, 0), IsUsed=False, IsUsedCTF=False,
+#                                          InsideAbsorpVis=0.0, OutsideAbsorpVis=0.0, InsideAbsorpSolar=0.0, OutsideAbsorpSolar=0.0, InsideAbsorpThermal=0.0,
+#                                          OutsideAbsorpThermal=0.0, OutsideRoughness=0, DayltPropPtr=0, W5FrameDivider=0, CTFCross=({0, MaxCTFTerms - 1}, 0.0),
+#                                          CTFFlux=(MaxCTFTerms - 1, 0.0), CTFInside=({0, MaxCTFTerms - 1}, 0.0), CTFOutside=({0, MaxCTFTerms - 1}, 0.0),
+#                                          CTFSourceIn=({0, MaxCTFTerms - 1}, 0.0), CTFSourceOut=({0, MaxCTFTerms - 1}, 0.0), CTFTimeStep=?, CTFSourceOut=({0, MaxCTFTerms - 1}, 0.0),
+#                                          CTFSourceIn=({0, MaxCTFTerms - 1}, 0.0), CTFTSourceQ=?, CTFTUserOut=?, CTFTUserIn=?, CTFTUserSource=?, NumHistories=0, NumCTFTerms=0,
+#                                          UValue=0.0, SolutionDimensions=0, SourceAfterLayer=0, TempAfterLayer=0, ThicknessPerpend=0, AbsDiffIn=0.0, AbsDiffOut=0.0,
+#                                          AbsDiff=(MaxSolidWinLayers, 0.0), BlAbsDiff=(MaxSlatAngs, MaxSolidWinLayers, 0.0), BlAbsDiffGnd=(MaxSlatAngs, MaxSolidWinLayers, 0.0),
+#                                          BlAbsDiffSky=(MaxSlatAngs, MaxSolidWinLayers, 0.0), AbsDiffBack=(MaxSolidWinLayers, 0.0), BlAbsDiffBack=(MaxSlatAngs, MaxSolidWinLayers, 0.0),
+#                                          AbsDiffShade=0.0, AbsDiffBlind=(MaxSlatAngs, 0.0), AbsDiffBlindGnd=(MaxSlatAngs, 0.0), AbsDiffBlindSky=(MaxSlatAngs, 0.0), AbsDiffBackShade=0.0,
+#                                          AbsDiffBackBlind=(MaxSlatAngs, 0.0), ShadeAbsorpThermal=0.0, AbsBeamCoef=(6, MaxSolidWinLayers, 0.0), AbsBeamBackCoef=(6, MaxSolidWinLayers, 0.0),
+#                                          AbsBeamShadeCoef=(6, 0.0), TransDiff=0.0, BlTransDiff=(MaxSlatAngs, 0.0), BlTransDiffGnd=(MaxSlatAngs, 0.0), BlTransDiffSky=(MaxSlatAngs, 0.0),
+#                                          TransDiffVis=0.0, BlTransDiffVis=(MaxSlatAngs, 0.0), ReflectSolDiffBack=0.0, BlReflectSolDiffBack=(MaxSlatAngs, 0.0), ReflectSolDiffFront=0.0,
+#                                          BlReflectSolDiffFront=(MaxSlatAngs, 0.0), ReflectVisDiffBack=0.0, BlReflectVisDiffBack=(MaxSlatAngs, 0.0), ReflectVisDiffFront=0.0,
+#                                          BlReflectVisDiffFront=(MaxSlatAngs, 0.0), TransSolBeamCoef=(6, 0.0), TransVisBeamCoef=(6, 0.0), ReflSolBeamFrontCoef=(6, 0.0),
+#                                          ReflSolBeamBackCoef=(6, 0.0), tBareSolCoef=(6, 5, 0.0), tBareVisCoef=(6, 5, 0.0), rfBareSolCoef=(6, 5, 0.0), rfBareVisCoef=(6, 5, 0.0),
+#                                          rbBareSolCoef=(6, 5, 0.0), rbBareVisCoef=(6, 5, 0.0), afBareSolCoef=(6, 5, 0.0), abBareSolCoef=(6, 5, 0.0), tBareSolDiff=(5, 0.0),
+#                                          tBareVisDiff=(5, 0.0), rfBareSolDiff=(5, 0.0), rfBareVisDiff=(5, 0.0), rbBareSolDiff=(5, 0.0), rbBareVisDiff=(5, 0.0), afBareSolDiff=(5, 0.0),
+#                                          abBareSolDiff=(5, 0.0), FromWindow5DataFile=False, W5FileMullionWidth=0.0, W5FileMullionOrientation=0, W5FileGlazingSysWidth=0.0,
+#                                          W5FileGlazingSysHeight=0.0, SummerSHGC=0.0, VisTransNorm=0.0, SolTransNorm=0.0, SourceSinkPresent=False, TypeIsWindow=False, WindowTypeBSDF=False,
+#                                          TypeIsEcoRoof=False, TypeIsIRT=False, TypeIsCfactorWall=False, TypeIsFfactorFloor=False, TCFlag=0, TCMasterConst=0, TCLayerID=0, TCGlassID=0,
+#                                          CFactor=0.0, Height=0.0, FFactor=0.0, Area=0.0, PerimeterExposed=0.0, ReverseConstructionNumLayersWarning=False, ReverseConstructionLayersOrderWarning=False)
     '''
         // Members
         std::string Name; // Name of construction
@@ -388,34 +388,34 @@ class ExternalFunctions:
                                                 'IntConvWindowWallRatio', 'IntConvWindowLocation', 'IntConvSurfGetsRadiantHeat',
                                                 'IntConvSurfHasActiveInIt', 'PartOfVentSlabOrRadiantSurface', 'GenericContam',
                                                 'DisabledShadowingZoneList'])
-    SurfaceData = SurfaceData_(Name=?, Construction=0, EMSConstructionOverrideON=False, EMSConstructionOverrideValue=0,
-                                ConstructionStoredInputValue=0, Class=0, Shape=?SurfaceShape::None, Sides=0, Area=0.0,
-                                GrossArea=0.0, NetAreaShadowCalc=0.0, Perimeter=0.0, Azimuth=0.0, Height=0.0, Reveal=0.0,
-                                Tilt=0.0, Width=0.0, HeatTransSurf=False, OutsideHeatSourceTermSchedule=0, InsideHeatSourceTermSchedule=0,
-                                HeatTransferAlgorithm=?HeatTransferModel_NotSet, BaseSurfName=?, BaseSurf=0, NumSubSurfaces=0, ZoneName=?,
-                                Zone=0, ExtBoundCondName=?, ExtBoundCond=0, LowTempErrCount=0, HighTempErrCount=0, ExtSolar=False, ExtWind=False,
-                                IntConvCoeff=0, EMSOverrideIntConvCoef=False, EMSValueForIntConvCoef=0.0, ExtConvCoeff=0, EMSOverrideExtConvCoef=False,
-                                EMSValueForExtConvCoef=0.0, ViewFactorGround=0.0, ViewFactorSky=0.0, ViewFactorGroundIR=0.0, ViewFactorSkyIR=0.0,
-                                OSCPtr=0, OSCMPtr=0, SchedShadowSurfIndex=0, ShadowSurfSchedVaries=False, ShadowingSurf=False, IsTransparent=False,
-                                SchedMinValue=0.0, ShadowSurfDiffuseSolRefl=0.0, ShadowSurfDiffuseVisRefl=0.0, ShadowSurfGlazingFrac=0.0,
-                                ShadowSurfGlazingConstruct=0, ShadowSurfPossibleObstruction=True, ShadowSurfPossibleReflector=False, ShadowSurfRecSurfNum=0,
-                                MaterialMovInsulExt=0, MaterialMovInsulInt=0, SchedMovInsulExt=0, SchedMovInsulInt=0, MovInsulIntPresent=False,
-                                MovInsulIntPresentPrevTS=False, NewVertex=?, Vertex=?, Centroid=(0.0, 0.0, 0.0), lcsx=(0.0, 0.0, 0.0), lcsy=(0.0, 0.0, 0.0),
-                                lcsz=(0.0, 0.0, 0.0), NewellAreaVector=(0.0, 0.0, 0.0), NewellSurfaceNormalVector=(0.0, 0.0, 0.0), OutNormVec=(3, 0.0),
-                                SinAzim=0.0, CosAzim=0.0, SinTilt=0.0, CosTilt=0.0, IsConvex=True, IsDegenerate=False, shapeCat=?ShapeCat::Unknown,
-                                plane=(0.0, 0.0, 0.0, 0.0), surface2d=?,
-                                ...Window Parameters...=,
-                                Shelf=0, TAirRef=?ZoneMeanAirTemp, OutDryBulbTemp=0.0, OutDryBulbTempEMSOverrideOn=False, OutDryBulbTempEMSOverrideValue=0.0,
-                                OutWetBulbTemp=0.0, OutWetBulbTempEMSOverrideOn=False, OutWetBulbTempEMSOverrideValue=0.0, WindSpeed=0.0,
-                                WindSpeedEMSOverrideOn=False, WindSpeedEMSOverrideValue=0.0, WindDir=0.0, WindDirEMSOverrideOn=False, WindDirEMSOverrideValue=0.0,
-                                SchedExternalShadingFrac=False, ExternalShadingSchInd=0, HasSurroundingSurfProperties=False, SurroundingSurfacesNum=0,
-                                HasLinkedOutAirNode=False, LinkedOutAirNode=0, UNomWOFilm="-              ", UNomFilm="-              ", ExtEcoRoof=False,
-                                ExtCavityPresent=False, ExtCavNum=0, IsPV=False, IsICS=False, IsPool=False, ICSPtr=0, MirroredSurf=False, IntConvClassification=0,
-                                IntConvHcModelEq=0, IntConvHcUserCurveIndex=0, OutConvClassification=0, OutConvHfModelEq=0, OutConvHfUserCurveIndex=0,
-                                OutConvHnModelEq=0, OutConvHnUserCurveIndex=0, OutConvFaceArea=0.0, OutConvFacePerimeter=0.0, OutConvFaceHeight=0.0,
-                                IntConvZoneWallHeight=0.0, IntConvZonePerimLength=0.0, IntConvZoneHorizHydrDiam=0.0, IntConvWindowWallRatio=0.0,
-                                IntConvWindowLocation=?InConvWinLoc_NotSet, IntConvSurfGetsRadiantHeat=False, IntConvSurfHasActiveInIt=False,
-                                PartOfVentSlabOrRadiantSurface=False, GenericContam=0.0, DisabledShadowingZoneList=?)
+#     SurfaceData = SurfaceData_(Name=?, Construction=0, EMSConstructionOverrideON=False, EMSConstructionOverrideValue=0,
+#                                 ConstructionStoredInputValue=0, Class=0, Shape=?SurfaceShape::None, Sides=0, Area=0.0,
+#                                 GrossArea=0.0, NetAreaShadowCalc=0.0, Perimeter=0.0, Azimuth=0.0, Height=0.0, Reveal=0.0,
+#                                 Tilt=0.0, Width=0.0, HeatTransSurf=False, OutsideHeatSourceTermSchedule=0, InsideHeatSourceTermSchedule=0,
+#                                 HeatTransferAlgorithm=?HeatTransferModel_NotSet, BaseSurfName=?, BaseSurf=0, NumSubSurfaces=0, ZoneName=?,
+#                                 Zone=0, ExtBoundCondName=?, ExtBoundCond=0, LowTempErrCount=0, HighTempErrCount=0, ExtSolar=False, ExtWind=False,
+#                                 IntConvCoeff=0, EMSOverrideIntConvCoef=False, EMSValueForIntConvCoef=0.0, ExtConvCoeff=0, EMSOverrideExtConvCoef=False,
+#                                 EMSValueForExtConvCoef=0.0, ViewFactorGround=0.0, ViewFactorSky=0.0, ViewFactorGroundIR=0.0, ViewFactorSkyIR=0.0,
+#                                 OSCPtr=0, OSCMPtr=0, SchedShadowSurfIndex=0, ShadowSurfSchedVaries=False, ShadowingSurf=False, IsTransparent=False,
+#                                 SchedMinValue=0.0, ShadowSurfDiffuseSolRefl=0.0, ShadowSurfDiffuseVisRefl=0.0, ShadowSurfGlazingFrac=0.0,
+#                                 ShadowSurfGlazingConstruct=0, ShadowSurfPossibleObstruction=True, ShadowSurfPossibleReflector=False, ShadowSurfRecSurfNum=0,
+#                                 MaterialMovInsulExt=0, MaterialMovInsulInt=0, SchedMovInsulExt=0, SchedMovInsulInt=0, MovInsulIntPresent=False,
+#                                 MovInsulIntPresentPrevTS=False, NewVertex=?, Vertex=?, Centroid=(0.0, 0.0, 0.0), lcsx=(0.0, 0.0, 0.0), lcsy=(0.0, 0.0, 0.0),
+#                                 lcsz=(0.0, 0.0, 0.0), NewellAreaVector=(0.0, 0.0, 0.0), NewellSurfaceNormalVector=(0.0, 0.0, 0.0), OutNormVec=(3, 0.0),
+#                                 SinAzim=0.0, CosAzim=0.0, SinTilt=0.0, CosTilt=0.0, IsConvex=True, IsDegenerate=False, shapeCat=?ShapeCat::Unknown,
+#                                 plane=(0.0, 0.0, 0.0, 0.0), surface2d=?,
+#                                 ...Window Parameters...=,
+#                                 Shelf=0, TAirRef=?ZoneMeanAirTemp, OutDryBulbTemp=0.0, OutDryBulbTempEMSOverrideOn=False, OutDryBulbTempEMSOverrideValue=0.0,
+#                                 OutWetBulbTemp=0.0, OutWetBulbTempEMSOverrideOn=False, OutWetBulbTempEMSOverrideValue=0.0, WindSpeed=0.0,
+#                                 WindSpeedEMSOverrideOn=False, WindSpeedEMSOverrideValue=0.0, WindDir=0.0, WindDirEMSOverrideOn=False, WindDirEMSOverrideValue=0.0,
+#                                 SchedExternalShadingFrac=False, ExternalShadingSchInd=0, HasSurroundingSurfProperties=False, SurroundingSurfacesNum=0,
+#                                 HasLinkedOutAirNode=False, LinkedOutAirNode=0, UNomWOFilm="-              ", UNomFilm="-              ", ExtEcoRoof=False,
+#                                 ExtCavityPresent=False, ExtCavNum=0, IsPV=False, IsICS=False, IsPool=False, ICSPtr=0, MirroredSurf=False, IntConvClassification=0,
+#                                 IntConvHcModelEq=0, IntConvHcUserCurveIndex=0, OutConvClassification=0, OutConvHfModelEq=0, OutConvHfUserCurveIndex=0,
+#                                 OutConvHnModelEq=0, OutConvHnUserCurveIndex=0, OutConvFaceArea=0.0, OutConvFacePerimeter=0.0, OutConvFaceHeight=0.0,
+#                                 IntConvZoneWallHeight=0.0, IntConvZonePerimLength=0.0, IntConvZoneHorizHydrDiam=0.0, IntConvWindowWallRatio=0.0,
+#                                 IntConvWindowLocation=?InConvWinLoc_NotSet, IntConvSurfGetsRadiantHeat=False, IntConvSurfHasActiveInIt=False,
+#                                 PartOfVentSlabOrRadiantSurface=False, GenericContam=0.0, DisabledShadowingZoneList=?)
     '''
         // Types
         using Vertices = pd.Series();
@@ -907,12 +907,15 @@ class ExternalFunctions:
         #     EString = String.substr(EPos)
         #     String.erase(EPos)
 
-        DotPos = String.index(".") # Position of decimal point in original string
-        assert(DotPos != std::string::npos);
-        assert(DotPos > 0); # Or SPos will not be valid
+        # DotPos = String.index(".") # Position of decimal point in original string
+        # assert(DotPos != std::string::npos); # verifica se DotPos tem ponto
+        # assert(DotPos > 0); # Or SPos will not be valid
+        assert String.index(".")
+        DotPos = String.index(".")
+        assert DotPos > 0
 
-        # (if, else, then) statement ?
-        char TestChar(DotPos + SigDigits + 1 < String.length() ? String[DotPos + SigDigits + 1] : ' '); # Test character (digit) for rounding, if position in digit string >= 5 (digit is 5 or greater) then will round
+        # python conditional expression
+        TestChar = String[DotPos + SigDigits + 1] if DotPos + SigDigits + 1 < String.length() else ' ' # Test character (digit) for rounding, if position in digit string >= 5 (digit is 5 or greater) then will round
 
         TPos = DigitChar.index(TestChar) # Position of Testchar in Digit string
 
@@ -921,8 +924,15 @@ class ExternalFunctions:
             SPos = DotPos - 1
         else:
             SPos = DotPos + SigDigits
-
-        if ((TPos != std::string::npos) && (TPos >= 5)):    # Must round to next Digit
+        
+        # funcionamento lógico, mas dará erro na definição de TPos...
+        try:
+            TPos
+            TPos_ = True
+        except ValueError:
+            TPos_ = False
+        
+        if ((TPos_) and (TPos >= 5)):    # Must round to next Digit
             char const Char2Rep = String[SPos];             # Character (digit) to be replaced
             NPos = DigitChar.index(Char2Rep)                # Position of "next" char in Digit String
             
@@ -1136,7 +1146,7 @@ class ExternalFunctions:
         Lo = FindArrayIndex(COSI, COSAngle)
         Hi = Lo + 1
 
-        if (Lo > 0 && Hi <= NumOfAngles):
+        if (Lo > 0 and Hi <= NumOfAngles):
             m = (transBeam(Hi) - transBeam(Lo)) / (COSAngle(Hi) - COSAngle(Lo))
             b = transBeam(Lo) - m * COSAngle(Lo)
 
@@ -1436,7 +1446,7 @@ class ExternalFunctions:
             
     #         for IWin in range( Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1 ):
 
-    #             if (Surface(IWin).Class == SurfaceClass_Window && Surface(IWin).ExtBoundCond >= 1):
+    #             if (Surface(IWin).Class == SurfaceClass_Window and Surface(IWin).ExtBoundCond >= 1):
     #                 ZoneNumAdj = Surface(Surface(IWin).ExtBoundCond).Zone
     #                 IntWinNextToIntWinAdjZone = False
                     
@@ -1646,7 +1656,7 @@ class ExternalFunctions:
         # Calc for daylighting reference points
         CalcDayltgCoeffsRefPoints(ZoneNum)
 
-        if (!DoingSizing && !KickOffSimulation):
+        if (!DoingSizing and !KickOffSimulation):
             # Calc for illuminance map
             if (TotIllumMaps > 0):
                 for MapNum in range(1, TotIllumMaps+1):
@@ -1791,7 +1801,7 @@ class ExternalFunctions:
                             for IntWin in range(Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1):
                             # for (IntWin = Zone(ZoneNum).SurfaceFirst; IntWin <= Zone(ZoneNum).SurfaceLast; ++IntWin) {
                                 SurfNumAdj = Surface(IntWin).ExtBoundCond
-                                if (Surface(IntWin).Class == SurfaceClass_Window && SurfNumAdj > 0):
+                                if (Surface(IntWin).Class == SurfaceClass_Window and SurfNumAdj > 0):
                                     ZoneNumAdj = Surface(SurfNumAdj).Zone
 
                                     if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
@@ -1816,7 +1826,7 @@ class ExternalFunctions:
                             for IntWin in range(Zone(ZoneNum).SurfaceFirst, Zone(ZoneNum).SurfaceLast+1):
                             # for (IntWin = Zone(ZoneNum).SurfaceFirst; IntWin <= Zone(ZoneNum).SurfaceLast; ++IntWin) {
                                 SurfNumAdj = Surface(IntWin).ExtBoundCond
-                                if (Surface(IntWin).Class == SurfaceClass_Window && SurfNumAdj > 0):
+                                if (Surface(IntWin).Class == SurfaceClass_Window and SurfNumAdj > 0):
                                     ZoneNumAdj = Surface(SurfNumAdj).Zone
                                     
                                     if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
@@ -2069,7 +2079,7 @@ class ExternalFunctions:
         #-----------------------------------------!
         # Detailed daylighting factor calculation !
         #-----------------------------------------!
-        if (!DetailedSolarTimestepIntegration && !KickOffSizing && !KickOffSimulation):
+        if (!DetailedSolarTimestepIntegration and !KickOffSizing and !KickOffSimulation):
             if (WarmupFlag):
                 print("Calculating Detailed Daylighting Factors, Start Date = {}".format(CurMnDy))
             else:
@@ -2087,7 +2097,7 @@ class ExternalFunctions:
 
             # Warning if detailed daylighting has been requested for a zone with no associated exterior windows.
             for ZoneNum in range(1, NumOfZones+1):
-                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
+                if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 and ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
                     ShowWarningError("Detailed daylighting will not be done for zone=" + Zone(ZoneNum).Name)
                     ShowContinueError("because it has no associated exterior windows.")
 
@@ -2095,7 +2105,7 @@ class ExternalFunctions:
             for ZoneNum in range(1, NumOfZones+1):
                 # TH 9/10/2009. Need to calculate for zones without daylighting controls (TotalDaylRefPoints = 0)
                 # but with adjacent zones having daylighting controls.
-                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 && ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) || ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl):
+                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 and ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) || ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl):
                     DayltgAveInteriorReflectance(ZoneNum)
 
         # Zero daylighting factor arrays
@@ -2185,8 +2195,8 @@ class ExternalFunctions:
         # End of zone loop, ZoneNum
 
         if (doSkyReporting):
-            if (!KickOffSizing && !KickOffSimulation):
-                # if (FirstTimeDaylFacCalc && TotWindowsWithDayl > 0):
+            if (!KickOffSizing and !KickOffSimulation):
+                # if (FirstTimeDaylFacCalc and TotWindowsWithDayl > 0):
                 #     # Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
                 #     # for first time that daylight factors are calculated and so is insensitive to possible variation
                 #     # due to change in ground reflectance from month to month, or change in storm window status.
@@ -2248,7 +2258,7 @@ class ExternalFunctions:
         # if (TotWindowsWithDayl == 0): return None
 
         # Skip if no request of reporting
-        if ((!DFSReportSizingDays) && (!DFSReportAllShadowCalculationDays)): return None
+        if ((!DFSReportSizingDays) and (!DFSReportAllShadowCalculationDays)): return None
 
         # Skip duplicate calls
         if (KickOffSizing): return None
@@ -2256,7 +2266,7 @@ class ExternalFunctions:
         if (KickOffSimulation): return None
 
         if (DFSReportSizingDays):
-            if (DoWeathSim && DoDesDaySim):
+            if (DoWeathSim and DoDesDaySim):
                 if (KindOfSim == ksRunPeriodWeather): return None
 
         if (DFSReportAllShadowCalculationDays):
@@ -2310,7 +2320,7 @@ class ExternalFunctions:
                         if (ISlatAngle == 1):
                             # base window without shades, screens, or blinds
                             gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ",Base Window";
-                        elif (ISlatAngle == 2 && ISA == 2):
+                        elif (ISlatAngle == 2 and ISA == 2):
                             # window shade or blind with fixed slat angle
                             gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ", ";
                         else:
@@ -2537,7 +2547,7 @@ class ExternalFunctions:
             &field_type = field_info.value().at("field_type").get<std::string>();
             within_idf_fields = (i < idf_max_fields)
 
-            if (field == "name" && schema_name_field != epJSON_schema_it_val.end()):
+            if (field == "name" and schema_name_field != epJSON_schema_it_val.end()):
                 &name_iter = schema_name_field.value();
                 if (name_iter.find("retaincase") != name_iter.end()):
                     Alphas(alpha_index) = objectInfo.objectName
@@ -2598,7 +2608,7 @@ class ExternalFunctions:
                             NumBlank()(numeric_index) = is_empty
             else:
                 if (field_type == "a"):
-                    if (!(within_idf_fields && findDefault(Alphas(alpha_index), schema_field_obj))):
+                    if (!(within_idf_fields and findDefault(Alphas(alpha_index), schema_field_obj))):
                         Alphas(alpha_index) = ""
                     
                     if (is_AlphaBlank):
@@ -2694,7 +2704,7 @@ class ExternalFunctions:
                                         NumBlank()(numeric_index) = is_empty
                         else:
                             if (field_type == "a"):
-                                if (!(within_idf_extensible_fields && findDefault(Alphas(alpha_index), schema_field))):
+                                if (!(within_idf_extensible_fields and findDefault(Alphas(alpha_index), schema_field))):
                                     Alphas(alpha_index) = ""
                                 
                                 if (is_AlphaBlank):
@@ -3497,7 +3507,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         else:
             cAlphaArgs(7) = "No"
 
-        if (DisableSelfShadingBetweenGroup && DisableSelfShadingWithinGroup):
+        if (DisableSelfShadingBetweenGroup and DisableSelfShadingWithinGroup):
             DisableAllSelfShading = True
         elif (DisableSelfShadingBetweenGroup || DisableSelfShadingWithinGroup):
             DisableGroupSelfShading = True
@@ -3537,18 +3547,18 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                             for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
                                 # Loop through all defined shading groups
                                 CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
-                                if (SurfZoneGroup == CurZoneGroup && DisableSelfShadingWithinGroup):
+                                if (SurfZoneGroup == CurZoneGroup and DisableSelfShadingWithinGroup):
                                     for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
                                         # Loop through all zones in the zone list
                                         Surface(SurfNum).DisabledShadowingZoneList.append(ZoneList(CurZoneGroup).Zone(ZoneNum))
                                 
-                                elif (SurfZoneGroup != CurZoneGroup && DisableSelfShadingBetweenGroup):
+                                elif (SurfZoneGroup != CurZoneGroup and DisableSelfShadingBetweenGroup):
                                     for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
                                         Surface(SurfNum).DisabledShadowingZoneList.append(ZoneList(CurZoneGroup).Zone(ZoneNum))
             else:
                 ShowFatalError("No Shading groups are defined when disabling grouped self shading.")
 
-        if (!DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing): # 'ShadingTransmittanceVaries' e 'SolarDistribution' e 'MinimalShadowing' não foram definidos
+        if (!DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing): # 'ShadingTransmittanceVaries' e 'SolarDistribution' e 'MinimalShadowing' não foram definidos
             ShowWarningError("GetShadowingInput: The shading transmittance for shading devices changes throughout the year. Choose "
                              "DetailedSkyDiffuseModeling in the " + cCurrentModuleObject + " object to remove this warning.")
             ShowContinueError("Simulation has been reset to use DetailedSkyDiffuseModeling. Simulation continues.")
@@ -3966,15 +3976,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             NSBS = 0
             NBKS = 0
 
-            if (!ShadowingSurf && !Surface(GRSNR).HeatTransSurf):
+            if (!ShadowingSurf and !Surface(GRSNR).HeatTransSurf):
                 continue
 
             HTS = GRSNR
 
-            if (!ShadowingSurf && !Surface(GRSNR).ExtSolar):
+            if (!ShadowingSurf and !Surface(GRSNR).ExtSolar):
                 continue # Skip surfaces with no external solar
 
-            if (!ShadowingSurf && Surface(GRSNR).BaseSurf != GRSNR):
+            if (!ShadowingSurf and Surface(GRSNR).BaseSurf != GRSNR):
                 continue # Skip subsurfaces (SBS)
 
             # Get the lowest point of receiving surface
@@ -3988,7 +3998,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     if (GSSNR == GRSNR):
                         continue # Receiving surface cannot shade itself
                     
-                    if ((Surface(GSSNR).HeatTransSurf) && (Surface(GSSNR).BaseSurf == GRSNR)):
+                    if ((Surface(GSSNR).HeatTransSurf) and (Surface(GSSNR).BaseSurf == GRSNR)):
                         continue # A heat transfer subsurface of a receiving surface
                     
                     # cannot shade the receiving surface
@@ -3996,7 +4006,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # If receiving surf is a shadowing surface exclude matching shadow surface as sending surface
                         # IF((GSSNR == GRSNR+1 .AND. Surface(GSSNR)%Name(1:3) == 'Mir').OR. &
                         #   (GSSNR == GRSNR-1 .AND. Surface(GRSNR)%Name(1:3) == 'Mir')) CYCLE
-                        if (((GSSNR == GRSNR + 1) && Surface(GSSNR).MirroredSurf) || ((GSSNR == GRSNR - 1) && Surface(GRSNR).MirroredSurf)):
+                        if (((GSSNR == GRSNR + 1) and Surface(GSSNR).MirroredSurf) || ((GSSNR == GRSNR - 1) and Surface(GRSNR).MirroredSurf)):
                             continue
 
                     if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
@@ -4007,7 +4017,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         
                         GSS(NGSS) = GSSNR # substitui o valor de GSS no index NGSS com GSSNR?
 
-                    elif ((Surface(GSSNR).BaseSurf == 0) || ((Surface(GSSNR).BaseSurf == GSSNR) &&
+                    elif ((Surface(GSSNR).BaseSurf == 0) || ((Surface(GSSNR).BaseSurf == GSSNR) and
                              ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) ||
                              Surface(GSSNR).ExtBoundCond == OtherSideCondModeledExt))): # Detached shadowing surface or | any other base surface
                                                                                         # exposed to outside environment
@@ -4029,7 +4039,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                     if (GSSNR == GRSNR):
                         continue # Receiving surface cannot shade itself
-                    if ((Surface(GSSNR).HeatTransSurf) && (Surface(GSSNR).BaseSurf == GRSNR)):
+                    if ((Surface(GSSNR).HeatTransSurf) and (Surface(GSSNR).BaseSurf == GRSNR)):
                         continue                           # Skip heat transfer subsurfaces of receiving surface
                     if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
                         NGSS += 1
@@ -4070,7 +4080,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             NBKS = 0
             #                                        Except for simplified
             #                                        interior solar distribution,
-            if ((SolarDistribution == FullInteriorExterior) && (HasWindow)): # For full interior solar distribution | and a window present on base surface (GRSNR)
+            if ((SolarDistribution == FullInteriorExterior) and (HasWindow)): # For full interior solar distribution | and a window present on base surface (GRSNR)
                 for BackSurfaceNumber in range(1, TotSurfaces+1):
                     # Loop through surfaces yet again, looking for back surfaces to GRSNR
 
@@ -4177,7 +4187,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 shd_stream << "....Surface=" << Surface(ShadowComb(HTS).SubSurf(NGSS)).Name << '\n'
 
         for HTS in range(1, TotSurfaces+1):
-            if (CastingSurface(HTS) && !Surface(HTS).IsConvex):
+            if (CastingSurface(HTS) and !Surface(HTS).IsConvex):
                 if (DisplayExtraWarnings):
                     ShowSevereError("DetermineShadowingCombinations: Surface=\"{}\" is a casting surface and is non-convex.".format(Surface(HTS).Name))
                     raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
@@ -4363,12 +4373,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             for N, P in zip(range(1, NVT+1), range(2, NVT+1)):
                 ZVT_N = ZVT_P
                 ZVT_P = ZVT(P)
-                if (ZVT_N >= 0.0 && ZVT_P < 0.0):
+                if (ZVT_N >= 0.0 and ZVT_P < 0.0):
                     # Line enters plane of receiving surface
                     ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
                     XIN = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
                     YIN = (ZVT_P * YVT(N) - ZVT_N * YVT(P)) * ZVT_fac
-                if (ZVT_N <= 0.0 && ZVT_P > 0.0):
+                if (ZVT_N <= 0.0 and ZVT_P > 0.0):
                     # Line exits plane of receiving surface
                     NEXT = N + 1
                     ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
@@ -4628,7 +4638,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # Check for duplication of previously determined points.
             if (NumVerticesOverlap != 0):
                 for K in range(1, NumVerticesOverlap+1):
-                    if ((XTEMP(K) == HCX(N1, N)) && (YTEMP(K) == HCY(N1, N))):
+                    if ((XTEMP(K) == HCX(N1, N)) and (YTEMP(K) == HCY(N1, N))):
                         CycleMainLoop = True # Set to cycle to the next value of N
                         break                # K DO loop
                 if (CycleMainLoop): continue
@@ -4700,13 +4710,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 # Eliminate cases where sides N and M do not intersect.
                 I1 = HCA(NS1, N) * HCX(NS2, M) + HCB(NS1, N) * HCY(NS2, M) + HCC(NS1, N)
                 I2 = HCA(NS1, N) * HCX(NS2, M + 1) + HCB(NS1, N) * HCY(NS2, M + 1) + HCC(NS1, N)
-                if (I1 >= 0 && I2 >= 0): continue
-                if (I1 <= 0 && I2 <= 0): continue
+                if (I1 >= 0 and I2 >= 0): continue
+                if (I1 <= 0 and I2 <= 0): continue
 
                 I1 = HCA(NS2, M) * HCX(NS1, N) + HCB(NS2, M) * HCY(NS1, N) + HCC(NS2, M)
                 I2 = HCA(NS2, M) * HCX(NS1, N + 1) + HCB(NS2, M) * HCY(NS1, N + 1) + HCC(NS2, M)
-                if (I1 >= 0 && I2 >= 0): continue
-                if (I1 <= 0 && I2 <= 0): continue
+                if (I1 >= 0 and I2 >= 0): continue
+                if (I1 <= 0 and I2 <= 0): continue
 
                 # Determine the point of intersection and record in the temporary array.
                 KK = NV3
@@ -5219,7 +5229,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         if (NS3 > MaxHCS):
             OverlapStatus = TooManyFigures
-            if (!TooManyFiguresMessage && !DisplayExtraWarnings):
+            if (!TooManyFiguresMessage and !DisplayExtraWarnings):
                 raise RuntimeWarning("DeterminePolygonOverlap: Too many figures [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCS))) # round with how many decimals?
                 TooManyFiguresMessage = True
 
@@ -5254,7 +5264,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # simple polygon clipping
             CLIPPOLY(NS1, NS2, NV1, NV2, NV3)
 
-        if (NV3 < MaxHCV && NS3 <= MaxHCS):
+        if (NV3 < MaxHCV and NS3 <= MaxHCS):
             if (!SutherlandHodgman):
                 ORDER(NV3, NS3) # Put vertices in clockwise order.
             else:
@@ -5276,15 +5286,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 Real64 const HCT_1(HCT(NS1))
                 Real64 const HCT_2(HCT(NS2))
                 Real64 HCT_3(HCT_2 * HCT_1) # Determine transmission of overlap
-                if (HCT_2 >= 0.5 && HCT_1 >= 0.5):
-                    if (HCT_2 != 1.0 && HCT_1 != 1.0):
+                if (HCT_2 >= 0.5 and HCT_1 >= 0.5):
+                    if (HCT_2 != 1.0 and HCT_1 != 1.0):
                         HCT_3 = 1.0 - HCT_3
                 HCT(NS3) = HCT_3
 
         elif (NV3 > MaxHCV):
             OverlapStatus = TooManyVertices
 
-            if (!TooManyVerticesMessage && !DisplayExtraWarnings):
+            if (!TooManyVerticesMessage and !DisplayExtraWarnings):
                 raise RuntimeWarning("DeterminePolygonOverlap: Too many vertices [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCV)))
                 TooManyVerticesMessage = True
 
@@ -5296,7 +5306,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         elif (NS3 > MaxHCS):
             OverlapStatus = TooManyFigures
 
-            if (!TooManyFiguresMessage && !DisplayExtraWarnings):
+            if (!TooManyFiguresMessage and !DisplayExtraWarnings):
                 raise RuntimeWarning("DeterminePolygonOverlap: Too many figures [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCS)))
                 TooManyFiguresMessage = True
 
@@ -5570,7 +5580,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     SunlitFrac(iTimeStep, iHour, SurfNum) = 1.0
                 
         #   Note -- if not the below, values are set in SkyDifSolarShading routine (constant for simulation)
-        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+        if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
             WithShdgIsoSky = 0.
             WoShdgIsoSky = 0.
             WithShdgHoriz = 0.
@@ -5584,15 +5594,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     SUNCOS(2) = cos_Phi[IPhi] * sin_Theta[ITheta]
 
                     for SurfNum in range(1, TotSurfaces+1):
-                        if (!Surface(SurfNum).ShadowingSurf && !Surface(SurfNum).HeatTransSurf): continue
+                        if (!Surface(SurfNum).ShadowingSurf and !Surface(SurfNum).HeatTransSurf): continue
                         CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
                     
                     SHADOW(iHour, iTimeStep) # Determine sunlit areas and solar multipliers for all surfaces.
 
                     for SurfNum in range(1, TotSurfaces+1):
-                        if (!Surface(SurfNum).ShadowingSurf &&
+                        if (!Surface(SurfNum).ShadowingSurf and
                             (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-                            (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+                            (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                                 continue
 
                         if (CTHETA(SurfNum) < 0.0):
@@ -5620,9 +5630,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             for SurfNum in range(1, TotSurfaces+1):
 
-                if (!Surface(SurfNum).ShadowingSurf &&
+                if (!Surface(SurfNum).ShadowingSurf and
                     (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-                    (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+                    (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                         continue
 
                 if (abs(WoShdgIsoSky(SurfNum)) > Eps):
@@ -5655,8 +5665,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # Note: if SunlitFrac = 0.0 the window is either completely shaded or the sun is in back
             # of the window in either case, frame/divider shadowing doesn't have to be done.
 
-            # if (Surface(SurfNum).Class == SurfaceClass_Window && Surface(SurfNum).ExtBoundCond == ExternalEnvironment &&
-            #   SunlitFrac(iTimeStep, iHour, SurfNum) > 0.0 && Surface(SurfNum).FrameDivider > 0):
+            # if (Surface(SurfNum).Class == SurfaceClass_Window and Surface(SurfNum).ExtBoundCond == ExternalEnvironment and
+            #   SunlitFrac(iTimeStep, iHour, SurfNum) > 0.0 and Surface(SurfNum).FrameDivider > 0):
             #       CalcFrameDividerShadow(SurfNum, Surface(SurfNum).FrameDivider, iHour)
         
         return None
@@ -5741,7 +5751,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             if (CTHETA(GRSNR) < SunIsUpValue): #.001) THEN ! Receiving surface is not in the sun
                 SAREA(HTS) = 0.0
                 SHDSBS(iHour, GRSNR, NBKS, NSBS, HTS, TS)
-            elif ((NGSS <= 0) && (NSBS <= 0)):
+            elif ((NGSS <= 0) and (NSBS <= 0)):
                 # Simple surface--no shaders or subsurfaces
                 SAREA(HTS) = Surface(GRSNR).NetAreaShadowCalc
             else:
@@ -5918,7 +5928,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 # Transform shadow casting surface from cartesian to homogeneous coordinates according to surface type.
 
-                if ((notHeatTransSurf) && (surface.BaseSurf != 0)):
+                if ((notHeatTransSurf) and (surface.BaseSurf != 0)):
                     # For shadowing subsurface coordinates of shadow casting surface are relative to the receiving surface
                     # project shadow to the receiving surface
 
@@ -5991,7 +6001,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 DeterminePolygonOverlap(NS1, NS2, NS3)
 
                 # Next statement is special to deal with transmitting shading devices
-                if (OverlapStatus == FirstSurfWithinSecond && SchValue > 0.0):
+                if (OverlapStatus == FirstSurfWithinSecond and SchValue > 0.0):
                     OverlapStatus = PartialOverlap
 
                 MainOverlapStatus = OverlapStatus
@@ -6139,7 +6149,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 # SUN3(DayOfYear, AvgSinSolarDeclin, AvgEqOfTime)
                 AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
                 # trigger display of progress in the simulation every two weeks
-                if (!WarmupFlag && BeginDayFlag && (DayOfSim % 14 == 0)):
+                if (!WarmupFlag and BeginDayFlag and (DayOfSim % 14 == 0)):
                     DisplayPerfSimulationFlag = True
 
             CalcPerSolarBeam(AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
@@ -6159,7 +6169,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         # Recalculate daylighting coefficients if storm window has been added
         # or removed from one or more windows at beginning of day
-        # if (TotWindowsWithDayl > 0 && !BeginSimFlag && !BeginEnvrnFlag && !WarmupFlag && TotStormWin > 0 && StormWinChangeThisDay):
+        # if (TotWindowsWithDayl > 0 and !BeginSimFlag and !BeginEnvrnFlag and !WarmupFlag and TotStormWin > 0 and StormWinChangeThisDay):
         #     CalcDayltgCoefficients()
         
         return None
@@ -6398,11 +6408,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # initialized as no shading
         DifShdgRatioIsoSky = 1.0
         DifShdgRatioHoriz = 1.0
-        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+        if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
             curDifShdgRatioIsoSky.dimension(TotSurfaces, 1.0)
         
         # only for detailed.
-        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+        if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
             DifShdgRatioIsoSkyHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
             DifShdgRatioIsoSkyHRTS = 1.0
             DifShdgRatioHorizHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
@@ -6413,7 +6423,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 continue
 
             # CurrentModuleObject='Surfaces'
-            if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+            if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
                 SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
                                     OutputProcessor::Unit::None,
                                     curDifShdgRatioIsoSky(SurfNum),
@@ -6458,7 +6468,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     # radiation from patch
                     ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
-                    if (!ShadowingSurf && !Surface(SurfNum).HeatTransSurf):
+                    if (!ShadowingSurf and !Surface(SurfNum).HeatTransSurf):
                         continue
 
                     CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) +
@@ -6469,9 +6479,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 for SurfNum in range(1, TotSurfaces+1):
                     ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
-                    if (!ShadowingSurf &&
+                    if (!ShadowingSurf and
                         (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-                         (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+                         (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                         continue
 
                     if (CTHETA(SurfNum) < 0.0): continue
@@ -6499,9 +6509,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         for SurfNum in range(1, TotSurfaces+1):
             ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
-            if (!ShadowingSurf &&
+            if (!ShadowingSurf and
                 (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-                 (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+                 (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                 continue
 
             if (abs(WoShdgIsoSky(SurfNum)) > Eps):
@@ -6543,7 +6553,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         #  DEALLOCATE(WithShdgHoriz)
         #  DEALLOCATE(WoShdgHoriz)
 
-        if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
+        if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
             for SurfNum in range(1, TotSurfaces+1):
                 DifShdgRatioIsoSkyHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioIsoSky(SurfNum)
                 DifShdgRatioHorizHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioHoriz(SurfNum)
