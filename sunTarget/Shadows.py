@@ -44,13 +44,13 @@ from collections import namedtuple
 from enum import Enum
 
 class ExternalFunctions:
-	'''
-	Definition of a variety of additional functions from another packages.
-	Only those useful for the following computations was copied to here.
+    '''
+    Definition of a variety of additional functions from another packages.
+    Only those useful for the following computations was copied to here.
     Nontheless, some are particularly defined inside other 'class' statement.
-	'''
+    '''
 
-	# DataGlobals.cc
+    # DataGlobals.cc
     BeginSimFlag = False        # True until any actual simulation (full or sizing) has begun, False after first time step
     NumOfZones = 0              # Total number of Zones for simulation
     KickOffSimulation = False   # Kick off simulation -- meaning run each environment for 1 or 2 time steps.
@@ -66,9 +66,9 @@ class ExternalFunctions:
     TimeStep = 0                # Counter for time steps (fractional hours)
 
     # DataStringGlobals::outputShdFileName
-	outputShdFileName = 'eplusout.shd'     # file to save the simulations result
+    outputShdFileName = 'eplusout.shd'     # file to save the simulations result
 
-	# DataShadowingCombinations.hh
+    # DataShadowingCombinations.hh
     ShadowingCombinations_ = namedtuple('ShadowingCombinations_', ['UseThisSurf', 'NumGenSurf', 'GenSurf', 'NumBackSurf', 'BackSurf', 'NumSubSurf', 'SubSurf'])
     ShadowingCombinations = ShadowingCombinations_(UseThisSurf=False, NumGenSurf=0, GenSurf=pd.Series(), NumBackSurf=0, BackSurf=pd.Series(), NumSubSurf=0, SubSurf=pd.Series())
     '''
@@ -88,9 +88,9 @@ class ExternalFunctions:
     '''
 
     # DataShadowingCombinations.cc
-	ShadowComb = pd.Series()
+    ShadowComb = pd.Series()
 
-	# DataHeatBalance.hh
+    # DataHeatBalance.hh
     ZoneListData_ = namedtuple('ZoneListData', ['Name', 'NumOfZones', 'MaxZoneNameLength', 'Zone'])
     ZoneListData = ZoneListData_(Name="", NumOfZones=0, MaxZoneNameLength=0, Zone=pd.Series())
     '''
@@ -338,7 +338,7 @@ class ExternalFunctions:
     '''
 
     # DataHeatBalance.cc
-	ZoneList = pd.Series()
+    ZoneList = pd.Series()
     Construct = ConstructionData
     AnisoSkyMult = pd.Series()              # Multiplier on exterior-surface sky view factor to
                                             # account for anisotropy of sky radiance; = 1.0 for
@@ -352,7 +352,7 @@ class ExternalFunctions:
     MultIsoSky = pd.Series()                # Contribution to eff sky view factor from isotropic sky
     SunlitFrac = pd.DataFrame()             # TimeStep fraction of heat transfer surface that is sunlit
 
-	# DataSurfaces.hh
+    # DataSurfaces.hh
     Vertices = pd.Series()
     Plane = pd.DataFrame() # Vector4<Real64> ?
 
@@ -659,9 +659,9 @@ class ExternalFunctions:
     '''
 
     # DataSurfaces.cc
-	Surface = pd.Series()
-	# SurfaceWindow = pd.Series() # PROVAVELMENTE NÃO SERÁ NECESSÁRIO
-	NumOfZoneLists = 0
+    Surface = pd.Series()
+    # SurfaceWindow = pd.Series() # PROVAVELMENTE NÃO SERÁ NECESSÁRIO
+    NumOfZoneLists = 0
     ?pd.DataFrame() SUNCOSHR(24, 3, 0.0); # Hourly values of SUNCOS (solar direction cosines) # Autodesk:Init Zero-initialization added to avoid use uninitialized
     # três colunas ou linhas?
 
@@ -723,8 +723,8 @@ class ExternalFunctions:
         unknown,
         customEMS,
 
-	# DataIPShortCuts.cc
-	cAlphaFieldNames = pd.Series()
+    # DataIPShortCuts.cc
+    cAlphaFieldNames = pd.Series()
     cNumericFieldNames = pd.Series()
     lNumericFieldBlanks = pd.Series()
     lAlphaFieldBlanks = pd.Series()
@@ -861,7 +861,7 @@ class ExternalFunctions:
 
     # General::RoundSigDigits
     def RoundSigDigits(RealValue, SigDigits):
-    	'''
+        '''
         FUNCTION INFORMATION:
               AUTHOR         Linda K. Lawrie
               DATE WRITTEN   March 2002
@@ -874,9 +874,9 @@ class ExternalFunctions:
         that is appropriate.
 
         # INPUTS:
-        #		Real64 const RealValue
-        # 		int const SigDigits
-		'''
+        #       Real64 const RealValue
+        #       int const SigDigits
+        '''
         # USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY : IEEE_IS_NAN ! Use IEEE_IS_NAN when GFortran supports it
 
         # FUNCTION PARAMETER DEFINITIONS:
@@ -888,7 +888,7 @@ class ExternalFunctions:
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
 
         if (np.isnan(RealValue)):
-        	return NAN_string
+            return NAN_string
 
         String = "" # Working string
         if (RealValue != 0.0):
@@ -1018,13 +1018,13 @@ class ExternalFunctions:
         return POLYF
 
     # DaylightingManager.cc
-    ?pd.Series() PHSUNHR(24, 0.0);  	# Hourly values of PHSUN
-    ?pd.Series() SPHSUNHR(24, 0.0); 	# Hourly values of the sine of PHSUN
-    ?pd.Series() CPHSUNHR(24, 0.0); 	# Hourly values of the cosine of PHSUN
-    ?pd.Series() THSUNHR(24, 0.0);  	# Hourly values of THSUN
-    ?pd.DataFrame() GILSK(24, 4, 0.0); 	# Horizontal illuminance from sky, by sky type, for each hour of the day
-    ?pd.Series() GILSU(24, 0.0);    	# Horizontal illuminance from sun for each hour of the day
-    # TotWindowsWithDayl = 0				# Total number of exterior windows in all daylit zones
+    ?pd.Series() PHSUNHR(24, 0.0);      # Hourly values of PHSUN
+    ?pd.Series() SPHSUNHR(24, 0.0);     # Hourly values of the sine of PHSUN
+    ?pd.Series() CPHSUNHR(24, 0.0);     # Hourly values of the cosine of PHSUN
+    ?pd.Series() THSUNHR(24, 0.0);      # Hourly values of THSUN
+    ?pd.DataFrame() GILSK(24, 4, 0.0);  # Horizontal illuminance from sky, by sky type, for each hour of the day
+    ?pd.Series() GILSU(24, 0.0);        # Horizontal illuminance from sun for each hour of the day
+    # TotWindowsWithDayl = 0                # Total number of exterior windows in all daylit zones
     CheckTDDZone = pd.Series()
     TDDTransVisBeam = pd.DataFrame()
     TDDFluxInc = pd.DataFrame()
@@ -1148,7 +1148,7 @@ class ExternalFunctions:
 
     # DaylightingDevices::FindTDDPipe
     def FindTDDPipe(WinNum):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Peter Graham Ellis
               DATE WRITTEN   May 2003
@@ -1162,8 +1162,8 @@ class ExternalFunctions:
         Similar to UtilityRoutines::FindItemInList( defined in InputProcessor.
 
         INPUT:
-        	int const WinNum
-    	'''
+            int const WinNum
+        '''
         # Using/Aliasing
         # using DataSurfaces::Surface;
 
@@ -1182,7 +1182,7 @@ class ExternalFunctions:
 
     # DaylightingDevices::TransTDD
     def TransTDD(PipeNum, COSI, RadiationType):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Peter Graham Ellis
               DATE WRITTEN   May 2003
@@ -1209,7 +1209,7 @@ class ExternalFunctions:
           Solar Energy Materials and Solar Cells 36 (1995), pp. 159-168.
 
         INPUTS:
-        		int const PipeNum,      # TDD pipe object number
+                int const PipeNum,      # TDD pipe object number
                 Real64 const COSI,      # Cosine of the incident angle
                 int const RadiationType # Radiation type flag
         '''
@@ -1217,14 +1217,14 @@ class ExternalFunctions:
         # using General::POLYF;
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
-        constDome = 0	# Construction object number for TDD:DOME
-        constDiff = 0	# Construction object number for TDD:DIFFUSER
+        constDome = 0   # Construction object number for TDD:DOME
+        constDiff = 0   # Construction object number for TDD:DIFFUSER
         transDome = 0.0
         transPipe = 0.0
         transDiff = 0.0
 
         # FLOW:
-        TransTDD = 0.0	# returned value, it's not a recursive function
+        TransTDD = 0.0  # returned value, it's not a recursive function
 
         # Get constructions of each TDD component
         constDome = Surface(TDDPipe(PipeNum).Dome).Construction
@@ -1663,15 +1663,15 @@ class ExternalFunctions:
 
     # DaylightingManager::GetDaylightingParametersInput
     def GetDaylightingParametersInput():
-    	'''
-    	SUBROUTINE INFORMATION:
-    	    AUTHOR         Linda Lawrie
-    	    DATE WRITTEN   Oct 2004
-    	    MODIFIED       na
-    	    RE-ENGINEERED  na
+        '''
+        SUBROUTINE INFORMATION:
+            AUTHOR         Linda Lawrie
+            DATE WRITTEN   Oct 2004
+            MODIFIED       na
+            RE-ENGINEERED  na
 
-    	PURPOSE OF THIS SUBROUTINE:
-    	This subroutine provides a simple structure to get all daylighting parameters.
+        PURPOSE OF THIS SUBROUTINE:
+        This subroutine provides a simple structure to get all daylighting parameters.
         '''
 
         # RJH DElight Modification Begin
@@ -1719,13 +1719,13 @@ class ExternalFunctions:
             GetInputIlluminanceMap(ErrorsFound)
             GetLightWellData(ErrorsFound)
             if (ErrorsFound):
-            	ShowFatalError("Program terminated for above reasons, related to DAYLIGHTING")
+                ShowFatalError("Program terminated for above reasons, related to DAYLIGHTING")
             DayltgSetupAdjZoneListsAndPointers()
 
         maxNumRefPtInAnyZone = 0
         for SurfNum in range(1, TotSurfaces+1):
             if (Surface(SurfNum).Class != SurfaceClass_Window):
-            	continue
+                continue
             
             ZoneNum = Surface(SurfNum).Zone
             numRefPoints = ZoneDaylight(ZoneNum).TotalDaylRefPoints
@@ -1931,13 +1931,13 @@ class ExternalFunctions:
                 DFSReportAllShadowCalculationDays = True
 
         if (ErrorsFound):
-        	ShowFatalError("Program terminated for above reasons");
+            ShowFatalError("Program terminated for above reasons");
 
-    	return None   
+        return None   
 
     # DaylightingManager::CalcDayltgCoefficients
     def CalcDayltgCoefficients():
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Fred Winkelmann
               DATE WRITTEN   July 1997
@@ -2010,12 +2010,12 @@ class ExternalFunctions:
         static gio::Fmt fmtA("(A)");
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        ZoneNum = 0		# Zone number
-        IHR = 0			# Hour of day counter
-        IWin = 0		# Window counter
-        # loop = 0		# DO loop indices
-        DaylFac1 = 0.0	# sky daylight factor at ref pt 1
-        DaylFac2 = 0.0	# sky daylight factor at ref pt 2
+        ZoneNum = 0     # Zone number
+        IHR = 0         # Hour of day counter
+        IWin = 0        # Window counter
+        # loop = 0      # DO loop indices
+        DaylFac1 = 0.0  # sky daylight factor at ref pt 1
+        DaylFac2 = 0.0  # sky daylight factor at ref pt 2
 
         # added for output all daylight factors
         write_stat = 0
@@ -2046,7 +2046,7 @@ class ExternalFunctions:
             CalcDayltghCoefficients_firstTime = False
             
             if (allocated(CheckTDDZone)):
-            	CheckTDDZone.deallocate()
+                CheckTDDZone.deallocate()
         # End of check if firstTime
 
         # Find the total number of exterior windows associated with all Daylighting:Detailed zones.
@@ -2064,7 +2064,7 @@ class ExternalFunctions:
                 # TotWindowsWithDayl += ZoneDaylight(ZoneNum).NumOfDayltgExtWins
 
         # if (TotWindowsWithDayl == 0):
-        	# return None
+            # return None
 
         #-----------------------------------------!
         # Detailed daylighting factor calculation !
@@ -2125,8 +2125,8 @@ class ExternalFunctions:
 
                 for IHR in range(1, 25):
                     if (SUNCOSHR(IHR, 3) < SunIsUpValue):
-                		# Skip if sun is below horizon #Autodesk SUNCOSHR was uninitialized here
-                    	continue
+                        # Skip if sun is below horizon #Autodesk SUNCOSHR was uninitialized here
+                        continue
                     
                     PHSUN = PiOvr2 - math.acos(SUNCOSHR(IHR, 3))
                     PHSUNHR(IHR) = PHSUN
@@ -2140,7 +2140,7 @@ class ExternalFunctions:
                     CPHSUN = CPHSUNHR(IHR)
                     DayltgExtHorizIllum(GILSK(IHR, 1), GILSU(IHR))
         else:
-        	# timestep integrated calculations
+            # timestep integrated calculations
             PHSUN = 0.0
             SPHSUN = 0.0
             CPHSUN = 0.0
@@ -2154,7 +2154,7 @@ class ExternalFunctions:
             GILSU(HourOfDay) = 0.0
             
             if (!(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)):
-            	# Skip if sun is below horizon
+                # Skip if sun is below horizon
                 PHSUN = PiOvr2 - math.acos(SUNCOSHR(HourOfDay, 3))
                 PHSUNHR(HourOfDay) = PHSUN
                 SPHSUNHR(HourOfDay) = math.sin(PHSUN)
@@ -2174,11 +2174,11 @@ class ExternalFunctions:
             # Skip zones that are not Daylighting:Detailed zones.
             # TotalDaylRefPoints = 0 means zone has (1) no daylighting or (3) Daylighting:DElight
             if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
-            	continue
+                continue
 
             # Skip zones with no exterior windows in the zone or in adjacent zone with which an interior window is shared
             if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
-        		continue
+                continue
 
             CalcDayltgCoeffsRefMapPoints(ZoneNum)
 
@@ -2194,7 +2194,7 @@ class ExternalFunctions:
 
                 #     for ZoneNum in range(1, NumOfZones+1):
                 #         if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
-                #     		continue
+                #           continue
                 #         for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
                 #             IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
                 #             # For this report, do not include ext wins in zone adjacent to ZoneNum since the inter-reflected
@@ -2204,7 +2204,7 @@ class ExternalFunctions:
                 #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 1, loop)
                 #                 DaylFac2 = 0.0
                 #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop)
+                #                   DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 1, 2, loop)
 
                 #                 gio::write(OutputFileInits, fmtA) << " Clear Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
                 #                                                          Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
@@ -2214,7 +2214,7 @@ class ExternalFunctions:
                 #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 1, loop)
                 #                 DaylFac2 = 0.0
                 #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop)
+                #                   DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 2, 2, loop)
 
                 #                 gio::write(OutputFileInits, fmtA) << " Clear Turbid Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
                 #                                                          ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
@@ -2224,7 +2224,7 @@ class ExternalFunctions:
                 #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 1, loop)
                 #                 DaylFac2 = 0.0
                 #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop)
+                #                   DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 3, 2, loop)
                                 
                 #                 gio::write(OutputFileInits, fmtA) << " Intermediate Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name +
                 #                                                          ',' + Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
@@ -2234,7 +2234,7 @@ class ExternalFunctions:
                 #                 DaylFac1 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 1, loop)
                 #                 DaylFac2 = 0.0
                 #                 if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 1):
-                #                 	DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop)
+                #                   DaylFac2 = ZoneDaylight(ZoneNum).DaylIllFacSky(12, 1, 4, 2, loop)
 
                 #                 gio::write(OutputFileInits, fmtA) << " Overcast Sky Daylight Factors," + CurMnDy + ',' + Zone(ZoneNum).Name + ',' +
                 #                                                          Surface(IWin).Name + ',' + RoundSigDigits(DaylFac1, 4) + ',' +
@@ -2286,7 +2286,7 @@ class ExternalFunctions:
 
         for ZoneNum in range(1, NumOfZones+1):
             if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0):
-            	continue
+                continue
 
             for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
                 IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
@@ -2346,11 +2346,11 @@ class ExternalFunctions:
                         # end hour loop
             # end exterior windows in zone loop
         # end zone loop
-	    return None
+        return None
 
-	# ScheduleManager::GetScheduleIndex
+    # ScheduleManager::GetScheduleIndex
     def GetScheduleIndex(&ScheduleName):
-    	'''
+        '''
         FUNCTION INFORMATION:
               AUTHOR         Linda K. Lawrie
               DATE WRITTEN   September 1997
@@ -2359,7 +2359,7 @@ class ExternalFunctions:
 
         PURPOSE OF THIS FUNCTION:
         This function returns the internal pointer to Schedule "ScheduleName".
-		'''
+        '''
 
         # Return value
         GetScheduleIndex = 0
@@ -2391,368 +2391,368 @@ class ExternalFunctions:
 
     # ScheduleManager::getNumObjectsFound
     def getNumObjectsFound(&ObjectWord):
-		'''
-	    FUNCTION INFORMATION:
-	          AUTHOR         Linda K. Lawrie
-	          DATE WRITTEN   September 1997
-	          MODIFIED       Mark Adams
-	          RE-ENGINEERED  na
+        '''
+        FUNCTION INFORMATION:
+              AUTHOR         Linda K. Lawrie
+              DATE WRITTEN   September 1997
+              MODIFIED       Mark Adams
+              RE-ENGINEERED  na
 
-	    PURPOSE OF THIS SUBROUTINE:
-	    This function returns the number of objects (in input data file)
-	    found in the current run.  If it can't find the object in list
-	    of objects, a 0 will be returned.
+        PURPOSE OF THIS SUBROUTINE:
+        This function returns the number of objects (in input data file)
+        found in the current run.  If it can't find the object in list
+        of objects, a 0 will be returned.
 
-	    METHODOLOGY EMPLOYED:
-	    Look up object in list of objects.  If there, return the
-	    number of objects found in the current input.  If not, return 0.
+        METHODOLOGY EMPLOYED:
+        Look up object in list of objects.  If there, return the
+        number of objects found in the current input.  If not, return 0.
 
         INPUT:
         std::string const &ObjectWord
-	    '''
-	    auto const &find_obj = epJSON.find(ObjectWord);
+        '''
+        auto const &find_obj = epJSON.find(ObjectWord);
 
-	    if (find_obj == epJSON.end()):
-	        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
-	        
-	        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
-	            return 0
-	        
-	        return static_cast<int>(epJSON[tmp_umit->second].size());
-	    else:
-	        return static_cast<int>(find_obj.value().size());
+        if (find_obj == epJSON.end()):
+            auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+            
+            if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
+                return 0
+            
+            return static_cast<int>(epJSON[tmp_umit->second].size());
+        else:
+            return static_cast<int>(find_obj.value().size());
 
-	    if (schema["properties"].find(ObjectWord) == schema["properties"].end()):
-	        auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
-	        if (tmp_umit == caseInsensitiveObjectMap.end()):
-	            ShowWarningError("Requested Object not found in Definitions: {}.".format(ObjectWord))
+        if (schema["properties"].find(ObjectWord) == schema["properties"].end()):
+            auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+            if (tmp_umit == caseInsensitiveObjectMap.end()):
+                ShowWarningError("Requested Object not found in Definitions: {}.".format(ObjectWord))
 
-	    return 0
+        return 0
 
     # ScheduleManager::getObjectItem
-	def getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, *args):
-		# void InputProcessor::getObjectItem(std::string const &Object,
-  		#                            int const Number,
-		#                            Array1S_string Alphas,
-		#                            int &NumAlphas,
-		#                            Array1S<Real64> Numbers,
-		#                            int &NumNumbers,
-		#                            int &Status,
+    def getObjectItem(&Object, Number, Alphas, &NumAlphas, Numbers, &NumNumbers, &Status, *args):
+        # void InputProcessor::getObjectItem(std::string const &Object,
+        #                            int const Number,
+        #                            Array1S_string Alphas,
+        #                            int &NumAlphas,
+        #                            Array1S<Real64> Numbers,
+        #                            int &NumNumbers,
+        #                            int &Status,
         #                            *args = (NumBlank, AlphaBlank, AlphaFieldNames, NumericFieldNames)
-		#                            Optional<pd.Series()> NumBlank,
-		#                            Optional<pd.Series()> AlphaBlank,
-		#                            Optional<pd.Series()> AlphaFieldNames,
-		#                            Optional<pd.Series()> NumericFieldNames)
-		'''
-	    SUBROUTINE INFORMATION:
-	          AUTHOR         Linda K. Lawrie
-	          DATE WRITTEN   September 1997
-	          MODIFIED       na
-	          RE-ENGINEERED  na
+        #                            Optional<pd.Series()> NumBlank,
+        #                            Optional<pd.Series()> AlphaBlank,
+        #                            Optional<pd.Series()> AlphaFieldNames,
+        #                            Optional<pd.Series()> NumericFieldNames)
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         Linda K. Lawrie
+              DATE WRITTEN   September 1997
+              MODIFIED       na
+              RE-ENGINEERED  na
 
-	    PURPOSE OF THIS SUBROUTINE:
-	    This subroutine gets the 'number' 'object' from the IDFRecord data structure.
-	    '''
+        PURPOSE OF THIS SUBROUTINE:
+        This subroutine gets the 'number' 'object' from the IDFRecord data structure.
+        '''
 
-	    adjustedNumber = getJSONObjNum(Object, Number) # if incoming input is idf, then use idf object order
+        adjustedNumber = getJSONObjNum(Object, Number) # if incoming input is idf, then use idf object order
 
-	    objectInfo = ObjectInfo()
-	    objectInfo.objectType = Object
-	    # auto sorted_iterators = find_iterators
+        objectInfo = ObjectInfo()
+        objectInfo.objectType = Object
+        # auto sorted_iterators = find_iterators
 
-	    find_iterators = objectCacheMap.find(Object)
-	    if (find_iterators == objectCacheMap.end()):
-	        tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object))
-	        if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
-	            return None
+        find_iterators = objectCacheMap.find(Object)
+        if (find_iterators == objectCacheMap.end()):
+            tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object))
+            if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
+                return None
 
-	        objectInfo.objectType = tmp_umit->second
-	        find_iterators = objectCacheMap.find(objectInfo.objectType)
+            objectInfo.objectType = tmp_umit->second
+            find_iterators = objectCacheMap.find(objectInfo.objectType)
 
-	    NumAlphas = 0
-	    NumNumbers = 0
-	    Status = -1
-	    &is_AlphaBlank = present(AlphaBlank)
-	    &is_AlphaFieldNames = present(AlphaFieldNames)
-	    &is_NumBlank = present(NumBlank)
-	    &is_NumericFieldNames = present(NumericFieldNames)
+        NumAlphas = 0
+        NumNumbers = 0
+        Status = -1
+        &is_AlphaBlank = present(AlphaBlank)
+        &is_AlphaFieldNames = present(AlphaFieldNames)
+        &is_NumBlank = present(NumBlank)
+        &is_NumericFieldNames = present(NumericFieldNames)
 
-	    &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1)
-	    &epJSON_schema_it = find_iterators->second.schemaIterator
-	    &epJSON_schema_it_val = epJSON_schema_it.value()
+        &epJSON_it = find_iterators->second.inputObjectIterators.at(adjustedNumber - 1)
+        &epJSON_schema_it = find_iterators->second.schemaIterator
+        &epJSON_schema_it_val = epJSON_schema_it.value()
 
-	    # Locations in JSON schema relating to normal fields
-	    &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"]
+        # Locations in JSON schema relating to normal fields
+        &schema_obj_props = epJSON_schema_it_val["patternProperties"][".*"]["properties"]
 
-	    # Locations in JSON schema storing the positional aspects from the IDD format, legacy prefixed
-	    &legacy_idd = epJSON_schema_it_val["legacy_idd"]
-	    &legacy_idd_field_info = legacy_idd["field_info"]
-	    &legacy_idd_fields = legacy_idd["fields"]
-	    &schema_name_field = epJSON_schema_it_val.find("name")
+        # Locations in JSON schema storing the positional aspects from the IDD format, legacy prefixed
+        &legacy_idd = epJSON_schema_it_val["legacy_idd"]
+        &legacy_idd_field_info = legacy_idd["field_info"]
+        &legacy_idd_fields = legacy_idd["fields"]
+        &schema_name_field = epJSON_schema_it_val.find("name")
 
-	    key = legacy_idd.find("extension")
-	    extension_key = ""
-	    if (key != legacy_idd.end()):
-	        extension_key = key.value()
+        key = legacy_idd.find("extension")
+        extension_key = ""
+        if (key != legacy_idd.end()):
+            extension_key = key.value()
 
-	    Alphas = ""
-	    Numbers = 0
-	    if (is_NumBlank): NumBlank() = True                 # declaração de variável duvidosa...
-	    if (is_AlphaBlank): AlphaBlank() = True             # declaração de variável duvidosa...
-	    if (is_AlphaFieldNames): AlphaFieldNames() = ""     # declaração de variável duvidosa...
-	    if (is_NumericFieldNames): NumericFieldNames() = "" # declaração de variável duvidosa...
+        Alphas = ""
+        Numbers = 0
+        if (is_NumBlank): NumBlank() = True                 # declaração de variável duvidosa...
+        if (is_AlphaBlank): AlphaBlank() = True             # declaração de variável duvidosa...
+        if (is_AlphaFieldNames): AlphaFieldNames() = ""     # declaração de variável duvidosa...
+        if (is_NumericFieldNames): NumericFieldNames() = "" # declaração de variável duvidosa...
 
-	    &obj = epJSON_it;
-	    &obj_val = obj.value();
+        &obj = epJSON_it;
+        &obj_val = obj.value();
 
-	    objectInfo.objectName = obj.key();
+        objectInfo.objectName = obj.key();
 
-	    find_unused = unusedInputs.find(objectInfo);
-	    if (find_unused != unusedInputs.end()):
-	        unusedInputs.erase(find_unused)
+        find_unused = unusedInputs.find(objectInfo);
+        if (find_unused != unusedInputs.end()):
+            unusedInputs.erase(find_unused)
 
-	    # size_t idf_max_fields = 0
+        # size_t idf_max_fields = 0
         idf_max_fields = size_t*[0]
-	    found_idf_max_fields = obj_val.find("idf_max_fields");
-	    if (found_idf_max_fields != obj_val.end()):
-	        idf_max_fields = *found_idf_max_fields
+        found_idf_max_fields = obj_val.find("idf_max_fields");
+        if (found_idf_max_fields != obj_val.end()):
+            idf_max_fields = *found_idf_max_fields
 
-	    # size_t idf_max_extensible_fields = 0
+        # size_t idf_max_extensible_fields = 0
         idf_max_extensible_fields = size_t*[0]
-	    found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
-	    if (found_idf_max_extensible_fields != obj_val.end()):
-	        idf_max_extensible_fields = *found_idf_max_extensible_fields;
+        found_idf_max_extensible_fields = obj_val.find("idf_max_extensible_fields");
+        if (found_idf_max_extensible_fields != obj_val.end()):
+            idf_max_extensible_fields = *found_idf_max_extensible_fields;
 
-	    alpha_index = 1
-	    numeric_index = 1
+        alpha_index = 1
+        numeric_index = 1
 
         # for (size_t i = 0; i < legacy_idd_fields.size(); ++i) {
         for i in range(0, legacy_idd_fields.size(), 1):
-	        &field = legacy_idd_fields[i]
-	        &field_info = legacy_idd_field_info.find(field)
+            &field = legacy_idd_fields[i]
+            &field_info = legacy_idd_field_info.find(field)
 
-	        if (field_info == legacy_idd_field_info.end()):
-	            ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
-	        
-	        &field_type = field_info.value().at("field_type").get<std::string>();
-	        within_idf_fields = (i < idf_max_fields)
+            if (field_info == legacy_idd_field_info.end()):
+                ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
+            
+            &field_type = field_info.value().at("field_type").get<std::string>();
+            within_idf_fields = (i < idf_max_fields)
 
-	        if (field == "name" && schema_name_field != epJSON_schema_it_val.end()):
-	            &name_iter = schema_name_field.value();
-	            if (name_iter.find("retaincase") != name_iter.end()):
-	                Alphas(alpha_index) = objectInfo.objectName
-	            else:
-	                Alphas(alpha_index) = UtilityRoutines::MakeUPPERCase(objectInfo.objectName);
+            if (field == "name" && schema_name_field != epJSON_schema_it_val.end()):
+                &name_iter = schema_name_field.value();
+                if (name_iter.find("retaincase") != name_iter.end()):
+                    Alphas(alpha_index) = objectInfo.objectName
+                else:
+                    Alphas(alpha_index) = UtilityRoutines::MakeUPPERCase(objectInfo.objectName);
 
-	            if (is_AlphaBlank):
-	            	AlphaBlank()(alpha_index) = objectInfo.objectName.empty()
-	            
-	            if (is_AlphaFieldNames):
-	                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                if (is_AlphaBlank):
+                    AlphaBlank()(alpha_index) = objectInfo.objectName.empty()
+                
+                if (is_AlphaFieldNames):
+                    AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
 
-	            NumAlphas += 1
-	            alpha_index += 1
-	            continue
+                NumAlphas += 1
+                alpha_index += 1
+                continue
 
-	        &schema_field_obj = schema_obj_props[field];
-	        it = obj_val.find(field);
-	        if (it != obj_val.end()):
-	            &field_value = it.value();
-	            if (field_type == "a"):
-	                # process alpha value
-	                if (field_value.is_string()):
-	                    value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
+            &schema_field_obj = schema_obj_props[field];
+            it = obj_val.find(field);
+            if (it != obj_val.end()):
+                &field_value = it.value();
+                if (field_type == "a"):
+                    # process alpha value
+                    if (field_value.is_string()):
+                        value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
 
-	                    Alphas(alpha_index) = value.first
-	                    if (is_AlphaBlank):
-	                    	AlphaBlank()(alpha_index) = value.second;
+                        Alphas(alpha_index) = value.first
+                        if (is_AlphaBlank):
+                            AlphaBlank()(alpha_index) = value.second;
 
-	                else:
-	                    if (field_value.is_number_integer()):
-	                        i64toa(field_value.get<std::int64_t>(), s);
-	                    else:
-	                        dtoa(field_value.get<double>(), s);
+                    else:
+                        if (field_value.is_number_integer()):
+                            i64toa(field_value.get<std::int64_t>(), s);
+                        else:
+                            dtoa(field_value.get<double>(), s);
 
-	                    Alphas(alpha_index) = s
-	                    if (is_AlphaBlank):
-	                    	AlphaBlank()(alpha_index) = False
+                        Alphas(alpha_index) = s
+                        if (is_AlphaBlank):
+                            AlphaBlank()(alpha_index) = False
 
-	            elif (field_type == "n"):
-	                # process numeric value
-	                if (field_value.is_number()):
-	                    if (field_value.is_number_integer()):
-	                        Numbers(numeric_index) = field_value.get<std::int64_t>();
-	                    else:
-	                        Numbers(numeric_index) = field_value.get<double>();
+                elif (field_type == "n"):
+                    # process numeric value
+                    if (field_value.is_number()):
+                        if (field_value.is_number_integer()):
+                            Numbers(numeric_index) = field_value.get<std::int64_t>();
+                        else:
+                            Numbers(numeric_index) = field_value.get<double>();
 
-	                    if (is_NumBlank):
-	                    	NumBlank()(numeric_index) = False
-	                else:
-	                    is_empty = field_value.get<std::string>().empty()
-	                    if (is_empty):
-	                        findDefault(Numbers(numeric_index), schema_field_obj);
-	                    else:
-	                        Numbers(numeric_index) = -99999 # autosize and autocalculate
+                        if (is_NumBlank):
+                            NumBlank()(numeric_index) = False
+                    else:
+                        is_empty = field_value.get<std::string>().empty()
+                        if (is_empty):
+                            findDefault(Numbers(numeric_index), schema_field_obj);
+                        else:
+                            Numbers(numeric_index) = -99999 # autosize and autocalculate
 
-	                    if (is_NumBlank):
-	                    	NumBlank()(numeric_index) = is_empty
-	        else:
-	            if (field_type == "a"):
-	                if (!(within_idf_fields && findDefault(Alphas(alpha_index), schema_field_obj))):
-	                    Alphas(alpha_index) = ""
-	                
-	                if (is_AlphaBlank):
-	                	AlphaBlank()(alpha_index) = True
-	            elif (field_type == "n"):
-	                if (within_idf_fields):
-	                    findDefault(Numbers(numeric_index), schema_field_obj);
-	                else:
-	                    Numbers(numeric_index) = 0
-	                
-	                if (is_NumBlank) NumBlank()(numeric_index) = True
+                        if (is_NumBlank):
+                            NumBlank()(numeric_index) = is_empty
+            else:
+                if (field_type == "a"):
+                    if (!(within_idf_fields && findDefault(Alphas(alpha_index), schema_field_obj))):
+                        Alphas(alpha_index) = ""
+                    
+                    if (is_AlphaBlank):
+                        AlphaBlank()(alpha_index) = True
+                elif (field_type == "n"):
+                    if (within_idf_fields):
+                        findDefault(Numbers(numeric_index), schema_field_obj);
+                    else:
+                        Numbers(numeric_index) = 0
+                    
+                    if (is_NumBlank) NumBlank()(numeric_index) = True
 
-	        if (field_type == "a"):
-	            if (within_idf_fields):
-	            	NumAlphas += 1
-	            
-	            if (is_AlphaFieldNames):
-	                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
-	            
-	            alpha_index += 1
-	        elif (field_type == "n"):
-	            if (within_idf_fields):
-	            	NumNumbers += 1
-	            if (is_NumericFieldNames):
-	                NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
-	            
-	            numeric_index += 1
+            if (field_type == "a"):
+                if (within_idf_fields):
+                    NumAlphas += 1
+                
+                if (is_AlphaFieldNames):
+                    AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                
+                alpha_index += 1
+            elif (field_type == "n"):
+                if (within_idf_fields):
+                    NumNumbers += 1
+                if (is_NumericFieldNames):
+                    NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                
+                numeric_index += 1
 
-	    size_t extensible_count = 0
-	    &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
-	    
-	    if (legacy_idd_extensibles_iter != legacy_idd.end()):
-	        epJSON_extensions_array_itr = obj.value().find(extension_key);
-	        
-	        if (epJSON_extensions_array_itr != obj.value().end()):
-	            &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
-	            &epJSON_extensions_array = epJSON_extensions_array_itr.value();
-	            &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
+        size_t extensible_count = 0
+        &legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
+        
+        if (legacy_idd_extensibles_iter != legacy_idd.end()):
+            epJSON_extensions_array_itr = obj.value().find(extension_key);
+            
+            if (epJSON_extensions_array_itr != obj.value().end()):
+                &legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
+                &epJSON_extensions_array = epJSON_extensions_array_itr.value();
+                &schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
 
-	            for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
-	                &epJSON_extension_obj = it.value();
+                for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
+                    &epJSON_extension_obj = it.value();
 
-	                for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
-	                    std::string const &field_name = legacy_idd_extensibles[i];
-	                    &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
-	                    &schema_field = schema_extension_fields[field_name];
+                    for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
+                        std::string const &field_name = legacy_idd_extensibles[i];
+                        &epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
+                        &schema_field = schema_extension_fields[field_name];
 
-	                    &field_info = legacy_idd_field_info.find(field_name);
-	                    if (field_info == legacy_idd_field_info.end()):
-	                        ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
-	                    
-	                    &field_type = field_info.value().at("field_type").get<std::string>();
-	                    within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields)
+                        &field_info = legacy_idd_field_info.find(field_name);
+                        if (field_info == legacy_idd_field_info.end()):
+                            ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
+                        
+                        &field_type = field_info.value().at("field_type").get<std::string>();
+                        within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields)
 
-	                    if (epJSON_obj_field_iter != epJSON_extension_obj.end()):
-	                        &field_value = epJSON_obj_field_iter.value();
+                        if (epJSON_obj_field_iter != epJSON_extension_obj.end()):
+                            &field_value = epJSON_obj_field_iter.value();
 
-	                        if (field_type == "a"):
-	                            if (field_value.is_string()):
-	                                value = getObjectItemValue(field_value.get<std::string>(), schema_field);
+                            if (field_type == "a"):
+                                if (field_value.is_string()):
+                                    value = getObjectItemValue(field_value.get<std::string>(), schema_field);
 
-	                                Alphas(alpha_index) = value.first;
-	                                if (is_AlphaBlank):
-	                                	AlphaBlank()(alpha_index) = value.second
-	                            else:
-	                                if (field_value.is_number_integer()):
-	                                    i64toa(field_value.get<std::int64_t>(), s);
-	                                else:
-	                                    dtoa(field_value.get<double>(), s);
-	                                
-	                                Alphas(alpha_index) = s
-	                                if (is_AlphaBlank):
-	                                	AlphaBlank()(alpha_index) = False
-	                            
-	                        elif (field_type == "n"):
-	                            if (field_value.is_number()):
-	                                if (field_value.is_number_integer()):
-	                                    Numbers(numeric_index) = field_value.get<std::int64_t>();
-	                                else:
-	                                    Numbers(numeric_index) = field_value.get<double>();
-	                                
-	                                if (is_NumBlank):
-	                                	NumBlank()(numeric_index) = False
-	                            
-	                            else:
-	                                is_empty = field_value.get<std::string>().empty()
-	                                if (is_empty):
-	                                    findDefault(Numbers(numeric_index), schema_field)
-	                                else:
-	                                    Numbers(numeric_index) = -99999 # autosize and autocalculate
-	                                
-	                                if (is_NumBlank):
-	                                	NumBlank()(numeric_index) = is_empty
-	                    else:
-	                        if (field_type == "a"):
-	                            if (!(within_idf_extensible_fields && findDefault(Alphas(alpha_index), schema_field))):
-	                                Alphas(alpha_index) = ""
-	                            
-	                            if (is_AlphaBlank):
-	                            	AlphaBlank()(alpha_index) = True
-	                        
-	                        elif (field_type == "n"):
-	                            if (within_idf_extensible_fields):
-	                                findDefault(Numbers(numeric_index), schema_field)
-	                            else:
-	                                Numbers(numeric_index) = 0
-	                            
-	                            if (is_NumBlank):
-	                            	NumBlank()(numeric_index) = True
+                                    Alphas(alpha_index) = value.first;
+                                    if (is_AlphaBlank):
+                                        AlphaBlank()(alpha_index) = value.second
+                                else:
+                                    if (field_value.is_number_integer()):
+                                        i64toa(field_value.get<std::int64_t>(), s);
+                                    else:
+                                        dtoa(field_value.get<double>(), s);
+                                    
+                                    Alphas(alpha_index) = s
+                                    if (is_AlphaBlank):
+                                        AlphaBlank()(alpha_index) = False
+                                
+                            elif (field_type == "n"):
+                                if (field_value.is_number()):
+                                    if (field_value.is_number_integer()):
+                                        Numbers(numeric_index) = field_value.get<std::int64_t>();
+                                    else:
+                                        Numbers(numeric_index) = field_value.get<double>();
+                                    
+                                    if (is_NumBlank):
+                                        NumBlank()(numeric_index) = False
+                                
+                                else:
+                                    is_empty = field_value.get<std::string>().empty()
+                                    if (is_empty):
+                                        findDefault(Numbers(numeric_index), schema_field)
+                                    else:
+                                        Numbers(numeric_index) = -99999 # autosize and autocalculate
+                                    
+                                    if (is_NumBlank):
+                                        NumBlank()(numeric_index) = is_empty
+                        else:
+                            if (field_type == "a"):
+                                if (!(within_idf_extensible_fields && findDefault(Alphas(alpha_index), schema_field))):
+                                    Alphas(alpha_index) = ""
+                                
+                                if (is_AlphaBlank):
+                                    AlphaBlank()(alpha_index) = True
+                            
+                            elif (field_type == "n"):
+                                if (within_idf_extensible_fields):
+                                    findDefault(Numbers(numeric_index), schema_field)
+                                else:
+                                    Numbers(numeric_index) = 0
+                                
+                                if (is_NumBlank):
+                                    NumBlank()(numeric_index) = True
 
-	                    if (field_type == "a"):
-	                        if (within_idf_extensible_fields):
-	                        	NumAlphas += 1
-	                        if (is_AlphaFieldNames):
-	                            AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
-	                        
-	                        alpha_index += 1
-	                    
-	                    elif (field_type == "n"):
-	                        if (within_idf_extensible_fields):
-	                        	NumNumbers += 1
-	                        if (is_NumericFieldNames):
-	                            NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
-	                        
-	                        numeric_index += 1
+                        if (field_type == "a"):
+                            if (within_idf_extensible_fields):
+                                NumAlphas += 1
+                            if (is_AlphaFieldNames):
+                                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+                            
+                            alpha_index += 1
+                        
+                        elif (field_type == "n"):
+                            if (within_idf_extensible_fields):
+                                NumNumbers += 1
+                            if (is_NumericFieldNames):
+                                NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+                            
+                            numeric_index += 1
 
-	    Status = 1 # ?
-	    return None
+        Status = 1 # ?
+        return None
 
     # PAREI AQUI!
-	# DataTimings::EP_Count_Calls --> como definir esta merda?!
-	ifdef EP_Count_Calls
-	    int NumShadow_Calls(0);
-	    int NumShadowAtTS_Calls(0);
-	    int NumClipPoly_Calls(0);
-	    int NumInitSolar_Calls(0);
-	    int NumAnisoSky_Calls(0);
-	    int NumDetPolyOverlap_Calls(0);
-	    int NumCalcPerSolBeam_Calls(0);
-	    int NumDetShadowCombs_Calls(0);
-	    int NumIntSolarDist_Calls(0);
-	    int NumIntRadExchange_Calls(0);
-	    int NumIntRadExchangeZ_Calls(0);
-	    int NumIntRadExchangeMain_Calls(0);
-	    int NumIntRadExchangeOSurf_Calls(0);
-	    int NumIntRadExchangeISurf_Calls(0);
-	    int NumMaxInsideSurfIterations(0);
-	    int NumCalcScriptF_Calls(0);
-	endif
+    # DataTimings::EP_Count_Calls --> como definir esta merda?!
+    ifdef EP_Count_Calls
+        int NumShadow_Calls(0);
+        int NumShadowAtTS_Calls(0);
+        int NumClipPoly_Calls(0);
+        int NumInitSolar_Calls(0);
+        int NumAnisoSky_Calls(0);
+        int NumDetPolyOverlap_Calls(0);
+        int NumCalcPerSolBeam_Calls(0);
+        int NumDetShadowCombs_Calls(0);
+        int NumIntSolarDist_Calls(0);
+        int NumIntRadExchange_Calls(0);
+        int NumIntRadExchangeZ_Calls(0);
+        int NumIntRadExchangeMain_Calls(0);
+        int NumIntRadExchangeOSurf_Calls(0);
+        int NumIntRadExchangeISurf_Calls(0);
+        int NumMaxInsideSurfIterations(0);
+        int NumCalcScriptF_Calls(0);
+    endif
 
-	# OutputReportPredefined.cc::PreDefTableEntry
-	def PreDefTableEntry(columnIndex, &objName, tableEntryInt):
-		# void PreDefTableEntry(int const columnIndex, std::string const &objName, int const tableEntryInt)
-	    '''
+    # OutputReportPredefined.cc::PreDefTableEntry
+    def PreDefTableEntry(columnIndex, &objName, tableEntryInt):
+        # void PreDefTableEntry(int const columnIndex, std::string const &objName, int const tableEntryInt)
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Jason Glazer
               DATE WRITTEN   August 2006
@@ -2765,7 +2765,7 @@ class ExternalFunctions:
 
         METHODOLOGY EMPLOYED:
           Simple assignments to public variables.
-		'''
+        '''
         # SUBROUTINE PARAMETER DEFINITIONS:
         static gio::Fmt fmtLD("*");
 
@@ -2783,7 +2783,7 @@ class ExternalFunctions:
 
     # WindowComplexManager::InitComplexWindows --> Será usado?
   #   def InitComplexWindows():
-  #   	'''
+  #     '''
   #       SUBROUTINE INFORMATION:
   #             AUTHOR         Linda Lawrie
   #             DATE WRITTEN   November 2012
@@ -2792,7 +2792,7 @@ class ExternalFunctions:
 
   #       PURPOSE OF THIS SUBROUTINE:
   #       Extract simple init for Complex Windows
-		# '''
+        # '''
   #       # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
   #       Once = True # Flag for insuring things happen once
 
@@ -2806,7 +2806,7 @@ class ExternalFunctions:
 
     # WindowComplexManager::UpdateComplexWindows --> Será usado?
   #   def UpdateComplexWindows():
-  #   	'''
+  #     '''
   #       SUBROUTINE INFORMATION:
   #             AUTHOR         Joe Klems
   #             DATE WRITTEN   August 2011
@@ -2819,7 +2819,7 @@ class ExternalFunctions:
 
   #       METHODOLOGY EMPLOYED:
   #       <description>
-		# '''
+        # '''
         
   #       # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
   #       # LOGICAL,SAVE    ::  Once  =.TRUE.  !Flag for insuring things happen once
@@ -2829,11 +2829,11 @@ class ExternalFunctions:
   #       IWind = 0     # Index identifying a window in the WindowList
 
   #       # !One-time initialization
-		# # IF (Once) THEN
-		# #   ONCE = .FALSE.
-		# #   CALL InitBSDFWindows
-		# #   CALL CalcStaticProperties
-		# # ENDIF
+        # # IF (Once) THEN
+        # #   ONCE = .FALSE.
+        # #   CALL InitBSDFWindows
+        # #   CALL CalcStaticProperties
+        # # ENDIF
 
   #       if (NumComplexWind == 0): return None
   #       if (KickOffSizing || KickOffSimulation): return None
@@ -2850,10 +2850,10 @@ class ExternalFunctions:
   #           # State loop
   #       # window loop
     
-  #   	return None
+  #     return None
 
 class SolarShading(ExternalFunctions):
-	'''
+    '''
     MODULE INFORMATION:
           AUTHOR         Rick Strand
           DATE WRITTEN   March 1997
@@ -2886,183 +2886,183 @@ class SolarShading(ExternalFunctions):
 
     OTHER NOTES:
     # na
-	'''
+    '''
 
-	def __init__(self):
-		'''
-		Define the variables to be used throughout the routine.
+    def __init__(self):
+        '''
+        Define the variables to be used throughout the routine.
 
-		SHOULD specify all the input data too!
-		'''
-	    # Using/Aliasing
-	    using namespace DataPrecisionGlobals
-	   # using namespace DataGlobals
-	    NumOfTimeStepInHour = 0                 # Number of time steps in each hour of the simulation
+        SHOULD specify all the input data too!
+        '''
+        # Using/Aliasing
+        using namespace DataPrecisionGlobals
+       # using namespace DataGlobals
+        NumOfTimeStepInHour = 0                 # Number of time steps in each hour of the simulation
         NumOfZones = 0                          # Total number of Zones for simulation
-	   # using namespace DataEnvironment
-	    IgnoreSolarRadiation = False            # TRUE if all solar radiation is to be ignored
-	   # using namespace DataHeatBalance
-	    SolarDistribution = 0                   # Solar Distribution Algorithm
-	    MinimalShadowing = -1                   # all incoming solar hits floor, no exterior shadowing except reveals
-	    MaxSolidWinLayers = 0                   # Maximum number of solid layers in a window construction
-	                                            # ** has to be big enough to hold no matter what window model
-	                                            #    each window model should validate layers individually
-	   # using namespace DataSurfaces
-	    ShadingTransmittanceVaries = False      # overall, shading transmittance varies for the building
-	    TotSurfaces = 0                         # Total number of surfaces (walls, floors, roofs, windows,
-	                                            # shading surfaces, etc.--everything)
-	    MaxVerticesPerSurface = 4               # Maximum number of vertices allowed for a single surface
-	                                            # (default -- can go higher)
-	    ExternalEnvironment = 0                 # Parameters to indicate exterior boundary conditions for use with
-	    OtherSideCondModeledExt = -4            # the Surface derived type.
-	                                            # Note:  Positive values correspond to an interzone adjacent surface
-	   # using DataBSDFWindow::MaxBkSurf
-	    # MaxBkSurf = 20                          # was 20    Maximum number of back surfaces in solar overlap &
-	                                            # interior solar distribution
-	    using namespace DataVectorTypes
-	    using namespace FenestrationCommon
-	    using namespace SingleLayerOptics
+       # using namespace DataEnvironment
+        IgnoreSolarRadiation = False            # TRUE if all solar radiation is to be ignored
+       # using namespace DataHeatBalance
+        SolarDistribution = 0                   # Solar Distribution Algorithm
+        MinimalShadowing = -1                   # all incoming solar hits floor, no exterior shadowing except reveals
+        MaxSolidWinLayers = 0                   # Maximum number of solid layers in a window construction
+                                                # ** has to be big enough to hold no matter what window model
+                                                #    each window model should validate layers individually
+       # using namespace DataSurfaces
+        ShadingTransmittanceVaries = False      # overall, shading transmittance varies for the building
+        TotSurfaces = 0                         # Total number of surfaces (walls, floors, roofs, windows,
+                                                # shading surfaces, etc.--everything)
+        MaxVerticesPerSurface = 4               # Maximum number of vertices allowed for a single surface
+                                                # (default -- can go higher)
+        ExternalEnvironment = 0                 # Parameters to indicate exterior boundary conditions for use with
+        OtherSideCondModeledExt = -4            # the Surface derived type.
+                                                # Note:  Positive values correspond to an interzone adjacent surface
+       # using DataBSDFWindow::MaxBkSurf
+        # MaxBkSurf = 20                          # was 20    Maximum number of back surfaces in solar overlap &
+                                                # interior solar distribution
+        using namespace DataVectorTypes
+        using namespace FenestrationCommon
+        using namespace SingleLayerOptics
 
-	    # Data
-	    # MODULE PARAMETER DEFINITIONS:
-	    # General Parameters...
-	    SmallIncrement = 1.0e-10 # Small increment added for shading/sunlit area calculations.
-	    HCMULT = 100000.0        # Multiplier used to change meters to .01 millimeters for homogeneous coordinates.
-	    
-	    # Homogeneous Coordinates are represented in integers (64 bit). This changes the surface coordinates from meters
-	    # to .01 millimeters -- making that the resolution for shadowing, polygon clipping, etc.
-	    sqHCMULT = (HCMULT * HCMULT)			# Square of HCMult used in Homogeneous coordinates
-	    sqHCMULT_fac = 0.5 / sqHCMULT			# ( 0.5 / sqHCMULT ) factor --> half of inverse square of HCMult used in Homogeneous coordinates
-	    # kHCMULT= 1.0 / (HCMULT * HCMULT)		# not used below
+        # Data
+        # MODULE PARAMETER DEFINITIONS:
+        # General Parameters...
+        SmallIncrement = 1.0e-10 # Small increment added for shading/sunlit area calculations.
+        HCMULT = 100000.0        # Multiplier used to change meters to .01 millimeters for homogeneous coordinates.
+        
+        # Homogeneous Coordinates are represented in integers (64 bit). This changes the surface coordinates from meters
+        # to .01 millimeters -- making that the resolution for shadowing, polygon clipping, etc.
+        sqHCMULT = (HCMULT * HCMULT)            # Square of HCMult used in Homogeneous coordinates
+        sqHCMULT_fac = 0.5 / sqHCMULT           # ( 0.5 / sqHCMULT ) factor --> half of inverse square of HCMult used in Homogeneous coordinates
+        # kHCMULT= 1.0 / (HCMULT * HCMULT)      # not used below
 
-	    # Parameters for use with the variable OverlapStatus...
-	    NoOverlap = 1
-	    FirstSurfWithinSecond = 2
-	    SecondSurfWithinFirst = 3
-	    PartialOverlap = 4
-	    TooManyVertices = 5
-	    TooManyFigures = 6
-	    cOverLapStatus = ["No-Overlap", "1st-Surf-within-2nd", "2nd-Surf-within-1st", "Partial-Overlap", "Too-Many-Vertices", "Too-Many-Figures"]
+        # Parameters for use with the variable OverlapStatus...
+        NoOverlap = 1
+        FirstSurfWithinSecond = 2
+        SecondSurfWithinFirst = 3
+        PartialOverlap = 4
+        TooManyVertices = 5
+        TooManyFigures = 6
+        cOverLapStatus = ["No-Overlap", "1st-Surf-within-2nd", "2nd-Surf-within-1st", "Partial-Overlap", "Too-Many-Vertices", "Too-Many-Figures"]
 
-	    # MODULE VARIABLE DECLARATIONS:
-	    MaxHCV = 15					# Maximum number of HC vertices
-	    							# (needs to be based on maxnumvertices)
-	    MaxHCS = 15000				# 200! Maximum number of HC surfaces (was 56)
-	    							# Following are initially set in AllocateModuleArrays
-	    MAXHCArrayBounds = 0    	# Bounds based on Max Number of Vertices in surfaces
-	    MAXHCArrayIncrement = 0 	# Increment based on Max Number of Vertices in surfaces
-	    
-	    # The following variable should be re-engineered to lower in module hierarchy but need more analysis
-	    NVS = 0 					# Number of vertices of the shadow/clipped surface
-	    NumVertInShadowOrClippedSurface = 0
-	    CurrentSurfaceBeingShadowed = 0
-	    CurrentShadowingSurface = 0
-	    OverlapStatus = 0			# Results of overlap calculation:
-	    							# 1=No overlap
-	    							# 2=NS1 completely within NS2
-									# 3=NS2 completely within NS1
-									# 4=Partial overlap
+        # MODULE VARIABLE DECLARATIONS:
+        MaxHCV = 15                 # Maximum number of HC vertices
+                                    # (needs to be based on maxnumvertices)
+        MaxHCS = 15000              # 200! Maximum number of HC surfaces (was 56)
+                                    # Following are initially set in AllocateModuleArrays
+        MAXHCArrayBounds = 0        # Bounds based on Max Number of Vertices in surfaces
+        MAXHCArrayIncrement = 0     # Increment based on Max Number of Vertices in surfaces
+        
+        # The following variable should be re-engineered to lower in module hierarchy but need more analysis
+        NVS = 0                     # Number of vertices of the shadow/clipped surface
+        NumVertInShadowOrClippedSurface = 0
+        CurrentSurfaceBeingShadowed = 0
+        CurrentShadowingSurface = 0
+        OverlapStatus = 0           # Results of overlap calculation:
+                                    # 1=No overlap
+                                    # 2=NS1 completely within NS2
+                                    # 3=NS2 completely within NS1
+                                    # 4=Partial overlap
 
-	    CTHETA = []        			# Cosine of angle of incidence of sun's rays on surface NS
-	    FBKSHC = 0                  # HC location of first back surface
-	    FGSSHC = 0                  # HC location of first general shadowing surface
-	    FINSHC = 0                  # HC location of first back surface overlap
-	    FRVLHC = 0                  # HC location of first reveal surface
-	    FSBSHC = 0                  # HC location of first subsurface
-	    LOCHCA = 0		            # Location of highest data in the HC arrays
-	    NBKSHC = 0                  # Number of back surfaces in the HC arrays
-	    NGSSHC = 0                  # Number of general shadowing surfaces in the HC arrays
-	    NINSHC = 0                  # Number of back surface overlaps in the HC arrays
-	    NRVLHC = 0                  # Number of reveal surfaces in HC array
-	    NSBSHC = 0                  # Number of subsurfaces in the HC arrays
-	    bool CalcSkyDifShading      # True when sky diffuse solar shading is
-	    ShadowingCalcFrequency = 0	# Frequency for Shadowing Calculations
-	    ShadowingDaysLeft = 0		# Days left in current shadowing period
-	    debugging = False
-	    namespace {
-	        # These were static variables within different functions. They were pulled out into the namespace
-	        # to facilitate easier unit testing of those functions.
-	        # These are purposefully not in the header file as an extern variable. No one outside of this should
-	        # use these. They are cleared by clear_state() for use by unit tests, but normal simulations should be unaffected.
-	        # This is purposefully in an anonymous namespace so nothing outside this implementation file can use it.
-	        MustAllocSolarShading = True
-	        GetInputFlag = True
-	        firstTime = True
-	    }
+        CTHETA = []                 # Cosine of angle of incidence of sun's rays on surface NS
+        FBKSHC = 0                  # HC location of first back surface
+        FGSSHC = 0                  # HC location of first general shadowing surface
+        FINSHC = 0                  # HC location of first back surface overlap
+        FRVLHC = 0                  # HC location of first reveal surface
+        FSBSHC = 0                  # HC location of first subsurface
+        LOCHCA = 0                  # Location of highest data in the HC arrays
+        NBKSHC = 0                  # Number of back surfaces in the HC arrays
+        NGSSHC = 0                  # Number of general shadowing surfaces in the HC arrays
+        NINSHC = 0                  # Number of back surface overlaps in the HC arrays
+        NRVLHC = 0                  # Number of reveal surfaces in HC array
+        NSBSHC = 0                  # Number of subsurfaces in the HC arrays
+        bool CalcSkyDifShading      # True when sky diffuse solar shading is
+        ShadowingCalcFrequency = 0  # Frequency for Shadowing Calculations
+        ShadowingDaysLeft = 0       # Days left in current shadowing period
+        debugging = False
+        namespace {
+            # These were static variables within different functions. They were pulled out into the namespace
+            # to facilitate easier unit testing of those functions.
+            # These are purposefully not in the header file as an extern variable. No one outside of this should
+            # use these. They are cleared by clear_state() for use by unit tests, but normal simulations should be unaffected.
+            # This is purposefully in an anonymous namespace so nothing outside this implementation file can use it.
+            MustAllocSolarShading = True
+            GetInputFlag = True
+            firstTime = True
+        }
 
-	    std::ofstream shd_stream # Shading file stream
-	    HCNS = []         			# Surface number of back surface HC figures
-	    HCNV = []         			# Number of vertices of each HC figure
-	    HCA = [[]]     				# 'A' homogeneous coordinates of sides
-	    HCB = [[]]     				# 'B' homogeneous coordinates of sides
-	    HCC = [[]]      			# 'C' homogeneous coordinates of sides
-	    HCX = [[]]      			# 'X' homogeneous coordinates of vertices of figure.
-	    HCY = [[]]      			# 'Y' homogeneous coordinates of vertices of figure.
-	    WindowRevealStatus = [[[]]]
-	    HCAREA = []					# Area of each HC figure.  Sign Convention:  Base Surface
-							    	# - Positive, Shadow - Negative, Overlap between two shadows
-							    	# - positive, etc., so that sum of HC areas=base sunlit area
-	    HCT = []   	 				# Transmittance of each HC figure
-	    ISABSF = []  				# For simple interior solar distribution (in which all beam
-									# radiation entering zone is assumed to strike the floor),
-	    							# fraction of beam radiation absorbed by each floor surface
-	    SAREA = []  				# Sunlit area of heat transfer surface HTS
-	    
-	    # Excludes multiplier for windows
-	    # Shadowing combinations data structure...See ShadowingCombinations type
-	    NumTooManyFigures = 0
-	    NumTooManyVertices = 0
-	    NumBaseSubSurround = 0
-	    SUNCOS = [3] 				# Direction cosines of solar position
-	    XShadowProjection = 0.0 	# X projection of a shadow (formerly called C)
-	    YShadowProjection = 0.0 	# Y projection of a shadow (formerly called S)
-	    XTEMP = []    				# Temporary 'X' values for HC vertices of the overlap
-	    XVC = []      				# X-vertices of the clipped figure
-	    XVS = []      				# X-vertices of the shadow
-	    YTEMP = []    				# Temporary 'Y' values for HC vertices of the overlap
-	    YVC = []      				# Y-vertices of the clipped figure
-	    YVS = []      				# Y-vertices of the shadow
-	    ZVC = []      				# Z-vertices of the clipped figure
-	    
-	    # Used in Sutherland Hodman poly clipping
-	    ATEMP = []					# Temporary 'A' values for HC vertices of the overlap
-	    BTEMP = [] 					# Temporary 'B' values for HC vertices of the overlap
-	    CTEMP = [] 					# Temporary 'C' values for HC vertices of the overlap
-	    XTEMP1 = []					# Temporary 'X' values for HC vertices of the overlap
-	    YTEMP1 = []					# Temporary 'Y' values for HC vertices of the overlap
-	    maxNumberOfFigures = 0
+        std::ofstream shd_stream # Shading file stream
+        HCNS = []                   # Surface number of back surface HC figures
+        HCNV = []                   # Number of vertices of each HC figure
+        HCA = [[]]                  # 'A' homogeneous coordinates of sides
+        HCB = [[]]                  # 'B' homogeneous coordinates of sides
+        HCC = [[]]                  # 'C' homogeneous coordinates of sides
+        HCX = [[]]                  # 'X' homogeneous coordinates of vertices of figure.
+        HCY = [[]]                  # 'Y' homogeneous coordinates of vertices of figure.
+        WindowRevealStatus = [[[]]]
+        HCAREA = []                 # Area of each HC figure.  Sign Convention:  Base Surface
+                                    # - Positive, Shadow - Negative, Overlap between two shadows
+                                    # - positive, etc., so that sum of HC areas=base sunlit area
+        HCT = []                    # Transmittance of each HC figure
+        ISABSF = []                 # For simple interior solar distribution (in which all beam
+                                    # radiation entering zone is assumed to strike the floor),
+                                    # fraction of beam radiation absorbed by each floor surface
+        SAREA = []                  # Sunlit area of heat transfer surface HTS
+        
+        # Excludes multiplier for windows
+        # Shadowing combinations data structure...See ShadowingCombinations type
+        NumTooManyFigures = 0
+        NumTooManyVertices = 0
+        NumBaseSubSurround = 0
+        SUNCOS = [3]                # Direction cosines of solar position
+        XShadowProjection = 0.0     # X projection of a shadow (formerly called C)
+        YShadowProjection = 0.0     # Y projection of a shadow (formerly called S)
+        XTEMP = []                  # Temporary 'X' values for HC vertices of the overlap
+        XVC = []                    # X-vertices of the clipped figure
+        XVS = []                    # X-vertices of the shadow
+        YTEMP = []                  # Temporary 'Y' values for HC vertices of the overlap
+        YVC = []                    # Y-vertices of the clipped figure
+        YVS = []                    # Y-vertices of the shadow
+        ZVC = []                    # Z-vertices of the clipped figure
+        
+        # Used in Sutherland Hodman poly clipping
+        ATEMP = []                  # Temporary 'A' values for HC vertices of the overlap
+        BTEMP = []                  # Temporary 'B' values for HC vertices of the overlap
+        CTEMP = []                  # Temporary 'C' values for HC vertices of the overlap
+        XTEMP1 = []                 # Temporary 'X' values for HC vertices of the overlap
+        YTEMP1 = []                 # Temporary 'Y' values for HC vertices of the overlap
+        maxNumberOfFigures = 0
 
-	    NPhi = 6                           # Number of altitude angle steps for sky integration
-	    NTheta = 24                        # Number of azimuth angle steps for sky integration
-	    Eps = 1.e-10				       # Small number
-	    DPhi = PiOvr2 / NPhi       	       # Altitude step size
-	    DTheta = 2.0 * math.pi / NTheta    # Azimuth step size
-	    DThetaDPhi = DTheta * DPhi 	       # Product of DTheta and DPhi
-	    PhiMin = 0.5 * DPhi        	       # Minimum altitude
+        NPhi = 6                           # Number of altitude angle steps for sky integration
+        NTheta = 24                        # Number of azimuth angle steps for sky integration
+        Eps = 1.e-10                       # Small number
+        DPhi = PiOvr2 / NPhi               # Altitude step size
+        DTheta = 2.0 * math.pi / NTheta    # Azimuth step size
+        DThetaDPhi = DTheta * DPhi         # Product of DTheta and DPhi
+        PhiMin = 0.5 * DPhi                # Minimum altitude
 
-	    sin_Phi = []
-	    cos_Phi = []
-	    sin_Theta = []
-	    cos_Theta = []
+        sin_Phi = []
+        cos_Phi = []
+        sin_Theta = []
+        cos_Theta = []
 
-	    # SUBROUTINE SPECIFICATIONS FOR MODULE SolarShading
+        # SUBROUTINE SPECIFICATIONS FOR MODULE SolarShading
 
-	    # Object Data ------------->  Que porra é essa?!
-	    TrackTooManyFigures = pd.Series()
+        # Object Data ------------->  Que porra é essa?!
+        TrackTooManyFigures = pd.Series()
         TrackTooManyVertices = pd.Series()
-	    TrackBaseSubSurround = pd.Series()
+        TrackBaseSubSurround = pd.Series()
 
-	    static gio::Fmt fmtLD("*")
+        static gio::Fmt fmtLD("*")
 
     #--------------------
     # MODULE SUBROUTINES:
-	#--------------------
+    #--------------------
 
     # Functions
     def clear_state():
-    	'''
-		Reset some initial variables to the values defined when the 'class' was initialized.
-    	'''
+        '''
+        Reset some initial variables to the values defined when the 'class' was initialized.
+        '''
         MaxHCV = 15
         MaxHCS = 1500
         MAXHCArrayBounds = 0
@@ -3126,187 +3126,187 @@ class SolarShading(ExternalFunctions):
         TrackBaseSubSurround.deallocate()
         DBZoneIntWin.deallocate()
         ISABSF.deallocate()
-    	
-    	return None
+        
+        return None
 
 # end of SolarShading
 
 
 class SolarCalculations(SolarShading): # ExternalFunctions will be passed automatically?
-	
-	def __init__(self):
-		'''
-	    SUBROUTINE INFORMATION:
-	          AUTHOR         George Walton
-	          DATE WRITTEN   September 1977
-	          MODIFIED       na
-	          RE-ENGINEERED  Mar97, RKS, Initial EnergyPlus Version
+    
+    def __init__(self):
+        '''
+        SUBROUTINE INFORMATION:
+              AUTHOR         George Walton
+              DATE WRITTEN   September 1977
+              MODIFIED       na
+              RE-ENGINEERED  Mar97, RKS, Initial EnergyPlus Version
 
-	    PURPOSE OF THIS SUBROUTINE:
-	    This routine controls the computation of the solar flux multipliers.
+        PURPOSE OF THIS SUBROUTINE:
+        This routine controls the computation of the solar flux multipliers.
 
-	    METHODOLOGY EMPLOYED:
-	    All shadowing calculations have been grouped under this routine to
-	    allow segmentation separating it from the hourly loads calculation.
+        METHODOLOGY EMPLOYED:
+        All shadowing calculations have been grouped under this routine to
+        allow segmentation separating it from the hourly loads calculation.
 
-	    REFERENCES:
-	    na
-	    '''
+        REFERENCES:
+        na
+        '''
 
-	    # FLOW:
-		#ifdef EP_Count_Calls # COMO FAZER ESTA MERDA EM PYTHON? --> Conditional inclusions: http://www.cplusplus.com/doc/tutorial/preprocessor/
-	    ++NumInitSolar_Calls
-		#endif
+        # FLOW:
+        #ifdef EP_Count_Calls # COMO FAZER ESTA MERDA EM PYTHON? --> Conditional inclusions: http://www.cplusplus.com/doc/tutorial/preprocessor/
+        ++NumInitSolar_Calls
+        #endif
 
-	    if (BeginSimFlag): # onde essa variável foi declarada?
-	        try:
-	        	shd_stream.open(DataStringGlobals::outputShdFileName) # --> "eplusout.shd" Pq preciso abrir este arquivo?
-	    															  # Será que é o arquivo que salvará os resultados?
-	        except OSError:
-	            print("SolarCalculations: Could not open file {} for output (write).".format(DataStringGlobals::outputShdFileName))
-	        else: # 'else' do 'except'? Não deveria estar junto ao 'try'?!
-	            if (GetInputFlag):
-	                GetShadowingInput()	# internal function
-	                GetInputFlag = False
-	                MaxHCV = (((max(15, MaxVerticesPerSurface) + 16) / 16) * 16) - 1 # Assure MaxHCV+1 is multiple of 16 for 128 B alignment
-	                assert((MaxHCV + 1) % 16 == 0)
+        if (BeginSimFlag): # onde essa variável foi declarada?
+            try:
+                shd_stream.open(DataStringGlobals::outputShdFileName) # --> "eplusout.shd" Pq preciso abrir este arquivo?
+                                                                      # Será que é o arquivo que salvará os resultados?
+            except OSError:
+                print("SolarCalculations: Could not open file {} for output (write).".format(DataStringGlobals::outputShdFileName))
+            else: # 'else' do 'except'? Não deveria estar junto ao 'try'?!
+                if (GetInputFlag):
+                    GetShadowingInput() # internal function
+                    GetInputFlag = False
+                    MaxHCV = (((max(15, MaxVerticesPerSurface) + 16) / 16) * 16) - 1 # Assure MaxHCV+1 is multiple of 16 for 128 B alignment
+                    assert((MaxHCV + 1) % 16 == 0)
 
-	            if (firstTime): print("Allocate Solar Module Arrays")
-	            AllocateModuleArrays()	# internal function
+                if (firstTime): print("Allocate Solar Module Arrays")
+                AllocateModuleArrays()  # internal function
 
-	            # if (SolarDistribution != FullInteriorExterior):
-	            #     if (firstTime): print("Computing Interior Solar Absorption Factors")
-	            #     ComputeIntSolarAbsorpFactors()
+                # if (SolarDistribution != FullInteriorExterior):
+                #     if (firstTime): print("Computing Interior Solar Absorption Factors")
+                #     ComputeIntSolarAbsorpFactors()
 
-	            if (firstTime): print("Determining Shadowing Combinations")
-	            DetermineShadowingCombinations()	# internal function
-	            shd_stream.close() # Done writing to shd file
+                if (firstTime): print("Determining Shadowing Combinations")
+                DetermineShadowingCombinations()    # internal function
+                shd_stream.close() # Done writing to shd file
 
-	        if (CalcSolRefl): print("Initializing Solar Reflection Factors")
-	        InitSolReflRecSurf()	# função não encontrada neste doc
+            if (CalcSolRefl): print("Initializing Solar Reflection Factors")
+            InitSolReflRecSurf()    # função não encontrada neste doc
 
-	        if (firstTime): print("Proceeding with Initializing Solar Calculations")
+            if (firstTime): print("Proceeding with Initializing Solar Calculations")
 
-	    if (BeginEnvrnFlag): # onde essa variável foi declarada?
-	        CTHETA = 0.0
-	        SAREA = 0.0
-	        SurfSunlitArea = 0.0
-	        SurfSunlitFrac = 0.0
-	        SunlitFracHR = 0.0
-	        SunlitFrac = 0.0
-	        SunlitFracWithoutReveal = 0.0
-	        BackSurfaces = 0
-	        OverlapAreas = 0.0
-	        CosIncAngHR = 0.0
-	        CosIncAng = 0.0
-	        AnisoSkyMult = 1.0 			# For isotropic sky recalculated in AnisoSkyViewFactors if anisotropic radiance
-	        MultIsoSky = 0.0
-	        MultCircumSolar = 0.0
-	        MultHorizonZenith = 0.0
-	        WinTransSolar = 0.0
-	        WinBmSolar = 0.0
-	        WinBmBmSolar = 0.0
-	        WinBmDifSolar = 0.0
+        if (BeginEnvrnFlag): # onde essa variável foi declarada?
+            CTHETA = 0.0
+            SAREA = 0.0
+            SurfSunlitArea = 0.0
+            SurfSunlitFrac = 0.0
+            SunlitFracHR = 0.0
+            SunlitFrac = 0.0
+            SunlitFracWithoutReveal = 0.0
+            BackSurfaces = 0
+            OverlapAreas = 0.0
+            CosIncAngHR = 0.0
+            CosIncAng = 0.0
+            AnisoSkyMult = 1.0          # For isotropic sky recalculated in AnisoSkyViewFactors if anisotropic radiance
+            MultIsoSky = 0.0
+            MultCircumSolar = 0.0
+            MultHorizonZenith = 0.0
+            WinTransSolar = 0.0
+            WinBmSolar = 0.0
+            WinBmBmSolar = 0.0
+            WinBmDifSolar = 0.0
 
-	        WinDifSolar = 0.0
-	        WinDirSolTransAtIncAngle = 0.0
-	        WinHeatGain = 0.0
-	        WinHeatTransfer = 0.0
-	        WinHeatGainRep = 0.0
-	        WinHeatLossRep = 0.0
-	        WinGainConvGlazToZoneRep = 0.0
-	        WinGainIRGlazToZoneRep = 0.0
-	        WinLossSWZoneToOutWinRep = 0.0
-	        WinGainFrameDividerToZoneRep = 0.0
-	        WinGainConvGlazShadGapToZoneRep = 0.0
-	        WinGainConvShadeToZoneRep = 0.0
-	        OtherConvGainInsideFaceToZoneRep = 0.0
-	        WinGainIRShadeToZoneRep = 0.0
-	        WinGapConvHtFlowRep = 0.0
-	        WinShadingAbsorbedSolar = 0.0
-	        WinSysSolTransmittance = 0.0
-	        WinSysSolReflectance = 0.0
-	        WinSysSolAbsorptance = 0.0
-	        InsideGlassCondensationFlag = 0
-	        InsideFrameCondensationFlag = 0
-	        InsideDividerCondensationFlag = 0
-	        ZoneTransSolar = 0.0
-	        ZoneBmSolFrExtWinsRep = 0.0
-	        ZoneBmSolFrIntWinsRep = 0.0
-	        InitialZoneDifSolReflW = 0.0
-	        ZoneDifSolFrExtWinsRep = 0.0
-	        ZoneDifSolFrIntWinsRep = 0.0
-	        ZoneWinHeatGain = 0.0
-	        ZoneWinHeatGainRep = 0.0
-	        ZoneWinHeatLossRep = 0.0
-	        ZoneOpaqSurfInsFaceCond = 0.0
-	        ZoneOpaqSurfInsFaceCondGainRep = 0.0
-	        ZoneOpaqSurfInsFaceCondLossRep = 0.0
-	        QRadSWOutIncident = 0.0
-	        QRadSWOutIncidentBeam = 0.0
-	        BmIncInsSurfIntensRep = 0.0
-	        BmIncInsSurfAmountRep = 0.0
-	        IntBmIncInsSurfIntensRep = 0.0
-	        IntBmIncInsSurfAmountRep = 0.0
-	        QRadSWOutIncidentSkyDiffuse = 0.0
-	        QRadSWOutIncidentGndDiffuse = 0.0
-	        QRadSWOutIncBmToDiffReflGnd = 0.0
-	        QRadSWOutIncSkyDiffReflGnd = 0.0
-	        QRadSWOutIncBmToBmReflObs = 0.0
-	        QRadSWOutIncBmToDiffReflObs = 0.0
-	        QRadSWOutIncSkyDiffReflObs = 0.0
-	        CosIncidenceAngle = 0.0
-	        QRadSWwinAbsTot = 0.0
-	        SWwinAbsTotalReport = 0.0
-	        InitialDifSolInAbsReport = 0.0
-	        InitialDifSolInTransReport = 0.0
-	        SWInAbsTotalReport = 0.0
-	        WindowRevealStatus = 0
-	        
-	        # energy
-	        WinTransSolarEnergy = 0.0
-	        WinBmSolarEnergy = 0.0
-	        WinBmBmSolarEnergy = 0.0
-	        WinBmDifSolarEnergy = 0.0
+            WinDifSolar = 0.0
+            WinDirSolTransAtIncAngle = 0.0
+            WinHeatGain = 0.0
+            WinHeatTransfer = 0.0
+            WinHeatGainRep = 0.0
+            WinHeatLossRep = 0.0
+            WinGainConvGlazToZoneRep = 0.0
+            WinGainIRGlazToZoneRep = 0.0
+            WinLossSWZoneToOutWinRep = 0.0
+            WinGainFrameDividerToZoneRep = 0.0
+            WinGainConvGlazShadGapToZoneRep = 0.0
+            WinGainConvShadeToZoneRep = 0.0
+            OtherConvGainInsideFaceToZoneRep = 0.0
+            WinGainIRShadeToZoneRep = 0.0
+            WinGapConvHtFlowRep = 0.0
+            WinShadingAbsorbedSolar = 0.0
+            WinSysSolTransmittance = 0.0
+            WinSysSolReflectance = 0.0
+            WinSysSolAbsorptance = 0.0
+            InsideGlassCondensationFlag = 0
+            InsideFrameCondensationFlag = 0
+            InsideDividerCondensationFlag = 0
+            ZoneTransSolar = 0.0
+            ZoneBmSolFrExtWinsRep = 0.0
+            ZoneBmSolFrIntWinsRep = 0.0
+            InitialZoneDifSolReflW = 0.0
+            ZoneDifSolFrExtWinsRep = 0.0
+            ZoneDifSolFrIntWinsRep = 0.0
+            ZoneWinHeatGain = 0.0
+            ZoneWinHeatGainRep = 0.0
+            ZoneWinHeatLossRep = 0.0
+            ZoneOpaqSurfInsFaceCond = 0.0
+            ZoneOpaqSurfInsFaceCondGainRep = 0.0
+            ZoneOpaqSurfInsFaceCondLossRep = 0.0
+            QRadSWOutIncident = 0.0
+            QRadSWOutIncidentBeam = 0.0
+            BmIncInsSurfIntensRep = 0.0
+            BmIncInsSurfAmountRep = 0.0
+            IntBmIncInsSurfIntensRep = 0.0
+            IntBmIncInsSurfAmountRep = 0.0
+            QRadSWOutIncidentSkyDiffuse = 0.0
+            QRadSWOutIncidentGndDiffuse = 0.0
+            QRadSWOutIncBmToDiffReflGnd = 0.0
+            QRadSWOutIncSkyDiffReflGnd = 0.0
+            QRadSWOutIncBmToBmReflObs = 0.0
+            QRadSWOutIncBmToDiffReflObs = 0.0
+            QRadSWOutIncSkyDiffReflObs = 0.0
+            CosIncidenceAngle = 0.0
+            QRadSWwinAbsTot = 0.0
+            SWwinAbsTotalReport = 0.0
+            InitialDifSolInAbsReport = 0.0
+            InitialDifSolInTransReport = 0.0
+            SWInAbsTotalReport = 0.0
+            WindowRevealStatus = 0
+            
+            # energy
+            WinTransSolarEnergy = 0.0
+            WinBmSolarEnergy = 0.0
+            WinBmBmSolarEnergy = 0.0
+            WinBmDifSolarEnergy = 0.0
 
-	        WinDifSolarEnergy = 0.0
-	        WinHeatGainRepEnergy = 0.0
-	        WinHeatLossRepEnergy = 0.0
-	        WinGapConvHtFlowRepEnergy = 0.0
-	        WinHeatTransferRepEnergy = 0.0
-	        WinShadingAbsorbedSolarEnergy = 0.0
-	        ZoneTransSolarEnergy = 0.0
-	        ZoneBmSolFrExtWinsRepEnergy = 0.0
-	        ZoneBmSolFrIntWinsRepEnergy = 0.0
-	        ZoneDifSolFrExtWinsRepEnergy = 0.0
-	        ZoneDifSolFrIntWinsRepEnergy = 0.0
-	        ZoneWinHeatGainRepEnergy = 0.0
-	        ZoneWinHeatLossRepEnergy = 0.0
-	        ZnOpqSurfInsFaceCondGnRepEnrg = 0.0
-	        ZnOpqSurfInsFaceCondLsRepEnrg = 0.0
-	        BmIncInsSurfAmountRepEnergy = 0.0
-	        IntBmIncInsSurfAmountRepEnergy = 0.0
-	        QRadSWwinAbsTotEnergy = 0.0
+            WinDifSolarEnergy = 0.0
+            WinHeatGainRepEnergy = 0.0
+            WinHeatLossRepEnergy = 0.0
+            WinGapConvHtFlowRepEnergy = 0.0
+            WinHeatTransferRepEnergy = 0.0
+            WinShadingAbsorbedSolarEnergy = 0.0
+            ZoneTransSolarEnergy = 0.0
+            ZoneBmSolFrExtWinsRepEnergy = 0.0
+            ZoneBmSolFrIntWinsRepEnergy = 0.0
+            ZoneDifSolFrExtWinsRepEnergy = 0.0
+            ZoneDifSolFrIntWinsRepEnergy = 0.0
+            ZoneWinHeatGainRepEnergy = 0.0
+            ZoneWinHeatLossRepEnergy = 0.0
+            ZnOpqSurfInsFaceCondGnRepEnrg = 0.0
+            ZnOpqSurfInsFaceCondLsRepEnrg = 0.0
+            BmIncInsSurfAmountRepEnergy = 0.0
+            IntBmIncInsSurfAmountRepEnergy = 0.0
+            QRadSWwinAbsTotEnergy = 0.0
 
-	    # Initialize these once
-	    for IPhi in range(1, NPhi+1):
-	    	# Loop over patch altitude values
-	        Phi = PhiMin + (IPhi - 1) * DPhi 		# 7.5,22.5,37.5,52.5,67.5,82.5 for NPhi = 6
-	        sin_Phi.append(np.sin(Phi))
-	        cos_Phi.append(np.cos(Phi))
+        # Initialize these once
+        for IPhi in range(1, NPhi+1):
+            # Loop over patch altitude values
+            Phi = PhiMin + (IPhi - 1) * DPhi        # 7.5,22.5,37.5,52.5,67.5,82.5 for NPhi = 6
+            sin_Phi.append(np.sin(Phi))
+            cos_Phi.append(np.cos(Phi))
 
-	    for ITheta in range(1, NTheta+1):
-	    	# Loop over patch azimuth values
-	        Theta = (ITheta - 1) * DTheta 			# 0,15,30,....,330,345 for NTheta = 24
-	        sin_Theta.append(np.sin(Theta))
-	        cos_Theta.append(np.cos(Theta))
+        for ITheta in range(1, NTheta+1):
+            # Loop over patch azimuth values
+            Theta = (ITheta - 1) * DTheta           # 0,15,30,....,330,345 for NTheta = 24
+            sin_Theta.append(np.sin(Theta))
+            cos_Theta.append(np.cos(Theta))
 
-	    firstTime = False
-	    
-	    return None
+        firstTime = False
+        
+        return None
 
     def GetShadowingInput():
-		'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Linda K. Lawrie
               DATE WRITTEN   July 1999
@@ -3315,7 +3315,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         PURPOSE OF THIS SUBROUTINE:
         This subroutine gets the Shadowing Calculation object.
-		'''
+        '''
 
         ScheduleFileShadingProcessed = False
 
@@ -3521,11 +3521,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         
                         # Check the shading zone group of each exterior surface
                         for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
-                        	# Loop through all defined shading groups
+                            # Loop through all defined shading groups
                             CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
 
                             for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
-                            	# Loop through all zones in the zone list
+                                # Loop through all zones in the zone list
                                 if (Surface(SurfNum).Zone == ZoneList(CurZoneGroup).Zone(ZoneNum)):
                                     SurfZoneGroup = CurZoneGroup
                                     break
@@ -3535,11 +3535,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                             # if DisableSelfShadingWithinGroup, add all zones in the same zone group to the surface's disabled zone list
                             # if DisableSelfShadingBetweenGroups, add all zones in all other zone groups to the surface's disabled zone list
                             for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
-                            	# Loop through all defined shading groups
+                                # Loop through all defined shading groups
                                 CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
                                 if (SurfZoneGroup == CurZoneGroup && DisableSelfShadingWithinGroup):
                                     for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
-                                    	# Loop through all zones in the zone list
+                                        # Loop through all zones in the zone list
                                         Surface(SurfNum).DisabledShadowingZoneList.append(ZoneList(CurZoneGroup).Zone(ZoneNum))
                                 
                                 elif (SurfZoneGroup != CurZoneGroup && DisableSelfShadingBetweenGroup):
@@ -3574,10 +3574,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                                                  cAlphaArgs(3) + ',' + cAlphaArgs(4) + ',' + cAlphaArgs(5) + ',' + cAlphaArgs(6) + ',' +
                                                  cAlphaArgs(7)
 
-    	return None
+        return None
 
     def AllocateModuleArrays():
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Rick Strand
               DATE WRITTEN   February 1998
@@ -3593,7 +3593,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         REFERENCES:
         # na
-    	'''
+        '''
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS: variáveis de loop!
         # int SurfLoop
@@ -3736,7 +3736,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         QRadSWwinAbsTotEnergy.dimension(TotSurfaces, 0.0)
         WinShadingAbsorbedSolarEnergy.dimension(TotSurfaces, 0.0)
         # for (auto &e : SurfaceWindow):
-    	# for e in SurfaceWindow:
+        # for e in SurfaceWindow:
      #        e.BmSolAbsdOutsReveal = 0.0
      #        e.BmSolRefldOutsRevealReport = 0.0
      #        e.BmSolAbsdInsReveal = 0.0
@@ -3758,7 +3758,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
 
         print("Initializing Surface (Shading) Report Variables")
-        # entender por aqui:	https://bigladdersoftware.com/epx/docs/8-9/module-developer/how-do-i-output-my-variables.html
+        # entender por aqui:    https://bigladdersoftware.com/epx/docs/8-9/module-developer/how-do-i-output-my-variables.html
         # CurrentModuleObject='Surfaces'
         for SurfLoop in range(1, TotSurfaces+1):
             SetupOutputVariable("Surface Outside Normal Azimuth Angle",
@@ -3770,11 +3770,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             
             if (Surface(SurfLoop).ExtSolar):
                 SetupOutputVariable("Surface Outside Face Sunlit Area",
-                					OutputProcessor::Unit::m2,
-                					SurfSunlitArea(SurfLoop),
-                					"Zone",
-                					"State",
-                					Surface(SurfLoop).Name)
+                                    OutputProcessor::Unit::m2,
+                                    SurfSunlitArea(SurfLoop),
+                                    "Zone",
+                                    "State",
+                                    Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Sunlit Fraction",
                                     OutputProcessor::Unit::None,
                                     SurfSunlitFrac(SurfLoop),
@@ -3868,11 +3868,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             if (!Surface(SurfLoop).HeatTransSurf): continue # probably will not be used
 
-    	return None
+        return None
 
     # MAYBE needed to get the nearby build shading
     def DetermineShadowingCombinations():
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         From Legacy Code
               DATE WRITTEN
@@ -3909,12 +3909,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        GSS = []             		# List of shadowing surfaces numbers for a receiving surface
-        BKS = []             		# List of back surface numbers for a receiving surface
-        SBS = []             		# List of subsurfaces for a receiving surface
-        MaxGSS = 50       			# Current Max for GSS array
-        MaxBKS = 50       			# Current Max for BKS array
-        MaxSBS = 50       			# Current Max for SBS array
+        GSS = []                    # List of shadowing surfaces numbers for a receiving surface
+        BKS = []                    # List of back surface numbers for a receiving surface
+        SBS = []                    # List of subsurfaces for a receiving surface
+        MaxGSS = 50                 # Current Max for GSS array
+        MaxBKS = 50                 # Current Max for BKS array
+        MaxSBS = 50                 # Current Max for SBS array
         bool CannotShade            # True if subsurface cannot shade receiving surface
         bool HasWindow              # True if a window is present on receiving surface
         ZMIN = 0.0                  # Lowest point on the receiving surface
@@ -3927,13 +3927,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         NGSS = 0                    # Number of shadowing surfaces for a receiving surface
         NSBS = 0                    # Number of subsurfaces for a receiving surface
         bool ShadowingSurf          # True if a receiving surface is a shadowing surface
-        CastingSurface = []			# [type:bool] tracking during setup of ShadowComb
+        CastingSurface = []         # [type:bool] tracking during setup of ShadowComb
 
         MaxDim = 0
 
-		#ifdef EP_Count_Calls
+        #ifdef EP_Count_Calls
         ++NumDetShadowCombs_Calls
-		#endif
+        #endif
 
         ShadowComb.dimension(TotSurfaces, ShadowingCombinations{}) # Set all elements to default constructed state
 
@@ -3967,15 +3967,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             NBKS = 0
 
             if (!ShadowingSurf && !Surface(GRSNR).HeatTransSurf):
-            	continue
+                continue
 
             HTS = GRSNR
 
             if (!ShadowingSurf && !Surface(GRSNR).ExtSolar):
-            	continue # Skip surfaces with no external solar
+                continue # Skip surfaces with no external solar
 
             if (!ShadowingSurf && Surface(GRSNR).BaseSurf != GRSNR):
-            	continue # Skip subsurfaces (SBS)
+                continue # Skip subsurfaces (SBS)
 
             # Get the lowest point of receiving surface
             ZMIN = minval(Surface(GRSNR).Vertex, &Vector::z)
@@ -3986,7 +3986,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 for GSSNR in range(1, TotSurfaces+1): # Loop through all surfaces, looking for ones that could shade GRSNR
                     
                     if (GSSNR == GRSNR):
-                    	continue # Receiving surface cannot shade itself
+                        continue # Receiving surface cannot shade itself
                     
                     if ((Surface(GSSNR).HeatTransSurf) && (Surface(GSSNR).BaseSurf == GRSNR)):
                         continue # A heat transfer subsurface of a receiving surface
@@ -3997,7 +3997,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # IF((GSSNR == GRSNR+1 .AND. Surface(GSSNR)%Name(1:3) == 'Mir').OR. &
                         #   (GSSNR == GRSNR-1 .AND. Surface(GRSNR)%Name(1:3) == 'Mir')) CYCLE
                         if (((GSSNR == GRSNR + 1) && Surface(GSSNR).MirroredSurf) || ((GSSNR == GRSNR - 1) && Surface(GRSNR).MirroredSurf)):
-                        	continue
+                            continue
 
                     if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
 
@@ -4008,13 +4008,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         GSS(NGSS) = GSSNR # substitui o valor de GSS no index NGSS com GSSNR?
 
                     elif ((Surface(GSSNR).BaseSurf == 0) || ((Surface(GSSNR).BaseSurf == GSSNR) &&
-                    		 ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) ||
-                    		 Surface(GSSNR).ExtBoundCond == OtherSideCondModeledExt))): # Detached shadowing surface or | any other base surface
+                             ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) ||
+                             Surface(GSSNR).ExtBoundCond == OtherSideCondModeledExt))): # Detached shadowing surface or | any other base surface
                                                                                         # exposed to outside environment
 
                         CHKGSS(GRSNR, GSSNR, ZMIN, CannotShade) # Check to see if this can shade the receiving surface
                         
-						# Update the shadowing surface data if shading is possible
+                        # Update the shadowing surface data if shading is possible
                         if (!CannotShade):
                             NGSS += 1
                             if (NGSS > MaxGSS):
@@ -4028,7 +4028,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 for GSSNR in range(1, TotSurfaces+1): # Loop through all surfaces (looking for surfaces which could shade GRSNR) ...
 
                     if (GSSNR == GRSNR):
-                    	continue # Receiving surface cannot shade itself
+                        continue # Receiving surface cannot shade itself
                     if ((Surface(GSSNR).HeatTransSurf) && (Surface(GSSNR).BaseSurf == GRSNR)):
                         continue                           # Skip heat transfer subsurfaces of receiving surface
                     if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
@@ -4047,14 +4047,14 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             for SBSNR in range(1, TotSurfaces+1): # Loop through the surfaces yet again (looking for subsurfaces of GRSNR)...
 
                 if (!Surface(SBSNR).HeatTransSurf):
-                	continue    # Skip non heat transfer subsurfaces
+                    continue    # Skip non heat transfer subsurfaces
                 if (SBSNR == GRSNR):
-                	continue                   # Surface itself cannot be its own subsurface
+                    continue                   # Surface itself cannot be its own subsurface
                 if (Surface(SBSNR).BaseSurf != GRSNR):
-                	continue # Ignore subsurfaces of other surfaces and other surfaces
+                    continue # Ignore subsurfaces of other surfaces and other surfaces
 
                 if (Construct(Surface(SBSNR).Construction).TransDiff > 0.0):
-                	HasWindow = True # Check for window
+                    HasWindow = True # Check for window
 
                 CHKSBS(HTS, GRSNR, SBSNR) # Check that the receiving surface completely encloses the subsurface
                 # severe error if not
@@ -4072,18 +4072,18 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             #                                        interior solar distribution,
             if ((SolarDistribution == FullInteriorExterior) && (HasWindow)): # For full interior solar distribution | and a window present on base surface (GRSNR)
                 for BackSurfaceNumber in range(1, TotSurfaces+1):
-                	# Loop through surfaces yet again, looking for back surfaces to GRSNR
+                    # Loop through surfaces yet again, looking for back surfaces to GRSNR
 
                     if (!Surface(BackSurfaceNumber).HeatTransSurf):
-                    	continue							# Skip non-heat transfer surfaces
+                        continue                            # Skip non-heat transfer surfaces
                     if (Surface(BackSurfaceNumber).BaseSurf == GRSNR):
-                    	continue							# Skip subsurfaces of this GRSNR
+                        continue                            # Skip subsurfaces of this GRSNR
                     if (BackSurfaceNumber == GRSNR):
-                    	continue                           # A back surface cannot be GRSNR itself
+                        continue                           # A back surface cannot be GRSNR itself
                     if (Surface(BackSurfaceNumber).Zone != Surface(GRSNR).Zone):
-                    	continue							# Skip if back surface not in zone
+                        continue                            # Skip if back surface not in zone
                     if (Surface(BackSurfaceNumber).Class == SurfaceClass_IntMass):
-                		continue
+                        continue
 
                     # Following line removed 1/27/03 by FCW. Was in original code that didn't do beam solar transmitted through
                     # interior windows. Was removed to allow such beam solar but then somehow was put back in.
@@ -4140,7 +4140,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             else:
                 shd_stream << "..Solar Distribution=FullInteriorAndExterior\n"
         else:
-        	# do nothing??? Vai dar erro de sintaxe!
+            # do nothing??? Vai dar erro de sintaxe!
 
         shd_stream << "..In the following, only the first 10 reference surfaces will be shown.\n"
         shd_stream << "..But all surfaces are used in the calculations.\n"
@@ -4164,7 +4164,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             shd_stream << "Number of general casting surfaces=" << ShadowComb(HTS).NumGenSurf << '\n'
             for NGSS in range(1, ShadowComb(HTS).NumGenSurf+1):
                 if (NGSS <= 10):
-                	shd_stream << "..Surface=" << Surface(ShadowComb(HTS).GenSurf(NGSS)).Name << '\n'
+                    shd_stream << "..Surface=" << Surface(ShadowComb(HTS).GenSurf(NGSS)).Name << '\n'
 
                 CastingSurface(ShadowComb(HTS).GenSurf(NGSS)) = True
 
@@ -4198,10 +4198,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             raise RuntimeError("...Add Output:Diagnostics,DisplayExtraWarnings to see individual severes for each surface.")
             TotalSevereErrors += TotalCastingNonConvexSurfaces
 
-    	return None
+        return None
 
     def CHKGSS(NRS, NSS, ZMIN, &CannotShade):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -4227,7 +4227,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         REFERENCES:
         BLAST/IBLAST code, original author George Walton
-    	'''
+        '''
         # Using/Aliasing
         using namespace Vectors
 
@@ -4252,8 +4252,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # see if no point of shadow casting surface is above low point of receiving surface
         auto const &surface_C(Surface(NSS))
         if (surface_C.OutNormVec(3) > 0.9999):
-        	# Shadow Casting Surface is horizontal and facing upward
-        	return None
+            # Shadow Casting Surface is horizontal and facing upward
+            return None
 
         auto const &vertex_C(surface_C.Vertex)
         ZMAX = vertex_C(1).z
@@ -4263,7 +4263,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             ZMAX = std::max(ZMAX, vertex_C(i).z)
 
         if (ZMAX <= ZMIN):
-        	return None
+            return None
 
         # SEE IF ANY VERTICES OF THE Shadow Casting Surface ARE ABOVE THE PLANE OF THE receiving surface
         auto const &surface_R(Surface(NRS))
@@ -4279,7 +4279,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         for I in range(1, NVSS+1):
             DOTP = dot(CVec, vertex_C(I) - vertex_R_2)
             if (DOTP > TolValue):
-            	break # DOTP loop
+                break # DOTP loop
 
         # SEE IF ANY VERTICES OF THE receiving surface ARE ABOVE THE PLANE OF THE S.S.
         if (DOTP > TolValue):
@@ -4296,10 +4296,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     CannotShade = False
                     break # DOTP loop
 
-    	return None
+        return None
 
     def CLIP(NVT, &XVT, &YVT, &ZVT):
-		'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -4340,7 +4340,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             if (ZVT_N == 0.0): NON += 1
 
         if (NABOVE + NON == NVT):
-        	# Rename the unclipped shadow casting surface.
+            # Rename the unclipped shadow casting surface.
             NVS = NVT
             NumVertInShadowOrClippedSurface = NVT
             for N in range(1, NVT+1):
@@ -4348,11 +4348,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 YVC(N) = YVT(N)
                 ZVC(N) = ZVT(N)
         elif (NABOVE == 0):
-        	# Totally submerged shadow casting surface.
+            # Totally submerged shadow casting surface.
             NVS = 0
             NumVertInShadowOrClippedSurface = 0
         else:
-        	# Remove (clip) that portion of the shadow casting surface which is below the receiving surface
+            # Remove (clip) that portion of the shadow casting surface which is below the receiving surface
             NVS = NABOVE + 2
             NumVertInShadowOrClippedSurface = NABOVE + 2
             Real64 ZVT_N, ZVT_P(ZVT(1)) # ??????? ZVT_P é uma var de tipo ZVT_N ??????????
@@ -4364,12 +4364,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 ZVT_N = ZVT_P
                 ZVT_P = ZVT(P)
                 if (ZVT_N >= 0.0 && ZVT_P < 0.0):
-                	# Line enters plane of receiving surface
+                    # Line enters plane of receiving surface
                     ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
                     XIN = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
                     YIN = (ZVT_P * YVT(N) - ZVT_N * YVT(P)) * ZVT_fac
                 if (ZVT_N <= 0.0 && ZVT_P > 0.0):
-                	# Line exits plane of receiving surface
+                    # Line exits plane of receiving surface
                     NEXT = N + 1
                     ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
                     XOUT = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
@@ -4384,16 +4384,16 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             ZVC(NVS) = 0.0
             for N in range(1, NABOVE):
                 if (NEXT > NVT):
-                	NEXT = 1
+                    NEXT = 1
                 XVC(N + 1) = XVT(NEXT)
                 YVC(N + 1) = YVT(NEXT)
                 ZVC(N + 1) = ZVT(NEXT)
                 NEXT += 1
 
-    	return None
+        return None
 
     def CTRANS(NS, NGRS, &NVT, &XVT, &YVT, &ZVT):
-		'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -4403,7 +4403,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         PURPOSE OF THIS SUBROUTINE:
         Transforms the general coordinates of the vertices
         of surface NS to coordinates in the plane of the receiving surface NGRS.
-        See subroutine 'CalcCoordinateTransformation' SurfaceGeometry Module.					--> outro arquivo
+        See subroutine 'CalcCoordinateTransformation' SurfaceGeometry Module.                   --> outro arquivo
         - int const NS,        # Surface number whose vertex coordinates are being transformed
         - int const NGRS,      # Base surface number for surface NS
         - int &NVT,            # Number of vertices for surface NS
@@ -4445,23 +4445,23 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             Zdif = vertex.z - base_Z0
 
             if (abs(Xdif) <= 1.E-15):
-            	Xdif = 0.0
+                Xdif = 0.0
             if (abs(Ydif) <= 1.E-15):
-            	Ydif = 0.0
+                Ydif = 0.0
             if (abs(Zdif) <= 1.E-15):
-            	Zdif = 0.0
+                Zdif = 0.0
 
             XVT(N) = base_lcsx.x * Xdif + base_lcsx.y * Ydif + base_lcsx.z * Zdif
             YVT(N) = base_lcsy.x * Xdif + base_lcsy.y * Ydif + base_lcsy.z * Zdif
             ZVT(N) = base_lcsz.x * Xdif + base_lcsz.y * Ydif + base_lcsz.z * Zdif
 
-    	return None
+        return None
 
     def HTRANS0(NS, NumVertices):
-    	'''
-		- int const NS,         # Figure Number
+        '''
+        - int const NS,         # Figure Number
         - int const NumVertices # Number of vertices
-    	'''
+        '''
         # Using/Aliasing
         using General::TrimSigDigits
 
@@ -4492,8 +4492,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
         for N in range(1, NumVertices+1):
-        	l += 1 # será q vai somar o par ordenado?
-        	m += 1 # será q vai somar o par ordenado?
+            l += 1 # será q vai somar o par ordenado?
+            m += 1 # será q vai somar o par ordenado?
             HCX_l = HCX_m
             HCY_l = HCY_m
             HCX_m = HCX[m]
@@ -4504,13 +4504,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         HCAREA(NS) = SUM * sqHCMULT_fac
 
-    	return None
+        return None
 
     def HTRANS1(NS, NumVertices):
-    	'''
-    	- int const NS,         # Figure Number
+        '''
+        - int const NS,         # Figure Number
         - int const NumVertices # Number of vertices
-    	'''
+        '''
         # Using/Aliasing
         using General::TrimSigDigits
 
@@ -4531,7 +4531,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # only in HTRANS1
         auto l(l1)
         for N in range(1, NumVertices): # [ l ] == ( NS, N )
-        	l += 1 # será q vai somar o par ordenado? Talvez precise de list comprehension: [a+1 for a in l]
+            l += 1 # será q vai somar o par ordenado? Talvez precise de list comprehension: [a+1 for a in l]
             HCX[l] = nint64(XVS(N) * HCMULT)
             HCY[l] = nint64(YVS(N) * HCMULT)
 
@@ -4547,8 +4547,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         # for (int N = 1 N <= NumVertices ++N, ++l, ++m):# [ l ] == ( NS, N ), [ m ] == ( NS, N + 1 )
         for N in range(1, NumVertices+1):
-        	l += 1 # será q vai somar o par ordenado?
-        	m += 1 # será q vai somar o par ordenado?
+            l += 1 # será q vai somar o par ordenado?
+            m += 1 # será q vai somar o par ordenado?
             HCX_l = HCX_m
             HCY_l = HCY_m
             HCX_m = HCX[m]
@@ -4559,10 +4559,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         HCAREA(NS) = SUM * sqHCMULT_fac
 
-    	return None
+        return None
 
     def INCLOS(N1, N1NumVert, N2, N2NumVert, &NumVerticesOverlap, &NIN):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -4638,10 +4638,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             XTEMP(NumVerticesOverlap) = HCX(N1, N)
             YTEMP(NumVerticesOverlap) = HCY(N1, N)
         
-    	return None
+        return None
 
     def INTCPT(NV1, NV2, &NV3, NS1, NS2):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -4732,10 +4732,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         NV3 = KK
                         break # K DO loop
         
-    	return None
+        return None
 
     def CLIPPOLY(NS1, NS2, NV1, NV2, &NV3):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Tyler Hoyt
               DATE WRITTEN   May 4, 2010
@@ -4747,10 +4747,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         of the overlap between NS1 and NS2, and determine relevant
         overlap status.
         - int const NS1, # Figure number of figure 1 (The subject polygon)
-		- int const NS2, # Figure number of figure 2 (The clipping polygon)
-		- int const NV1, # Number of vertices of figure 1
-		- int const NV2, # Number of vertices of figure 2
-		- int &NV3       # Number of vertices of figure 3
+        - int const NS2, # Figure number of figure 2 (The clipping polygon)
+        - int const NV1, # Number of vertices of figure 1
+        - int const NV2, # Number of vertices of figure 2
+        - int &NV3       # Number of vertices of figure 3
 
         METHODOLOGY EMPLOYED:
         The Sutherland-Hodgman algorithm for polygon clipping is employed.
@@ -4787,9 +4787,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         Real64 W # Normalization factor
         Real64 HFunct
 
-		#ifdef EP_Count_Calls
+        #ifdef EP_Count_Calls
         ++NumClipPoly_Calls
-		#endif
+        #endif
         # Tuned Linear indexing
 
         assert(equal_dimensions(HCX, HCY))
@@ -4807,7 +4807,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             ATEMP[j] = HCA[l]
             BTEMP[j] = HCB[l]
             CTEMP[j] = HCC[l]
-            l += 1			# Está no lugar certo? Ou deveria ser antes de qualquer operação?
+            l += 1          # Está no lugar certo? Ou deveria ser antes de qualquer operação?
 
         NVOUT = NV1 # First point-loop is the length of the subject polygon.
         INTFLAG = False
@@ -4897,7 +4897,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 else:
                     HFunct = XTEMP1_S * HCA_E + YTEMP1_S * HCB_E + HCC_E
                     if (HFunct <= 0.0):
-                    	# Test vertex is not in the clipping plane
+                        # Test vertex is not in the clipping plane
 
                         if (NVTEMP < 2 * (MaxVerticesPerSurface + 1)):
                         # avoid assigning to element outside of XTEMP array size
@@ -4932,7 +4932,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 XTEMP1_S = XTEMP1_P
                 YTEMP1_S = YTEMP1_P
 
-            	l += 1			# Está no lugar certo? Ou deveria ser antes de qualquer operação?
+                l += 1          # Está no lugar certo? Ou deveria ser antes de qualquer operação?
             # end loop over points of subject polygon
 
             NVOUT = NVTEMP
@@ -4967,10 +4967,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         elif (!INTFLAG):
             OverlapStatus = FirstSurfWithinSecond
 
-    	return None
+        return None
 
     def MULTOL(NNN, LOC0, NRFIGS):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -5029,10 +5029,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             LOCHCA = NS3 # Increment h.c. arrays pointer.
 
-    	return None
+        return None
 
     def ORDER(NV3, NS3):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -5146,10 +5146,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             HCX(NS3, N + P) = nint64(XTEMP(N))
             HCY(NS3, N + P) = nint64(YTEMP(N))
         
-    	return None
+        return None
 
     def DeterminePolygonOverlap(NS1, NS2, NS3):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -5213,9 +5213,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         TooManyVerticesMessage = False
 
         # Check for exceeding array limits.
-		#ifdef EP_Count_Calls
+        #ifdef EP_Count_Calls
         ++NumDetPolyOverlap_Calls
-		#endif
+        #endif
 
         if (NS3 > MaxHCS):
             OverlapStatus = TooManyFigures
@@ -5285,7 +5285,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             OverlapStatus = TooManyVertices
 
             if (!TooManyVerticesMessage && !DisplayExtraWarnings):
-            	raise RuntimeWarning("DeterminePolygonOverlap: Too many vertices [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCV)))
+                raise RuntimeWarning("DeterminePolygonOverlap: Too many vertices [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCV)))
                 TooManyVerticesMessage = True
 
             if (DisplayExtraWarnings):
@@ -5305,10 +5305,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 TrackTooManyFigures(NumTooManyFigures).SurfIndex1 = CurrentShadowingSurface
                 TrackTooManyFigures(NumTooManyFigures).SurfIndex2 = CurrentSurfaceBeingShadowed
         
-    	return None
+        return None
 
     def CalcPerSolarBeam(AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -5319,8 +5319,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         This subroutine manages computation of solar gain multipliers for beam radiation. These
         are calculated for a period of days depending on the input "Shadowing Calculations".
         - Real64 const AvgEqOfTime,       # Average value of Equation of Time for period
-		- Real64 const AvgSinSolarDeclin, # Average value of Sine of Solar Declination for period
-		- Real64 const AvgCosSolarDeclin  # Average value of Cosine of Solar Declination for period
+        - Real64 const AvgSinSolarDeclin, # Average value of Sine of Solar Declination for period
+        - Real64 const AvgCosSolarDeclin  # Average value of Cosine of Solar Declination for period
 
         METHODOLOGY EMPLOYED:
         # na
@@ -5352,15 +5352,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         Once = True
 
         if (Once):
-        	InitComplexWindows()
+            InitComplexWindows()
         Once = False
 
         if (KickOffSizing || KickOffSimulation):
-        	return None # Skip solar calcs for these Initialization steps.
+            return None # Skip solar calcs for these Initialization steps.
 
-		#ifdef EP_Count_Calls
+        #ifdef EP_Count_Calls
         ++NumCalcPerSolBeam_Calls
-		#endif
+        #endif
 
         # Initialize some values for the appropriate period
         if (!DetailedSolarTimestepIntegration):
@@ -5374,7 +5374,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             BackSurfaces = 0
             OverlapAreas = 0.0
             # for (auto &e : SurfaceWindow):
-        	# for e in SurfaceWindow:
+            # for e in SurfaceWindow:
          #        e.OutProjSLFracMult = 1.0
          #        e.InOutProjSLFracMult = 1.0
         else:
@@ -5404,7 +5404,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             for iHour in range(1, 25): # Do for all hours.
                 for TS in range(1, NumOfTimeStepInHour+1):
                     FigureSolarBeamAtTimestep(iHour, TS)
-                	# end of TimeStep Loop
+                    # end of TimeStep Loop
             # end of Hour Loop
         else:
             FigureSolarBeamAtTimestep(HourOfDay, TimeStep)
@@ -5429,10 +5429,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                             gio::write(OutputFileShadingFrac, fmtN, flags)
                         }
         
-    	return None
+        return None
 
     def FigureSunCosines(iHour, iTimeStep, EqOfTime, SinSolarDeclin, CosSolarDeclin):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         B. Griffith
               DATE WRITTEN   October 2012
@@ -5442,10 +5442,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         PURPOSE OF THIS SUBROUTINE:
         Determine solar position.  Default for sun below horizon.
         - int const iHour,
-		- int const iTimeStep,
-		- Real64 const EqOfTime,       # value of Equation of Time for period
-		- Real64 const SinSolarDeclin, # value of Sine of Solar Declination for period
-		- Real64 const CosSolarDeclin  # value of Cosine of Solar Declination for period
+        - int const iTimeStep,
+        - Real64 const EqOfTime,       # value of Equation of Time for period
+        - Real64 const SinSolarDeclin, # value of Sine of Solar Declination for period
+        - Real64 const CosSolarDeclin  # value of Cosine of Solar Declination for period
 
         METHODOLOGY EMPLOYED:
         Given hour, timestep, equation of time, solar declination sine, and solar declination cosine,
@@ -5480,17 +5480,17 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # Save hourly values for use in DaylightingManager
         if (!DetailedSolarTimestepIntegration):
             if (iTimeStep == NumOfTimeStepInHour): # poderia ser um 'AND'
-            	SUNCOSHR(iHour, {1, 3}) = SUNCOS
+                SUNCOSHR(iHour, {1, 3}) = SUNCOS
         else:
             SUNCOSHR(iHour, {1, 3}) = SUNCOS
         
         # Save timestep values for use in WindowComplexManager
         SUNCOSTS(iTimeStep, iHour, {1, 3}) = SUNCOS
-    	
-    	return None
+        
+        return None
 
     def FigureSolarBeamAtTimestep(iHour, iTimeStep):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         B.Griffith, derived from CalcPerSolarBeam, Legacy and Lawrie.
               DATE WRITTEN   October 2012
@@ -5532,13 +5532,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         CTHETA = 0.0
 
         if (SUNCOS(3) < SunIsUpValue):
-        	return None
+            return None
 
         for SurfNum in range(1, TotSurfaces+1):
             CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
             if (!DetailedSolarTimestepIntegration):
                 if (iTimeStep == NumOfTimeStepInHour):
-                	CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
+                    CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
             else:
                 CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
             
@@ -5557,17 +5557,17 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     SurfArea = Surface(SurfNum).NetAreaShadowCalc
                     if (!DetailedSolarTimestepIntegration):
                         if (iTimeStep == NumOfTimeStepInHour):
-                        	SunlitFracHR(iHour, SurfNum) = SAREA(SurfNum) / SurfArea
+                            SunlitFracHR(iHour, SurfNum) = SAREA(SurfNum) / SurfArea
                     else:
                         SunlitFracHR(iHour, SurfNum) = SAREA(SurfNum) / SurfArea
                     
                     SunlitFrac(iTimeStep, iHour, SurfNum) = SAREA(SurfNum) / SurfArea
                     if (SunlitFrac(iTimeStep, iHour, SurfNum) < 1.e-5):
-                    	SunlitFrac(iTimeStep, iHour, SurfNum) = 0.0
+                        SunlitFrac(iTimeStep, iHour, SurfNum) = 0.0
                 
                 # Added check
                 if (SunlitFrac(iTimeStep, iHour, SurfNum) > 1.0):
-                	SunlitFrac(iTimeStep, iHour, SurfNum) = 1.0
+                    SunlitFrac(iTimeStep, iHour, SurfNum) = 1.0
                 
         #   Note -- if not the below, values are set in SkyDifSolarShading routine (constant for simulation)
         if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
@@ -5591,12 +5591,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                     for SurfNum in range(1, TotSurfaces+1):
                         if (!Surface(SurfNum).ShadowingSurf &&
-                    		(!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-                			(Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
-                    			continue
+                            (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+                            (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+                                continue
 
                         if (CTHETA(SurfNum) < 0.0):
-                        	continue
+                            continue
 
                         Fac1WoShdg = cos_Phi[IPhi] * DThetaDPhi * CTHETA(SurfNum)
                         SurfArea = Surface(SurfNum).NetAreaShadowCalc
@@ -5621,9 +5621,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             for SurfNum in range(1, TotSurfaces+1):
 
                 if (!Surface(SurfNum).ShadowingSurf &&
-                	(!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
-            		(Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
-                    	continue
+                    (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+                    (Surface(SurfNum).ExtBoundCond != ExternalEnvironment && Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
+                        continue
 
                 if (abs(WoShdgIsoSky(SurfNum)) > Eps):
                     DifShdgRatioIsoSkyHRTS(iTimeStep, iHour, SurfNum) = (WithShdgIsoSky(SurfNum)) / (WoShdgIsoSky(SurfNum))
@@ -5656,13 +5656,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # of the window in either case, frame/divider shadowing doesn't have to be done.
 
             # if (Surface(SurfNum).Class == SurfaceClass_Window && Surface(SurfNum).ExtBoundCond == ExternalEnvironment &&
-            # 	SunlitFrac(iTimeStep, iHour, SurfNum) > 0.0 && Surface(SurfNum).FrameDivider > 0):
-            #     	CalcFrameDividerShadow(SurfNum, Surface(SurfNum).FrameDivider, iHour)
+            #   SunlitFrac(iTimeStep, iHour, SurfNum) > 0.0 && Surface(SurfNum).FrameDivider > 0):
+            #       CalcFrameDividerShadow(SurfNum, Surface(SurfNum).FrameDivider, iHour)
         
-    	return None
+        return None
 
     def SHADOW(iHour, TS):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -5711,12 +5711,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             ZVT = 0.0
             OneTimeFlag = False
 
-		#ifdef EP_Count_Calls
+        #ifdef EP_Count_Calls
         if (iHour == 0):
             NumShadow_Calls += 1
         else:
             NumShadowAtTS_Calls += 1
-		#endif
+        #endif
 
         SAREA = 0.0
 
@@ -5742,13 +5742,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 SAREA(HTS) = 0.0
                 SHDSBS(iHour, GRSNR, NBKS, NSBS, HTS, TS)
             elif ((NGSS <= 0) && (NSBS <= 0)):
-            	# Simple surface--no shaders or subsurfaces
+                # Simple surface--no shaders or subsurfaces
                 SAREA(HTS) = Surface(GRSNR).NetAreaShadowCalc
             else:
-            	# Surface in sun and either shading surfaces or subsurfaces present (or both)
+                # Surface in sun and either shading surfaces or subsurfaces present (or both)
                 NGRS = Surface(GRSNR).BaseSurf
                 if (Surface(GRSNR).ShadowingSurf):
-                	NGRS = GRSNR
+                    NGRS = GRSNR
 
                 # Compute the X and Y displacements of a shadow.
                 XS = Surface(NGRS).lcsx.x * SUNCOS(1) + Surface(NGRS).lcsx.y * SUNCOS(2) + Surface(NGRS).lcsx.z * SUNCOS(3)
@@ -5794,10 +5794,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # There used to be a call to legacy subroutine SHDCVR here when the
             # zone type was not a standard zone.
 
-    	return None
+        return None
 
     def SHDGSS(NGRS, iHour, TS, CurSurf, NGSS, HTS):
-		'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -5818,7 +5818,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         REFERENCES:
         BLAST/IBLAST code, original author George Walton
-		'''
+        '''
         # Using/Aliasing
         # using DataSystemVariables::DisableAllSelfShading
         DisableAllSelfShading = False                       # when true, all external shadowing surfaces is ignored
@@ -5875,7 +5875,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 GSSNR = GenSurf(I)
 
                 if (CTHETA(GSSNR) > sunIsUp): #.001) CYCLE ! NO SHADOW IF GSS IN SUNLIGHT.
-                	continue
+                    continue
 
                 auto const &surface(Surface(GSSNR))
                 bool const notHeatTransSurf(!surface.HeatTransSurf)
@@ -5889,14 +5889,14 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 if (notHeatTransSurf):
                     if (surface.IsTransparent):
-                    	# No shadow if shading surface is transparent
-                    	continue
+                        # No shadow if shading surface is transparent
+                        continue
                     if (surface.SchedShadowSurfIndex > 0):
                         if (LookUpScheduleValue(surface.SchedShadowSurfIndex, iHour) == 1.0):
-                        	continue
+                            continue
                         if (!CalcSkyDifShading): # poderia ser um AND?
                             if (LookUpScheduleValue(surface.SchedShadowSurfIndex, iHour, TS) == 1.0):
-                            	continue
+                                continue
 
                 # Elimate shawdowing surfaces that is supposed to be disabled.
                 if (DisableAllSelfShading):
@@ -5911,7 +5911,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                             isDisabledShadowSurf = True
                             break
                     if (isDisabledShadowSurf):
-                    	continue # Disable all shadowing surfaces in all disabled zones.
+                        continue # Disable all shadowing surfaces in all disabled zones.
 
                 #      IF ((.NOT.Surface(GSSNR)%HeatTransSurf) .AND. &
                 #            GetCurrentScheduleValue(Surface(GSSNR)%SchedShadowSurfIndex) == 1.0) CYCLE
@@ -5936,7 +5936,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     CLIP(NVT, XVT, YVT, ZVT) # Clip portions of the shadow casting surface which are behind the receiving surface
 
                     if (NumVertInShadowOrClippedSurface <= 2):
-                    	continue
+                        continue
 
                     # Project shadow from shadow casting surface along sun's rays to receiving surface Shadow vertices
                     # become clockwise sequential
@@ -5962,14 +5962,14 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     for l in range(l, NVR):
                         auto const delX(abs(HCX[l] - HCX_N))
                         if (delX > 6):
-                    		continue
+                            continue
                         auto const delY(abs(HCY[l] - HCY_N))
                         if (delY > 6):
-                        	continue
+                            continue
                         if (delX > 0):
-                        	HCX[j] = HCX[l] # [ j ] == ( NS3, N )
+                            HCX[j] = HCX[l] # [ j ] == ( NS3, N )
                         if (delY > 0):
-                        	HCY[j] = HCY[l]
+                            HCY[j] = HCY[l]
                         break
                 
                 HTRANS0(NS3, NumVertInShadowOrClippedSurface)
@@ -5992,13 +5992,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 # Next statement is special to deal with transmitting shading devices
                 if (OverlapStatus == FirstSurfWithinSecond && SchValue > 0.0):
-                	OverlapStatus = PartialOverlap
+                    OverlapStatus = PartialOverlap
 
                 MainOverlapStatus = OverlapStatus
                 ExitLoopStatus = MainOverlapStatus
 
                 if (MainOverlapStatus == NoOverlap): # No overlap of general surface shadow and receiving surface
-                	continue
+                    continue
                 elif ((MainOverlapStatus == FirstSurfWithinSecond) || (MainOverlapStatus == TooManyVertices) ||
                       (MainOverlapStatus == TooManyFigures)):
                     #----------------------goto ShadowingSurfaces_exit
@@ -6007,7 +6007,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     LOCHCA = NS3
                     NGSSHC = LOCHCA - FGSSHC + 1
                     if (NGSSHC > 1):
-                    	MULTOL(LOCHCA, FGSSHC - 1, NGSSHC - 1) # HOYT - Remove this call
+                        MULTOL(LOCHCA, FGSSHC - 1, NGSSHC - 1) # HOYT - Remove this call
                 else:
                     goto ShadowingSurfaces_exit
 
@@ -6041,10 +6041,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         NGSSHC = LOCHCA - FGSSHC + 1
         
-    	return None
+        return None
 
     def PerformSolarCalculations():
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Linda K. Lawrie
               DATE WRITTEN   July 1999
@@ -6149,7 +6149,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 CalcBeamSolDiffuseReflFactors()
                 CalcBeamSolSpecularReflFactors()
                 if (BeginSimFlag):
-                	CalcSkySolDiffuseReflFactors()
+                    CalcSkySolDiffuseReflFactors()
 
             #  Calculate daylighting coefficients
             # CalcDayltgCoefficients()
@@ -6162,10 +6162,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # if (TotWindowsWithDayl > 0 && !BeginSimFlag && !BeginEnvrnFlag && !WarmupFlag && TotStormWin > 0 && StormWinChangeThisDay):
         #     CalcDayltgCoefficients()
         
-    	return None
+        return None
 
-	def SUN3(JulianDayOfYear, &SineOfSolarDeclination, &EquationOfTime):
-    	'''
+    def SUN3(JulianDayOfYear, &SineOfSolarDeclination, &EquationOfTime):
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -6176,8 +6176,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         This subroutine computes the coefficients for determining
         the solar position.
         - int const JulianDayOfYear,      # Julian Day Of Year
-		- Real64 &SineOfSolarDeclination, # Sine of Solar Declination
-		- Real64 &EquationOfTime          # Equation of Time (Degrees)
+        - Real64 &SineOfSolarDeclination, # Sine of Solar Declination
+        - Real64 &EquationOfTime          # Equation of Time (Degrees)
 
         METHODOLOGY EMPLOYED:
         The expressions are based on least-squares fits of data on p.316 of 'Thermal
@@ -6246,10 +6246,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                          EqOfTimeCoef(7) * (CosX * (pow_2(CosX) - pow_2(SineX)) - SineX * (SineX * CosX * 2.0)) +
                          EqOfTimeCoef(8) * (2.0 * (SineX * CosX * 2.0) * (pow_2(CosX) - pow_2(SineX))) +
                          EqOfTimeCoef(9) * (pow_2(pow_2(CosX) - pow_2(SineX)) - pow_2(SineX * CosX * 2.0))
-    	return None
+        return None
 
     def SUN4(CurrentTime, EqOfTime, SinSolarDeclin, CosSolarDeclin):
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Legacy Code
               DATE WRITTEN
@@ -6260,9 +6260,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         This subroutine computes solar direction cosines for a given hour. These
         cosines are used in the shadowing calculations.
         - Real64 const CurrentTime,    # Time to use in shadowing calculations
-		- Real64 const EqOfTime,       # Equation of time for current day
-		- Real64 const SinSolarDeclin, # Sine of the Solar declination (current day)
-		- Real64 const CosSolarDeclin  # Cosine of the Solar declination (current day)
+        - Real64 const EqOfTime,       # Equation of time for current day
+        - Real64 const SinSolarDeclin, # Sine of the Solar declination (current day)
+        - Real64 const CosSolarDeclin  # Cosine of the Solar declination (current day)
 
         METHODOLOGY EMPLOYED:
         # na
@@ -6300,17 +6300,17 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         SUNCOS(1) = 0.0
 
         if (SUNCOS(3) < SunIsUpValue):
-        	return None # Return if sun not above horizon.
+            return None # Return if sun not above horizon.
 
         # Compute other direction cosines.
         SUNCOS(2) = SinSolarDeclin * CosLatitude - CosSolarDeclin * SinLatitude * np.cos(H)
         SUNCOS(1) = CosSolarDeclin * np.sin(H)
 
-    	return None
+        return None
 
-	# MAYBE needed to get the nearby build shading
+    # MAYBE needed to get the nearby build shading
     def SkyDifSolarShading():
-    	'''
+        '''
         SUBROUTINE INFORMATION:
               AUTHOR         Fred Winkelmann
               DATE WRITTEN   May 1999
@@ -6410,7 +6410,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         
         for SurfNum in range(1, TotSurfaces+1): # SurfNum <= TotSurfaces == SurfNum = TotSurfaces
             if (!Surface(SurfNum).ExtSolar):
-            	continue
+                continue
 
             # CurrentModuleObject='Surfaces'
             if (DetailedSkyDiffuseAlgorithm && ShadingTransmittanceVaries && SolarDistribution != MinimalShadowing):
@@ -6459,7 +6459,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
                     if (!ShadowingSurf && !Surface(SurfNum).HeatTransSurf):
-                    	continue
+                        continue
 
                     CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) +
                                       SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
@@ -6548,6 +6548,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 DifShdgRatioIsoSkyHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioIsoSky(SurfNum)
                 DifShdgRatioHorizHRTS({1, NumOfTimeStepInHour}, {1, 24}, SurfNum) = DifShdgRatioHoriz(SurfNum)
 
-    	return None
+        return None
 
 # end of SolarCalculations
