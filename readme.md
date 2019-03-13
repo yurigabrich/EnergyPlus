@@ -151,6 +151,7 @@ File `Shadows.py` (functions and variables dependencies):
                         RoundSigDigits(RealValue, SigDigits)
                             TestChar --> ??? não sei como converter para Python
                             stripped() --> computing performance?
+                        OutputFileDebug
                     AssociateWindowShadingControlWithDaylighting() --> REALMENTE VAI SER USADO?
                         TotWinShadingControl --> ? DataSurfaces
                         NumOfZones
@@ -232,7 +233,6 @@ File `Shadows.py` (functions and variables dependencies):
                         ? SurfaceWindow --> definido como Pandas Series (l.680)
                     MaxSlatAngs --> ? DataSurfaces
                     OutputFileDFS --> ? DaylightingManager
-                    fmtA --> ? definido e usado dentro dessa função, mas não sei como usar ? parece ser um tipo de formatação de string
                     double() --> ? não parece ser definição de variável ?
         __init__()
             outputShdFileName

@@ -39,6 +39,7 @@ For more information check at: https://spdx.org/licenses/BSD-3-Clause.html
 # ------------------------------------------
 
 import math
+# import numpy as np
 import pandas as pd
 from collections import namedtuple
 from enum import Enum
@@ -49,6 +50,8 @@ class ExternalFunctions:
     Only those useful for the following computations was copied to here.
     Nontheless, some are particularly defined inside other 'class' statement.
     '''
+    # personal
+    OutputFileDebug = ""
 
     # DataGlobals.cc
     BeginSimFlag = False        # True until any actual simulation (full or sizing) has begun, False after first time step
@@ -883,7 +886,7 @@ class ExternalFunctions:
         DigitChar = "01234567890"
         NAN_string = "NAN"
         ZEROOOO = "0.000000000000000000000000000"
-        ?static gio::Fmt fmtLD("*");
+        fmtLD = "*"
 
         # FUNCTION LOCAL VARIABLE DECLARATIONS:
 
@@ -892,7 +895,7 @@ class ExternalFunctions:
 
         String = "" # Working string
         if (RealValue != 0.0):
-            ?gio::write(String, fmtLD) << RealValue;
+            String += fmtLD + RealValue
         else:
             String = ZEROOOO
 
@@ -932,59 +935,63 @@ class ExternalFunctions:
         except ValueError:
             TPos_ = False
         
-        if ((TPos_) and (TPos >= 5)):    # Must round to next Digit
-            char const Char2Rep = String[SPos];             # Character (digit) to be replaced
-            NPos = DigitChar.index(Char2Rep)                # Position of "next" char in Digit String
+        if ((TPos_) and (TPos >= 5)):           # Must round to next Digit
+            Char2Rep = String[SPos]             # Character (digit) to be replaced
             
-            assert(NPos != std::string::npos);
+            assert DigitChar.index(Char2Rep)
+            NPos = DigitChar.index(Char2Rep)    # Position of "next" char in Digit String
+            # assert(NPos != std::string::npos);
+            
             String[SPos] = DigitChar[NPos + 1]
             
             while (NPos == 9):                              # Must change other char too
                 if (SigDigits == 1):
-                    assert(SPos >= 2u);
+                    assert(SPos >= 2);
                     TestChar = String[SPos - 2]
                     
                     if (TestChar == '.'):
-                        assert(SPos >= 3u);
+                        assert(SPos >= 3);
                         TestChar = String[SPos - 3]
                         SPos =- 2
                     
                     if (TestChar == ' '):
                         TestChar = '0'                      # all 999s
                     elif (TestChar == '-'):                 # Autodesk Added to fix bug for values like -9.9999
-                        assert(SPos >= 3u);
+                        assert(SPos >= 3);
                         String[SPos - 3] = TestChar         # Shift sign left to avoid overwriting it
                         TestChar = '0'                      # all 999s
                     
+                    assert DigitChar.index(TestChar)
                     TPos1 = DigitChar.index(TestChar)
-                    assert(TPos1 != std::string::npos);
-                    assert(SPos >= 2u);
+                    # assert(TPos1 != std::string::npos);
+                    assert(SPos >= 2);
                     String[SPos - 2] = DigitChar[TPos1 + 1]
                 else:
-                    assert(SPos >= 1u);
+                    assert(SPos >= 1);
                     TestChar = String[SPos - 1]
                     if (TestChar == '.'):
-                        assert(SPos >= 2u);
+                        assert(SPos >= 2);
                         TestChar = String[SPos - 2]
                         SPos =- 1
                     
                     if (TestChar == ' '):
                         TestChar = '0'                      # all 999s
                     elif (TestChar == '-'):                 # Autodesk Added to fix bug for values like -9.9999
-                        assert(SPos >= 2u);
+                        assert(SPos >= 2);
                         String[SPos - 2] = TestChar         # Shift sign left to avoid overwriting it
                         TestChar = '0'                      # all 999s
                     
+                    assert DigitChar.index(TestChar)
                     TPos1 = DigitChar.index(TestChar)
-                    assert(TPos1 != std::string::npos);
-                    assert(SPos >= 1u);
+                    # assert(TPos1 != std::string::npos);
+                    assert(SPos >= 1);
                     String[SPos - 1] = DigitChar[TPos1 + 1]
                 
                 SPos =- 1
                 NPos = TPos1
 
         # IncludeDot --> True when decimal point output
-        if (SigDigits > 0 || EString != ""):
+        if (SigDigits > 0 or EString != ""):
             IncludeDot = True
         else:
             IncludeDot = False
@@ -1001,7 +1008,7 @@ class ExternalFunctions:
     # General::POLYF --> ? REVER COMPORTAMENTO DO 'A'
     # ACHO Q ESSA FUNÇÃO NÃO SERÁ USADA PARA A SOMBRA!
     def POLYF(X, A):
-    '''
+        '''
         FUNCTION INFORMATION:
                 AUTHOR         Fred Winkelmann
                 DATE WRITTEN   February 1999
@@ -1016,11 +1023,11 @@ class ExternalFunctions:
         INPUTS:
                 Real64 const X,         # Cosine of angle of incidence
                 Array1A<Real64> const A # Polynomial coefficients
-    '''
+        '''
         # Argument array dimensioning
         A.dim(6);
 
-        if (X < 0.0 || X > 1.0):
+        if (X < 0.0 or X > 1.0):
             POLYF = 0.0
         else:
             POLYF = X * ( A(1) + X * ( A(2) + X * ( A(3) + X * ( A(4) + X * ( A(5) + X * A(6) )))))
@@ -1089,7 +1096,7 @@ class ExternalFunctions:
         # FLOW:
         DomeSurf = TDDPipe(PipeNum).Dome;
 
-        if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
+        if (not DetailedSkyDiffuseAlgorithm or not ShadingTransmittanceVaries or SolarDistribution == MinimalShadowing):
             IsoSkyRad = MultIsoSky(DomeSurf) * DifShdgRatioIsoSky(DomeSurf)
             HorizonRad = MultHorizonZenith(DomeSurf) * DifShdgRatioHoriz(DomeSurf)
         else:
@@ -1184,7 +1191,7 @@ class ExternalFunctions:
             ShowFatalError("FindTDDPipe: Surface = {}, TDD:Dome object does not reference a valid Diffuser object....needs DaylightingDevice:Tubular of same name as Surface.".format(Surface(WinNum).Name))
 
         for PipeNum in range(1, NumOfTDDPipes+1):
-            if ((WinNum == TDDPipe(PipeNum).Dome) || (WinNum == TDDPipe(PipeNum).Diffuser)):
+            if ((WinNum == TDDPipe(PipeNum).Dome) or (WinNum == TDDPipe(PipeNum).Diffuser)):
                 FindTDDPipe = PipeNum
                 break
 
@@ -1286,7 +1293,7 @@ class ExternalFunctions:
         '''
 
         # SUBROUTINE PARAMETER DEFINITIONS:
-        static gio::Fmt fmtA("(A)");
+        fmtA = "(A)"
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         PipeNum = 0  # TDD pipe object number
@@ -1310,40 +1317,36 @@ class ExternalFunctions:
                     ErrorsFound = True
                     
                     if (CheckTDDZone(Surface(SurfNum).Zone)):
-                        gio::write(OutputFileDebug, fmtA) << " ! Following control is to allow tubular reporting in this Zone";
-                        gio::write(OutputFileDebug, fmtA) << "Daylighting:Controls,  !- this control controls 0% of zone.";
-                        gio::write(OutputFileDebug, fmtA) << "   " + Zone(Surface(SurfNum).Zone).Name + ",  !- Zone Name";
-                        gio::write(OutputFileDebug, fmtA) << "     1,   !- Total Daylighting Reference Points";
+                        OutputFileDebug += fmtA + '\n' + " ! Following control is to allow tubular reporting in this Zone"
+                        OutputFileDebug += fmtA + '\n' + "Daylighting:Controls,  !- this control controls 0% of zone."
+                        OutputFileDebug += fmtA + '\n' + "   {},  !- Zone Name".format(Zone(Surface(SurfNum).Zone).Name)
+                        OutputFileDebug += fmtA + '\n' + "     1,   !- Total Daylighting Reference Points"
                         
                         if (DaylRefWorldCoordSystem):
                             # world coordinates, use zone origin for ref pt
-                            gio::write(OutputFileDebug, fmtA) << "   " + RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginX, 2) +
-                                                                     ",   !- X-Coordinate of First Reference Point {m}";
-                            gio::write(OutputFileDebug, fmtA) << "   " + RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginY, 2) +
-                                                                     ",   !- Y-Coordinate of First Reference Point {m}";
-                            gio::write(OutputFileDebug, fmtA) << "   " + RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginZ, 2) +
-                                                                     ",   !- Z-Coordinate of First Reference Point {m}";
+                            OutputFileDebug += fmtA + '\n' + "   {},   !- X-Coordinate of First Reference Point {{m}}".format(RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginX, 2))
+                            OutputFileDebug += fmtA + '\n' + "   {},   !- Y-Coordinate of First Reference Point {{m}}".format(RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginY, 2))
+                            OutputFileDebug += fmtA + '\n' + "   {},   !- Z-Coordinate of First Reference Point {{m}}".format(RoundSigDigits(Zone(Surface(SurfNum).Zone).OriginZ, 2))
                         else:
                             # relative coordinates, use 0,0,0 for ref pt
-                            gio::write(OutputFileDebug, fmtA) << "   0.0,   !- X-Coordinate of First Reference Point {m}";
-                            gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Y-Coordinate of First Reference Point {m}";
-                            gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Z-Coordinate of First Reference Point {m}";
+                            OutputFileDebug += fmtA + '\n' + "   0.0,   !- X-Coordinate of First Reference Point {{m}}"
+                            OutputFileDebug += fmtA + '\n' + "   0.0,   !- Y-Coordinate of First Reference Point {{m}}"
+                            OutputFileDebug += fmtA + '\n' + "   0.0,   !- Z-Coordinate of First Reference Point {{m}}"
                         
-                        gio::write(OutputFileDebug, fmtA) << "      ,   !- X-Coordinate of Second Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "      ,   !- Y-Coordinate of Second Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "      ,   !- Z-Coordinate of Second Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Fraction of Zone Controlled by First Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Fraction of Zone Controlled by Second Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Illuminance Setpoint at First Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Illuminance Setpoint at Second Reference Point";
-                        gio::write(OutputFileDebug, fmtA) << "     3,   !- Lighting Control Type";
-                        gio::write(OutputFileDebug, fmtA)
-                            << "   0.0,   !- Glare Calculation Azimuth Angle of View Direction Clockwise from Zone y-Axis";
-                        gio::write(OutputFileDebug, fmtA) << "      ,   !- Maximum Allowable Discomfort Glare Index";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Minimum Input Power Fraction for Continuous Dimming Control";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0,   !- Minimum Light Output Fraction for Continuous Dimming Control";
-                        gio::write(OutputFileDebug, fmtA) << "     0,   !- Number of Stepped Control Steps";
-                        gio::write(OutputFileDebug, fmtA) << "   0.0;   !- Probability Lighting will be Reset When Needed in Manual Stepped Control";
+                        OutputFileDebug += fmtA + '\n' + "      ,   !- X-Coordinate of Second Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "      ,   !- Y-Coordinate of Second Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "      ,   !- Z-Coordinate of Second Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Fraction of Zone Controlled by First Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Fraction of Zone Controlled by Second Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Illuminance Setpoint at First Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Illuminance Setpoint at Second Reference Point"
+                        OutputFileDebug += fmtA + '\n' + "     3,   !- Lighting Control Type"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Glare Calculation Azimuth Angle of View Direction Clockwise from Zone y-Axis"
+                        OutputFileDebug += fmtA + '\n' + "      ,   !- Maximum Allowable Discomfort Glare Index"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Minimum Input Power Fraction for Continuous Dimming Control"
+                        OutputFileDebug += fmtA + '\n' + "   0.0,   !- Minimum Light Output Fraction for Continuous Dimming Control"
+                        OutputFileDebug += fmtA + '\n' + "     0,   !- Number of Stepped Control Steps"
+                        OutputFileDebug += fmtA + '\n' + "   0.0;   !- Probability Lighting will be Reset When Needed in Manual Stepped Control"
 
                         CheckTDDZone(Surface(SurfNum).Zone) = False
 
@@ -1656,7 +1659,7 @@ class ExternalFunctions:
         # Calc for daylighting reference points
         CalcDayltgCoeffsRefPoints(ZoneNum)
 
-        if (!DoingSizing and !KickOffSimulation):
+        if (not DoingSizing and not KickOffSimulation):
             # Calc for illuminance map
             if (TotIllumMaps > 0):
                 for MapNum in range(1, TotIllumMaps+1):
@@ -1691,7 +1694,7 @@ class ExternalFunctions:
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
-        static gio::Fmt fmtA("(A)");
+        fmtA = "(A)"
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         TotDaylightingControls = 0  # Total Daylighting:Controls inputs (splitflux or delight type)
@@ -1744,7 +1747,7 @@ class ExternalFunctions:
                 maxNumRefPtInAnyZone = numRefPoints
 
             if (ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0):
-                # if (!SurfaceWindow(SurfNum).SurfDayLightInit):
+                # if (not SurfaceWindow(SurfNum).SurfDayLightInit):
                 #     SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
                 #     SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
                 #     SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
@@ -1766,7 +1769,7 @@ class ExternalFunctions:
                     ZoneNumAdj = Surface(SurfNumAdj).Zone
                     
                     if (ZoneDaylight(ZoneNumAdj).TotalDaylRefPoints > 0):
-                        # if (!SurfaceWindow(SurfNum).SurfDayLightInit):
+                        # if (not SurfaceWindow(SurfNum).SurfDayLightInit):
                             # SurfaceWindow(SurfNum).SolidAngAtRefPt.allocate(numRefPoints)
                             # SurfaceWindow(SurfNum).SolidAngAtRefPt = 0.0
                             # SurfaceWindow(SurfNum).SolidAngAtRefPtWtd.allocate(numRefPoints)
@@ -1865,7 +1868,7 @@ class ExternalFunctions:
                 # Then, if any error has occurred, ShowFatalError to terminate processing
                 bEndofErrFile = False
                 bRecordsOnErrFile = False
-                while (!bEndofErrFile):
+                while (not bEndofErrFile):
                     {
                         IOFlags flags;
                         gio::read(iDElightErrorFile, fmtA, flags) >> cErrorLine;
@@ -2017,7 +2020,7 @@ class ExternalFunctions:
         '''
 
         # SUBROUTINE PARAMETER DEFINITIONS:
-        static gio::Fmt fmtA("(A)");
+        fmtA = "(A)"
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         ZoneNum = 0     # Zone number
@@ -2079,7 +2082,7 @@ class ExternalFunctions:
         #-----------------------------------------!
         # Detailed daylighting factor calculation !
         #-----------------------------------------!
-        if (!DetailedSolarTimestepIntegration and !KickOffSizing and !KickOffSimulation):
+        if (not DetailedSolarTimestepIntegration and not KickOffSizing and not KickOffSimulation):
             if (WarmupFlag):
                 print("Calculating Detailed Daylighting Factors, Start Date = {}".format(CurMnDy))
             else:
@@ -2105,11 +2108,11 @@ class ExternalFunctions:
             for ZoneNum in range(1, NumOfZones+1):
                 # TH 9/10/2009. Need to calculate for zones without daylighting controls (TotalDaylRefPoints = 0)
                 # but with adjacent zones having daylighting controls.
-                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 and ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) || ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl):
+                if ((ZoneDaylight(ZoneNum).TotalDaylRefPoints > 0 and ZoneDaylight(ZoneNum).NumOfDayltgExtWins > 0) or ZoneDaylight(ZoneNum).AdjZoneHasDayltgCtrl):
                     DayltgAveInteriorReflectance(ZoneNum)
 
         # Zero daylighting factor arrays
-        if (!DetailedSolarTimestepIntegration):
+        if (not DetailedSolarTimestepIntegration):
             TDDTransVisBeam = 0.0
             TDDFluxInc = 0.0
             TDDFluxTrans = 0.0
@@ -2118,7 +2121,7 @@ class ExternalFunctions:
             TDDFluxInc(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0
             TDDFluxTrans(HourOfDay, {1, 4}, {1, NumOfTDDPipes}) = 0.0
 
-        if (!DetailedSolarTimestepIntegration):
+        if (not DetailedSolarTimestepIntegration):
             if (BeginDayFlag):
                 # Calculate hourly sun angles, clear sky zenith luminance, and exterior horizontal illuminance
                 PHSUN = 0.0
@@ -2183,7 +2186,7 @@ class ExternalFunctions:
         for ZoneNum in range(1, NumOfZones+1):
             # Skip zones that are not Daylighting:Detailed zones.
             # TotalDaylRefPoints = 0 means zone has (1) no daylighting or (3) Daylighting:DElight
-            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
+            if (ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0 or ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
                 continue
 
             # Skip zones with no exterior windows in the zone or in adjacent zone with which an interior window is shared
@@ -2195,7 +2198,7 @@ class ExternalFunctions:
         # End of zone loop, ZoneNum
 
         if (doSkyReporting):
-            if (!KickOffSizing and !KickOffSimulation):
+            if (not KickOffSizing and not KickOffSimulation):
                 # if (FirstTimeDaylFacCalc and TotWindowsWithDayl > 0):
                 #     # Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
                 #     # for first time that daylight factors are calculated and so is insensitive to possible variation
@@ -2203,7 +2206,7 @@ class ExternalFunctions:
                 #     gio::write(OutputFileInits, Format_700);
 
                 #     for ZoneNum in range(1, NumOfZones+1):
-                #         if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 || ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
+                #         if (ZoneDaylight(ZoneNum).NumOfDayltgExtWins == 0 or ZoneDaylight(ZoneNum).DaylightMethod != SplitFluxDaylighting):
                 #           continue
                 #         for loop in range(1, ZoneDaylight(ZoneNum).NumOfDayltgExtWins+1):
                 #             IWin = ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop)
@@ -2258,7 +2261,7 @@ class ExternalFunctions:
         # if (TotWindowsWithDayl == 0): return None
 
         # Skip if no request of reporting
-        if ((!DFSReportSizingDays) and (!DFSReportAllShadowCalculationDays)): return None
+        if ((not DFSReportSizingDays) and (not DFSReportAllShadowCalculationDays)): return None
 
         # Skip duplicate calls
         if (KickOffSizing): return None
@@ -2378,14 +2381,14 @@ class ExternalFunctions:
         # DayCtr = 0
         # WeekCtr = 0
 
-        if (!ScheduleInputProcessed):
+        if (not ScheduleInputProcessed):
             ProcessScheduleInput()
             ScheduleInputProcessed = True
 
         if (NumSchedules > 0):
             GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}))
             if (GetScheduleIndex > 0):
-                if (!Schedule(GetScheduleIndex).Used):
+                if (not Schedule(GetScheduleIndex).Used):
                     Schedule(GetScheduleIndex).Used = True
                     
                     for WeekCtr in range(1, 367):
@@ -2425,7 +2428,7 @@ class ExternalFunctions:
         if (find_obj == epJSON.end()):
             auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
             
-            if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
+            if (tmp_umit == caseInsensitiveObjectMap.end() or epJSON.find(tmp_umit->second) == epJSON.end()):
                 return 0
             
             return static_cast<int>(epJSON[tmp_umit->second].size());
@@ -2473,7 +2476,7 @@ class ExternalFunctions:
         find_iterators = objectCacheMap.find(Object)
         if (find_iterators == objectCacheMap.end()):
             tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(Object))
-            if (tmp_umit == caseInsensitiveObjectMap.end() || epJSON.find(tmp_umit->second) == epJSON.end()):
+            if (tmp_umit == caseInsensitiveObjectMap.end() or epJSON.find(tmp_umit->second) == epJSON.end()):
                 return None
 
             objectInfo.objectType = tmp_umit->second
@@ -2777,7 +2780,7 @@ class ExternalFunctions:
           Simple assignments to public variables.
         '''
         # SUBROUTINE PARAMETER DEFINITIONS:
-        static gio::Fmt fmtLD("*");
+        fmtLD = "*"
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         stringEntry = ""
@@ -2846,7 +2849,7 @@ class ExternalFunctions:
         # # ENDIF
 
   #       if (NumComplexWind == 0): return None
-  #       if (KickOffSizing || KickOffSimulation): return None
+  #       if (KickOffSizing or KickOffSimulation): return None
 
   #       # Shading-dependent initialization; performed once for each shading period
 
@@ -3062,7 +3065,7 @@ class SolarShading(ExternalFunctions):
         TrackTooManyVertices = pd.Series()
         TrackBaseSubSurround = pd.Series()
 
-        static gio::Fmt fmtLD("*")
+        fmtLD = "*"
 
     #--------------------
     # MODULE SUBROUTINES:
@@ -3330,7 +3333,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         ScheduleFileShadingProcessed = False
 
         # SUBROUTINE PARAMETER DEFINITIONS:
-        static gio::Fmt fmtA("(A)")
+        fmtA = "(A)"
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         NumItems = 0
@@ -3400,18 +3403,18 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 SutherlandHodgman = False
                 cAlphaArgs(2) = "ConvexWeilerAtherton"
             elif (lAlphaFieldBlanks(2)):
-                if (!SutherlandHodgman): # if already set.
+                if (not SutherlandHodgman): # if already set.
                     cAlphaArgs(2) = "ConvexWeilerAtherton"
                 else:
                     cAlphaArgs(2) = "SutherlandHodgman"
             else:
                 ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(2))
-                if (!SutherlandHodgman):
+                if (not SutherlandHodgman):
                     ShowContinueError("Value entered=\"" + cAlphaArgs(2) + "\", ConvexWeilerAtherton will be used.")
                 else:
                     ShowContinueError("Value entered=\"" + cAlphaArgs(2) + "\", SutherlandHodgman will be used.")
         else:
-            if (!SutherlandHodgman):
+            if (not SutherlandHodgman):
                 cAlphaArgs(2) = "ConvexWeilerAtherton"
             else:
                 cAlphaArgs(2) = "SutherlandHodgman"
@@ -3509,7 +3512,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         if (DisableSelfShadingBetweenGroup and DisableSelfShadingWithinGroup):
             DisableAllSelfShading = True
-        elif (DisableSelfShadingBetweenGroup || DisableSelfShadingWithinGroup):
+        elif (DisableSelfShadingBetweenGroup or DisableSelfShadingWithinGroup):
             DisableGroupSelfShading = True
 
         SurfZoneGroup = 0
@@ -3558,7 +3561,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             else:
                 ShowFatalError("No Shading groups are defined when disabling grouped self shading.")
 
-        if (!DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing): # 'ShadingTransmittanceVaries' e 'SolarDistribution' e 'MinimalShadowing' não foram definidos
+        if (not DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing): # 'ShadingTransmittanceVaries' e 'SolarDistribution' e 'MinimalShadowing' não foram definidos
             ShowWarningError("GetShadowingInput: The shading transmittance for shading devices changes throughout the year. Choose "
                              "DetailedSkyDiffuseModeling in the " + cCurrentModuleObject + " object to remove this warning.")
             ShowContinueError("Simulation has been reset to use DetailedSkyDiffuseModeling. Simulation continues.")
@@ -3568,7 +3571,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 ShowContinueError("Better accuracy may be gained by setting the " + cNumericFieldNames(1) + " to 1 in the " + cCurrentModuleObject + " object.")
 
         elif (DetailedSkyDiffuseAlgorithm):
-            if (!ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
+            if (not ShadingTransmittanceVaries or SolarDistribution == MinimalShadowing):
                 ShowWarningError("GetShadowingInput: DetailedSkyDiffuseModeling is chosen but not needed as either the shading transmittance for "
                                  "shading devices does not change throughout the year")
                 ShowContinueError(" or MinimalShadowing has been chosen.")
@@ -3876,7 +3879,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                                     "Average",
                                     Surface(SurfLoop).Name)
 
-            if (!Surface(SurfLoop).HeatTransSurf): continue # probably will not be used
+            if (not Surface(SurfLoop).HeatTransSurf): continue # probably will not be used
 
         return None
 
@@ -3910,7 +3913,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
 
         # SUBROUTINE PARAMETER DEFINITIONS:
-        static gio::Fmt fmtA("(A)")
+        fmtA = "(A)"
 
         # INTERFACE BLOCK SPECIFICATIONS
         # na
@@ -3976,15 +3979,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             NSBS = 0
             NBKS = 0
 
-            if (!ShadowingSurf and !Surface(GRSNR).HeatTransSurf):
+            if (not ShadowingSurf and not Surface(GRSNR).HeatTransSurf):
                 continue
 
             HTS = GRSNR
 
-            if (!ShadowingSurf and !Surface(GRSNR).ExtSolar):
+            if (not ShadowingSurf and not Surface(GRSNR).ExtSolar):
                 continue # Skip surfaces with no external solar
 
-            if (!ShadowingSurf and Surface(GRSNR).BaseSurf != GRSNR):
+            if (not ShadowingSurf and Surface(GRSNR).BaseSurf != GRSNR):
                 continue # Skip subsurfaces (SBS)
 
             # Get the lowest point of receiving surface
@@ -4006,7 +4009,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # If receiving surf is a shadowing surface exclude matching shadow surface as sending surface
                         # IF((GSSNR == GRSNR+1 .AND. Surface(GSSNR)%Name(1:3) == 'Mir').OR. &
                         #   (GSSNR == GRSNR-1 .AND. Surface(GRSNR)%Name(1:3) == 'Mir')) CYCLE
-                        if (((GSSNR == GRSNR + 1) and Surface(GSSNR).MirroredSurf) || ((GSSNR == GRSNR - 1) and Surface(GRSNR).MirroredSurf)):
+                        if (((GSSNR == GRSNR + 1) and Surface(GSSNR).MirroredSurf) or ((GSSNR == GRSNR - 1) and Surface(GRSNR).MirroredSurf)):
                             continue
 
                     if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
@@ -4017,15 +4020,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         
                         GSS(NGSS) = GSSNR # substitui o valor de GSS no index NGSS com GSSNR?
 
-                    elif ((Surface(GSSNR).BaseSurf == 0) || ((Surface(GSSNR).BaseSurf == GSSNR) and
-                             ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) ||
+                    elif ((Surface(GSSNR).BaseSurf == 0) or ((Surface(GSSNR).BaseSurf == GSSNR) and
+                             ((Surface(GSSNR).ExtBoundCond == ExternalEnvironment) or
                              Surface(GSSNR).ExtBoundCond == OtherSideCondModeledExt))): # Detached shadowing surface or | any other base surface
                                                                                         # exposed to outside environment
 
                         CHKGSS(GRSNR, GSSNR, ZMIN, CannotShade) # Check to see if this can shade the receiving surface
                         
                         # Update the shadowing surface data if shading is possible
-                        if (!CannotShade):
+                        if (not CannotShade):
                             NGSS += 1
                             if (NGSS > MaxGSS):
                                 GSS.redimension(MaxGSS *= 2, 0)
@@ -4056,7 +4059,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # legacy: IF (OSENV(HTS) > 10) WINDOW=.True. -->Note: WINDOW was set True for roof ponds, solar walls, or other zones
             for SBSNR in range(1, TotSurfaces+1): # Loop through the surfaces yet again (looking for subsurfaces of GRSNR)...
 
-                if (!Surface(SBSNR).HeatTransSurf):
+                if (not Surface(SBSNR).HeatTransSurf):
                     continue    # Skip non heat transfer subsurfaces
                 if (SBSNR == GRSNR):
                     continue                   # Surface itself cannot be its own subsurface
@@ -4084,7 +4087,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 for BackSurfaceNumber in range(1, TotSurfaces+1):
                     # Loop through surfaces yet again, looking for back surfaces to GRSNR
 
-                    if (!Surface(BackSurfaceNumber).HeatTransSurf):
+                    if (not Surface(BackSurfaceNumber).HeatTransSurf):
                         continue                            # Skip non-heat transfer surfaces
                     if (Surface(BackSurfaceNumber).BaseSurf == GRSNR):
                         continue                            # Skip subsurfaces of this GRSNR
@@ -4187,7 +4190,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 shd_stream << "....Surface=" << Surface(ShadowComb(HTS).SubSurf(NGSS)).Name << '\n'
 
         for HTS in range(1, TotSurfaces+1):
-            if (CastingSurface(HTS) and !Surface(HTS).IsConvex):
+            if (CastingSurface(HTS) and not Surface(HTS).IsConvex):
                 if (DisplayExtraWarnings):
                     ShowSevereError("DetermineShadowingCombinations: Surface=\"{}\" is a casting surface and is non-convex.".format(Surface(HTS).Name))
                     raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
@@ -4495,7 +4498,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         Int64 HCY_m(HCY[l] = HCY[l1]) # [ l1 ] == ( NS, 1 )
 
         l = l1
-        auto m(l1 + 1u)
+        auto m(l1 + 1)
         HCX_l = 0
         HCY_l = 0
         SUM = 0.0
@@ -4550,7 +4553,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         Int64 HCY_m(HCY[l] = HCY[l1])
 
         l = l1
-        auto m(l1 + 1u)
+        auto m(l1 + 1)
         HCX_l = 0
         HCY_l = 0
         SUM = 0.0
@@ -4974,7 +4977,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         if (NV3 < 3): # Determine overlap status
             OverlapStatus = NoOverlap
-        elif (!INTFLAG):
+        elif (not INTFLAG):
             OverlapStatus = FirstSurfWithinSecond
 
         return None
@@ -5035,7 +5038,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             # Process overlap cases:
             if (OverlapStatus == NoOverlap): continue
-            if ((OverlapStatus == TooManyVertices) || (OverlapStatus == TooManyFigures)): break
+            if ((OverlapStatus == TooManyVertices) or (OverlapStatus == TooManyFigures)): break
 
             LOCHCA = NS3 # Increment h.c. arrays pointer.
 
@@ -5229,7 +5232,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         if (NS3 > MaxHCS):
             OverlapStatus = TooManyFigures
-            if (!TooManyFiguresMessage and !DisplayExtraWarnings):
+            if (not TooManyFiguresMessage and not DisplayExtraWarnings):
                 raise RuntimeWarning("DeterminePolygonOverlap: Too many figures [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCS))) # round with how many decimals?
                 TooManyFiguresMessage = True
 
@@ -5245,7 +5248,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         NV2 = HCNV(NS2)
         NV3 = 0
 
-        if (!SutherlandHodgman):
+        if (not SutherlandHodgman):
             INCLOS(NS1, NV1, NS2, NV2, NV3, NIN1) # Find vertices of NS1 within NS2.
 
             if (NIN1 >= NV1):
@@ -5265,7 +5268,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             CLIPPOLY(NS1, NS2, NV1, NV2, NV3)
 
         if (NV3 < MaxHCV and NS3 <= MaxHCS):
-            if (!SutherlandHodgman):
+            if (not SutherlandHodgman):
                 ORDER(NV3, NS3) # Put vertices in clockwise order.
             else:
                 assert(equal_dimensions(HCX, HCY))
@@ -5294,7 +5297,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         elif (NV3 > MaxHCV):
             OverlapStatus = TooManyVertices
 
-            if (!TooManyVerticesMessage and !DisplayExtraWarnings):
+            if (not TooManyVerticesMessage and not DisplayExtraWarnings):
                 raise RuntimeWarning("DeterminePolygonOverlap: Too many vertices [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCV)))
                 TooManyVerticesMessage = True
 
@@ -5306,7 +5309,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         elif (NS3 > MaxHCS):
             OverlapStatus = TooManyFigures
 
-            if (!TooManyFiguresMessage and !DisplayExtraWarnings):
+            if (not TooManyFiguresMessage and not DisplayExtraWarnings):
                 raise RuntimeWarning("DeterminePolygonOverlap: Too many figures [>{}] detected in an overlap calculation. Use Output:Diagnostics,DisplayExtraWarnings for more details.".format(RoundSigDigits(MaxHCS)))
                 TooManyFiguresMessage = True
 
@@ -5354,18 +5357,18 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         iHour = 0   # Hour index number
         TS = 0      # TimeStep Loop Counter
         SurfNum = 0 # Do loop counter
-        static gio::Fmt fmtA("(A)")
-        static gio::Fmt ShdFracFmtName("(A, A)")
-        static gio::Fmt ShdFracFmt1("(I2.2,'/',I2.2,' ',I2.2, ':',I2.2, ',')")
-        static gio::Fmt ShdFracFmt2("(f6.2,',')")
-        static gio::Fmt fmtN("('\n')")
+        fmtA = "(A)"
+        ShdFracFmtName = "(A, A)"
+        ShdFracFmt1 = "(I2.2,'/',I2.2,' ',I2.2, ':',I2.2, ',')"
+        ShdFracFmt2 = "(f6.2,',')"
+        fmtN = "('\n')"
         Once = True
 
         if (Once):
             InitComplexWindows()
         Once = False
 
-        if (KickOffSizing || KickOffSimulation):
+        if (KickOffSizing or KickOffSimulation):
             return None # Skip solar calcs for these Initialization steps.
 
         #ifdef EP_Count_Calls
@@ -5373,7 +5376,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         #endif
 
         # Initialize some values for the appropriate period
-        if (!DetailedSolarTimestepIntegration):
+        if (not DetailedSolarTimestepIntegration):
             SunlitFracHR = 0.0
             SunlitFrac = 0.0
             SunlitFracWithoutReveal = 0.0
@@ -5401,7 +5404,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             #     SurfaceWindow(SurfNum).OutProjSLFracMult(HourOfDay) = 1.0
             #     SurfaceWindow(SurfNum).InOutProjSLFracMult(HourOfDay) = 1.0
 
-        if (!DetailedSolarTimestepIntegration):
+        if (not DetailedSolarTimestepIntegration):
             for iHour in range(1, 25): # Do for all hours
                 for TS in range(1, NumOfTimeStepInHour+1):
                     FigureSunCosines(iHour, TS, AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
@@ -5410,7 +5413,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         
         # Initialize/update the Complex Fenestration geometry and optical properties
         # UpdateComplexWindows()
-        if (!DetailedSolarTimestepIntegration):
+        if (not DetailedSolarTimestepIntegration):
             for iHour in range(1, 25): # Do for all hours.
                 for TS in range(1, NumOfTimeStepInHour+1):
                     FigureSolarBeamAtTimestep(iHour, TS)
@@ -5488,7 +5491,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         SUN4(CurrentTime, EqOfTime, SinSolarDeclin, CosSolarDeclin)
 
         # Save hourly values for use in DaylightingManager
-        if (!DetailedSolarTimestepIntegration):
+        if (not DetailedSolarTimestepIntegration):
             if (iTimeStep == NumOfTimeStepInHour): # poderia ser um 'AND'
                 SUNCOSHR(iHour, {1, 3}) = SUNCOS
         else:
@@ -5546,7 +5549,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         for SurfNum in range(1, TotSurfaces+1):
             CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
-            if (!DetailedSolarTimestepIntegration):
+            if (not DetailedSolarTimestepIntegration):
                 if (iTimeStep == NumOfTimeStepInHour):
                     CosIncAngHR(iHour, SurfNum) = CTHETA(SurfNum)
             else:
@@ -5565,7 +5568,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             for SurfNum in range(1, TotSurfaces+1):
                 if (Surface(SurfNum).Area >= 1.e-10):
                     SurfArea = Surface(SurfNum).NetAreaShadowCalc
-                    if (!DetailedSolarTimestepIntegration):
+                    if (not DetailedSolarTimestepIntegration):
                         if (iTimeStep == NumOfTimeStepInHour):
                             SunlitFracHR(iHour, SurfNum) = SAREA(SurfNum) / SurfArea
                     else:
@@ -5594,14 +5597,14 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     SUNCOS(2) = cos_Phi[IPhi] * sin_Theta[ITheta]
 
                     for SurfNum in range(1, TotSurfaces+1):
-                        if (!Surface(SurfNum).ShadowingSurf and !Surface(SurfNum).HeatTransSurf): continue
+                        if (not Surface(SurfNum).ShadowingSurf and not Surface(SurfNum).HeatTransSurf): continue
                         CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) + SUNCOS(3) * Surface(SurfNum).OutNormVec(3)
                     
                     SHADOW(iHour, iTimeStep) # Determine sunlit areas and solar multipliers for all surfaces.
 
                     for SurfNum in range(1, TotSurfaces+1):
-                        if (!Surface(SurfNum).ShadowingSurf and
-                            (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+                        if (not Surface(SurfNum).ShadowingSurf and
+                            (not Surface(SurfNum).HeatTransSurf or not Surface(SurfNum).ExtSolar or
                             (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                                 continue
 
@@ -5630,8 +5633,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             for SurfNum in range(1, TotSurfaces+1):
 
-                if (!Surface(SurfNum).ShadowingSurf and
-                    (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+                if (not Surface(SurfNum).ShadowingSurf and
+                    (not Surface(SurfNum).HeatTransSurf or not Surface(SurfNum).ExtSolar or
                     (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                         continue
 
@@ -5732,7 +5735,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         for GRSNR in range(1, TotSurfaces+1):
 
-            if (!ShadowComb(GRSNR).UseThisSurf): continue
+            if (not ShadowComb(GRSNR).UseThisSurf): continue
 
             SAREA(GRSNR) = 0.0
 
@@ -5787,7 +5790,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 HCT(1) = 1.0
 
                 SHDGSS(NGRS, iHour, TS, GRSNR, NGSS, HTS) # Determine shadowing on surface.
-                if (!CalcSkyDifShading):
+                if (not CalcSkyDifShading):
                     SHDBKS(NGRS, GRSNR, NBKS, HTS) # Determine possible back surfaces.
 
                 SHDSBS(iHour, GRSNR, NBKS, NSBS, HTS, TS) # Subtract subsurf areas from total
@@ -5888,7 +5891,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     continue
 
                 auto const &surface(Surface(GSSNR))
-                bool const notHeatTransSurf(!surface.HeatTransSurf)
+                bool const notHeatTransSurf(not surface.HeatTransSurf)
 
                 #     This used to check to see if the shadowing surface was not opaque (within the scheduled dates of
                 #            transmittance value.  Perhaps it ignored it if it were outside the range.  (if so, was an error)
@@ -5904,7 +5907,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     if (surface.SchedShadowSurfIndex > 0):
                         if (LookUpScheduleValue(surface.SchedShadowSurfIndex, iHour) == 1.0):
                             continue
-                        if (!CalcSkyDifShading): # poderia ser um AND?
+                        if (not CalcSkyDifShading): # poderia ser um AND?
                             if (LookUpScheduleValue(surface.SchedShadowSurfIndex, iHour, TS) == 1.0):
                                 continue
 
@@ -5961,7 +5964,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 # Adjust near-duplicate points.
                 assert(equal_dimensions(HCX, HCY))
-                assert(HCX.index(1, 1) == 0u)
+                assert(HCX.index(1, 1) == 0)
                 size_type j(HCX.index(NS3, 1))
                 size_type NVR(HCNV(1))
                 for N in range(1, NumVertInShadowOrClippedSurface+1): # Tuned Logic change: break after 1st "close" point found
@@ -5983,7 +5986,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         break
                 
                 HTRANS0(NS3, NumVertInShadowOrClippedSurface)
-                if (!CalcSkyDifShading):
+                if (not CalcSkyDifShading):
                     if (iHour != 0):
                         SchValue = LookUpScheduleValue(surface.SchedShadowSurfIndex, iHour, TS)
                     else:
@@ -6009,10 +6012,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 if (MainOverlapStatus == NoOverlap): # No overlap of general surface shadow and receiving surface
                     continue
-                elif ((MainOverlapStatus == FirstSurfWithinSecond) || (MainOverlapStatus == TooManyVertices) ||
+                elif ((MainOverlapStatus == FirstSurfWithinSecond) or (MainOverlapStatus == TooManyVertices) or
                       (MainOverlapStatus == TooManyFigures)):
                     #----------------------goto ShadowingSurfaces_exit
-                elif ((MainOverlapStatus == SecondSurfWithinFirst) || (MainOverlapStatus == PartialOverlap)):
+                elif ((MainOverlapStatus == SecondSurfWithinFirst) or (MainOverlapStatus == PartialOverlap)):
                     # Determine overlaps with previous shadows.
                     LOCHCA = NS3
                     NGSSHC = LOCHCA - FGSSHC + 1
@@ -6029,7 +6032,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             if (ExitLoopStatus == FirstSurfWithinSecond): # Surface fully shaded
                 SAREA(HTS) = 0.0
                 LOCHCA = FGSSHC
-            elif ((ExitLoopStatus == TooManyVertices) || (ExitLoopStatus == TooManyFigures)): # Array limits exceeded, estimate
+            elif ((ExitLoopStatus == TooManyVertices) or (ExitLoopStatus == TooManyFigures)): # Array limits exceeded, estimate
                 SAREA(HTS) = 0.25 * HCAREA(1)
             else:
                 # Compute the sunlit area here.
@@ -6115,15 +6118,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         if (BeginEnvrnFlag):
             ShadowingDaysLeft = 0
 
-        if (ShadowingDaysLeft <= 0 || DetailedSolarTimestepIntegration):
-            if (!DetailedSolarTimestepIntegration):
+        if (ShadowingDaysLeft <= 0 or DetailedSolarTimestepIntegration):
+            if (not DetailedSolarTimestepIntegration):
                 #  Perform calculations.
                 ShadowingDaysLeft = ShadowingCalcFrequency
                 if (DayOfSim + ShadowingDaysLeft > NumOfDayInEnvrn):
                     ShadowingDaysLeft = NumOfDayInEnvrn - DayOfSim + 1
 
                 #  Calculate average Equation of Time, Declination Angle for this period
-                if (!WarmupFlag):
+                if (not WarmupFlag):
                     if (KindOfSim == ksRunPeriodWeather):
                         print("Updating Shadowing Calculations, Start Date = {}".format(CurMnDyYr))
                     else:
@@ -6149,7 +6152,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 # SUN3(DayOfYear, AvgSinSolarDeclin, AvgEqOfTime)
                 AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
                 # trigger display of progress in the simulation every two weeks
-                if (!WarmupFlag and BeginDayFlag and (DayOfSim % 14 == 0)):
+                if (not WarmupFlag and BeginDayFlag and (DayOfSim % 14 == 0)):
                     DisplayPerfSimulationFlag = True
 
             CalcPerSolarBeam(AvgEqOfTime, AvgSinSolarDeclin, AvgCosSolarDeclin)
@@ -6164,7 +6167,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             #  Calculate daylighting coefficients
             # CalcDayltgCoefficients()
 
-        if (!WarmupFlag):
+        if (not WarmupFlag):
             ShadowingDaysLeft
 
         # Recalculate daylighting coefficients if storm window has been added
@@ -6419,7 +6422,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             DifShdgRatioHorizHRTS = 1.0
         
         for SurfNum in range(1, TotSurfaces+1): # SurfNum <= TotSurfaces == SurfNum = TotSurfaces
-            if (!Surface(SurfNum).ExtSolar):
+            if (not Surface(SurfNum).ExtSolar):
                 continue
 
             # CurrentModuleObject='Surfaces'
@@ -6468,7 +6471,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     # radiation from patch
                     ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
-                    if (!ShadowingSurf and !Surface(SurfNum).HeatTransSurf):
+                    if (not ShadowingSurf and not Surface(SurfNum).HeatTransSurf):
                         continue
 
                     CTHETA(SurfNum) = SUNCOS(1) * Surface(SurfNum).OutNormVec(1) + SUNCOS(2) * Surface(SurfNum).OutNormVec(2) +
@@ -6479,8 +6482,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 for SurfNum in range(1, TotSurfaces+1):
                     ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
-                    if (!ShadowingSurf and
-                        (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+                    if (not ShadowingSurf and
+                        (not Surface(SurfNum).HeatTransSurf or not Surface(SurfNum).ExtSolar or
                          (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                         continue
 
@@ -6509,8 +6512,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         for SurfNum in range(1, TotSurfaces+1):
             ShadowingSurf = Surface(SurfNum).ShadowingSurf
 
-            if (!ShadowingSurf and
-                (!Surface(SurfNum).HeatTransSurf || !Surface(SurfNum).ExtSolar ||
+            if (not ShadowingSurf and
+                (not Surface(SurfNum).HeatTransSurf or not Surface(SurfNum).ExtSolar or
                  (Surface(SurfNum).ExtBoundCond != ExternalEnvironment and Surface(SurfNum).ExtBoundCond != OtherSideCondModeledExt))):
                 continue
 
@@ -6533,7 +6536,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # sky or ground.
 
         for SurfNum in range(1, TotSurfaces+1):
-            if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing):
+            if (not DetailedSkyDiffuseAlgorithm or not ShadingTransmittanceVaries or SolarDistribution == MinimalShadowing):
                 Surface(SurfNum).ViewFactorSkyIR *= DifShdgRatioIsoSky(SurfNum)
             else:
                 Surface(SurfNum).ViewFactorSkyIR *= DifShdgRatioIsoSkyHRTS(1, 1, SurfNum)
