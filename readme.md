@@ -218,7 +218,6 @@ File `Shadows.py` (functions and variables dependencies):
                         CalcDayltgCoeffsMapPoints(ZoneNum) --> ? DaylightingManager
                     FirstTimeDaylFacCalc
                     OutputFileInits --> ? DataGlobals
-                    Format_700 --> ? definido e usado dentro dessa função, mas não sei como usar ? parece ser um tipo de formatação de string
                     Surface()
                         ? Surface --> definido como Pandas Series (l.679)
                     DFSReportSizingDays --> definido em GetDaylightingParametersInput() --> it's enough?

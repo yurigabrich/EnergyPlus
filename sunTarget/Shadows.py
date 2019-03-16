@@ -1858,11 +1858,11 @@ class ExternalFunctions:
             if (iErrorFlag != 0):
                 # Open DElight Daylight Factors Error File for reading
                 iDElightErrorFile = GetNewUnitNumber()
-                {
-                    IOFlags flags;
-                    flags.ACTION("READWRITE");
-                    gio::open(iDElightErrorFile, DataStringGlobals::outputDelightDfdmpFileName, flags);
-                }
+                # {
+                #     IOFlags flags;
+                #     flags.ACTION("READWRITE");
+                #     gio::open(iDElightErrorFile, DataStringGlobals::outputDelightDfdmpFileName, flags);
+                # }
 
                 # Sequentially read lines in DElight Daylight Factors Error File
                 # and process them using standard EPlus warning/error handling calls
@@ -1871,11 +1871,11 @@ class ExternalFunctions:
                 bEndofErrFile = False
                 bRecordsOnErrFile = False
                 while (not bEndofErrFile):
-                    {
-                        IOFlags flags;
-                        gio::read(iDElightErrorFile, fmtA, flags) >> cErrorLine;
-                        iReadStatus = flags.ios();
-                    }
+                    # {
+                    #     IOFlags flags;
+                    #     gio::read(iDElightErrorFile, fmtA, flags) >> cErrorLine;
+                    #     iReadStatus = flags.ios();
+                    # }
                     if (iReadStatus < GoodIOStatValue):
                         bEndofErrFile = True
                         continue
@@ -1893,18 +1893,18 @@ class ExternalFunctions:
                         iErrorFlag = 1
 
                 # Close and Delete DElight Error File
-                if (bRecordsOnErrFile):
-                    {
-                        IOFlags flags;
-                        flags.DISPOSE("DELETE");
-                        gio::close(iDElightErrorFile, flags);
-                    }
-                else:
-                    {
-                        IOFlags flags;
-                        flags.DISPOSE("DELETE");
-                        gio::close(iDElightErrorFile, flags);
-                    }
+                # if (bRecordsOnErrFile):
+                #     {
+                #         IOFlags flags;
+                #         flags.DISPOSE("DELETE");
+                #         gio::close(iDElightErrorFile, flags);
+                #     }
+                # else:
+                #     {
+                #         IOFlags flags;
+                #         flags.DISPOSE("DELETE");
+                #         gio::close(iDElightErrorFile, flags);
+                #     }
                 
                 # If any DElight Error occurred then ShowFatalError to terminate
                 if (iErrorFlag > 0):
@@ -1913,16 +1913,16 @@ class ExternalFunctions:
             else:
                 # Open, Close, and Delete DElight Daylight Factors Error File for reading
                 iDElightErrorFile = GetNewUnitNumber()
-                {
-                    IOFlags flags;
-                    flags.ACTION("READWRITE");
-                    gio::open(iDElightErrorFile, DataStringGlobals::outputDelightDfdmpFileName, flags);
-                }
-                {
-                    IOFlags flags;
-                    flags.DISPOSE("DELETE");
-                    gio::close(iDElightErrorFile, flags);
-                }
+                # {
+                #     IOFlags flags;
+                #     flags.ACTION("READWRITE");
+                #     gio::open(iDElightErrorFile, DataStringGlobals::outputDelightDfdmpFileName, flags);
+                # }
+                # {
+                #     IOFlags flags;
+                #     flags.DISPOSE("DELETE");
+                #     gio::close(iDElightErrorFile, flags);
+                # }
         # RJH DElight Modification End - Calls to DElight preprocessing subroutines
 
         # TH 6/3/2010, added to report daylight factors
@@ -2050,8 +2050,7 @@ class ExternalFunctions:
         doSkyReporting = True
 
         # Formats
-        static gio::Fmt Format_700(
-            "('! <Sky Daylight Factors>, MonthAndDay, Zone Name, Window Name, Daylight Fac: Ref Pt #1, Daylight Fac: Ref Pt #2')");
+        Format_700 = "('! <Sky Daylight Factors>, MonthAndDay, Zone Name, Window Name, Daylight Fac: Ref Pt #1, Daylight Fac: Ref Pt #2')"
 
         # FLOW:
         if (CalcDayltghCoefficients_firstTime):
@@ -2168,7 +2167,7 @@ class ExternalFunctions:
             GILSK(HourOfDay, {1, 4}) = 0.0
             GILSU(HourOfDay) = 0.0
             
-            if (!(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)):
+            if (not(SUNCOSHR(HourOfDay, 3) < SunIsUpValue)):
                 # Skip if sun is below horizon
                 PHSUN = PiOvr2 - math.acos(SUNCOSHR(HourOfDay, 3))
                 PHSUNHR(HourOfDay) = PHSUN
@@ -2201,6 +2200,7 @@ class ExternalFunctions:
 
         if (doSkyReporting):
             if (not KickOffSizing and not KickOffSimulation):
+                continue # to avoid IndentationError
                 # if (FirstTimeDaylFacCalc and TotWindowsWithDayl > 0):
                 #     # Write the bare-window four sky daylight factors at noon time to the eio file; this is done only
                 #     # for first time that daylight factors are calculated and so is insensitive to possible variation
@@ -2280,23 +2280,23 @@ class ExternalFunctions:
         # open a new file eplusout.dfs for saving the daylight factors
         if (CreateDFSReportFile):
             OutputFileDFS = GetNewUnitNumber()
-            {
-                IOFlags flags;
-                flags.ACTION("write");
-                gio::open(OutputFileDFS, DataStringGlobals::outputDfsFileName, flags);
-                write_stat = flags.ios();
-            }
+            # {
+            #     IOFlags flags;
+            #     flags.ACTION("write");
+            #     gio::open(OutputFileDFS, DataStringGlobals::outputDfsFileName, flags);
+            #     write_stat = flags.ios(); # influencia diretamente na operação abaixo!
+            # }
             if (write_stat != 0):
-                ShowFatalError("CalcDayltgCoefficients: Could not open file {} for output (write).".format(DataStringGlobals::outputDfsFileName));
+                ShowFatalError("CalcDayltgCoefficients: Could not open file {} for output (write).".format(outputDfsFileName))
             else:
-                gio::write(OutputFileDFS, fmtA) << "This file contains daylight factors for all exterior windows of daylight zones.";
-                gio::write(OutputFileDFS, fmtA) << "If only one reference point the last 4 columns in the data will be zero.";
-                gio::write(OutputFileDFS, fmtA) << "MonthAndDay,Zone Name,Window Name,Window State";
-                gio::write(OutputFileDFS, fmtA) << "Hour,Daylight Factor for Clear Sky at Reference point 1,Daylight Factor for Clear Turbid Sky at "
-                                                   "Reference point 1,Daylight Factor for Intermediate Sky at Reference point 1,Daylight Factor for "
-                                                   "Overcast Sky at Reference point 1,Daylight Factor for Clear Sky at Reference point 2,Daylight "
-                                                   "Factor for Clear Turbid Sky at Reference point 2,Daylight Factor for Intermediate Sky at "
-                                                   "Reference point 2,Daylight Factor for Overcast Sky at Reference point 2";
+                print(fmtA, '\t', OutputFileDFS, "\tThis file contains daylight factors for all exterior windows of daylight zones.")
+                print(fmtA, '\t', OutputFileDFS, "\tIf only one reference point the last 4 columns in the data will be zero.")
+                print(fmtA, '\t', OutputFileDFS, "\tMonthAndDay,Zone Name,Window Name,Window State")
+                print(fmtA, '\t', OutputFileDFS, "\tHour,Daylight Factor for Clear Sky at Reference point 1,Daylight Factor for Clear Turbid Sky at ", end='')
+                print("Reference point 1,Daylight Factor for Intermediate Sky at Reference point 1,Daylight Factor for ", end='')
+                print("Overcast Sky at Reference point 1,Daylight Factor for Clear Sky at Reference point 2,Daylight ", end='')
+                print("Factor for Clear Turbid Sky at Reference point 2,Daylight Factor for Intermediate Sky at ", end='')
+                print("Reference point 2,Daylight Factor for Overcast Sky at Reference point 2")
             CreateDFSReportFile = False
 
         for ZoneNum in range(1, NumOfZones+1):
@@ -2324,15 +2324,14 @@ class ExternalFunctions:
                     for ISlatAngle in range(1, ISA+1):
                         if (ISlatAngle == 1):
                             # base window without shades, screens, or blinds
-                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ",Base Window";
+                            print(fmtA, '\t', OutputFileDFS, "\t{}, {}, {}, Base Window".format(CurMnDy, Zone(ZoneNum).Name, Surface(IWin).Name))
                         elif (ISlatAngle == 2 and ISA == 2):
                             # window shade or blind with fixed slat angle
-                            gio::write(OutputFileDFS, fmtA) << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ", ";
+                            print(fmtA, '\t', OutputFileDFS, "\t{}, {}, {}, ".format(CurMnDy, Zone(ZoneNum).Name, Surface(IWin).Name))
                         else:
                             # blind with variable slat angle
                             SlatAngle = 180.0 / double(MaxSlatAngs - 1) * double(ISlatAngle - 2)
-                            gio::write(OutputFileDFS, fmtA)
-                                << CurMnDy + ',' + Zone(ZoneNum).Name + ',' + Surface(IWin).Name + ',' + RoundSigDigits(SlatAngle, 1);
+                            print(fmtA, '\t', OutputFileDFS, "\t{}, {}, {}, {}".format(CurMnDy, Zone(ZoneNum).Name, Surface(IWin).Name), RoundSigDigits(SlatAngle, 1))
 
                         for IHR in range(1, 25):
                             # daylight reference point 1
@@ -2354,10 +2353,7 @@ class ExternalFunctions:
                                 DFOcSky2 = 0.0
 
                             # write daylight factors - 4 sky types for each daylight ref point
-                            gio::write(OutputFileDFS, fmtA)
-                                << RoundSigDigits(IHR) + ',' + RoundSigDigits(DFClrSky1, 5) + ',' + RoundSigDigits(DFClrTbSky1, 5) + ',' +
-                                       RoundSigDigits(DFIntSky1, 5) + ',' + RoundSigDigits(DFOcSky1, 5) + ',' + RoundSigDigits(DFClrSky2, 5) + ',' +
-                                       RoundSigDigits(DFClrTbSky2, 5) + ',' + RoundSigDigits(DFIntSky2, 5) + ',' + RoundSigDigits(DFOcSky2, 5);
+                            print(fmtA, '\t', OutputFileDFS, "\t{}, {}, {}, {}, {}, {}, {}, {}, {}".format(RoundSigDigits(IHR), RoundSigDigits(DFClrSky1, 5), RoundSigDigits(DFClrTbSky1, 5), RoundSigDigits(DFIntSky1, 5), RoundSigDigits(DFOcSky1, 5), RoundSigDigits(DFClrSky2, 5), RoundSigDigits(DFClrTbSky2, 5), RoundSigDigits(DFIntSky2, 5), RoundSigDigits(DFOcSky2, 5)))
                         # end hour loop
             # end exterior windows in zone loop
         # end zone loop
@@ -2613,7 +2609,7 @@ class ExternalFunctions:
                             NumBlank()(numeric_index) = is_empty
             else:
                 if (field_type == "a"):
-                    if (!(within_idf_fields and findDefault(Alphas(alpha_index), schema_field_obj))):
+                    if (not(within_idf_fields and findDefault(Alphas(alpha_index), schema_field_obj))):
                         Alphas(alpha_index) = ""
                     
                     if (is_AlphaBlank):
@@ -2709,7 +2705,7 @@ class ExternalFunctions:
                                         NumBlank()(numeric_index) = is_empty
                         else:
                             if (field_type == "a"):
-                                if (!(within_idf_extensible_fields and findDefault(Alphas(alpha_index), schema_field))):
+                                if (not(within_idf_extensible_fields and findDefault(Alphas(alpha_index), schema_field))):
                                     Alphas(alpha_index) = ""
                                 
                                 if (is_AlphaBlank):
@@ -2789,7 +2785,7 @@ class ExternalFunctions:
 
         incrementTableEntry()
         # convert the integer to a string
-        gio::write(stringEntry, fmtLD) << tableEntryInt;
+        print(fmtLD, '\t', stringEntry, '\t', tableEntryInt)
         tableEntry(numTableEntry).charEntry = stringEntry;
         tableEntry(numTableEntry).objectName = objName;
         tableEntry(numTableEntry).indexColumn = columnIndex;
@@ -3580,14 +3576,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 ShowContinueError("Simulation should be set to use SimpleSkyDiffuseModeling, but is left at Detailed for simulation.")
                 ShowContinueError("Choose SimpleSkyDiffuseModeling in the " + cCurrentModuleObject + " object to reduce computation time.")
 
-        gio::write(OutputFileInits, fmtA) << "! <Shadowing/Sun Position Calculations Annual Simulations>, Calculation Method, Value {days}, "
-                                             "Allowable Number Figures in Shadow Overlap {}, Polygon Clipping Algorithm, Sky Diffuse Modeling "
-                                             "Algorithm, External Shading Calculation Method, Output External Shading Calculation Results, Disable "
-                                             "Self-Shading Within Shading Zone Groups, Disable Self-Shading From Shading Zone Groups to Other Zones"
-        gio::write(OutputFileInits, fmtA) << "Shadowing/Sun Position Calculations Annual Simulations," + cAlphaArgs(1) + ',' +
-                                                 RoundSigDigits(ShadowingCalcFrequency) + ',' + RoundSigDigits(MaxHCS) + ',' + cAlphaArgs(2) + ',' +
-                                                 cAlphaArgs(3) + ',' + cAlphaArgs(4) + ',' + cAlphaArgs(5) + ',' + cAlphaArgs(6) + ',' +
-                                                 cAlphaArgs(7)
+        print(fmtA, '\t', OutputFileInits, "\t! <Shadowing/Sun Position Calculations Annual Simulations>, Calculation Method, Value \{days\}, ", end='')
+        print("Allowable Number Figures in Shadow Overlap {}, Polygon Clipping Algorithm, Sky Diffuse Modeling ", end='')
+        print("Algorithm, External Shading Calculation Method, Output External Shading Calculation Results, Disable ", end='')
+        print("Self-Shading Within Shading Zone Groups, Disable Self-Shading From Shading Zone Groups to Other Zones")
+        
+        print(fmtA, '\t', OutputFileInits, "\tShadowing/Sun Position Calculations Annual Simulations, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(cAlphaArgs(1), RoundSigDigits(ShadowingCalcFrequency), RoundSigDigits(MaxHCS), cAlphaArgs(2), cAlphaArgs(3), cAlphaArgs(4), cAlphaArgs(5), cAlphaArgs(6), cAlphaArgs(7)))
 
         return None
 
@@ -5428,21 +5422,23 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             if (KindOfSim == ksRunPeriodWeather):
                 for iHour in range(1, 25): # Do for all hours.
                     for TS in range(1, NumOfTimeStepInHour+1):
-                            IOFlags flags
-                            flags.ADVANCE("No")
-                            gio::write(OutputFileShadingFrac, ShdFracFmt1, flags)
-                                << Month << DayOfMonth << iHour - 1 << (60 / NumOfTimeStepInHour) * (TS - 1)
+                            # IOFlags flags
+                            # flags.ADVANCE("No")
+                            # gio::write(OutputFileShadingFrac, ShdFracFmt1, flags)
+                            #     << Month << DayOfMonth << iHour - 1 << (60 / NumOfTimeStepInHour) * (TS - 1)
+                            print("\t...\t `flags` operation") # temp line
                         for SurfNum in range(1, TotSurfaces+1):
-                            {
-                                IOFlags flags
-                                flags.ADVANCE("No")
-                                gio::write(OutputFileShadingFrac, ShdFracFmt2, flags) << SunlitFrac(TS, iHour, SurfNum)
-                            }
-                        {
-                            IOFlags flags
-                            flags.ADVANCE("No")
-                            gio::write(OutputFileShadingFrac, fmtN, flags)
-                        }
+                            # {
+                            #     IOFlags flags
+                            #     flags.ADVANCE("No")
+                            #     gio::write(OutputFileShadingFrac, ShdFracFmt2, flags) << SunlitFrac(TS, iHour, SurfNum)
+                            # }
+                            print("\t...\t `flags` operation") # temp line
+                        # {
+                        #     IOFlags flags
+                        #     flags.ADVANCE("No")
+                        #     gio::write(OutputFileShadingFrac, fmtN, flags)
+                        # }
         
         return None
 
