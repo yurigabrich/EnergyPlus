@@ -52,6 +52,14 @@ class ExternalFunctions:
     '''
     # personal
     OutputFileDebug = ""
+    def FindItemInList(item_looked, list_to_look_at):
+        '''
+        Alternative method to UtilityRoutines::FindItemInList(...)
+        '''
+        try:
+            return list_to_look_at.index(item_looked)
+        except ValueError:
+            return 0
 
     # DataGlobals.cc
     BeginSimFlag = False        # True until any actual simulation (full or sizing) has begun, False after first time step
@@ -2384,7 +2392,7 @@ class ExternalFunctions:
             ScheduleInputProcessed = True
 
         if (NumSchedules > 0):
-            GetScheduleIndex = UtilityRoutines::FindItemInList(ScheduleName, Schedule({1, NumSchedules}))
+            GetScheduleIndex = FindItemInList(ScheduleName, Schedule({1, NumSchedules}))
             if (GetScheduleIndex > 0):
                 if (not Schedule(GetScheduleIndex).Used):
                     Schedule(GetScheduleIndex).Used = True
@@ -2421,20 +2429,20 @@ class ExternalFunctions:
         INPUT:
         std::string const _ObjectWord
         '''
-        _find_obj = epJSON.find(ObjectWord);
+        _find_obj = epJSON.find(ObjectWord)
 
         if (find_obj == epJSON.end()):
-            auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+            tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord))
             
             if (tmp_umit == caseInsensitiveObjectMap.end() or epJSON.find(tmp_umit.second) == epJSON.end()):
                 return 0
             
-            return static_cast<int>(epJSON[tmp_umit.second].size());
+            return static_cast<int>(epJSON[tmp_umit.second].size())
         else:
-            return static_cast<int>(find_obj.value().size());
+            return static_cast<int>(find_obj.value().size())
 
         if (schema["properties"].find(ObjectWord) == schema["properties"].end()):
-            auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
+            tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord))
             if (tmp_umit == caseInsensitiveObjectMap.end()):
                 ShowWarningError("Requested Object not found in Definitions: {}.".format(ObjectWord))
 
@@ -2642,43 +2650,43 @@ class ExternalFunctions:
         _legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
         
         if (legacy_idd_extensibles_iter != legacy_idd.end()):
-            epJSON_extensions_array_itr = obj.value().find(extension_key);
+            epJSON_extensions_array_itr = obj.value().find(extension_key)
             
             if (epJSON_extensions_array_itr != obj.value().end()):
-                _legacy_idd_extensibles = legacy_idd_extensibles_iter.value();
-                _epJSON_extensions_array = epJSON_extensions_array_itr.value();
-                _schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"];
+                _legacy_idd_extensibles = legacy_idd_extensibles_iter.value()
+                _epJSON_extensions_array = epJSON_extensions_array_itr.value()
+                _schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"]
 
-                for (auto it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
-                    _epJSON_extension_obj = it.value();
+                for (it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
+                    _epJSON_extension_obj = it.value()
 
                     for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
-                        std::string const _field_name = legacy_idd_extensibles[i];
-                        _epJSON_obj_field_iter = epJSON_extension_obj.find(field_name);
-                        _schema_field = schema_extension_fields[field_name];
+                        _field_name = legacy_idd_extensibles[i]
+                        _epJSON_obj_field_iter = epJSON_extension_obj.find(field_name)
+                        _schema_field = schema_extension_fields[field_name]
 
-                        _field_info = legacy_idd_field_info.find(field_name);
+                        _field_info = legacy_idd_field_info.find(field_name)
                         if (field_info == legacy_idd_field_info.end()):
-                            ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
+                            ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.")
                         
-                        _field_type = field_info.value().at("field_type").get<std::string>();
+                        _field_type = field_info.value().at("field_type").get<std::string>()
                         within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields)
 
                         if (epJSON_obj_field_iter != epJSON_extension_obj.end()):
-                            _field_value = epJSON_obj_field_iter.value();
+                            _field_value = epJSON_obj_field_iter.value()
 
                             if (field_type == "a"):
                                 if (field_value.is_string()):
-                                    value = getObjectItemValue(field_value.get<std::string>(), schema_field);
+                                    value = getObjectItemValue(field_value.get<std::string>(), schema_field)
 
                                     Alphas(alpha_index) = value.first;
                                     if (is_AlphaBlank):
                                         AlphaBlank()(alpha_index) = value.second
                                 else:
                                     if (field_value.is_number_integer()):
-                                        i64toa(field_value.get<std::int64_t>(), s);
+                                        i64toa(field_value.get<std::int64_t>(), s)
                                     else:
-                                        dtoa(field_value.get<double>(), s);
+                                        dtoa(field_value.get<double>(), s)
                                     
                                     Alphas(alpha_index) = s
                                     if (is_AlphaBlank):
@@ -2687,9 +2695,9 @@ class ExternalFunctions:
                             elif (field_type == "n"):
                                 if (field_value.is_number()):
                                     if (field_value.is_number_integer()):
-                                        Numbers(numeric_index) = field_value.get<std::int64_t>();
+                                        Numbers(numeric_index) = field_value.get<std::int64_t>()
                                     else:
-                                        Numbers(numeric_index) = field_value.get<double>();
+                                        Numbers(numeric_index) = field_value.get<double>()
                                     
                                     if (is_NumBlank):
                                         NumBlank()(numeric_index) = False
@@ -3523,7 +3531,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 NumOfShadingGroups = NumAlphas - 7
                 DisableSelfShadingGroups.append(NumOfShadingGroups)
                 for i in range(1, NumOfShadingGroups+1):
-                    Found = UtilityRoutines::FindItemInList(cAlphaArgs(i + 7), ZoneList, NumOfZoneLists)
+                    Found = FindItemInList(cAlphaArgs(i + 7), ZoneList)
                     if (Found != 0) DisableSelfShadingGroups(i) = Found
 
                 for SurfNum in range(1, TotSurfaces+1):
@@ -4259,12 +4267,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         CannotShade = True
 
         # see if no point of shadow casting surface is above low point of receiving surface
-        auto const _surface_C(Surface(NSS))
+        _surface_C = Surface(NSS)
         if (surface_C.OutNormVec(3) > 0.9999):
             # Shadow Casting Surface is horizontal and facing upward
             return None
 
-        auto const _vertex_C(surface_C.Vertex)
+        _vertex_C = surface_C.Vertex
         ZMAX = vertex_C(1).z
         # for (int i = 2, e = surface_C.Sides i <= e ++i):
         e = surface_C.Sides
@@ -4275,13 +4283,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             return None
 
         # SEE IF ANY VERTICES OF THE Shadow Casting Surface ARE ABOVE THE PLANE OF THE receiving surface
-        auto const _surface_R(Surface(NRS))
-        auto const _vertex_R(surface_R.Vertex)
+        
+        _surface_R = Surface(NRS)
+        _vertex_R = surface_R.Vertex
         vertex_R_2 = vertex_R(2)
-        Vector const AVec(vertex_R(1) - vertex_R_2) # Vector from vertex 2 to vertex 1 of receiving surface
-        Vector const BVec(vertex_R(3) - vertex_R_2) # Vector from vertex 2 to vertex 3 of receiving surface
-
-        Vector const CVec(cross(BVec, AVec)) # Vector perpendicular to surface at vertex 2
+        AVec = vertex_R(1) - vertex_R_2 # Vector from vertex 2 to vertex 1 of receiving surface
+        BVec = vertex_R(3) - vertex_R_2 # Vector from vertex 2 to vertex 3 of receiving surface
+        CVec = cross(BVec, AVec)        # Vector perpendicular to surface at vertex 2
 
         NVSS = surface_C.Sides # Number of vertices of the shadow casting surface
         DOTP = 0.0             # Dot Product
@@ -4293,10 +4301,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # SEE IF ANY VERTICES OF THE receiving surface ARE ABOVE THE PLANE OF THE S.S.
         if (DOTP > TolValue):
             vertex_C_2 = vertex_C(2)
-            Vector const AVec(vertex_C(1) - vertex_C_2)
-            Vector const BVec(vertex_C(3) - vertex_C_2)
-
-            Vector const CVec(cross(BVec, AVec))
+            AVec = vertex_C(1) - vertex_C_2
+            BVec = vertex_C(3) - vertex_C_2
+            CVec = cross(BVec, AVec)
 
             NVRS = surface_R.Sides # Number of vertices of the receiving surface
             for I in range(1, NVRS+1):
@@ -4429,25 +4436,25 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         '''
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Real64 Xdif # Intermediate Result
-        Real64 Ydif # Intermediate Result
-        Real64 Zdif # Intermediate Result
+        Xdif = 0.0 # Intermediate Result
+        Ydif = 0.0 # Intermediate Result
+        Zdif = 0.0 # Intermediate Result
 
         # Tuned
-        auto const _surface(Surface(NS))
-        auto const _base_surface(Surface(NGRS))
-        auto const _base_lcsx(base_surface.lcsx)
-        auto const _base_lcsy(base_surface.lcsy)
-        auto const _base_lcsz(base_surface.lcsz)
-        Real64 const base_X0(X0(NGRS))
-        Real64 const base_Y0(Y0(NGRS))
-        Real64 const base_Z0(Z0(NGRS))
+        _surface = Surface(NS)
+        _base_surface = Surface(NGRS)
+        _base_lcsx = base_surface.lcsx
+        _base_lcsy = base_surface.lcsy
+        _base_lcsz = base_surface.lcsz
+        base_X0 = X0(NGRS)
+        base_Y0 = Y0(NGRS)
+        base_Z0 = Z0(NGRS)
 
         NVT = surface.Sides
 
         # Perform transformation
         for N in range(1, NVT+1):
-            auto const _vertex(surface.Vertex(N))
+            _vertex = surface.Vertex(N)
 
             Xdif = vertex.x - base_X0
             Ydif = vertex.y - base_Y0
@@ -4472,7 +4479,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         - int const NumVertices # Number of vertices
         '''
         # Using/Aliasing
-        using General::TrimSigDigits
+        # using General::TrimSigDigits
 
         # Locals
 
@@ -4487,14 +4494,14 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         assert(equal_dimensions(HCX, HCB))
         assert(equal_dimensions(HCX, HCC))
 
-        auto const l1(HCX.index(NS, 1))
+        l1 = HCX.index(NS, 1)
 
-        auto l(HCX.index(NS, NumVertices + 1))
-        Int64 HCX_m(HCX[l] = HCX[l1]) # [ l1 ] == ( NS, 1 )
-        Int64 HCY_m(HCY[l] = HCY[l1]) # [ l1 ] == ( NS, 1 )
+        l = HCX.index(NS, NumVertices + 1)
+        HCX_m = HCX[l] = HCX[l1] # [ l1 ] == ( NS, 1 )
+        HCY_m = HCY[l] = HCY[l1] # [ l1 ] == ( NS, 1 )
 
         l = l1
-        auto m(l1 + 1)
+        m = l1 + 1
         HCX_l = 0
         HCY_l = 0
         SUM = 0.0
@@ -4535,10 +4542,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         assert(equal_dimensions(HCX, HCB))
         assert(equal_dimensions(HCX, HCC))
 
-        auto const l1(HCX.index(NS, 1))
+        l1 = HCX.index(NS, 1)
 
         # only in HTRANS1
-        auto l(l1)
+        l = l1
         for N in range(1, NumVertices): # [ l ] == ( NS, N )
             l += 1 # será q vai somar o par ordenado? Talvez precise de list comprehension: [a+1 for a in l]
             HCX[l] = nint64(XVS(N) * HCMULT)
@@ -4549,7 +4556,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         Int64 HCY_m(HCY[l] = HCY[l1])
 
         l = l1
-        auto m(l1 + 1)
+        m(l1 + 1)
         HCX_l = 0
         HCY_l = 0
         SUM = 0.0
@@ -4733,8 +4740,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 # Eliminate near-duplicate points.
                 if (KK != 0):
-                    auto const x(XTEMP(NV3))
-                    auto const y(YTEMP(NV3))
+                    x = XTEMP(NV3)
+                    y = YTEMP(NV3)
                     for K in range(1, KK):
                         if (abs(x - XTEMP(K)) > 2.0): continue
                         if (abs(y - YTEMP(K)) > 2.0): continue
@@ -4793,8 +4800,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         int NVOUT    # Current output length for loops
         int NVTEMP
 
-        Real64 W # Normalization factor
-        Real64 HFunct
+        W = 0.0 # Normalization factor
+        HFunct = 0.0
 
         #ifdef EP_Count_Calls
         ++NumClipPoly_Calls
@@ -4823,7 +4830,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         NVTEMP = 0
         KK = 0
 
-        auto l(HCA.index(NS2, 1))
+        l(HCA.index(NS2, 1))
         # Loop over edges of the clipping polygon
         # for (int E = 1 E <= NV2 ++E, ++l):
         for E in range(1, NV2+1):
@@ -4832,14 +4839,14 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 YTEMP1(P) = YTEMP(P)
 
             S = NVOUT
-            Real64 const HCA_E(HCA[l])
-            Real64 const HCB_E(HCB[l])
-            Real64 const HCC_E(HCC[l])
-            Real64 XTEMP1_S(XTEMP1(S))
-            Real64 YTEMP1_S(YTEMP1(S))
+            HCA_E = HCA[l]
+            HCB_E = HCB[l]
+            HCC_E = HCC[l]
+            XTEMP1_S = XTEMP1(S)
+            YTEMP1_S = YTEMP1(S)
             for P in range(1, NVOUT+1):
-                Real64 const XTEMP1_P(XTEMP1(P))
-                Real64 const YTEMP1_P(YTEMP1(P))
+                XTEMP1_P = XTEMP1(P)
+                YTEMP1_P = YTEMP1(P)
                 HFunct = XTEMP1_P * HCA_E + YTEMP1_P * HCB_E + HCC_E
                 # S is constant within this block
 
@@ -4851,9 +4858,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # Find/store the intersection of the clip edge and the line connecting S and P
                         KK = NVTEMP
                         NVTEMP += 1
-                        Real64 const ATEMP_S(ATEMP(S))
-                        Real64 const BTEMP_S(BTEMP(S))
-                        Real64 const CTEMP_S(CTEMP(S))
+                        ATEMP_S = ATEMP(S)
+                        BTEMP_S = BTEMP(S)
+                        CTEMP_S = CTEMP(S)
                         W = HCB_E * ATEMP_S - HCA_E * BTEMP_S
                         
                         if (W != 0.0):
@@ -4868,8 +4875,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                         if (E == NV2): # Remove near-duplicates on last edge
                             if (KK != 0):
-                                auto const x(XTEMP(NVTEMP))
-                                auto const y(YTEMP(NVTEMP))
+                                x = XTEMP(NVTEMP)
+                                y = YTEMP(NVTEMP)
                                 for K in range(1, KK+1):
                                     if (abs(x - XTEMP(K)) > 2.0): continue
                                     if (abs(y - YTEMP(K)) > 2.0): continue
@@ -4880,7 +4887,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     NVTEMP += 1
                     
                     if (NVTEMP > MAXHCArrayBounds):
-                        int const NewArrayBounds(MAXHCArrayBounds + MAXHCArrayIncrement)
+                        NewArrayBounds = MAXHCArrayBounds + MAXHCArrayIncrement
                         XTEMP.redimension(NewArrayBounds, 0.0)
                         YTEMP.redimension(NewArrayBounds, 0.0)
                         XTEMP1.redimension(NewArrayBounds, 0.0)
@@ -4895,8 +4902,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                     if (E == NV2): # Remove near-duplicates on last edge
                         if (KK != 0):
-                            auto const x(XTEMP(NVTEMP))
-                            auto const y(YTEMP(NVTEMP))
+                            x = XTEMP(NVTEMP)
+                            y = YTEMP(NVTEMP)
                             for K in range(1, KK+1):
                                 if (abs(x - XTEMP(K)) > 2.0): continue
                                 if (abs(y - YTEMP(K)) > 2.0): continue
@@ -4912,9 +4919,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # avoid assigning to element outside of XTEMP array size
                             KK = NVTEMP
                             NVTEMP += 1
-                            Real64 const ATEMP_S(ATEMP(S))
-                            Real64 const BTEMP_S(BTEMP(S))
-                            Real64 const CTEMP_S(CTEMP(S))
+                            ATEMP_S = ATEMP(S)
+                            BTEMP_S = BTEMP(S)
+                            CTEMP_S = CTEMP(S)
                             W = HCB_E * ATEMP_S - HCA_E * BTEMP_S
 
                             if (W != 0.0):
@@ -4929,8 +4936,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                             if (E == NV2): # Remove near-duplicates on last edge
                                 if (KK != 0):
-                                    auto const x(XTEMP(NVTEMP))
-                                    auto const y(YTEMP(NVTEMP))
+                                    x = XTEMP(NVTEMP)
+                                    y = YTEMP(NVTEMP)
                                     for K in range(1, KK+1):
                                         if (abs(x - XTEMP(K)) > 2.0): continue
                                         if (abs(y - YTEMP(K)) > 2.0): continue
@@ -4950,10 +4957,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             if (E != NV2):
                 if (NVOUT > 2): # Compute HC values for edges of output polygon
-                    Real64 const X_1(XTEMP(1))
-                    Real64 const Y_1(YTEMP(1))
-                    Real64 X_P(X_1), X_P1
-                    Real64 Y_P(Y_1), Y_P1
+                    X_1 = XTEMP(1)
+                    Y_1 = YTEMP(1)
+                    X_P(X_1) = X_P1 # não sei se está certo
+                    Y_P(Y_1) = Y_P1 # não sei se está certo
                     
                     for P in range(1, NVOUT):
                         X_P1 = XTEMP(P + 1)
@@ -5080,20 +5087,20 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        SLOPE = pd.Series() # Slopes from left-most vertex to others
-        Real64 DELTAX                # Difference between X coordinates of two vertices
-        Real64 DELTAY                # Difference between Y coordinates of two vertices
-        Real64 SAVES                 # Temporary location for exchange of variables
-        Real64 SAVEX                 # Temporary location for exchange of variables
-        Real64 SAVEY                 # Temporary location for exchange of variables
-        Real64 XMIN                  # X coordinate of left-most vertex
-        Real64 YXMIN
-        I = 0   # Sort index
-        IM1 = 0 # Sort control
-        J = 0   # Sort index
-        M = 0   # Number of slopes to be sorted
-        N = 0   # Vertex number
-        P = 0   # Location of first slope to be sorted
+        SLOPE = pd.Series()         # Slopes from left-most vertex to others
+        DELTAX = 0.0                # Difference between X coordinates of two vertices
+        DELTAY = 0.0                # Difference between Y coordinates of two vertices
+        SAVES = 0.0                 # Temporary location for exchange of variables
+        SAVEX = 0.0                 # Temporary location for exchange of variables
+        SAVEY = 0.0                 # Temporary location for exchange of variables
+        XMIN = 0.0                  # X coordinate of left-most vertex
+        YXMIN = 0.0
+        I = 0                       # Sort index
+        IM1 = 0                     # Sort control
+        J = 0                       # Sort index
+        M = 0                       # Number of slopes to be sorted
+        N = 0                       # Vertex number
+        P = 0                       # Location of first slope to be sorted
         FirstTimeFlag = True
 
         if (FirstTimeFlag):
@@ -5268,7 +5275,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 ORDER(NV3, NS3) # Put vertices in clockwise order.
             else:
                 assert(equal_dimensions(HCX, HCY))
-                auto l(HCX.index(NS3, 1))
+                l(HCX.index(NS3, 1))
                 # for (N = 1 N <= NV3 ++N, ++l):
                 for N in range(1, NV3+1):
                     HCX[l] = nint64(XTEMP(N)) # [ l ] == ( N, NS3 )
@@ -5282,9 +5289,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 OverlapStatus = NoOverlap
             else:
                 if (HCAREA(NS1) * HCAREA(NS2) > 0.0) HCAREA(NS3) = -HCAREA(NS3) # Determine sign of area of overlap
-                Real64 const HCT_1(HCT(NS1))
-                Real64 const HCT_2(HCT(NS2))
-                Real64 HCT_3(HCT_2 * HCT_1) # Determine transmission of overlap
+                HCT_1 = HCT(NS1)
+                HCT_2 = HCT(NS2)
+                HCT_3 = HCT_2 * HCT_1 # Determine transmission of overlap
                 if (HCT_2 >= 0.5 and HCT_1 >= 0.5):
                     if (HCT_2 != 1.0 and HCT_1 != 1.0):
                         HCT_3 = 1.0 - HCT_3
@@ -5694,9 +5701,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         '''
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Real64 XS # Intermediate result
-        Real64 YS # Intermediate result
-        Real64 ZS # Intermediate result
+        XS = 0.0  # Intermediate result
+        YS = 0.0  # Intermediate result
+        ZS = 0.0  # Intermediate result
         N = 0     # Vertex number
         NGRS = 0  # Coordinate transformation index
         NZ = 0    # Zone Number of surface
@@ -5934,9 +5941,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     # project shadow to the receiving surface
 
                     NVS = surface.Sides
-                    auto const _XV(ShadeV(GSSNR).XV)
-                    auto const _YV(ShadeV(GSSNR).YV)
-                    auto const _ZV(ShadeV(GSSNR).ZV)
+                    _XV = ShadeV(GSSNR).XV
+                    _YV = ShadeV(GSSNR).YV
+                    _ZV = ShadeV(GSSNR).ZV
                     for N in range(1, NVS+1):
                         XVS(N) = XV(N) - XShadowProjection * ZV(N)
                         YVS(N) = YV(N) - YShadowProjection * ZV(N)
@@ -5966,15 +5973,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 size_type j(HCX.index(NS3, 1))
                 size_type NVR(HCNV(1))
                 for N in range(1, NumVertInShadowOrClippedSurface+1): # Tuned Logic change: break after 1st "close" point found
-                    auto const HCX_N(HCX[j])                                    # [ j ] == ( NS3, N )
-                    auto const HCY_N(HCY[j])
+                    HCX_N = HCX[j]                                    # [ j ] == ( NS3, N )
+                    HCY_N = HCY[j]
                     j += 1 # será que é aqui ou depois do próximo loop?!
                     # for (size_type l = 0 l < NVR ++l): # [ l ] == ( 1, l+1 )
                     for l in range(l, NVR):
-                        auto const delX(abs(HCX[l] - HCX_N))
+                        delX = abs(HCX[l] - HCX_N)
                         if (delX > 6):
                             continue
-                        auto const delY(abs(HCY[l] - HCY_N))
+                        delY = abs(HCY[l] - HCY_N)
                         if (delY > 6):
                             continue
                         if (delX > 0):
@@ -6039,7 +6046,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 if (NGSSHC <= 0):
                     SAREA(HTS) = HCAREA(1) # Surface fully sunlit
                 else:
-                    Real64 A(HCAREA(1)) # Area
+                    A = HCAREA(1) # Area
                     # for (int i = FGSSHC, e = FGSSHC + NGSSHC - 1 i <= e ++i):
                     e = FGSSHC + NGSSHC - 1
                     for i in range(FGSSHC, e+1):
@@ -6206,7 +6213,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # SUBROUTINE ARGUMENT DEFINITIONS:
 
         # SUBROUTINE PARAMETER DEFINITIONS:
-        ?static pd.Series() const SineSolDeclCoef(9,
+        ?static pd.Series() SineSolDeclCoef(9,
                                                      {0.00561800,
                                                       0.0657911,
                                                       -0.392779,
@@ -6216,7 +6223,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                                                       -0.00007951,
                                                       -0.00011691,
                                                       0.00002096}) # Fitted coefficients of Fourier series | SINE OF DECLINATION | COEFFICIENTS
-        ?static pd.Series() const EqOfTimeCoef(9,
+        ?static pd.Series() EqOfTimeCoef(9,
                                                   {0.00021971,
                                                    -0.122649,
                                                    0.00762856,

@@ -260,7 +260,9 @@ File `Shadows.py` (functions and variables dependencies):
                     ? Surface --> definido como Pandas Series (l.679)
                 [class] Unit --> OutputProcessor::Unit
             GetShadowingInput()
+                FindItemInList(item_looked, list_to_look_at)
                 GetScheduleIndex(&ScheduleName)
+                    FindItemInList(item_looked, list_to_look_at)
                     ScheduleInputProcessed --> ? ScheduleManager
                     ProcessScheduleInput(...) --> ? ScheduleManager
                     NumSchedules --> ? ScheduleManager
