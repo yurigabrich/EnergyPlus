@@ -2516,10 +2516,10 @@ class ExternalFunctions:
 
         Alphas = ""
         Numbers = 0
-        if (is_NumBlank): NumBlank() = True                 # declaração de variável duvidosa...
-        if (is_AlphaBlank): AlphaBlank() = True             # declaração de variável duvidosa...
-        if (is_AlphaFieldNames): AlphaFieldNames() = ""     # declaração de variável duvidosa...
-        if (is_NumericFieldNames): NumericFieldNames() = "" # declaração de variável duvidosa...
+        if (is_NumBlank): NumBlank = pd.Series(True)                 # declaração de variável duvidosa...
+        if (is_AlphaBlank): AlphaBlank = pd.Series(True)             # declaração de variável duvidosa...
+        if (is_AlphaFieldNames): AlphaFieldNames = pd.Series("")     # declaração de variável duvidosa...
+        if (is_NumericFieldNames): NumericFieldNames = pd.Series("") # declaração de variável duvidosa...
 
         _obj = epJSON_it;
         _obj_val = obj.value();
@@ -2553,7 +2553,9 @@ class ExternalFunctions:
             if (field_info == legacy_idd_field_info.end()):
                 ShowFatalError("Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
             
-            _field_type = field_info.value().at("field_type").get<std::string>();
+            # _field_type = field_info.value().at("field_type").get<std::string>();
+            print("corrigir erro")
+            break
             within_idf_fields = (i < idf_max_fields)
 
             if (field == "name" and schema_name_field != epJSON_schema_it_val.end()):
@@ -2561,13 +2563,15 @@ class ExternalFunctions:
                 if (name_iter.find("retaincase") != name_iter.end()):
                     Alphas(alpha_index) = objectInfo.objectName
                 else:
-                    Alphas(alpha_index) = UtilityRoutines::MakeUPPERCase(objectInfo.objectName);
+                    Alphas(alpha_index) = objectInfo.objectName.upper()
 
                 if (is_AlphaBlank):
-                    AlphaBlank()(alpha_index) = objectInfo.objectName.empty()
+                    AlphaBlank['alpha_index'] = objectInfo.objectName.empty()
                 
                 if (is_AlphaFieldNames):
-                    AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                    # AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                    print("corrigir erro")
+                    break
 
                 NumAlphas += 1
                 alpha_index += 1
@@ -2580,73 +2584,90 @@ class ExternalFunctions:
                 if (field_type == "a"):
                     # process alpha value
                     if (field_value.is_string()):
-                        value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
+                        # value = getObjectItemValue(field_value.get<std::string>(), schema_field_obj);
+                        print("corrigir erro")
+                        break
 
                         Alphas(alpha_index) = value.first
                         if (is_AlphaBlank):
-                            AlphaBlank()(alpha_index) = value.second;
+                            AlphaBlank['alpha_index'] = value.second;
 
                     else:
                         if (field_value.is_number_integer()):
-                            i64toa(field_value.get<std::int64_t>(), s);
+                            # i64toa(field_value.get<std::int64_t>(), s);
+                            print("corrigir erro")
+                            break
                         else:
-                            dtoa(field_value.get<double>(), s);
+                            # dtoa(field_value.get<double>(), s);
+                            print("corrigir erro")
+                            break
 
                         Alphas(alpha_index) = s
                         if (is_AlphaBlank):
-                            AlphaBlank()(alpha_index) = False
+                            AlphaBlank['alpha_index'] = False
 
                 elif (field_type == "n"):
                     # process numeric value
                     if (field_value.is_number()):
                         if (field_value.is_number_integer()):
-                            Numbers(numeric_index) = field_value.get<std::int64_t>();
+                            # Numbers(numeric_index) = field_value.get<std::int64_t>();
+                            print("corrigir erro")
+                            break
                         else:
-                            Numbers(numeric_index) = field_value.get<double>();
+                            # Numbers(numeric_index) = field_value.get<double>();
+                            print("corrigir erro")
+                            break
 
                         if (is_NumBlank):
-                            NumBlank()(numeric_index) = False
+                            NumBlank['numeric_index'] = False
                     else:
-                        is_empty = field_value.get<std::string>().empty()
+                        # is_empty = field_value.get<std::string>().empty()
+                        print("corrigir erro")
+                        break
                         if (is_empty):
                             findDefault(Numbers(numeric_index), schema_field_obj);
                         else:
                             Numbers(numeric_index) = -99999 # autosize and autocalculate
 
                         if (is_NumBlank):
-                            NumBlank()(numeric_index) = is_empty
+                            NumBlank['numeric_index'] = is_empty
             else:
                 if (field_type == "a"):
                     if (not(within_idf_fields and findDefault(Alphas(alpha_index), schema_field_obj))):
                         Alphas(alpha_index) = ""
                     
                     if (is_AlphaBlank):
-                        AlphaBlank()(alpha_index) = True
+                        AlphaBlank['alpha_index'] = True
                 elif (field_type == "n"):
                     if (within_idf_fields):
                         findDefault(Numbers(numeric_index), schema_field_obj);
                     else:
                         Numbers(numeric_index) = 0
                     
-                    if (is_NumBlank) NumBlank()(numeric_index) = True
+                    if (is_NumBlank): NumBlank['numeric_index'] = True
 
             if (field_type == "a"):
                 if (within_idf_fields):
                     NumAlphas += 1
                 
                 if (is_AlphaFieldNames):
-                    AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                    # AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                    print("corrigir erro")
+                    break
                 
                 alpha_index += 1
             elif (field_type == "n"):
                 if (within_idf_fields):
                     NumNumbers += 1
                 if (is_NumericFieldNames):
-                    NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                    # NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field : field_info.value().at("field_name").get<std::string>();
+                    print("corrigir erro")
+                    break
                 
                 numeric_index += 1
 
-        size_t extensible_count = 0
+        # size_t extensible_count = 0
+        extensible_count = size_t*[0]
         _legacy_idd_extensibles_iter = legacy_idd.find("extensibles");
         
         if (legacy_idd_extensibles_iter != legacy_idd.end()):
@@ -2657,10 +2678,12 @@ class ExternalFunctions:
                 _epJSON_extensions_array = epJSON_extensions_array_itr.value()
                 _schema_extension_fields = schema_obj_props[extension_key]["items"]["properties"]
 
-                for (it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
+                # for (it = epJSON_extensions_array.begin(); it != epJSON_extensions_array.end(); ++it) { # que porra é essa?
+                for it in range(epJSON_extensions_array.begin(), epJSON_extensions_array.end(), 1):
                     _epJSON_extension_obj = it.value()
 
-                    for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
+                    # for (size_t i = 0; i < legacy_idd_extensibles.size(); i++, extensible_count++) { # que porra é essa?
+                    for i in range(0, legacy_idd_extensibles.size(), 1):
                         _field_name = legacy_idd_extensibles[i]
                         _epJSON_obj_field_iter = epJSON_extension_obj.find(field_name)
                         _schema_field = schema_extension_fields[field_name]
@@ -2669,7 +2692,9 @@ class ExternalFunctions:
                         if (field_info == legacy_idd_field_info.end()):
                             ShowFatalError("Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.")
                         
-                        _field_type = field_info.value().at("field_type").get<std::string>()
+                        # _field_type = field_info.value().at("field_type").get<std::string>()
+                        print("corrigir erro")
+                        break
                         within_idf_extensible_fields = (extensible_count < idf_max_extensible_fields)
 
                         if (epJSON_obj_field_iter != epJSON_extension_obj.end()):
@@ -2677,47 +2702,59 @@ class ExternalFunctions:
 
                             if (field_type == "a"):
                                 if (field_value.is_string()):
-                                    value = getObjectItemValue(field_value.get<std::string>(), schema_field)
+                                    # value = getObjectItemValue(field_value.get<std::string>(), schema_field)
+                                    print("corrigir erro")
+                                    break
 
                                     Alphas(alpha_index) = value.first;
                                     if (is_AlphaBlank):
-                                        AlphaBlank()(alpha_index) = value.second
+                                        AlphaBlank['alpha_index'] = value.second
                                 else:
                                     if (field_value.is_number_integer()):
-                                        i64toa(field_value.get<std::int64_t>(), s)
+                                        # i64toa(field_value.get<std::int64_t>(), s)
+                                        print("corrigir erro")
+                                        break
                                     else:
-                                        dtoa(field_value.get<double>(), s)
+                                        # dtoa(field_value.get<double>(), s)
+                                        print("corrigir erro")
+                                        break
                                     
                                     Alphas(alpha_index) = s
                                     if (is_AlphaBlank):
-                                        AlphaBlank()(alpha_index) = False
+                                        AlphaBlank['alpha_index'] = False
                                 
                             elif (field_type == "n"):
                                 if (field_value.is_number()):
                                     if (field_value.is_number_integer()):
-                                        Numbers(numeric_index) = field_value.get<std::int64_t>()
+                                        # Numbers(numeric_index) = field_value.get<std::int64_t>()
+                                        print("corrigir erro")
+                                        break
                                     else:
-                                        Numbers(numeric_index) = field_value.get<double>()
+                                        # Numbers(numeric_index) = field_value.get<double>()
+                                        print("corrigir erro")
+                                        break
                                     
                                     if (is_NumBlank):
-                                        NumBlank()(numeric_index) = False
+                                        NumBlank['numeric_index'] = False
                                 
                                 else:
-                                    is_empty = field_value.get<std::string>().empty()
+                                    # is_empty = field_value.get<std::string>().empty()
+                                    print("corrigir erro")
+                                    break
                                     if (is_empty):
                                         findDefault(Numbers(numeric_index), schema_field)
                                     else:
                                         Numbers(numeric_index) = -99999 # autosize and autocalculate
                                     
                                     if (is_NumBlank):
-                                        NumBlank()(numeric_index) = is_empty
+                                        NumBlank['numeric_index'] = is_empty
                         else:
                             if (field_type == "a"):
                                 if (not(within_idf_extensible_fields and findDefault(Alphas(alpha_index), schema_field))):
                                     Alphas(alpha_index) = ""
                                 
                                 if (is_AlphaBlank):
-                                    AlphaBlank()(alpha_index) = True
+                                    AlphaBlank['alpha_index'] = True
                             
                             elif (field_type == "n"):
                                 if (within_idf_extensible_fields):
@@ -2726,13 +2763,15 @@ class ExternalFunctions:
                                     Numbers(numeric_index) = 0
                                 
                                 if (is_NumBlank):
-                                    NumBlank()(numeric_index) = True
+                                    NumBlank['numeric_index'] = True
 
                         if (field_type == "a"):
                             if (within_idf_extensible_fields):
                                 NumAlphas += 1
                             if (is_AlphaFieldNames):
-                                AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+                                # AlphaFieldNames()(alpha_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+                                print("corrigir erro")
+                                break
                             
                             alpha_index += 1
                         
@@ -2740,7 +2779,9 @@ class ExternalFunctions:
                             if (within_idf_extensible_fields):
                                 NumNumbers += 1
                             if (is_NumericFieldNames):
-                                NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+                                # NumericFieldNames()(numeric_index) = (DataGlobals::isEpJSON) ? field_name : field_info.value().at("field_name").get<std::string>();
+                                print("corrigir erro")
+                                break
                             
                             numeric_index += 1
 
