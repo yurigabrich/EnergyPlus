@@ -2789,25 +2789,25 @@ class ExternalFunctions:
         return None
 
     # PAREI AQUI!
-    # DataTimings::EP_Count_Calls --> como definir esta merda?!
-    ifdef EP_Count_Calls
-        int NumShadow_Calls(0);
-        int NumShadowAtTS_Calls(0);
-        int NumClipPoly_Calls(0);
-        int NumInitSolar_Calls(0);
-        int NumAnisoSky_Calls(0);
-        int NumDetPolyOverlap_Calls(0);
-        int NumCalcPerSolBeam_Calls(0);
-        int NumDetShadowCombs_Calls(0);
-        int NumIntSolarDist_Calls(0);
-        int NumIntRadExchange_Calls(0);
-        int NumIntRadExchangeZ_Calls(0);
-        int NumIntRadExchangeMain_Calls(0);
-        int NumIntRadExchangeOSurf_Calls(0);
-        int NumIntRadExchangeISurf_Calls(0);
-        int NumMaxInsideSurfIterations(0);
-        int NumCalcScriptF_Calls(0);
-    endif
+    # DataTimings::EP_Count_Calls --> como definir esta merda?! Não achei a definição, então não precisa de seu uso.
+    # ifdef EP_Count_Calls
+    #     int NumShadow_Calls(0);
+    #     int NumShadowAtTS_Calls(0);
+    #     int NumClipPoly_Calls(0);
+    #     int NumInitSolar_Calls(0);
+    #     int NumAnisoSky_Calls(0);
+    #     int NumDetPolyOverlap_Calls(0);
+    #     int NumCalcPerSolBeam_Calls(0);
+    #     int NumDetShadowCombs_Calls(0);
+    #     int NumIntSolarDist_Calls(0);
+    #     int NumIntRadExchange_Calls(0);
+    #     int NumIntRadExchangeZ_Calls(0);
+    #     int NumIntRadExchangeMain_Calls(0);
+    #     int NumIntRadExchangeOSurf_Calls(0);
+    #     int NumIntRadExchangeISurf_Calls(0);
+    #     int NumMaxInsideSurfIterations(0);
+    #     int NumCalcScriptF_Calls(0);
+    # endif
 
     # OutputReportPredefined.cc::PreDefTableEntry
     def PreDefTableEntry(columnIndex, _objName, tableEntryInt):
@@ -3035,22 +3035,22 @@ class SolarShading(ExternalFunctions):
         NINSHC = 0                  # Number of back surface overlaps in the HC arrays
         NRVLHC = 0                  # Number of reveal surfaces in HC array
         NSBSHC = 0                  # Number of subsurfaces in the HC arrays
-        bool CalcSkyDifShading      # True when sky diffuse solar shading is
+        # bool CalcSkyDifShading      # True when sky diffuse solar shading is
         ShadowingCalcFrequency = 0  # Frequency for Shadowing Calculations
         ShadowingDaysLeft = 0       # Days left in current shadowing period
         debugging = False
-        namespace {
-            # These were static variables within different functions. They were pulled out into the namespace
-            # to facilitate easier unit testing of those functions.
-            # These are purposefully not in the header file as an extern variable. No one outside of this should
-            # use these. They are cleared by clear_state() for use by unit tests, but normal simulations should be unaffected.
-            # This is purposefully in an anonymous namespace so nothing outside this implementation file can use it.
-            MustAllocSolarShading = True
-            GetInputFlag = True
-            firstTime = True
-        }
+        # namespace {
+        # These were static variables within different functions. They were pulled out into the namespace
+        # to facilitate easier unit testing of those functions.
+        # These are purposefully not in the header file as an extern variable. No one outside of this should
+        # use these. They are cleared by clear_state() for use by unit tests, but normal simulations should be unaffected.
+        # This is purposefully in an anonymous namespace so nothing outside this implementation file can use it.
+        MustAllocSolarShading = True
+        GetInputFlag = True
+        firstTime = True
+        # }
 
-        std::ofstream shd_stream # Shading file stream
+        # std::ofstream shd_stream # Shading file stream --> não precisa desta definição
         HCNS = []                   # Surface number of back surface HC figures
         HCNV = []                   # Number of vertices of each HC figure
         HCA = [[]]                  # 'A' homogeneous coordinates of sides
@@ -3215,15 +3215,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         # FLOW:
         #ifdef EP_Count_Calls # COMO FAZER ESTA MERDA EM PYTHON? --> Conditional inclusions: http://www.cplusplus.com/doc/tutorial/preprocessor/
-        ++NumInitSolar_Calls
+        # ++NumInitSolar_Calls
         #endif
 
         if (BeginSimFlag): # onde essa variável foi declarada?
             try:
-                shd_stream.open(DataStringGlobals::outputShdFileName) # --> "eplusout.shd" Pq preciso abrir este arquivo?
+                shd_stream = open(outputShdFileName, 'w') # --> "eplusout.shd" Pq preciso abrir este arquivo?
                                                                       # Será que é o arquivo que salvará os resultados?
             except OSError:
-                print("SolarCalculations: Could not open file {} for output (write).".format(DataStringGlobals::outputShdFileName))
+                print("SolarCalculations: Could not open file {} for output (write).".format(outputShdFileName))
             else: # 'else' do 'except'? Não deveria estar junto ao 'try'?!
                 if (GetInputFlag):
                     GetShadowingInput() # internal function
@@ -3990,7 +3990,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         MaxDim = 0
 
         #ifdef EP_Count_Calls
-        ++NumDetShadowCombs_Calls
+        # ++NumDetShadowCombs_Calls
         #endif
 
         ShadowComb.dimension(TotSurfaces, ShadowingCombinations{}) # Set all elements to default constructed state
@@ -4184,60 +4184,60 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         SBS.deallocate()
         BKS.deallocate()
 
-        shd_stream << "Shadowing Combinations\n"
+        shd_stream.write("Shadowing Combinations\n")
         if (SolarDistribution == MinimalShadowing):
-            shd_stream << "..Solar Distribution=Minimal Shadowing, Detached Shading will not be used in shadowing calculations\n"
+            shd_stream.write("..Solar Distribution=Minimal Shadowing, Detached Shading will not be used in shadowing calculations\n")
         elif (SolarDistribution == FullExterior):
             if (CalcSolRefl):
-                shd_stream << "..Solar Distribution=FullExteriorWithReflectionsFromExteriorSurfaces\n"
+                shd_stream.write("..Solar Distribution=FullExteriorWithReflectionsFromExteriorSurfaces\n")
             else:
-                shd_stream << "..Solar Distribution=FullExterior\n"
+                shd_stream.write("..Solar Distribution=FullExterior\n")
         elif (SolarDistribution == FullInteriorExterior):
             if (CalcSolRefl):
-                shd_stream << "..Solar Distribution=FullInteriorAndExteriorWithReflectionsFromExteriorSurfaces\n"
+                shd_stream.write("..Solar Distribution=FullInteriorAndExteriorWithReflectionsFromExteriorSurfaces\n")
             else:
-                shd_stream << "..Solar Distribution=FullInteriorAndExterior\n"
+                shd_stream.write("..Solar Distribution=FullInteriorAndExterior\n")
         else:
             # do nothing??? Vai dar erro de sintaxe!
 
-        shd_stream << "..In the following, only the first 10 reference surfaces will be shown.\n"
-        shd_stream << "..But all surfaces are used in the calculations.\n"
+        shd_stream.write("..In the following, only the first 10 reference surfaces will be shown.\n")
+        shd_stream.write("..But all surfaces are used in the calculations.\n")
 
         for HTS in range(1, TotSurfaces+1):
-            shd_stream << "==================================\n"
+            shd_stream.write("==================================\n")
             if (ShadowComb(HTS).UseThisSurf):
                 if (Surface(HTS).IsConvex):
-                    shd_stream << "Surface=" << Surface(HTS).Name << " is used as Receiving Surface in calculations and is convex.\n"
+                    shd_stream.write("Surface={} is used as Receiving Surface in calculations and is convex.\n".format(Surface(HTS).Name))
                 else:
-                    shd_stream << "Surface=" << Surface(HTS).Name << " is used as Receiving Surface in calculations and is non-convex.\n"
+                    shd_stream.write("Surface={} is used as Receiving Surface in calculations and is non-convex.\n".format(Surface(HTS).Name))
                     if (ShadowComb(HTS).NumGenSurf > 0):
                         if (DisplayExtraWarnings):
-                            raise RuntimeWarning("DetermineShadowingCombinations: Surface=\"{}\" is a receiving surface and is non-convex.".format(Surface(HTS).Name))
+                            raise RuntimeWarning("DetermineShadowingCombinations: Surface={} is a receiving surface and is non-convex.".format(Surface(HTS).Name))
                             raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
                         else:
                             TotalReceivingNonConvexSurfaces += 1
             else:
-                shd_stream << "Surface=" << Surface(HTS).Name << " is not used as Receiving Surface in calculations.\n"
+                shd_stream.write("Surface={} is not used as Receiving Surface in calculations.\n".format(Surface(HTS).Name))
             
-            shd_stream << "Number of general casting surfaces=" << ShadowComb(HTS).NumGenSurf << '\n'
+            shd_stream.write("Number of general casting surfaces={}\n".format(ShadowComb(HTS).NumGenSurf))
             for NGSS in range(1, ShadowComb(HTS).NumGenSurf+1):
                 if (NGSS <= 10):
-                    shd_stream << "..Surface=" << Surface(ShadowComb(HTS).GenSurf(NGSS)).Name << '\n'
+                    shd_stream.write("..Surface={}\n".format(Surface(ShadowComb(HTS).GenSurf(NGSS)).Name))
 
                 CastingSurface(ShadowComb(HTS).GenSurf(NGSS)) = True
 
-            shd_stream << "Number of back surfaces=" << ShadowComb(HTS).NumBackSurf << '\n'
+            shd_stream.write("Number of back surfaces=" << ShadowComb(HTS).NumBackSurf << '\n')
             for NGSS in range(1, min(10, ShadowComb(HTS).NumBackSurf)+1):
-                shd_stream << "...Surface=" << Surface(ShadowComb(HTS).BackSurf(NGSS)).Name << '\n'
+                shd_stream.write("...Surface={}\n".format(Surface(ShadowComb(HTS).BackSurf(NGSS)).Name))
             
-            shd_stream << "Number of receiving sub surfaces=" << ShadowComb(HTS).NumSubSurf << '\n'
+            shd_stream.write("Number of receiving sub surfaces={}\n".format(ShadowComb(HTS).NumSubSurf))
             for NGSS in range(1, min(10, ShadowComb(HTS).NumSubSurf)+1):
-                shd_stream << "....Surface=" << Surface(ShadowComb(HTS).SubSurf(NGSS)).Name << '\n'
+                shd_stream.write("....Surface={}\n".format(Surface(ShadowComb(HTS).SubSurf(NGSS)).Name))
 
         for HTS in range(1, TotSurfaces+1):
             if (CastingSurface(HTS) and not Surface(HTS).IsConvex):
                 if (DisplayExtraWarnings):
-                    ShowSevereError("DetermineShadowingCombinations: Surface=\"{}\" is a casting surface and is non-convex.".format(Surface(HTS).Name))
+                    ShowSevereError("DetermineShadowingCombinations: Surface={} is a casting surface and is non-convex.".format(Surface(HTS).Name))
                     raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
                 else:
                     ++TotalCastingNonConvexSurfaces
@@ -4845,7 +4845,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         HFunct = 0.0
 
         #ifdef EP_Count_Calls
-        ++NumClipPoly_Calls
+        # ++NumClipPoly_Calls
         #endif
         # Tuned Linear indexing
 
@@ -5271,7 +5271,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         # Check for exceeding array limits.
         #ifdef EP_Count_Calls
-        ++NumDetPolyOverlap_Calls
+        # ++NumDetPolyOverlap_Calls
         #endif
 
         if (NS3 > MaxHCS):
@@ -5416,7 +5416,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             return None # Skip solar calcs for these Initialization steps.
 
         #ifdef EP_Count_Calls
-        ++NumCalcPerSolBeam_Calls
+        # ++NumCalcPerSolBeam_Calls
         #endif
 
         # Initialize some values for the appropriate period
@@ -5771,10 +5771,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             OneTimeFlag = False
 
         #ifdef EP_Count_Calls
-        if (iHour == 0):
-            NumShadow_Calls += 1
-        else:
-            NumShadowAtTS_Calls += 1
+        # if (iHour == 0):
+        #     NumShadow_Calls += 1
+        # else:
+        #     NumShadowAtTS_Calls += 1
         #endif
 
         SAREA = 0.0
