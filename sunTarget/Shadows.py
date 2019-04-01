@@ -681,7 +681,7 @@ class ExternalFunctions:
     DetailedSkyDiffuseAlgorithm = False      # use detailed diffuse shading algorithm for sky (shading transmittance varies)
     DetailedSolarTimestepIntegration = False # when true, use detailed timestep integration for all solar,shading, etc.
 
-    # OutputProcessor::Unit --> I don't how it works...?
+    # # OutputProcessor::Unit --> I don't how it works...?
     class Unit(Enum):
         # enum.auto()
         kg_s,
@@ -1385,7 +1385,7 @@ class ExternalFunctions:
     #         found = -1
             
     #         for jZone in range(1, NumOfZones+1):
-    #             if (UtilityRoutines::SameString(WindowShadingControl(iShadeCtrl).DaylightingControlName, ZoneDaylight(jZone).Name)):
+    #             if (WindowShadingControl(iShadeCtrl).DaylightingControlName, ZoneDaylight(jZone).Name)):
     #                 found = jZone
     #                 break
 
@@ -3427,10 +3427,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             MaxHCS = 15000
 
         if (NumAlphas >= 1):
-            if (UtilityRoutines::SameString(cAlphaArgs(1), "AverageOverDaysInFrequency")):
+            if (cAlphaArgs(1) == "AverageOverDaysInFrequency"):
                 DetailedSolarTimestepIntegration = False
                 cAlphaArgs(1) = "AverageOverDaysInFrequency"
-            elif (UtilityRoutines::SameString(cAlphaArgs(1), "TimestepFrequency")):
+            elif (cAlphaArgs(1) == "TimestepFrequency"):
                 DetailedSolarTimestepIntegration = True
                 cAlphaArgs(1) = "TimestepFrequency"
             else:
@@ -3443,10 +3443,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             cAlphaArgs(1) = "AverageOverDaysInFrequency"
 
         if (NumAlphas >= 2):
-            if (UtilityRoutines::SameString(cAlphaArgs(2), "SutherlandHodgman")):
+            if (cAlphaArgs(2) == "SutherlandHodgman"):
                 SutherlandHodgman = True
                 cAlphaArgs(2) = "SutherlandHodgman"
-            elif (UtilityRoutines::SameString(cAlphaArgs(2), "ConvexWeilerAtherton")):
+            elif (cAlphaArgs(2) == "ConvexWeilerAtherton"):
                 SutherlandHodgman = False
                 cAlphaArgs(2) = "ConvexWeilerAtherton"
             elif (lAlphaFieldBlanks(2)):
@@ -3467,10 +3467,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 cAlphaArgs(2) = "SutherlandHodgman"
 
         if (NumAlphas >= 3):
-            if (UtilityRoutines::SameString(cAlphaArgs(3), "SimpleSkyDiffuseModeling")):
+            if (cAlphaArgs(3) == "SimpleSkyDiffuseModeling"):
                 DetailedSkyDiffuseAlgorithm = False
                 cAlphaArgs(3) = "SimpleSkyDiffuseModeling"
-            elif (UtilityRoutines::SameString(cAlphaArgs(3), "DetailedSkyDiffuseModeling")):
+            elif (cAlphaArgs(3) == "DetailedSkyDiffuseModeling"):
                 DetailedSkyDiffuseAlgorithm = True
                 cAlphaArgs(3) = "DetailedSkyDiffuseModeling"
             elif (lAlphaFieldBlanks(3)):
@@ -3484,10 +3484,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             DetailedSkyDiffuseAlgorithm = False
 
         if (NumAlphas >= 4):
-            if (UtilityRoutines::SameString(cAlphaArgs(4), "ScheduledShading")):
+            if (cAlphaArgs(4) == "ScheduledShading"):
                 UseScheduledSunlitFrac = True
                 cAlphaArgs(4) = "ScheduledShading"
-            elif (UtilityRoutines::SameString(cAlphaArgs(4), "ImportedShading")):
+            elif (cAlphaArgs(4) == "ImportedShading"):
                 if (ScheduleFileShadingProcessed):
                     UseImportedSunlitFrac = True
                     cAlphaArgs(4) = "ImportedShading"
@@ -3495,7 +3495,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(4))
                     ShowContinueError("Value entered=\"" + cAlphaArgs(4) +
                                       "\" while no Schedule:File:Shading object is defined, InternalCalculation will be used.")
-            elif (UtilityRoutines::SameString(cAlphaArgs(4), "InternalCalculation")):
+            elif (cAlphaArgs(4) == "InternalCalculation"):
                 UseScheduledSunlitFrac = False
                 UseImportedSunlitFrac = False
                 cAlphaArgs(4) = "InternalCalculation"
@@ -3508,10 +3508,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             UseImportedSunlitFrac = False
 
         if (NumAlphas >= 5):
-            if (UtilityRoutines::SameString(cAlphaArgs(5), "Yes")):
+            if (cAlphaArgs(5) == "Yes"):
                 ReportExtShadingSunlitFrac = True
                 cAlphaArgs(5) = "Yes"
-            elif (UtilityRoutines::SameString(cAlphaArgs(5), "No")):
+            elif (cAlphaArgs(5) == "No"):
                 ReportExtShadingSunlitFrac = False
                 cAlphaArgs(5) = "No"
             else:
@@ -3534,10 +3534,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         DisableSelfShadingBetweenGroup = False
 
         if (NumAlphas >= 6):
-            if (UtilityRoutines::SameString(cAlphaArgs(6), "Yes")):
+            if (cAlphaArgs(6) == "Yes"):
                 DisableSelfShadingWithinGroup = True
                 cAlphaArgs(6) = "Yes"
-            elif (UtilityRoutines::SameString(cAlphaArgs(6), "No")):
+            elif (cAlphaArgs(6) == "No"):
                 cAlphaArgs(6) = "No"
             else:
                 ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(6))
@@ -3546,10 +3546,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             cAlphaArgs(6) = "No"
 
         if (NumAlphas >= 7):
-            if (UtilityRoutines::SameString(cAlphaArgs(7), "Yes")):
+            if (cAlphaArgs(7) == "Yes"):
                 DisableSelfShadingBetweenGroup = True
                 cAlphaArgs(7) = "Yes"
-            elif (UtilityRoutines::SameString(cAlphaArgs(7), "No")):
+            elif (cAlphaArgs(7) == "No"):
                 cAlphaArgs(7) = "No"
             else:
                 ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(7))
@@ -3573,7 +3573,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 DisableSelfShadingGroups.append(NumOfShadingGroups)
                 for i in range(1, NumOfShadingGroups+1):
                     Found = FindItemInList(cAlphaArgs(i + 7), ZoneList)
-                    if (Found != 0) DisableSelfShadingGroups(i) = Found
+                    if (Found != 0): DisableSelfShadingGroups(i) = Found
 
                 for SurfNum in range(1, TotSurfaces+1):
                     if (Surface(SurfNum).ExtBoundCond == 0): # Loop through all exterior surfaces
@@ -3820,7 +3820,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # CurrentModuleObject='Surfaces'
         for SurfLoop in range(1, TotSurfaces+1):
             SetupOutputVariable("Surface Outside Normal Azimuth Angle",
-                                OutputProcessor::Unit::deg,
+                                # # OutputProcessor::Unit::deg,
                                 Surface(SurfLoop).Azimuth,
                                 "Zone",
                                 "Average",
@@ -3828,97 +3828,97 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             
             if (Surface(SurfLoop).ExtSolar):
                 SetupOutputVariable("Surface Outside Face Sunlit Area",
-                                    OutputProcessor::Unit::m2,
+                                    # OutputProcessor::Unit::m2,
                                     SurfSunlitArea(SurfLoop),
                                     "Zone",
                                     "State",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Sunlit Fraction",
-                                    OutputProcessor::Unit::None,
+                                    # OutputProcessor::Unit::None,
                                     SurfSunlitFrac(SurfLoop),
                                     "Zone",
                                     "State",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncident(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Beam Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncidentBeam(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Sky Diffuse Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncidentSkyDiffuse(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Ground Diffuse Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncidentGndDiffuse(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Beam Solar Incident Angle Cosine Value",
-                                    OutputProcessor::Unit::None,
+                                    # OutputProcessor::Unit::None,
                                     CosIncidenceAngle(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Sky Diffuse Ground Reflected Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncSkyDiffReflGnd(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Sky Diffuse Surface Reflected Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncSkyDiffReflObs(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Beam To Beam Surface Reflected Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncBmToBmReflObs(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Beam To Diffuse Surface Reflected Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncBmToDiffReflObs(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Outside Face Incident Beam To Diffuse Ground Reflected Solar Radiation Rate per Area",
-                                    OutputProcessor::Unit::W_m2,
+                                    # OutputProcessor::Unit::W_m2,
                                     QRadSWOutIncBmToDiffReflGnd(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Anisotropic Sky Multiplier",
-                                    OutputProcessor::Unit::None,
+                                    # OutputProcessor::Unit::None,
                                     AnisoSkyMult(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Window BSDF Beam Direction Number",
-                                    OutputProcessor::Unit::None,
+                                    # OutputProcessor::Unit::None,
                                     BSDFBeamDirectionRep(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Window BSDF Beam Theta Angle",
-                                    OutputProcessor::Unit::rad,
+                                    # OutputProcessor::Unit::rad,
                                     BSDFBeamThetaRep(SurfLoop),
                                     "Zone",
                                     "Average",
                                     Surface(SurfLoop).Name)
                 SetupOutputVariable("Surface Window BSDF Beam Phi Angle",
-                                    OutputProcessor::Unit::rad,
+                                    # OutputProcessor::Unit::rad,
                                     BSDFBeamPhiRep(SurfLoop),
                                     "Zone",
                                     "Average",
@@ -3973,8 +3973,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         MaxGSS = 50                 # Current Max for GSS array
         MaxBKS = 50                 # Current Max for BKS array
         MaxSBS = 50                 # Current Max for SBS array
-        bool CannotShade            # True if subsurface cannot shade receiving surface
-        bool HasWindow              # True if a window is present on receiving surface
+        CannotShade = True          # True if subsurface cannot shade receiving surface
+        HasWindow = True            # True if a window is present on receiving surface
         ZMIN = 0.0                  # Lowest point on the receiving surface
         BackSurfaceNumber = 0       # Back surface number
         HTS = 0                     # Heat transfer surface number for a receiving surface
@@ -3984,7 +3984,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         NBKS = 0                    # Number of back surfaces for a receiving surface
         NGSS = 0                    # Number of shadowing surfaces for a receiving surface
         NSBS = 0                    # Number of subsurfaces for a receiving surface
-        bool ShadowingSurf          # True if a receiving surface is a shadowing surface
+        ShadowingSurf = True        # True if a receiving surface is a shadowing surface
         CastingSurface = []         # [type:bool] tracking during setup of ShadowComb
 
         MaxDim = 0
@@ -3993,7 +3993,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # ++NumDetShadowCombs_Calls
         #endif
 
-        ShadowComb.dimension(TotSurfaces, ShadowingCombinations{}) # Set all elements to default constructed state
+        ShadowComb.dimension(TotSurfaces, ShadowingCombinations()) # Set all elements to default constructed state
 
         CastingSurface.dimension(TotSurfaces, False)
 
@@ -4036,7 +4036,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 continue # Skip subsurfaces (SBS)
 
             # Get the lowest point of receiving surface
-            ZMIN = minval(Surface(GRSNR).Vertex, _Vector::z)
+            ZMIN = minval(Surface(GRSNR).Vertex, build_height)
 
             # Check every surface as a possible shadow casting surface ("SS" = shadow sending)
             NGSS = 0
@@ -4061,7 +4061,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                         NGSS += 1
                         if (NGSS > MaxGSS):
-                            GSS.redimension(MaxGSS *= 2, 0)
+                            MaxGSS_ = 2 * MaxGSS
+                            GSS.redimension(MaxGSS_, 0)
                         
                         GSS(NGSS) = GSSNR # substitui o valor de GSS no index NGSS com GSSNR?
 
@@ -4076,7 +4077,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         if (not CannotShade):
                             NGSS += 1
                             if (NGSS > MaxGSS):
-                                GSS.redimension(MaxGSS *= 2, 0)
+                                MaxGSS_ = 2 * MaxGSS
+                                GSS.redimension(MaxGSS_, 0)
                             
                             GSS(NGSS) = GSSNR
 
@@ -4092,7 +4094,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     if (Surface(GSSNR).BaseSurf == GRSNR): # Shadowing subsurface of receiving surface
                         NGSS += 1
                         if (NGSS > MaxGSS):
-                            GSS.redimension(MaxGSS *= 2, 0)
+                            MaxGSS_ = 2 * MaxGSS
+                            GSS.redimension(MaxGSS_, 0)
                         
                         GSS(NGSS) = GSSNR
 
@@ -4118,7 +4121,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 # severe error if not
                 NSBS += 1
                 if (NSBS > MaxSBS):
-                    SBS.redimension(MaxSBS *= 2, 0)
+                    MaxSBS_ = 2 * MaxSBS
+                    SBS.redimension(MaxSBS_, 0)
                 
                 SBS(NSBS) = SBSNR
 
@@ -4150,7 +4154,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     CHKBKS(BackSurfaceNumber, GRSNR) # CHECK FOR CONVEX ZONE severe error if not
                     NBKS += 1
                     if (NBKS > MaxBKS):
-                        BKS.redimension(MaxBKS *= 2, 0)
+                        MaxBKS_ = 2 * MaxBKS
+                        BKS.redimension(MaxBKS_, 0)
                     
                     BKS(NBKS) = BackSurfaceNumber
 
@@ -4660,10 +4665,10 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # na
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        K = 0              # Vertex number of the overlap
-        M = 0              # Side number of figure N2
-        N = 0              # Vertex number of figure N1
-        bool CycleMainLoop # Sets when to cycle main loop
+        K = 0                # Vertex number of the overlap
+        M = 0                # Side number of figure N2
+        N = 0                # Vertex number of figure N1
+        CycleMainLoop = True # Sets when to cycle main loop
         HFunct = 0.0
 
         NIN = 0
@@ -4818,8 +4823,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         '''
 
         # Using/Aliasing
-        using General::ReallocateRealArray
-        using General::SafeDivide
+        # using General::ReallocateRealArray
+        # using General::SafeDivide
 
         # Locals
         # SUBROUTINE ARGUMENT DEFINITIONS:
@@ -4835,11 +4840,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         # SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         ?typedef pd.DataFrame()::size_type size_type
-        bool INTFLAG # For overlap status
-        int S        # Test vertex
-        int KK       # Duplicate test index
-        int NVOUT    # Current output length for loops
-        int NVTEMP
+        INTFLAG = True  # For overlap status
+        S = 0           # Test vertex
+        KK = 0          # Duplicate test index
+        NVOUT = 0       # Current output length for loops
+        NVTEMP = 0
 
         W = 0.0 # Normalization factor
         HFunct = 0.0
@@ -5990,7 +5995,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         YVS(N) = YV(N) - YShadowProjection * ZV(N)
                 else:
                     # Transform coordinates of shadow casting surface from general system to the system relative to the receiving surface
-                    int NVT
+                    NVT = 0
                     CTRANS(GSSNR, NGRS, NVT, XVT, YVT, ZVT)
                     CLIP(NVT, XVT, YVT, ZVT) # Clip portions of the shadow casting surface which are behind the receiving surface
 
@@ -6474,33 +6479,33 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # CurrentModuleObject='Surfaces'
             if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
                 SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
-                                    OutputProcessor::Unit::None,
+                                    # OutputProcessor::Unit::None,
                                     curDifShdgRatioIsoSky(SurfNum),
                                     "Zone",
                                     "Average",
                                     Surface(SurfNum).Name)
             else:
                 SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioIsoSky",
-                                    OutputProcessor::Unit::None,
+                                    # OutputProcessor::Unit::None,
                                     DifShdgRatioIsoSky(SurfNum),
                                     "Zone",
                                     "Average",
                                     Surface(SurfNum).Name)
             
             SetupOutputVariable("Debug Surface Solar Shading Model DifShdgRatioHoriz",
-                                OutputProcessor::Unit::None,
+                                # OutputProcessor::Unit::None,
                                 DifShdgRatioHoriz(SurfNum),
                                 "Zone",
                                 "Average",
                                 Surface(SurfNum).Name)
             SetupOutputVariable("Debug Surface Solar Shading Model WithShdgIsoSky",
-                                OutputProcessor::Unit::None,
+                                # OutputProcessor::Unit::None,
                                 WithShdgIsoSky(SurfNum),
                                 "Zone",
                                 "Average",
                                 Surface(SurfNum).Name)
             SetupOutputVariable("Debug Surface Solar Shading Model WoShdgIsoSky",
-                                OutputProcessor::Unit::None,
+                                # OutputProcessor::Unit::None,
                                 WoShdgIsoSky(SurfNum),
                                 "Zone",
                                 "Average",
