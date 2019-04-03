@@ -1038,7 +1038,7 @@ class ExternalFunctions:
         if (X < 0.0 or X > 1.0):
             POLYF = 0.0
         else:
-            POLYF = X * ( A(1) + X * ( A(2) + X * ( A(3) + X * ( A(4) + X * ( A(5) + X * A(6) )))))
+            POLYF = X * ( A[1] + X * ( A[2] + X * ( A[3] + X * ( A[4] + X * ( A[5] + X * A[6] )))))
         
         return POLYF
 
@@ -3220,7 +3220,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         if (BeginSimFlag): # onde essa variável foi declarada?
             try:
-                shd_stream = open(outputShdFileName, 'w') # --> "eplusout.shd" Pq preciso abrir este arquivo?
+              print("Should open the `shd_stream`.")
+                # shd_stream = open(outputShdFileName, 'w') # --> "eplusout.shd" Pq preciso abrir este arquivo?
                                                                       # Será que é o arquivo que salvará os resultados?
             except OSError:
                 print("SolarCalculations: Could not open file {} for output (write).".format(outputShdFileName))
@@ -3240,7 +3241,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 if (firstTime): print("Determining Shadowing Combinations")
                 DetermineShadowingCombinations()    # internal function
-                shd_stream.close() # Done writing to shd file
+                # shd_stream.close() # Done writing to shd file
 
             if (CalcSolRefl): print("Initializing Solar Reflection Factors")
             InitSolReflRecSurf()    # função não encontrada neste doc
@@ -4189,32 +4190,34 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         SBS.deallocate()
         BKS.deallocate()
 
-        shd_stream.write("Shadowing Combinations\n")
+        print("Shadowing Combinations\n")
         if (SolarDistribution == MinimalShadowing):
-            shd_stream.write("..Solar Distribution=Minimal Shadowing, Detached Shading will not be used in shadowing calculations\n")
+            print("..Solar Distribution=Minimal Shadowing, Detached Shading will not be used in shadowing calculations\n")
         elif (SolarDistribution == FullExterior):
             if (CalcSolRefl):
-                shd_stream.write("..Solar Distribution=FullExteriorWithReflectionsFromExteriorSurfaces\n")
+                print("..Solar Distribution=FullExteriorWithReflectionsFromExteriorSurfaces\n")
             else:
-                shd_stream.write("..Solar Distribution=FullExterior\n")
+                print("..Solar Distribution=FullExterior\n")
         elif (SolarDistribution == FullInteriorExterior):
             if (CalcSolRefl):
-                shd_stream.write("..Solar Distribution=FullInteriorAndExteriorWithReflectionsFromExteriorSurfaces\n")
+                print("..Solar Distribution=FullInteriorAndExteriorWithReflectionsFromExteriorSurfaces\n")
             else:
-                shd_stream.write("..Solar Distribution=FullInteriorAndExterior\n")
+                print("..Solar Distribution=FullInteriorAndExterior\n")
         else:
-            # do nothing??? Vai dar erro de sintaxe!
+          # do nothing??? Vai dar erro de sintaxe!
+          continue
+          
 
-        shd_stream.write("..In the following, only the first 10 reference surfaces will be shown.\n")
-        shd_stream.write("..But all surfaces are used in the calculations.\n")
+        print("..In the following, only the first 10 reference surfaces will be shown.\n")
+        print("..But all surfaces are used in the calculations.\n")
 
         for HTS in range(1, TotSurfaces+1):
-            shd_stream.write("==================================\n")
+            print("==================================\n")
             if (ShadowComb(HTS).UseThisSurf):
                 if (Surface(HTS).IsConvex):
-                    shd_stream.write("Surface={} is used as Receiving Surface in calculations and is convex.\n".format(Surface(HTS).Name))
+                    print("Surface={} is used as Receiving Surface in calculations and is convex.\n".format(Surface(HTS).Name))
                 else:
-                    shd_stream.write("Surface={} is used as Receiving Surface in calculations and is non-convex.\n".format(Surface(HTS).Name))
+                    print("Surface={} is used as Receiving Surface in calculations and is non-convex.\n".format(Surface(HTS).Name))
                     if (ShadowComb(HTS).NumGenSurf > 0):
                         if (DisplayExtraWarnings):
                             raise RuntimeWarning("DetermineShadowingCombinations: Surface={} is a receiving surface and is non-convex.".format(Surface(HTS).Name))
@@ -4222,22 +4225,22 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         else:
                             TotalReceivingNonConvexSurfaces += 1
             else:
-                shd_stream.write("Surface={} is not used as Receiving Surface in calculations.\n".format(Surface(HTS).Name))
+                print("Surface={} is not used as Receiving Surface in calculations.\n".format(Surface(HTS).Name))
             
-            shd_stream.write("Number of general casting surfaces={}\n".format(ShadowComb(HTS).NumGenSurf))
+            print("Number of general casting surfaces={}\n".format(ShadowComb(HTS).NumGenSurf))
             for NGSS in range(1, ShadowComb(HTS).NumGenSurf+1):
                 if (NGSS <= 10):
-                    shd_stream.write("..Surface={}\n".format(Surface(ShadowComb(HTS).GenSurf(NGSS)).Name))
+                    print("..Surface={}\n".format(Surface(ShadowComb(HTS).GenSurf(NGSS)).Name))
 
                 CastingSurface(ShadowComb(HTS).GenSurf(NGSS)) = True
 
-            shd_stream.write("Number of back surfaces=" << ShadowComb(HTS).NumBackSurf << '\n')
+            print("Number of back surfaces=" << ShadowComb(HTS).NumBackSurf << '\n')
             for NGSS in range(1, min(10, ShadowComb(HTS).NumBackSurf)+1):
-                shd_stream.write("...Surface={}\n".format(Surface(ShadowComb(HTS).BackSurf(NGSS)).Name))
+                print("...Surface={}\n".format(Surface(ShadowComb(HTS).BackSurf(NGSS)).Name))
             
-            shd_stream.write("Number of receiving sub surfaces={}\n".format(ShadowComb(HTS).NumSubSurf))
+            print("Number of receiving sub surfaces={}\n".format(ShadowComb(HTS).NumSubSurf))
             for NGSS in range(1, min(10, ShadowComb(HTS).NumSubSurf)+1):
-                shd_stream.write("....Surface={}\n".format(Surface(ShadowComb(HTS).SubSurf(NGSS)).Name))
+                print("....Surface={}\n".format(Surface(ShadowComb(HTS).SubSurf(NGSS)).Name))
 
         for HTS in range(1, TotSurfaces+1):
             if (CastingSurface(HTS) and not Surface(HTS).IsConvex):
@@ -4323,7 +4326,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # for (int i = 2, e = surface_C.Sides i <= e ++i):
         e = surface_C.Sides
         for i in range(2, e+1):
-            ZMAX = std::max(ZMAX, vertex_C(i).z)
+            ZMAX = max(ZMAX, vertex_C(i).z)
 
         if (ZMAX <= ZMIN):
             return None
@@ -4397,7 +4400,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # Determine if the shadow casting surface is above, below, or intersects with the plane of the receiving surface
         NumVertInShadowOrClippedSurface = NVS
         for N in range(1, NVT+1):
-            ZVT_N = ZVT(N)
+            ZVT_N = ZVT[N]
             if (ZVT_N > 0.0): NABOVE += 1
             if (ZVT_N == 0.0): NON += 1
 
@@ -4406,9 +4409,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             NVS = NVT
             NumVertInShadowOrClippedSurface = NVT
             for N in range(1, NVT+1):
-                XVC(N) = XVT(N)
-                YVC(N) = YVT(N)
-                ZVC(N) = ZVT(N)
+                XVC[N] = XVT[N]
+                YVC[N] = YVT[N]
+                ZVC[N] = ZVT[N]
         elif (NABOVE == 0):
             # Totally submerged shadow casting surface.
             NVS = 0
@@ -4417,39 +4420,39 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # Remove (clip) that portion of the shadow casting surface which is below the receiving surface
             NVS = NABOVE + 2
             NumVertInShadowOrClippedSurface = NABOVE + 2
-            Real64 ZVT_N, ZVT_P(ZVT(1)) # ??????? ZVT_P é uma var de tipo ZVT_N ??????????
-            XVT(NVT + 1) = XVT(1)
-            YVT(NVT + 1) = YVT(1)
-            ZVT(NVT + 1) = ZVT_P
+            ZVT_P = ZVT[1]
+            XVT[NVT + 1] = XVT[1]
+            YVT[NVT + 1] = YVT[1]
+            ZVT[NVT + 1] = ZVT_P
             # for (int N = 1, P = 2 N <= NVT ++N, ++P):
             for N, P in zip(range(1, NVT+1), range(2, NVT+1)):
                 ZVT_N = ZVT_P
-                ZVT_P = ZVT(P)
+                ZVT_P = ZVT[P]
                 if (ZVT_N >= 0.0 and ZVT_P < 0.0):
                     # Line enters plane of receiving surface
                     ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
-                    XIN = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
-                    YIN = (ZVT_P * YVT(N) - ZVT_N * YVT(P)) * ZVT_fac
+                    XIN = (ZVT_P * XVT[N] - ZVT_N * XVT[P]) * ZVT_fac
+                    YIN = (ZVT_P * YVT[N] - ZVT_N * YVT[P]) * ZVT_fac
                 if (ZVT_N <= 0.0 and ZVT_P > 0.0):
                     # Line exits plane of receiving surface
                     NEXT = N + 1
                     ZVT_fac = 1.0 / (ZVT_P - ZVT_N)
-                    XOUT = (ZVT_P * XVT(N) - ZVT_N * XVT(P)) * ZVT_fac
-                    YOUT = (ZVT_P * YVT(N) - ZVT_N * YVT(P)) * ZVT_fac
+                    XOUT = (ZVT_P * XVT[N] - ZVT_N * XVT[P]) * ZVT_fac
+                    YOUT = (ZVT_P * YVT[N] - ZVT_N * YVT[P]) * ZVT_fac
 
             # Renumber the vertices of the clipped shadow casting surface, so they are still counter-clockwise sequential.
-            XVC(1) = XOUT # ? Verify that the IN and OUT values were ever set?
-            YVC(1) = YOUT
-            ZVC(1) = 0.0
-            XVC(NVS) = XIN
-            YVC(NVS) = YIN
-            ZVC(NVS) = 0.0
+            XVC[1] = XOUT # ? Verify that the IN and OUT values were ever set?
+            YVC[1] = YOUT
+            ZVC[1] = 0.0
+            XVC[NVS] = XIN
+            YVC[NVS] = YIN
+            ZVC[NVS] = 0.0
             for N in range(1, NABOVE):
                 if (NEXT > NVT):
                     NEXT = 1
-                XVC(N + 1) = XVT(NEXT)
-                YVC(N + 1) = YVT(NEXT)
-                ZVC(N + 1) = ZVT(NEXT)
+                XVC[N + 1] = XVT[NEXT]
+                YVC[N + 1] = YVT[NEXT]
+                ZVC[N + 1] = ZVT[NEXT]
                 NEXT += 1
 
         return None
@@ -4513,9 +4516,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             if (abs(Zdif) <= 1.E-15):
                 Zdif = 0.0
 
-            XVT(N) = base_lcsx.x * Xdif + base_lcsx.y * Ydif + base_lcsx.z * Zdif
-            YVT(N) = base_lcsy.x * Xdif + base_lcsy.y * Ydif + base_lcsy.z * Zdif
-            ZVT(N) = base_lcsz.x * Xdif + base_lcsz.y * Ydif + base_lcsz.z * Zdif
+            XVT[N] = base_lcsx.x * Xdif + base_lcsx.y * Ydif + base_lcsx.z * Zdif
+            YVT[N] = base_lcsy.x * Xdif + base_lcsy.y * Ydif + base_lcsy.z * Zdif
+            ZVT[N] = base_lcsz.x * Xdif + base_lcsz.y * Ydif + base_lcsz.z * Zdif
 
         return None
 
@@ -4594,8 +4597,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         l = l1
         for N in range(1, NumVertices): # [ l ] == ( NS, N )
             l += 1 # será q vai somar o par ordenado? Talvez precise de list comprehension: [a+1 for a in l]
-            HCX[l] = nint64(XVS(N) * HCMULT)
-            HCY[l] = nint64(YVS(N) * HCMULT)
+            HCX[l] = nint64(XVS[N] * HCMULT)
+            HCY[l] = nint64(YVS[N] * HCMULT)
 
         l = HCX.index(NS, NumVertices + 1)
         Int64 HCX_m(HCX[l] = HCX[l1]) # [ l1 ] == ( NS, 1 )
@@ -4679,7 +4682,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             # Eliminate cases where vertex N is to the left of side M.
             for M in range(1, N2NumVert):
-                HFunct = HCX(N1, N) * HCA(N2, M) + HCY(N1, N) * HCB(N2, M) + HCC(N2, M)
+                HFunct = HCX[N1][N] * HCA[N2][M] + HCY[N1][N] * HCB[N2][M] + HCC[N2][M]
                 if (HFunct > 0.0):
                     CycleMainLoop = True # Set to cycle to the next value of N
                     break                # M DO loop
@@ -4690,15 +4693,15 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # Check for duplication of previously determined points.
             if (NumVerticesOverlap != 0):
                 for K in range(1, NumVerticesOverlap+1):
-                    if ((XTEMP(K) == HCX(N1, N)) and (YTEMP(K) == HCY(N1, N))):
+                    if ((XTEMP[K] == HCX[N1][N]) and (YTEMP[K] == HCY[N1][N])):
                         CycleMainLoop = True # Set to cycle to the next value of N
                         break                # K DO loop
                 if (CycleMainLoop): continue
 
             # Record enclosed vertices in temporary arrays.
             NumVerticesOverlap += 1
-            XTEMP(NumVerticesOverlap) = HCX(N1, N)
-            YTEMP(NumVerticesOverlap) = HCY(N1, N)
+            XTEMP(NumVerticesOverlap) = HCX[N1][N]
+            YTEMP(NumVerticesOverlap) = HCY[N1][N]
         
         return None
 
@@ -4789,8 +4792,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     x = XTEMP(NV3)
                     y = YTEMP(NV3)
                     for K in range(1, KK):
-                        if (abs(x - XTEMP(K)) > 2.0): continue
-                        if (abs(y - YTEMP(K)) > 2.0): continue
+                        if (abs(x - XTEMP[K]) > 2.0): continue
+                        if (abs(y - YTEMP[K]) > 2.0): continue
                         NV3 = KK
                         break # K DO loop
         
@@ -4881,18 +4884,18 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # for (int E = 1 E <= NV2 ++E, ++l):
         for E in range(1, NV2+1):
             for P in range(1, NVOUT+1):
-                XTEMP1(P) = XTEMP(P)
-                YTEMP1(P) = YTEMP(P)
+                XTEMP1[P] = XTEMP[P]
+                YTEMP1[P] = YTEMP[P]
 
             S = NVOUT
             HCA_E = HCA[l]
             HCB_E = HCB[l]
             HCC_E = HCC[l]
-            XTEMP1_S = XTEMP1(S)
-            YTEMP1_S = YTEMP1(S)
+            XTEMP1_S = XTEMP1[S]
+            YTEMP1_S = YTEMP1[S]
             for P in range(1, NVOUT+1):
-                XTEMP1_P = XTEMP1(P)
-                YTEMP1_P = YTEMP1(P)
+                XTEMP1_P = XTEMP1[P]
+                YTEMP1_P = YTEMP1[P]
                 HFunct = XTEMP1_P * HCA_E + YTEMP1_P * HCB_E + HCC_E
                 # S is constant within this block
 
@@ -4904,9 +4907,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # Find/store the intersection of the clip edge and the line connecting S and P
                         KK = NVTEMP
                         NVTEMP += 1
-                        ATEMP_S = ATEMP(S)
-                        BTEMP_S = BTEMP(S)
-                        CTEMP_S = CTEMP(S)
+                        ATEMP_S = ATEMP[S]
+                        BTEMP_S = BTEMP[S]
+                        CTEMP_S = CTEMP[S]
                         W = HCB_E * ATEMP_S - HCA_E * BTEMP_S
                         
                         if (W != 0.0):
@@ -4924,8 +4927,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                                 x = XTEMP(NVTEMP)
                                 y = YTEMP(NVTEMP)
                                 for K in range(1, KK+1):
-                                    if (abs(x - XTEMP(K)) > 2.0): continue
-                                    if (abs(y - YTEMP(K)) > 2.0): continue
+                                    if (abs(x - XTEMP[K]) > 2.0): continue
+                                    if (abs(y - YTEMP[K]) > 2.0): continue
                                     NVTEMP = KK
                                     break # K loop
 
@@ -4951,8 +4954,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                             x = XTEMP(NVTEMP)
                             y = YTEMP(NVTEMP)
                             for K in range(1, KK+1):
-                                if (abs(x - XTEMP(K)) > 2.0): continue
-                                if (abs(y - YTEMP(K)) > 2.0): continue
+                                if (abs(x - XTEMP[K]) > 2.0): continue
+                                if (abs(y - YTEMP[K]) > 2.0): continue
                                 NVTEMP = KK
                                 break # K loop
 
@@ -4965,9 +4968,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # avoid assigning to element outside of XTEMP array size
                             KK = NVTEMP
                             NVTEMP += 1
-                            ATEMP_S = ATEMP(S)
-                            BTEMP_S = BTEMP(S)
-                            CTEMP_S = CTEMP(S)
+                            ATEMP_S = ATEMP[S]
+                            BTEMP_S = BTEMP[S]
+                            CTEMP_S = CTEMP[S]
                             W = HCB_E * ATEMP_S - HCA_E * BTEMP_S
 
                             if (W != 0.0):
@@ -4985,8 +4988,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                                     x = XTEMP(NVTEMP)
                                     y = YTEMP(NVTEMP)
                                     for K in range(1, KK+1):
-                                        if (abs(x - XTEMP(K)) > 2.0): continue
-                                        if (abs(y - YTEMP(K)) > 2.0): continue
+                                        if (abs(x - XTEMP[K]) > 2.0): continue
+                                        if (abs(y - YTEMP[K]) > 2.0): continue
                                         NVTEMP = KK
                                         break # K loop
 
@@ -5003,23 +5006,23 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
             if (E != NV2):
                 if (NVOUT > 2): # Compute HC values for edges of output polygon
-                    X_1 = XTEMP(1)
-                    Y_1 = YTEMP(1)
-                    X_P(X_1) = X_P1 # não sei se está certo
-                    Y_P(Y_1) = Y_P1 # não sei se está certo
+                    X_1 = XTEMP[1]
+                    Y_1 = YTEMP[1]
+                    X_P[X_1] = X_P1 # não sei se está certo
+                    Y_P[Y_1] = Y_P1 # não sei se está certo
                     
                     for P in range(1, NVOUT):
-                        X_P1 = XTEMP(P + 1)
-                        Y_P1 = YTEMP(P + 1)
-                        ATEMP(P) = Y_P - Y_P1
-                        BTEMP(P) = X_P1 - X_P
-                        CTEMP(P) = X_P * Y_P1 - Y_P * X_P1
+                        X_P1 = XTEMP[P + 1]
+                        Y_P1 = YTEMP[P + 1]
+                        ATEMP[P] = Y_P - Y_P1
+                        BTEMP[P] = X_P1 - X_P
+                        CTEMP[P] = X_P * Y_P1 - Y_P * X_P1
                         X_P = X_P1
                         Y_P = Y_P1
                     
-                    ATEMP(NVOUT) = Y_P1 - Y_1
-                    BTEMP(NVOUT) = X_1 - X_P1
-                    CTEMP(NVOUT) = X_P1 * Y_1 - Y_P1 * X_1
+                    ATEMP[NVOUT] = Y_P1 - Y_1
+                    BTEMP[NVOUT] = X_1 - X_P1
+                    CTEMP[NVOUT] = X_P1 * Y_1 - Y_P1 * X_1
 
         # end loop over edges in NS2
         NV3 = NVOUT
@@ -5154,33 +5157,33 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             FirstTimeFlag = False
 
         # Determine left-most vertex.
-        XMIN = XTEMP(1)
-        YXMIN = YTEMP(1)
+        XMIN = XTEMP[1]
+        YXMIN = YTEMP[1]
         for N in range(2, NV3+1):
-            if (XTEMP(N) >= XMIN): continue # QUAL O SENTIDO DISSO?
-            XMIN = XTEMP(N)
-            YXMIN = YTEMP(N)
+            if (XTEMP[N] >= XMIN): continue # QUAL O SENTIDO DISSO?
+            XMIN = XTEMP[N]
+            YXMIN = YTEMP[N]
 
         # Determine slopes from left-most vertex to all others.
         # Identify first and second or last points as they occur.
         P = 1
         M = 0
         for N in range(1, NV3+1):
-            DELTAX = XTEMP(N) - XMIN
-            DELTAY = YTEMP(N) - YXMIN
+            DELTAX = XTEMP[N] - XMIN
+            DELTAY = YTEMP[N] - YXMIN
 
             if (abs(DELTAX) > 0.5):
                 M += 1
-                SLOPE(M) = DELTAY / DELTAX
-                XTEMP(M) = XTEMP(N)
-                YTEMP(M) = YTEMP(N)
+                SLOPE[M] = DELTAY / DELTAX
+                XTEMP[M] = XTEMP[N]
+                YTEMP[M] = YTEMP[N]
             elif (DELTAY > 0.5):
                 P = 2
-                HCX(NS3, 2) = nint64(XTEMP(N))
-                HCY(NS3, 2) = nint64(YTEMP(N))
+                HCX(NS3, 2) = nint64(XTEMP[N])
+                HCY(NS3, 2) = nint64(YTEMP[N])
             elif (DELTAY < -0.5):
-                HCX(NS3, NV3) = nint64(XTEMP(N))
-                HCY(NS3, NV3) = nint64(YTEMP(N))
+                HCX(NS3, NV3) = nint64(XTEMP[N])
+                HCY(NS3, NV3) = nint64(YTEMP[N])
             else:
                 HCX(NS3, 1) = nint64(XMIN)
                 HCY(NS3, 1) = nint64(YXMIN)
@@ -5191,22 +5194,22 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             for I in range(2, M+1):
                 IM1 = I - 1
                 for J in range(1, IM1+1):
-                    if (SLOPE(I) <= SLOPE(J)): continue # QUAL O SENTIDO DISSO?
-                    SAVEX = XTEMP(I)
-                    SAVEY = YTEMP(I)
-                    SAVES = SLOPE(I)
-                    XTEMP(I) = XTEMP(J)
-                    YTEMP(I) = YTEMP(J)
-                    SLOPE(I) = SLOPE(J)
-                    XTEMP(J) = SAVEX
-                    YTEMP(J) = SAVEY
-                    SLOPE(J) = SAVES
+                    if (SLOPE[I] <= SLOPE[J]): continue # QUAL O SENTIDO DISSO?
+                    SAVEX = XTEMP[I]
+                    SAVEY = YTEMP[I]
+                    SAVES = SLOPE[I]
+                    XTEMP[I] = XTEMP[J]
+                    YTEMP[I] = YTEMP[J]
+                    SLOPE[I] = SLOPE[J]
+                    XTEMP[J] = SAVEX
+                    YTEMP[J] = SAVEY
+                    SLOPE[J] = SAVES
 
         # Place sequenced points in the homogeneous coordinate arrays.
 
         for N in range(1, M+1):
-            HCX(NS3, N + P) = nint64(XTEMP(N))
-            HCY(NS3, N + P) = nint64(YTEMP(N))
+            HCX(NS3, N + P) = nint64(XTEMP[N])
+            HCY(NS3, N + P) = nint64(YTEMP[N])
         
         return None
 
@@ -5324,8 +5327,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 l(HCX.index(NS3, 1))
                 # for (N = 1 N <= NV3 ++N, ++l):
                 for N in range(1, NV3+1):
-                    HCX[l] = nint64(XTEMP(N)) # [ l ] == ( N, NS3 )
-                    HCY[l] = nint64(YTEMP(N))
+                    HCX[l] = nint64(XTEMP[N]) # [ l ] == ( N, NS3 )
+                    HCY[l] = nint64(YTEMP[N])
                     l += 1
 
             HTRANS0(NS3, NV3) # Determine h.c. values of sides.
@@ -5832,13 +5835,13 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 # Re-order its vertices to clockwise sequential.
                 for N in range(1, NVT+1):
-                    XVS(N) = XVT(NVT + 1 - N)
-                    YVS(N) = YVT(NVT + 1 - N)
+                    XVS[N] = XVT(NVT + 1 - N)
+                    YVS[N] = YVT(NVT + 1 - N)
 
                 HTRANS1(1, NVT) # Transform to homogeneous coordinates.
 
-                HCAREA(1) = -HCAREA(1) # Compute (+) gross surface area.
-                HCT(1) = 1.0
+                HCAREA(1) =- HCAREA(1) # Compute (+) gross surface area.
+                HCT[1] = 1.0
 
                 SHDGSS(NGRS, iHour, TS, GRSNR, NGSS, HTS) # Determine shadowing on surface.
                 if (not CalcSkyDifShading):
@@ -5967,7 +5970,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     if (surface.Zone != 0):
                         continue # Disable all shadowing surfaces in all zones. Attached shading surfaces are not part of a zone, zone value is 0.
                 elif (DisableGroupSelfShading):
-                    std::vector<int> DisabledZones = Surface(CurSurf).DisabledShadowingZoneList
+                    DisabledZones = Surface(CurSurf).DisabledShadowingZoneList
                     isDisabledShadowSurf = False
                     # for (int i : DisabledZones):
                     for i in range(DisabledZones): # isso?
@@ -5991,8 +5994,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     _YV = ShadeV(GSSNR).YV
                     _ZV = ShadeV(GSSNR).ZV
                     for N in range(1, NVS+1):
-                        XVS(N) = XV(N) - XShadowProjection * ZV(N)
-                        YVS(N) = YV(N) - YShadowProjection * ZV(N)
+                        XVS[N] = XV[N] - XShadowProjection * ZV[N]
+                        YVS[N] = YV[N] - YShadowProjection * ZV[N]
                 else:
                     # Transform coordinates of shadow casting surface from general system to the system relative to the receiving surface
                     NVT = 0
@@ -6006,8 +6009,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                     # become clockwise sequential
 
                     for N in range(1, NumVertInShadowOrClippedSurface+1):
-                        XVS(N) = XVC(N) - XShadowProjection * ZVC(N)
-                        YVS(N) = YVC(N) - YShadowProjection * ZVC(N)
+                        XVS[N] = XVC[N] - XShadowProjection * ZVC[N]
+                        YVS[N] = YVC[N] - YShadowProjection * ZVC[N]
 
                 # Transform to the homogeneous coordinate system.
                 NS3 = LOCHCA + 1
@@ -6090,17 +6093,17 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 # Call UnionShadow(FGSSHC,LOCHCA)
                 NGSSHC = LOCHCA - FGSSHC + 1
                 if (NGSSHC <= 0):
-                    SAREA(HTS) = HCAREA(1) # Surface fully sunlit
+                    SAREA[HTS] = HCAREA[1] # Surface fully sunlit
                 else:
-                    A = HCAREA(1) # Area
+                    A = HCAREA[1] # Area
                     # for (int i = FGSSHC, e = FGSSHC + NGSSHC - 1 i <= e ++i):
                     e = FGSSHC + NGSSHC - 1
                     for i in range(FGSSHC, e+1):
-                        A += HCAREA(i) * (1.0 - HCT(i))
+                        A += HCAREA[i] * (1.0 - HCT[i])
 
-                    SAREA(HTS) = A
-                    if (SAREA(HTS) <= 0.0) # Surface fully shaded
-                        SAREA(HTS) = 0.0
+                    SAREA[HTS] = A
+                    if (SAREA[HTS] <= 0.0) # Surface fully shaded
+                        SAREA[HTS] = 0.0
                         LOCHCA = FGSSHC
 
         NGSSHC = LOCHCA - FGSSHC + 1
@@ -6196,12 +6199,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 #  Compute Period Values
                 AvgSinSolarDeclin = SumDec / double(ShadowingDaysLeft)
-                AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
+                AvgCosSolarDeclin = math.sqrt(1.0 - pow_2(AvgSinSolarDeclin))
                 AvgEqOfTime = SumET / double(ShadowingDaysLeft)
             
             else:
                 # SUN3(DayOfYear, AvgSinSolarDeclin, AvgEqOfTime)
-                AvgCosSolarDeclin = std::sqrt(1.0 - pow_2(AvgSinSolarDeclin))
+                AvgCosSolarDeclin = math.sqrt(1.0 - pow_2(AvgSinSolarDeclin))
                 # trigger display of progress in the simulation every two weeks
                 if (not WarmupFlag and BeginDayFlag and (DayOfSim % 14 == 0)):
                     DisplayPerfSimulationFlag = True
