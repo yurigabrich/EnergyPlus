@@ -99,7 +99,7 @@ class ExternalFunctions:
     '''
 
     # DataShadowingCombinations.cc
-    ShadowComb = pd.Series()
+    ShadowComb = pd.DataFrame()
 
     # DataHeatBalance.hh
     ZoneListData_ = namedtuple('ZoneListData', ['Name', 'NumOfZones', 'MaxZoneNameLength', 'Zone'])
@@ -4163,26 +4163,26 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 # ...end of surfaces DO loop (BackSurfaceNumber)
 
             # Put this into the ShadowComb data structure
-            ShadowComb(GRSNR).UseThisSurf = True
-            ShadowComb(GRSNR).NumGenSurf = NGSS
-            ShadowComb(GRSNR).NumBackSurf = NBKS
-            ShadowComb(GRSNR).NumSubSurf = NSBS
+            ShadowComb.loc[GRSNR, 'UseThisSurf'] = True
+            ShadowComb.loc[GRSNR, 'NumGenSurf'] = NGSS
+            ShadowComb.loc[GRSNR, 'NumBackSurf'] = NBKS
+            ShadowComb.loc[GRSNR, 'NumSubSurf'] = NSBS
             MaxDim = max(MaxDim, NGSS, NBKS, NSBS)
 
-            ShadowComb(GRSNR).GenSurf.allocate({0, ShadowComb(GRSNR).NumGenSurf})
-            ShadowComb(GRSNR).GenSurf(0) = 0
-            if (ShadowComb(GRSNR).NumGenSurf > 0):
-                ShadowComb(GRSNR).GenSurf({1, ShadowComb(GRSNR).NumGenSurf}) = GSS({1, NGSS})
+            ShadowComb.iloc[GRSNR, GenSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumGenSurf']})]
+            ShadowComb.iloc[GRSNR, GenSurf(0)] = 0
+            if (ShadowComb.loc[GRSNR, 'NumGenSurf'] > 0):
+                ShadowComb.iloc[GRSNR, GenSurf({1, ShadowComb.loc[GRSNR, 'NumGenSurf']})] = GSS({1, NGSS})
 
-            ShadowComb(GRSNR).BackSurf.allocate({0, ShadowComb(GRSNR).NumBackSurf})
-            ShadowComb(GRSNR).BackSurf(0) = 0
-            if (ShadowComb(GRSNR).NumBackSurf > 0):
-                ShadowComb(GRSNR).BackSurf({1, ShadowComb(GRSNR).NumBackSurf}) = BKS({1, NBKS})
+            ShadowComb.iloc[GRSNR, BackSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumBackSurf']})]
+            ShadowComb.iloc[GRSNR, BackSurf(0)] = 0
+            if (ShadowComb.loc[GRSNR, 'NumBackSurf'] > 0):
+                ShadowComb.iloc[GRSNR, BackSurf({1, ShadowComb.loc[GRSNR, 'NumBackSurf']})] = BKS({1, NBKS})
 
-            ShadowComb(GRSNR).SubSurf.allocate({0, ShadowComb(GRSNR).NumSubSurf})
-            ShadowComb(GRSNR).SubSurf(0) = 0
-            if (ShadowComb(GRSNR).NumSubSurf > 0):
-                ShadowComb(GRSNR).SubSurf({1, ShadowComb(GRSNR).NumSubSurf}) = SBS({1, NSBS})
+            ShadowComb.iloc[GRSNR, SubSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumSubSurf']})]
+            ShadowComb.iloc[GRSNR, SubSurf(0)] = 0
+            if (ShadowComb.loc[GRSNR, 'NumSubSurf'] > 0):
+                ShadowComb.iloc[GRSNR, SubSurf({1, ShadowComb.loc[GRSNR, 'NumSubSurf']})] = SBS({1, NSBS})
 
         # ...end of surfaces (GRSNR) DO loop
 
@@ -4213,12 +4213,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         for HTS in range(1, TotSurfaces+1):
             print("==================================\n")
-            if (ShadowComb(HTS).UseThisSurf):
+            if (ShadowComb.loc[HTS, 'UseThisSurf']):
                 if (Surface(HTS).IsConvex):
                     print("Surface={} is used as Receiving Surface in calculations and is convex.\n".format(Surface(HTS).Name))
                 else:
                     print("Surface={} is used as Receiving Surface in calculations and is non-convex.\n".format(Surface(HTS).Name))
-                    if (ShadowComb(HTS).NumGenSurf > 0):
+                    if (ShadowComb.loc[HTS, 'NumGenSurf'] > 0):
                         if (DisplayExtraWarnings):
                             raise RuntimeWarning("DetermineShadowingCombinations: Surface={} is a receiving surface and is non-convex.".format(Surface(HTS).Name))
                             raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
@@ -4227,25 +4227,25 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             else:
                 print("Surface={} is not used as Receiving Surface in calculations.\n".format(Surface(HTS).Name))
             
-            print("Number of general casting surfaces={}\n".format(ShadowComb(HTS).NumGenSurf))
-            for NGSS in range(1, ShadowComb(HTS).NumGenSurf+1):
+            print("Number of general casting surfaces={}\n".format(ShadowComb.loc[HTS, 'NumGenSurf']))
+            for NGSS in range(1, ShadowComb.loc[HTS, 'NumGenSurf'] + 1 ):
                 if (NGSS <= 10):
-                    print("..Surface={}\n".format(Surface(ShadowComb(HTS).GenSurf(NGSS)).Name))
+                    print("..Surface={}\n".format(Surface(ShadowComb.loc[HTS, GenSurf(NGSS).Name])))
 
-                CastingSurface(ShadowComb(HTS).GenSurf(NGSS)) = True
+                CastingSurface(ShadowComb.iloc[HTS, GenSurf(NGSS)]) = True
 
-            print("Number of back surfaces=" << ShadowComb(HTS).NumBackSurf << '\n')
-            for NGSS in range(1, min(10, ShadowComb(HTS).NumBackSurf)+1):
-                print("...Surface={}\n".format(Surface(ShadowComb(HTS).BackSurf(NGSS)).Name))
+            print("Number of back surfaces={}\n".format(ShadowComb.loc[HTS, 'NumBackSurf']))
+            for NGSS in range(1, min(10, ShadowComb.loc[HTS, 'NumBackSurf']) + 1):
+                print("...Surface={}\n".format(Surface(ShadowComb.loc[HTS, BackSurf(NGSS).Name])))
             
-            print("Number of receiving sub surfaces={}\n".format(ShadowComb(HTS).NumSubSurf))
-            for NGSS in range(1, min(10, ShadowComb(HTS).NumSubSurf)+1):
-                print("....Surface={}\n".format(Surface(ShadowComb(HTS).SubSurf(NGSS)).Name))
+            print("Number of receiving sub surfaces={}\n".format(ShadowComb.loc[HTS, 'NumSubSurf']))
+            for NGSS in range(1, min(10, ShadowComb.loc[HTS, 'NumSubSurf']) + 1):
+                print("....Surface={}\n".format(Surface(ShadowComb.loc[HTS, SubSurf(NGSS).Name])))
 
         for HTS in range(1, TotSurfaces+1):
             if (CastingSurface(HTS) and not Surface(HTS).IsConvex):
                 if (DisplayExtraWarnings):
-                    ShowSevereError("DetermineShadowingCombinations: Surface={} is a casting surface and is non-convex.".format(Surface(HTS).Name))
+                    ShowSevereError("DetermineShadowingCombinations: Surface={} is a casting surface and is non-convex.".format(Surface(HTS,Name)))
                     raise RuntimeError("...Shadowing values may be inaccurate. Check .shd report file for more surface shading details")
                 else:
                     ++TotalCastingNonConvexSurfaces
@@ -5789,16 +5789,16 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         for GRSNR in range(1, TotSurfaces+1):
 
-            if (not ShadowComb(GRSNR).UseThisSurf): continue
+            if (not ShadowComb.loc[GRSNR, 'UseThisSurf']): continue
 
             SAREA(GRSNR) = 0.0
 
             NZ = Surface(GRSNR).Zone
-            NGSS = ShadowComb(GRSNR).NumGenSurf
+            NGSS = ShadowComb.loc[GRSNR, 'NumGenSurf']
             NGSSHC = 0
-            NBKS = ShadowComb(GRSNR).NumBackSurf
+            NBKS = ShadowComb.loc[GRSNR, 'NumBackSurf']
             NBKSHC = 0
-            NSBS = ShadowComb(GRSNR).NumSubSurf
+            NSBS = ShadowComb.loc[GRSNR, 'NumSubSurf']
             NRVLHC = 0
             NSBSHC = 0
             LOCHCA = 1
@@ -5934,7 +5934,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             SAREA(HTS) = HCAREA(1) # Surface fully sunlit
         else:
             ExitLoopStatus = -1
-            _GenSurf = ShadowComb(CurSurf).GenSurf
+            _GenSurf = ShadowComb.loc[CurSurf, 'GenSurf']
             sunIsUp = SunIsUpValue
             
             # Loop through all shadowing surfaces...
