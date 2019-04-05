@@ -80,8 +80,9 @@ class ExternalFunctions:
     outputShdFileName = 'eplusout.shd'     # file to save the simulations result
 
     # DataShadowingCombinations.hh
-    ShadowingCombinations_ = namedtuple('ShadowingCombinations_', ['UseThisSurf', 'NumGenSurf', 'GenSurf', 'NumBackSurf', 'BackSurf', 'NumSubSurf', 'SubSurf'])
-    ShadowingCombinations = ShadowingCombinations_(UseThisSurf=False, NumGenSurf=0, GenSurf=pd.Series(), NumBackSurf=0, BackSurf=pd.Series(), NumSubSurf=0, SubSurf=pd.Series())
+    ShadowingCombinations = pd.DataFrame( {'UseThisSurf':False, 'NumGenSurf':0, 'GenSurf':pd.Series(), 'NumBackSurf':0, 'BackSurf':pd.Series(), 'NumSubSurf':0, 'SubSurf':pd.Series()} )
+    # ShadowingCombinations_ = namedtuple('ShadowingCombinations_', ['UseThisSurf', 'NumGenSurf', 'GenSurf', 'NumBackSurf', 'BackSurf', 'NumSubSurf', 'SubSurf'])
+    # ShadowingCombinations = ShadowingCombinations_(UseThisSurf=False, NumGenSurf=0, GenSurf=pd.Series(), NumBackSurf=0, BackSurf=pd.Series(), NumSubSurf=0, SubSurf=pd.Series())
     '''
         // Members
         bool UseThisSurf;     // True when this surface should be used in calculations
@@ -99,7 +100,7 @@ class ExternalFunctions:
     '''
 
     # DataShadowingCombinations.cc
-    ShadowComb = pd.DataFrame()
+    # ShadowComb = pd.DataFrame() # defined when called by the function
 
     # DataHeatBalance.hh
     ZoneListData_ = namedtuple('ZoneListData', ['Name', 'NumOfZones', 'MaxZoneNameLength', 'Zone'])
@@ -1311,7 +1312,7 @@ class ExternalFunctions:
         ErrorsFound = False
 
         if (CheckTDDs_firstTime):
-            CheckTDDZone.dimension(NumOfZones, true);
+            CheckTDDZone.dimension(NumOfZones, True);
             CheckTDDs_firstTime = False
 
         for PipeNum in range(1, NumOfTDDPipes+1):
@@ -2103,9 +2104,9 @@ class ExternalFunctions:
             # Used in calculating daylighting through interior windows.
             # CalcMinIntWinSolidAngs()
 
-            TDDTransVisBeam.allocate(24, NumOfTDDPipes)
-            TDDFluxInc.allocate(24, 4, NumOfTDDPipes)
-            TDDFluxTrans.allocate(24, 4, NumOfTDDPipes)
+            # TDDTransVisBeam.allocate(24, NumOfTDDPipes)
+            # TDDFluxInc.allocate(24, 4, NumOfTDDPipes)
+            # TDDFluxTrans.allocate(24, 4, NumOfTDDPipes)
 
             # Warning if detailed daylighting has been requested for a zone with no associated exterior windows.
             for ZoneNum in range(1, NumOfZones+1):
@@ -3994,7 +3995,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # ++NumDetShadowCombs_Calls
         #endif
 
-        ShadowComb.dimension(TotSurfaces, ShadowingCombinations()) # Set all elements to default constructed state
+        # ShadowComb.dimension(TotSurfaces, ShadowingCombinations()) # Set all elements to default constructed state
+        ShadowComb = ShadowingCombinations # a DF with same attributes of ShadowingCombinations
 
         CastingSurface.dimension(TotSurfaces, False)
 
@@ -4169,17 +4171,17 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             ShadowComb.loc[GRSNR, 'NumSubSurf'] = NSBS
             MaxDim = max(MaxDim, NGSS, NBKS, NSBS)
 
-            ShadowComb.iloc[GRSNR, GenSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumGenSurf']})]
+            # ShadowComb.iloc[GRSNR, GenSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumGenSurf']})]
             ShadowComb.iloc[GRSNR, GenSurf(0)] = 0
             if (ShadowComb.loc[GRSNR, 'NumGenSurf'] > 0):
                 ShadowComb.iloc[GRSNR, GenSurf({1, ShadowComb.loc[GRSNR, 'NumGenSurf']})] = GSS({1, NGSS})
 
-            ShadowComb.iloc[GRSNR, BackSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumBackSurf']})]
+            # ShadowComb.iloc[GRSNR, BackSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumBackSurf']})]
             ShadowComb.iloc[GRSNR, BackSurf(0)] = 0
             if (ShadowComb.loc[GRSNR, 'NumBackSurf'] > 0):
                 ShadowComb.iloc[GRSNR, BackSurf({1, ShadowComb.loc[GRSNR, 'NumBackSurf']})] = BKS({1, NBKS})
 
-            ShadowComb.iloc[GRSNR, SubSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumSubSurf']})]
+            # ShadowComb.iloc[GRSNR, SubSurf.allocate({0, ShadowComb.loc[GRSNR, 'NumSubSurf']})]
             ShadowComb.iloc[GRSNR, SubSurf(0)] = 0
             if (ShadowComb.loc[GRSNR, 'NumSubSurf'] > 0):
                 ShadowComb.iloc[GRSNR, SubSurf({1, ShadowComb.loc[GRSNR, 'NumSubSurf']})] = SBS({1, NSBS})
@@ -4565,7 +4567,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             HCY_m = HCY[m]
             HCA[l] = HCY_l - HCY_m
             HCB[l] = HCX_m - HCX_l
-            SUM += HCC[l] = (HCY_m * HCX_l) - (HCX_m * HCY_l)
+            # SUM += HCC[l] = (HCY_m * HCX_l) - (HCX_m * HCY_l)
+            SUM += HCC[l] + (HCY_m * HCX_l) - (HCX_m * HCY_l) # será que é isso?
 
         HCAREA(NS) = SUM * sqHCMULT_fac
 
@@ -5153,7 +5156,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         FirstTimeFlag = True
 
         if (FirstTimeFlag):
-            SLOPE.allocate(max(10, MaxVerticesPerSurface + 1))
+            # SLOPE.allocate(max(10, MaxVerticesPerSurface + 1))
             FirstTimeFlag = False
 
         # Determine left-most vertex.
@@ -5770,9 +5773,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         # For windows, includes divider area
 
         if (OneTimeFlag):
-            XVT.allocate(MaxVerticesPerSurface + 1)
-            YVT.allocate(MaxVerticesPerSurface + 1)
-            ZVT.allocate(MaxVerticesPerSurface + 1)
+            # XVT.allocate(MaxVerticesPerSurface + 1)
+            # YVT.allocate(MaxVerticesPerSurface + 1)
+            # ZVT.allocate(MaxVerticesPerSurface + 1)
             XVT = 0.0
             YVT = 0.0
             ZVT = 0.0
@@ -6460,8 +6463,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         WoShdgIsoSky.dimension(TotSurfaces, 0.0)
         WithShdgHoriz.dimension(TotSurfaces, 0.0)
         WoShdgHoriz.dimension(TotSurfaces, 0.0)
-        DifShdgRatioIsoSky.allocate(TotSurfaces)
-        DifShdgRatioHoriz.allocate(TotSurfaces)
+        # DifShdgRatioIsoSky.allocate(TotSurfaces)
+        # DifShdgRatioHoriz.allocate(TotSurfaces)
         # initialized as no shading
         DifShdgRatioIsoSky = 1.0
         DifShdgRatioHoriz = 1.0
@@ -6470,9 +6473,9 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         
         # only for detailed.
         if (DetailedSkyDiffuseAlgorithm and ShadingTransmittanceVaries and SolarDistribution != MinimalShadowing):
-            DifShdgRatioIsoSkyHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
+            # DifShdgRatioIsoSkyHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
             DifShdgRatioIsoSkyHRTS = 1.0
-            DifShdgRatioHorizHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
+            # DifShdgRatioHorizHRTS.allocate(NumOfTimeStepInHour, 24, TotSurfaces)
             DifShdgRatioHorizHRTS = 1.0
         
         for SurfNum in range(1, TotSurfaces+1): # SurfNum <= TotSurfaces == SurfNum = TotSurfaces
