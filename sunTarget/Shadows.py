@@ -740,6 +740,8 @@ class ExternalFunctions:
     cNumericFieldNames = pd.Series()
     lNumericFieldBlanks = pd.Series()
     lAlphaFieldBlanks = pd.Series()
+    rNumericArgs = pd.Series()
+    cAlphaArgs = pd.Series()
 
     # DataEnvironment.cc
     SunIsUpValue = 0.00001                  # if Cos Zenith Angle of the sun is >= this value, the sun is "up"
@@ -1949,9 +1951,9 @@ class ExternalFunctions:
                                           lAlphaFieldBlanks,
                                           cAlphaFieldNames,
                                           cNumericFieldNames);
-            if (has_prefix(cAlphaArgs(1), "SIZINGDAYS")):
+            if (has_prefix(cAlphaArgs[1], "SIZINGDAYS")):
                 DFSReportSizingDays = True
-            elif (has_prefix(cAlphaArgs(1), "ALLSHADOWCALCULATIONDAYS")):
+            elif (has_prefix(cAlphaArgs[1], "ALLSHADOWCALCULATIONDAYS")):
                 DFSReportAllShadowCalculationDays = True
 
         if (ErrorsFound):
@@ -3392,8 +3394,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         Found = 0
 
         rNumericArgs({1, 4}) = 0.0 # so if nothing gotten, defaults will be maintained.
-        cAlphaArgs(1) = ""
-        cAlphaArgs(2) = ""
+        cAlphaArgs[1] = ""
+        cAlphaArgs[2] = ""
         cCurrentModuleObject = "ShadowCalculation"
         NumItems = inputProcessor.getNumObjectsFound(cCurrentModuleObject)
         NumAlphas = 0
@@ -3413,7 +3415,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                                           lAlphaFieldBlanks,
                                           cAlphaFieldNames,
                                           cNumericFieldNames)
-            ShadowingCalcFrequency = rNumericArgs(1)
+            ShadowingCalcFrequency = rNumericArgs[1]
 
         if (ShadowingCalcFrequency <= 0):
             # Set to default value
@@ -3421,106 +3423,106 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
         if (ShadowingCalcFrequency > 31):
             ShowWarningError(cCurrentModuleObject + ": suspect " + cNumericFieldNames(1))
-            ShowContinueError("Value entered=[" + RoundSigDigits(rNumericArgs(1), 0) + "], Shadowing Calculations will be inaccurate.")
+            ShowContinueError("Value entered=[" + RoundSigDigits(rNumericArgs[1], 0) + "], Shadowing Calculations will be inaccurate.")
 
-        if (rNumericArgs(2) > 199.0):
-            MaxHCS = rNumericArgs(2)
+        if (rNumericArgs[2] > 199.0):
+            MaxHCS = rNumericArgs[2]
         else:
             MaxHCS = 15000
 
         if (NumAlphas >= 1):
-            if (cAlphaArgs(1) == "AverageOverDaysInFrequency"):
+            if (cAlphaArgs[1] == "AverageOverDaysInFrequency"):
                 DetailedSolarTimestepIntegration = False
-                cAlphaArgs(1) = "AverageOverDaysInFrequency"
-            elif (cAlphaArgs(1) == "TimestepFrequency"):
+                cAlphaArgs[1] = "AverageOverDaysInFrequency"
+            elif (cAlphaArgs[1] == "TimestepFrequency"):
                 DetailedSolarTimestepIntegration = True
-                cAlphaArgs(1) = "TimestepFrequency"
+                cAlphaArgs[1] = "TimestepFrequency"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(1))
-                ShowContinueError("Value entered=\"" + cAlphaArgs(1) + "\", AverageOverDaysInFrequency will be used.")
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[1])
+                ShowContinueError("Value entered=\"" + cAlphaArgs[1] + "\", AverageOverDaysInFrequency will be used.")
                 DetailedSolarTimestepIntegration = False
-                cAlphaArgs(1) = "AverageOverDaysInFrequency"
+                cAlphaArgs[1] = "AverageOverDaysInFrequency"
         else:
             DetailedSolarTimestepIntegration = False
-            cAlphaArgs(1) = "AverageOverDaysInFrequency"
+            cAlphaArgs[1] = "AverageOverDaysInFrequency"
 
         if (NumAlphas >= 2):
-            if (cAlphaArgs(2) == "SutherlandHodgman"):
+            if (cAlphaArgs[2] == "SutherlandHodgman"):
                 SutherlandHodgman = True
-                cAlphaArgs(2) = "SutherlandHodgman"
-            elif (cAlphaArgs(2) == "ConvexWeilerAtherton"):
+                cAlphaArgs[2] = "SutherlandHodgman"
+            elif (cAlphaArgs[2] == "ConvexWeilerAtherton"):
                 SutherlandHodgman = False
-                cAlphaArgs(2) = "ConvexWeilerAtherton"
-            elif (lAlphaFieldBlanks(2)):
+                cAlphaArgs[2] = "ConvexWeilerAtherton"
+            elif (lAlphaFieldBlanks[2]):
                 if (not SutherlandHodgman): # if already set.
-                    cAlphaArgs(2) = "ConvexWeilerAtherton"
+                    cAlphaArgs[2] = "ConvexWeilerAtherton"
                 else:
-                    cAlphaArgs(2) = "SutherlandHodgman"
+                    cAlphaArgs[2] = "SutherlandHodgman"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(2))
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[2])
                 if (not SutherlandHodgman):
-                    ShowContinueError("Value entered=\"" + cAlphaArgs(2) + "\", ConvexWeilerAtherton will be used.")
+                    ShowContinueError("Value entered=\"" + cAlphaArgs[2] + "\", ConvexWeilerAtherton will be used.")
                 else:
-                    ShowContinueError("Value entered=\"" + cAlphaArgs(2) + "\", SutherlandHodgman will be used.")
+                    ShowContinueError("Value entered=\"" + cAlphaArgs[2] + "\", SutherlandHodgman will be used.")
         else:
             if (not SutherlandHodgman):
-                cAlphaArgs(2) = "ConvexWeilerAtherton"
+                cAlphaArgs[2] = "ConvexWeilerAtherton"
             else:
-                cAlphaArgs(2) = "SutherlandHodgman"
+                cAlphaArgs[2] = "SutherlandHodgman"
 
         if (NumAlphas >= 3):
-            if (cAlphaArgs(3) == "SimpleSkyDiffuseModeling"):
+            if (cAlphaArgs[3] == "SimpleSkyDiffuseModeling"):
                 DetailedSkyDiffuseAlgorithm = False
-                cAlphaArgs(3) = "SimpleSkyDiffuseModeling"
-            elif (cAlphaArgs(3) == "DetailedSkyDiffuseModeling"):
+                cAlphaArgs[3] = "SimpleSkyDiffuseModeling"
+            elif (cAlphaArgs[3] == "DetailedSkyDiffuseModeling"):
                 DetailedSkyDiffuseAlgorithm = True
-                cAlphaArgs(3) = "DetailedSkyDiffuseModeling"
-            elif (lAlphaFieldBlanks(3)):
+                cAlphaArgs[3] = "DetailedSkyDiffuseModeling"
+            elif (lAlphaFieldBlanks[3]):
                 DetailedSkyDiffuseAlgorithm = False
-                cAlphaArgs(3) = "SimpleSkyDiffuseModeling"
+                cAlphaArgs[3] = "SimpleSkyDiffuseModeling"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(3))
-                ShowContinueError("Value entered=\"" + cAlphaArgs(3) + "\", SimpleSkyDiffuseModeling will be used.")
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[3])
+                ShowContinueError("Value entered=\"" + cAlphaArgs[3] + "\", SimpleSkyDiffuseModeling will be used.")
         else:
-            cAlphaArgs(3) = "SimpleSkyDiffuseModeling"
+            cAlphaArgs[3] = "SimpleSkyDiffuseModeling"
             DetailedSkyDiffuseAlgorithm = False
 
         if (NumAlphas >= 4):
-            if (cAlphaArgs(4) == "ScheduledShading"):
+            if (cAlphaArgs[4] == "ScheduledShading"):
                 UseScheduledSunlitFrac = True
-                cAlphaArgs(4) = "ScheduledShading"
-            elif (cAlphaArgs(4) == "ImportedShading"):
+                cAlphaArgs[4] = "ScheduledShading"
+            elif (cAlphaArgs[4] == "ImportedShading"):
                 if (ScheduleFileShadingProcessed):
                     UseImportedSunlitFrac = True
-                    cAlphaArgs(4) = "ImportedShading"
+                    cAlphaArgs[4] = "ImportedShading"
                 else:
-                    ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(4))
-                    ShowContinueError("Value entered=\"" + cAlphaArgs(4) +
+                    ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[4])
+                    ShowContinueError("Value entered=\"" + cAlphaArgs[4] +
                                       "\" while no Schedule:File:Shading object is defined, InternalCalculation will be used.")
-            elif (cAlphaArgs(4) == "InternalCalculation"):
+            elif (cAlphaArgs[4] == "InternalCalculation"):
                 UseScheduledSunlitFrac = False
                 UseImportedSunlitFrac = False
-                cAlphaArgs(4) = "InternalCalculation"
+                cAlphaArgs[4] = "InternalCalculation"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(4))
-                ShowContinueError("Value entered=\"" + cAlphaArgs(4) + "\", InternalCalculation will be used.")
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[4])
+                ShowContinueError("Value entered=\"" + cAlphaArgs[4] + "\", InternalCalculation will be used.")
         else:
-            cAlphaArgs(4) = "InternalCalculation"
+            cAlphaArgs[4] = "InternalCalculation"
             UseScheduledSunlitFrac = False
             UseImportedSunlitFrac = False
 
         if (NumAlphas >= 5):
-            if (cAlphaArgs(5) == "Yes"):
+            if (cAlphaArgs[5] == "Yes"):
                 ReportExtShadingSunlitFrac = True
-                cAlphaArgs(5) = "Yes"
-            elif (cAlphaArgs(5) == "No"):
+                cAlphaArgs[5] = "Yes"
+            elif (cAlphaArgs[5] == "No"):
                 ReportExtShadingSunlitFrac = False
-                cAlphaArgs(5) = "No"
+                cAlphaArgs[5] = "No"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(5))
-                ShowContinueError("Value entered=\"" + cAlphaArgs(5) + "\", InternalCalculation will be used.")
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[5])
+                ShowContinueError("Value entered=\"" + cAlphaArgs[5] + "\", InternalCalculation will be used.")
         else:
-            cAlphaArgs(5) = "No"
+            cAlphaArgs[5] = "No"
             ReportExtShadingSunlitFrac = False
 
         ExtShadingSchedNum = 0
@@ -3536,28 +3538,28 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         DisableSelfShadingBetweenGroup = False
 
         if (NumAlphas >= 6):
-            if (cAlphaArgs(6) == "Yes"):
+            if (cAlphaArgs[6] == "Yes"):
                 DisableSelfShadingWithinGroup = True
-                cAlphaArgs(6) = "Yes"
-            elif (cAlphaArgs(6) == "No"):
-                cAlphaArgs(6) = "No"
+                cAlphaArgs[6] = "Yes"
+            elif (cAlphaArgs[6] == "No"):
+                cAlphaArgs[6] = "No"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(6))
-                ShowContinueError("Value entered=\"" + cAlphaArgs(6) + "\", all shading effects would be considered.")
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[6])
+                ShowContinueError("Value entered=\"" + cAlphaArgs[6] + "\", all shading effects would be considered.")
         else:
-            cAlphaArgs(6) = "No"
+            cAlphaArgs[6] = "No"
 
         if (NumAlphas >= 7):
-            if (cAlphaArgs(7) == "Yes"):
+            if (cAlphaArgs[7] == "Yes"):
                 DisableSelfShadingBetweenGroup = True
-                cAlphaArgs(7) = "Yes"
-            elif (cAlphaArgs(7) == "No"):
-                cAlphaArgs(7) = "No"
+                cAlphaArgs[7] = "Yes"
+            elif (cAlphaArgs[7] == "No"):
+                cAlphaArgs[7] = "No"
             else:
-                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames(7))
-                ShowContinueError("Value entered=\"" + cAlphaArgs(7) + "\", all shading effects would be considered.")
+                ShowWarningError(cCurrentModuleObject + ": invalid " + cAlphaFieldNames[7])
+                ShowContinueError("Value entered=\"" + cAlphaArgs[7] + "\", all shading effects would be considered.")
         else:
-            cAlphaArgs(7) = "No"
+            cAlphaArgs[7] = "No"
 
         if (DisableSelfShadingBetweenGroup and DisableSelfShadingWithinGroup):
             DisableAllSelfShading = True
@@ -3574,8 +3576,8 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 NumOfShadingGroups = NumAlphas - 7
                 DisableSelfShadingGroups.append(NumOfShadingGroups)
                 for i in range(1, NumOfShadingGroups+1):
-                    Found = FindItemInList(cAlphaArgs(i + 7), ZoneList)
-                    if (Found != 0): DisableSelfShadingGroups(i) = Found
+                    Found = FindItemInList(cAlphaArgs[i + 7], ZoneList)
+                    if (Found != 0): DisableSelfShadingGroups[i] = Found
 
                 for SurfNum in range(1, TotSurfaces+1):
                     if (Surface(SurfNum).ExtBoundCond == 0): # Loop through all exterior surfaces
@@ -3584,7 +3586,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                         # Check the shading zone group of each exterior surface
                         for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
                             # Loop through all defined shading groups
-                            CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
+                            CurZoneGroup = DisableSelfShadingGroups[ZoneGroupLoop]
 
                             for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
                                 # Loop through all zones in the zone list
@@ -3598,7 +3600,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                             # if DisableSelfShadingBetweenGroups, add all zones in all other zone groups to the surface's disabled zone list
                             for ZoneGroupLoop in range(1, NumOfShadingGroups+1):
                                 # Loop through all defined shading groups
-                                CurZoneGroup = DisableSelfShadingGroups(ZoneGroupLoop)
+                                CurZoneGroup = DisableSelfShadingGroups[ZoneGroupLoop]
                                 if (SurfZoneGroup == CurZoneGroup and DisableSelfShadingWithinGroup):
                                     for ZoneNum in range(1, ZoneList(CurZoneGroup).NumOfZones + 1):
                                         # Loop through all zones in the zone list
@@ -3615,7 +3617,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                              "DetailedSkyDiffuseModeling in the " + cCurrentModuleObject + " object to remove this warning.")
             ShowContinueError("Simulation has been reset to use DetailedSkyDiffuseModeling. Simulation continues.")
             DetailedSkyDiffuseAlgorithm = True
-            cAlphaArgs(2) = "DetailedSkyDiffuseModeling"
+            cAlphaArgs[2] = "DetailedSkyDiffuseModeling"
             if (ShadowingCalcFrequency > 1):
                 ShowContinueError("Better accuracy may be gained by setting the " + cNumericFieldNames(1) + " to 1 in the " + cCurrentModuleObject + " object.")
 
@@ -3632,7 +3634,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         print("Algorithm, External Shading Calculation Method, Output External Shading Calculation Results, Disable ", end='')
         print("Self-Shading Within Shading Zone Groups, Disable Self-Shading From Shading Zone Groups to Other Zones")
         
-        print(fmtA, '\t', OutputFileInits, "\tShadowing/Sun Position Calculations Annual Simulations, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(cAlphaArgs(1), RoundSigDigits(ShadowingCalcFrequency), RoundSigDigits(MaxHCS), cAlphaArgs(2), cAlphaArgs(3), cAlphaArgs(4), cAlphaArgs(5), cAlphaArgs(6), cAlphaArgs(7)))
+        print(fmtA, '\t', OutputFileInits, "\tShadowing/Sun Position Calculations Annual Simulations, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(cAlphaArgs[1], RoundSigDigits(ShadowingCalcFrequency), RoundSigDigits(MaxHCS), cAlphaArgs[2], cAlphaArgs[3], cAlphaArgs[4], cAlphaArgs[5], cAlphaArgs[6], cAlphaArgs[7]))
 
         return None
 

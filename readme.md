@@ -86,6 +86,7 @@ File `Shadows.py` (functions and variables dependencies):
                         TestChar --> ??? não sei como converter para Python
                         stripped() --> computing performance?
                     GetDaylightingParametersInput()
+                        rNumericArgs
                         getNumObjectsFound(&ObjectWord)
                             caseInsensitiveObjectMap --> ? não tem no html
                             convertToUpper() --> ? não tem no html
@@ -131,7 +132,7 @@ File `Shadows.py` (functions and variables dependencies):
                             dtoa(...) --> ? não tem no html
                             Numbers(...) --> ? não tem no html
                             findDefault(default_value, schema_field_obj) --> InputProcessor
-                        cAlphaArgs(?) --> ? DataIPShortCuts
+                        cAlphaArgs
                     CheckTDDsAndLightShelvesInDaylitZones()
                         CheckTDDs_firstTime --> ? DaylightingManager
                         NumOfZones
@@ -299,7 +300,8 @@ File `Shadows.py` (functions and variables dependencies):
                 lNumericFieldBlanks
                 lAlphaFieldBlanks
                 cAlphaFieldNames
-                cNumericFieldNames
+                rNumericArgs
+                cAlphaArgs
                 DisableGroupSelfShading
                 ScheduleFileShadingProcessed --> definido dentro de GetShadowingInput(), mudar para External...
                 ZoneList
