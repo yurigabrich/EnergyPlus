@@ -3053,6 +3053,8 @@ class SolarShading(ExternalFunctions):
         firstTime = True
         # }
 
+        # HC = Homogeneous Coordinates --> https://bigladdersoftware.com/epx/docs/9-1/engineering-reference/shading-module.html#homogeneous-coordinates
+
         # std::ofstream shd_stream # Shading file stream --> não precisa desta definição
         HCNS = []                   # Surface number of back surface HC figures
         HCNV = []                   # Number of vertices of each HC figure
@@ -3062,9 +3064,12 @@ class SolarShading(ExternalFunctions):
         HCX = [[]]                  # 'X' homogeneous coordinates of vertices of figure.
         HCY = [[]]                  # 'Y' homogeneous coordinates of vertices of figure.
         WindowRevealStatus = [[[]]]
-        HCAREA = []                 # Area of each HC figure.  Sign Convention:  Base Surface
-                                    # - Positive, Shadow - Negative, Overlap between two shadows
-                                    # - positive, etc., so that sum of HC areas=base sunlit area
+        HCAREA = pd.Series()        # Area of each HC figure. Sign Convention:
+                                    # Base Surface - Positive,
+                                    # Shadow - Negative,
+                                    # Overlap between two shadows - positive,
+                                    # etc., so that sum of HC areas=base sunlit area
+        
         HCT = []                    # Transmittance of each HC figure
         ISABSF = []                 # For simple interior solar distribution (in which all beam
                                     # radiation entering zone is assumed to strike the floor),
@@ -4007,7 +4012,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         HCC.dimension(2 * MaxHCS, MaxHCV + 1, 0)
         HCX.dimension(2 * MaxHCS, MaxHCV + 1, 0)
         HCY.dimension(2 * MaxHCS, MaxHCV + 1, 0)
-        HCAREA.dimension(2 * MaxHCS, 0.0)
+        # HCAREA.dimension(2 * MaxHCS, 0.0)         # no need to declare the size of a pd.Series()
         HCNS.dimension(2 * MaxHCS, 0)
         HCNV.dimension(2 * MaxHCS, 0)
         HCT.dimension(2 * MaxHCS, 0.0)
@@ -4572,7 +4577,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             # SUM += HCC[l] = (HCY_m * HCX_l) - (HCX_m * HCY_l)
             SUM += HCC[l] + (HCY_m * HCX_l) - (HCX_m * HCY_l) # será que é isso?
 
-        HCAREA(NS) = SUM * sqHCMULT_fac
+        HCAREA = HCAREA.append(pd.Series([ SUM * sqHCMULT_fac ], index=[NS]))
 
         return None
 
@@ -4627,7 +4632,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             HCB[l] = HCX_m - HCX_l
             SUM += HCC[l] = (HCY_m * HCX_l) - (HCX_m * HCY_l)
 
-        HCAREA(NS) = SUM * sqHCMULT_fac
+        HCAREA = HCAREA.append(pd.Series([ SUM * sqHCMULT_fac ], index=[NS]))
 
         return None
 
@@ -5339,10 +5344,11 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
             HTRANS0(NS3, NV3) # Determine h.c. values of sides.
             # Skip overlaps of negligible area.
 
-            if (abs(HCAREA(NS3)) * HCMULT < abs(HCAREA(NS1))):
+            if (abs(HCAREA[NS3]) * HCMULT < abs(HCAREA[NS1])):
                 OverlapStatus = NoOverlap
             else:
-                if (HCAREA(NS1) * HCAREA(NS2) > 0.0) HCAREA(NS3) = -HCAREA(NS3) # Determine sign of area of overlap
+                if (HCAREA[NS1] * HCAREA[NS2] > 0.0)
+                  HCAREA[NS3] = -HCAREA[NS3] # Determine sign of area of overlap
                 HCT_1 = HCT(NS1)
                 HCT_2 = HCT(NS2)
                 HCT_3 = HCT_2 * HCT_1 # Determine transmission of overlap
@@ -5845,7 +5851,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
 
                 HTRANS1(1, NVT) # Transform to homogeneous coordinates.
 
-                HCAREA(1) =- HCAREA(1) # Compute (+) gross surface area.
+                HCAREA[1] =- HCAREA[1] # Compute (+) gross surface area. # if index 1 doesn't exist, it will raise a index error (out-of-bounds)
                 HCT[1] = 1.0
 
                 SHDGSS(NGRS, iHour, TS, GRSNR, NGSS, HTS) # Determine shadowing on surface.
@@ -5936,7 +5942,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         OverlapStatus = NoOverlap
 
         if (NGSS <= 0): # IF NO S.S., receiving surface FULLY SUNLIT.
-            SAREA(HTS) = HCAREA(1) # Surface fully sunlit
+            SAREA(HTS) = HCAREA[1] # Surface fully sunlit
         else:
             ExitLoopStatus = -1
             _GenSurf = ShadowComb.loc[CurSurf, 'GenSurf']
@@ -6092,7 +6098,7 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
                 SAREA(HTS) = 0.0
                 LOCHCA = FGSSHC
             elif ((ExitLoopStatus == TooManyVertices) or (ExitLoopStatus == TooManyFigures)): # Array limits exceeded, estimate
-                SAREA(HTS) = 0.25 * HCAREA(1)
+                SAREA(HTS) = 0.25 * HCAREA[1]
             else:
                 # Compute the sunlit area here.
                 # Call UnionShadow(FGSSHC,LOCHCA)
