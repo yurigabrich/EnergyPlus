@@ -4536,10 +4536,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         - int const NS,         # Figure Number
         - int const NumVertices # Number of vertices
         '''
-        # Using/Aliasing
-        # using General::TrimSigDigits
-
-        # Locals
 
         if (NS > 2 * MaxHCS):
             raise RuntimeError("Solar Shading: HTrans0: Too many Figures (>{})".format(TrimSigDigits(MaxHCS)))
@@ -4586,8 +4582,6 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         - int const NS,         # Figure Number
         - int const NumVertices # Number of vertices
         '''
-        # Using/Aliasing
-        using General::TrimSigDigits
 
         if (NS > 2 * MaxHCS):
             raise RuntimeError("Solar Shading: HTrans1: Too many Figures (>{})".format(TrimSigDigits(MaxHCS)))
@@ -4607,12 +4601,12 @@ class SolarCalculations(SolarShading): # ExternalFunctions will be passed automa
         l = l1
         for N in range(1, NumVertices): # [ l ] == ( NS, N )
             l += 1 # será q vai somar o par ordenado? Talvez precise de list comprehension: [a+1 for a in l]
-            HCX[l] = nint64(XVS[N] * HCMULT)
-            HCY[l] = nint64(YVS[N] * HCMULT)
+            HCX[l] = XVS[N] * HCMULT
+            HCY[l] = YVS[N] * HCMULT
 
         l = HCX.index(NS, NumVertices + 1)
         Int64 HCX_m(HCX[l] = HCX[l1]) # [ l1 ] == ( NS, 1 )
-        Int64 HCY_m(HCY[l] = HCY[l1])
+        Int64 HCY_m(HCY[l] = HCY[l1]) # --> NÃO SEI O QUE ISSO SIGNIFICA! Acontece o msm em HTRANS0
 
         l = l1
         m(l1 + 1)
